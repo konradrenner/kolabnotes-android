@@ -14,7 +14,6 @@ import android.widget.TextView;
 
 
 import org.kore.kolab.notes.Notebook;
-import org.kore.kolabnotes.android.repository.LocalRepository;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -81,7 +80,7 @@ public class NotebooksFragment extends Fragment implements AbsListView.OnItemCli
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
 
-        notebooks = new ArrayList<Notebook>(LocalRepository.getInstance().getRepositoryData().getNotebooks());
+        notebooks = new ArrayList<Notebook>(MainActivity.getRepository("Notes").getNotebooks());
 
         // TODO: Change Adapter to display your content
         mAdapter = new ArrayAdapter<Notebook>(getActivity(),
@@ -126,7 +125,7 @@ public class NotebooksFragment extends Fragment implements AbsListView.OnItemCli
         if (null != mListener) {
             // Notify the active callbacks interface (the activity, if the
             // fragment is attached to one) that an item has been selected.
-            LocalRepository.getInstance().setSelectedNotebook(notebooks.get(position).getIdentification().getUid());
+            MainActivity.setSelectedNotebook(notebooks.get(position).getIdentification().getUid());
             mListener.onFragmentInteraction(notebooks.get(position).getIdentification().getUid());
         }
     }

@@ -11,28 +11,50 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import org.kore.kolab.notes.AccountInformation;
+import org.kore.kolab.notes.Note;
 import org.kore.kolab.notes.Notebook;
 import org.kore.kolab.notes.NotesRepository;
-import org.kore.kolab.notes.imap.ImapRepository;
+import org.kore.kolab.notes.local.LocalNotesRepository;
 import org.kore.kolab.notes.v3.KolabNotesParserV3;
-import org.kore.kolabnotes.android.repository.LocalRepository;
+import org.kore.kolabnotes.android.async.NotesLoaderTask;
+
+import java.util.HashMap;
+import java.util.Map;
 
 
 public class MainActivity extends Activity {
+
+    private final static Map<String, NotesRepository> REPO_CACHE = new HashMap<>();
+    private static String selectedNotebook;
+    private static String selectedNote;
+
+    static{
+        //At the moment there are just notebooks supported which are in the Notes folder
+        REPO_CACHE.put("Notes",new LocalNotesRepository(new KolabNotesParserV3(),"Notes"));
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        if (savedInstanceState == null) {
+        /*if (savedInstanceState == null) {
             getFragmentManager().beginTransaction()
                     .add(R.id.container, new NotebooksFragment())
                     .add(R.id.container, new NotesFragment())
                     .add(R.id.container, new NoteFragment())
                     .commit();
-        }
-        //init singleton
-        LocalRepository.getInstance();
+        }*/
+        //new NotesLoaderTask().execute();
+        NotesRepository notes = REPO_CACHE.get("Notes");
+        Notebook notebook = notes.createNotebook("Book1", "Book1");
+        Note note = notebook.createNote("Note1", "Note1");
+        note.setDescription("This is note 1");
+        note = notebook.createNote("Note2", "Note2");
+        note.setDescription("This is note 2");
+
+        notebook = notes.createNotebook("Book2", "Book2");
+        note = notebook.createNote("Note21", "Note21");
+        note.setDescription("Hallo");
     }
 
     @Override
@@ -57,5 +79,25 @@ public class MainActivity extends Activity {
 
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public static String getSelectedNotebook() {
+        return selectedNotebook;
+    }
+
+    public static void setSelectedNotebook(String selectedNotebook) {
+        selectedNotebook = selectedNotebook;
+    }
+
+    public static String getSelectedNote() {
+        return selectedNote;
+    }
+
+    public static void setSelectedNote(String selectedNote) {
+        selectedNote = selectedNote;
+    }
+
+    public static NotesRepository getRepository(String rootFolder){
+        return REPO_CACHE.get(rootFolder);
     }
 }

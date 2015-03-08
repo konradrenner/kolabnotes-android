@@ -15,7 +15,6 @@ import android.widget.TextView;
 
 import org.kore.kolab.notes.Note;
 import org.kore.kolab.notes.Notebook;
-import org.kore.kolabnotes.android.repository.LocalRepository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -81,7 +80,8 @@ public class NotesFragment extends Fragment implements AbsListView.OnItemClickLi
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
 
-        Notebook notebook = LocalRepository.getInstance().getRepositoryData().getNotebook(LocalRepository.getInstance().getSelectedNotebook());
+        String selectedNotebook = MainActivity.getSelectedNotebook();
+        Notebook notebook = MainActivity.getRepository("rootFolder").getNotebook(selectedNotebook);
 
         notes = new ArrayList<Note>(notebook.getNotes());
 
@@ -128,7 +128,7 @@ public class NotesFragment extends Fragment implements AbsListView.OnItemClickLi
         if (null != mListener) {
             // Notify the active callbacks interface (the activity, if the
             // fragment is attached to one) that an item has been selected.
-            LocalRepository.getInstance().setSelectedNote(notes.get(position).getIdentification().getUid());
+            MainActivity.setSelectedNote(notes.get(position).getIdentification().getUid());
             mListener.onFragmentInteraction(notes.get(position).getIdentification().getUid());
         }
     }

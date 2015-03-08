@@ -9,8 +9,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import org.kore.kolabnotes.android.repository.LocalRepository;
-
 
 /**
  * A simple {@link Fragment} subclass.
@@ -67,8 +65,8 @@ public class NoteFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         TextView text = (TextView) container.findViewById(R.id.noteText);
-        String selectedNote = LocalRepository.getInstance().getSelectedNote();
-        text.setText(LocalRepository.getInstance().getRepositoryData().getNote(selectedNote).getSummary());
+        String selectedNote = MainActivity.getSelectedNote();
+        text.setText(MainActivity.getRepository("Notes").getNote(selectedNote).getSummary());
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_note, container, false);
     }
