@@ -11,20 +11,4 @@
         android:id="@+id/fragment"
         android:layout_gravity="left|center_vertical"
         tools:layout="@layout/fragment_notebooks" />
-
-    <fragment
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:name="org.kore.kolabnotes.android.NotesFragment"
-        android:id="@+id/fragment2"
-        android:layout_gravity="center"
-        tools:layout="@layout/fragment_notes" />
-
-    <fragment
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:name="org.kore.kolabnotes.android.NoteFragment"
-        android:id="@+id/fragment3"
-        android:layout_gravity="right|center_vertical"
-        tools:layout="@layout/fragment_note" />
 </FrameLayout>

@@ -14,6 +14,7 @@ import android.widget.TextView;
 
 
 import org.kore.kolab.notes.Notebook;
+import org.kore.kolabnotes.android.adapter.NotesListAdapter;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -25,7 +26,7 @@ import java.util.List;
  * Large screen devices (such as tablets) are supported by replacing the ListView
  * with a GridView.
  * <p/>
- * Activities containing this fragment MUST implement the {@link OnFragmentInteractionListener}
+ * Activities containing this fragment MUST implement the {@link OnNotebookFragmentInteractionListener}
  * interface.
  */
 public class NotebooksFragment extends Fragment implements AbsListView.OnItemClickListener {
@@ -41,7 +42,7 @@ public class NotebooksFragment extends Fragment implements AbsListView.OnItemCli
 
     private List<Notebook> notebooks;
 
-    private OnFragmentInteractionListener mListener;
+    private OnNotebookFragmentInteractionListener mListener;
 
     /**
      * The fragment's ListView/GridView.
@@ -69,6 +70,7 @@ public class NotebooksFragment extends Fragment implements AbsListView.OnItemCli
      * fragment (e.g. upon screen orientation changes).
      */
     public NotebooksFragment() {
+        notebooks = new ArrayList<Notebook>(MainActivity.getRepository("Notes").getNotebooks());
     }
 
     @Override
@@ -80,16 +82,15 @@ public class NotebooksFragment extends Fragment implements AbsListView.OnItemCli
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
 
-        notebooks = new ArrayList<Notebook>(MainActivity.getRepository("Notes").getNotebooks());
-
         // TODO: Change Adapter to display your content
-        mAdapter = new ArrayAdapter<Notebook>(getActivity(),
+        mAdapter = new NotesListAdapter<Notebook>(getActivity(),
                 android.R.layout.simple_list_item_1, android.R.id.text1,notebooks);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
         View view = inflater.inflate(R.layout.fragment_notebooks, container, false);
 
         // Set the adapter
@@ -103,10 +104,19 @@ public class NotebooksFragment extends Fragment implements AbsListView.OnItemCli
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        MainActivity main = (MainActivity)super.getActivity();
+        notebooks.clear();
+        notebooks.addAll(MainActivity.getRepository("Notes").getNotebooks());
+    }
+
+    @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         try {
-            mListener = (OnFragmentInteractionListener) activity;
+
+            mListener = (OnNotebookFragmentInteractionListener) activity;
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()
                     + " must implement OnFragmentInteractionListener");
@@ -123,10 +133,14 @@ public class NotebooksFragment extends Fragment implements AbsListView.OnItemCli
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         if (null != mListener) {
+
+            getFragmentManager().beginTransaction()
+                    .add(R.id.container, new NotesFragment())
+                    .commit();
+
             // Notify the active callbacks interface (the activity, if the
             // fragment is attached to one) that an item has been selected.
-            MainActivity.setSelectedNotebook(notebooks.get(position).getIdentification().getUid());
-            mListener.onFragmentInteraction(notebooks.get(position).getIdentification().getUid());
+            mListener.onNotebookFragmentInteraction(notebooks.get(position).getIdentification().getUid());
         }
     }
 
@@ -153,9 +167,9 @@ public class NotebooksFragment extends Fragment implements AbsListView.OnItemCli
      * "http://developer.android.com/training/basics/fragments/communicating.html"
      * >Communicating with Other Fragments</a> for more information.
      */
-    public interface OnFragmentInteractionListener {
+    public interface OnNotebookFragmentInteractionListener {
         // TODO: Update argument type and name
-        public void onFragmentInteraction(String id);
+        public void onNotebookFragmentInteraction(String id);
     }
 
 }

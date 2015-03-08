@@ -15,6 +15,7 @@ import android.widget.TextView;
 
 import org.kore.kolab.notes.Note;
 import org.kore.kolab.notes.Notebook;
+import org.kore.kolabnotes.android.adapter.NotesListAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +26,7 @@ import java.util.List;
  * Large screen devices (such as tablets) are supported by replacing the ListView
  * with a GridView.
  * <p/>
- * Activities containing this fragment MUST implement the {@link OnFragmentInteractionListener}
+ * Activities containing this fragment MUST implement the {@link OnNotesFragmentInteractionListener}
  * interface.
  */
 public class NotesFragment extends Fragment implements AbsListView.OnItemClickListener {
@@ -41,7 +42,7 @@ public class NotesFragment extends Fragment implements AbsListView.OnItemClickLi
 
     private List<Note> notes;
 
-    private OnFragmentInteractionListener mListener;
+    private OnNotesFragmentInteractionListener mListener;
 
     /**
      * The fragment's ListView/GridView.
@@ -69,6 +70,7 @@ public class NotesFragment extends Fragment implements AbsListView.OnItemClickLi
      * fragment (e.g. upon screen orientation changes).
      */
     public NotesFragment() {
+        notes = new ArrayList<Note>();
     }
 
     @Override
@@ -80,19 +82,15 @@ public class NotesFragment extends Fragment implements AbsListView.OnItemClickLi
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
 
-        String selectedNotebook = MainActivity.getSelectedNotebook();
-        Notebook notebook = MainActivity.getRepository("rootFolder").getNotebook(selectedNotebook);
-
-        notes = new ArrayList<Note>(notebook.getNotes());
-
         // TODO: Change Adapter to display your content
-        mAdapter = new ArrayAdapter<Note>(getActivity(),
+        mAdapter = new NotesListAdapter<Note>(getActivity(),
                 android.R.layout.simple_list_item_1, android.R.id.text1, notes);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
         View view = inflater.inflate(R.layout.fragment_notes, container, false);
 
         // Set the adapter
@@ -106,10 +104,22 @@ public class NotesFragment extends Fragment implements AbsListView.OnItemClickLi
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        MainActivity main = (MainActivity)super.getActivity();
+        notes.clear();
+        String selectedNotebook = main.getSelectedNotebook();
+        if(selectedNotebook != null) {
+            notes.addAll(MainActivity.getRepository("Notes").getNotebook(selectedNotebook).getNotes());
+        }
+    }
+
+    @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         try {
-            mListener = (OnFragmentInteractionListener) activity;
+
+            mListener = (OnNotesFragmentInteractionListener) activity;
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()
                     + " must implement OnFragmentInteractionListener");
@@ -126,10 +136,12 @@ public class NotesFragment extends Fragment implements AbsListView.OnItemClickLi
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         if (null != mListener) {
+            getFragmentManager().beginTransaction()
+                    .add(R.id.container, new NoteFragment())
+                    .commit();
             // Notify the active callbacks interface (the activity, if the
             // fragment is attached to one) that an item has been selected.
-            MainActivity.setSelectedNote(notes.get(position).getIdentification().getUid());
-            mListener.onFragmentInteraction(notes.get(position).getIdentification().getUid());
+            mListener.onNotesFragmentInteraction(notes.get(position).getIdentification().getUid());
         }
     }
 
@@ -156,9 +168,9 @@ public class NotesFragment extends Fragment implements AbsListView.OnItemClickLi
      * "http://developer.android.com/training/basics/fragments/communicating.html"
      * >Communicating with Other Fragments</a> for more information.
      */
-    public interface OnFragmentInteractionListener {
+    public interface OnNotesFragmentInteractionListener {
         // TODO: Update argument type and name
-        public void onFragmentInteraction(String id);
+        public void onNotesFragmentInteraction(String id);
     }
 
 }

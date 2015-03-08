@@ -2,6 +2,7 @@ package org.kore.kolabnotes.android;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -22,11 +23,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 
-public class MainActivity extends Activity {
+public class MainActivity extends Activity implements NotesFragment.OnNotesFragmentInteractionListener, NotebooksFragment.OnNotebookFragmentInteractionListener, NoteFragment.OnNoteFragmentInteractionListener{
 
     private final static Map<String, NotesRepository> REPO_CACHE = new HashMap<>();
-    private static String selectedNotebook;
-    private static String selectedNote;
+    private String selectedNotebook;
+    private String selectedNote;
 
     static{
         //At the moment there are just notebooks supported which are in the Notes folder
@@ -81,23 +82,30 @@ public class MainActivity extends Activity {
         return super.onOptionsItemSelected(item);
     }
 
-    public static String getSelectedNotebook() {
+    public static NotesRepository getRepository(String rootFolder){
+        return REPO_CACHE.get(rootFolder);
+    }
+
+    @Override
+    public void onNoteFragmentInteraction(Uri uri) {
+        //Nothing at the moment
+    }
+
+    @Override
+    public void onNotebookFragmentInteraction(String id) {
+        selectedNotebook = id;
+    }
+
+    @Override
+    public void onNotesFragmentInteraction(String id) {
+        selectedNote = id;
+    }
+
+    public String getSelectedNotebook() {
         return selectedNotebook;
     }
 
-    public static void setSelectedNotebook(String selectedNotebook) {
-        selectedNotebook = selectedNotebook;
-    }
-
-    public static String getSelectedNote() {
+    public String getSelectedNote() {
         return selectedNote;
-    }
-
-    public static void setSelectedNote(String selectedNote) {
-        selectedNote = selectedNote;
-    }
-
-    public static NotesRepository getRepository(String rootFolder){
-        return REPO_CACHE.get(rootFolder);
     }
 }

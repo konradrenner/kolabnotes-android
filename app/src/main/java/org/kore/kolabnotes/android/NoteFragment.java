@@ -13,7 +13,7 @@ import android.widget.TextView;
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link NoteFragment.OnFragmentInteractionListener} interface
+ * {@link NoteFragment.OnNoteFragmentInteractionListener} interface
  * to handle interaction events.
  * Use the {@link NoteFragment#newInstance} factory method to
  * create an instance of this fragment.
@@ -28,7 +28,7 @@ public class NoteFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
-    private OnFragmentInteractionListener mListener;
+    private OnNoteFragmentInteractionListener mListener;
 
     /**
      * Use this factory method to create a new instance of
@@ -64,17 +64,26 @@ public class NoteFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        TextView text = (TextView) container.findViewById(R.id.noteText);
-        String selectedNote = MainActivity.getSelectedNote();
-        text.setText(MainActivity.getRepository("Notes").getNote(selectedNote).getSummary());
-        // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_note, container, false);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        TextView textView = (TextView)getView().findViewById(R.id.noteText);
+        MainActivity main = (MainActivity)super.getActivity();
+
+        String selectedNote = main.getSelectedNote();
+        if(selectedNote != null) {
+            textView.setText(MainActivity.getRepository("Notes").getNote(selectedNote).getSummary());
+        }
     }
 
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
+            mListener.onNoteFragmentInteraction(uri);
         }
     }
 
@@ -82,7 +91,7 @@ public class NoteFragment extends Fragment {
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         try {
-            mListener = (OnFragmentInteractionListener) activity;
+            mListener = (OnNoteFragmentInteractionListener) activity;
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()
                     + " must implement OnFragmentInteractionListener");
@@ -105,9 +114,9 @@ public class NoteFragment extends Fragment {
      * "http://developer.android.com/training/basics/fragments/communicating.html"
      * >Communicating with Other Fragments</a> for more information.
      */
-    public interface OnFragmentInteractionListener {
+    public interface OnNoteFragmentInteractionListener {
         // TODO: Update argument type and name
-        public void onFragmentInteraction(Uri uri);
+        public void onNoteFragmentInteraction(Uri uri);
     }
 
 }
