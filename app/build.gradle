@@ -24,5 +24,7 @@ android {
 
 dependencies {
     //compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile "org.kore.kolab.notes:kolabnotes-java:0.2.1"
+    compile 'org.kore.kolab.notes:kolabnotes-java:0.2.1'
+    compile 'com.android.support:recyclerview-v7:21.0.3'
+    compile 'com.android.support:cardview-v7:21.0.3'
 }
