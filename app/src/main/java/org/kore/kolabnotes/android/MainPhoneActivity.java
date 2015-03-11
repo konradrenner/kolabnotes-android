@@ -1,36 +1,42 @@
 package org.kore.kolabnotes.android;
 
-import android.app.Activity;
-
-import android.app.ActionBar;
-import android.app.Fragment;
-import android.app.FragmentManager;
-import android.content.Context;
-import android.os.Build;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.pm.ResolveInfo;
+import android.os.AsyncTask;
 import android.os.Bundle;
-import android.view.Gravity;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
+import android.support.v4.app.ActivityOptionsCompat;
+import android.support.v4.util.Pair;
 import android.support.v4.widget.DrawerLayout;
-import android.widget.ArrayAdapter;
-import android.widget.TextView;
+import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
+import android.view.View;
+import android.widget.CompoundButton;
+import android.widget.ImageButton;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
+import android.widget.Switch;
 
 import org.kore.kolab.notes.Note;
 import org.kore.kolab.notes.Notebook;
 import org.kore.kolab.notes.NotesRepository;
 import org.kore.kolab.notes.local.LocalNotesRepository;
 import org.kore.kolab.notes.v3.KolabNotesParserV3;
+import org.kore.kolabnotes.android.adapter.ApplicationAdapter;
+import org.kore.kolabnotes.android.entity.AppInfo;
+import org.kore.kolabnotes.android.itemanimator.CustomItemAnimator;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-
-public class MainPhoneActivity extends Activity
-        implements NavigationDrawerFragment.NavigationDrawerCallbacks {
-
+public class MainPhoneActivity extends ActionBarActivity {
     private final static Map<String, NotesRepository> REPO_CACHE = new HashMap<>();
     private String selectedNotebook;
     private String selectedNote;
@@ -40,31 +46,101 @@ public class MainPhoneActivity extends Activity
         REPO_CACHE.put("Notes",new LocalNotesRepository(new KolabNotesParserV3(),"Notes"));
     }
 
-    /**
-     * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
-     */
-    private NavigationDrawerFragment mNavigationDrawerFragment;
+    private List<AppInfo> applicationList = new ArrayList<AppInfo>();
 
-    /**
-     * Used to store the last screen title. For use in {@link #restoreActionBar()}.
-     */
-    private CharSequence mTitle;
+    private ApplicationAdapter mAdapter;
+    private ImageButton mFabButton;
+    private RecyclerView mRecyclerView;
+    private SwipeRefreshLayout mSwipeRefreshLayout;
+    private ProgressBar mProgressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        //supportRequestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
+
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main_phone);
+        setContentView(R.layout.activity_main);
 
-        mNavigationDrawerFragment = (NavigationDrawerFragment)
-                getFragmentManager().findFragmentById(R.id.navigation_drawer);
-        mTitle = getTitle();
+        // Set explode animation when enter and exit the activity
+        //Utils.configureWindowEnterExitTransition(getWindow());
 
-        // Set up the drawer.
-        mNavigationDrawerFragment.setUp(
-                R.id.navigation_drawer,
-                (DrawerLayout) findViewById(R.id.drawer_layout));
+        // Handle Toolbar
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        //new NotesLoaderTask().execute();
+        // Handle DrawerLayout
+        DrawerLayout mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer);
+
+        // Handle ActionBarDrawerToggle
+        ActionBarDrawerToggle actionBarDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, toolbar, R.string.drawer_open, R.string.drawer_close);
+        actionBarDrawerToggle.syncState();
+
+        // Handle different Drawer States :D
+        mDrawerLayout.setDrawerListener(actionBarDrawerToggle);
+
+        // Handle DrawerList
+        LinearLayout mDrawerList = (LinearLayout) findViewById(R.id.drawerList);
+
+        // Handle ProgressBar
+        mProgressBar = (ProgressBar) findViewById(R.id.progressBar);
+
+        // Init DrawerElems NOTE Just don't do this in a live app :D
+        final SharedPreferences pref = getSharedPreferences("com.mikepenz.applicationreader", 0);
+        ((Switch) mDrawerList.findViewById(R.id.drawer_autoupload)).setChecked(pref.getBoolean("autouploadenabled", false));
+        ((Switch) mDrawerList.findViewById(R.id.drawer_autoupload)).setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                SharedPreferences.Editor editor = pref.edit();
+                editor.putBoolean("autouploadenabled", isChecked);
+                editor.apply();
+            }
+        });
+
+        mDrawerList.findViewById(R.id.drawer_opensource).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //nothing at the moment
+            }
+        });
+        //((ImageView) mDrawerList.findViewById(R.id.drawer_opensource_icon)).setImageDrawable(new IconicsDrawable(this, FontAwesome.Icon.faw_github).colorRes(R.color.secondary).actionBarSize());
+
+        // Fab Button
+        mFabButton = (ImageButton) findViewById(R.id.fab_button);
+        //mFabButton.setImageDrawable(new IconicsDrawable(this, FontAwesome.Icon.faw_upload).color(Color.WHITE).actionBarSize());
+        mFabButton.setOnClickListener(fabClickListener);
+        Utils.configureFab(mFabButton);
+
+        mRecyclerView = (RecyclerView) findViewById(R.id.list);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        mRecyclerView.setItemAnimator(new CustomItemAnimator());
+        //mRecyclerView.setItemAnimator(new ReboundItemAnimator());
+
+        mAdapter = new ApplicationAdapter(new ArrayList<AppInfo>(), R.layout.row_application, this);
+        mRecyclerView.setAdapter(mAdapter);
+
+        mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_container);
+        mSwipeRefreshLayout.setColorSchemeColors(getResources().getColor(R.color.theme_accent));
+        mSwipeRefreshLayout.setRefreshing(true);
+        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                new InitializeApplicationsTask().execute();
+            }
+        });
+
+        new InitializeApplicationsTask().execute();
+
+        if (savedInstanceState != null) {
+            //nothing at the moment
+        }
+
+        //show progress
+        mRecyclerView.setVisibility(View.GONE);
+        mProgressBar.setVisibility(View.VISIBLE);
+    }
+
+    void initData(){
         NotesRepository notes = REPO_CACHE.get("Notes");
         Notebook notebook = notes.createNotebook("Book1", "Book1");
         Note note = notebook.createNote("Note1", "Note1");
@@ -78,102 +154,68 @@ public class MainPhoneActivity extends Activity
     }
 
     @Override
-    public void onNavigationDrawerItemSelected(int position) {
-        // update the main content by replacing fragments
-        FragmentManager fragmentManager = getFragmentManager();
-        fragmentManager.beginTransaction()
-                .replace(R.id.container, PlaceholderFragment.newInstance(position + 1))
-                .commit();
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
     }
 
-    public void onSectionAttached(int number) {
-        switch (number) {
-            case 1:
-                mTitle = getString(R.string.title_section1);
-                break;
-            case 2:
-                mTitle = getString(R.string.title_section2);
-                break;
-            case 3:
-                mTitle = getString(R.string.title_section3);
-                break;
+    View.OnClickListener fabClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            //nothing at the moment
         }
+    };
+
+
+    public void animateActivity(AppInfo appInfo, View appIcon) {
+        Intent i = new Intent(this, DetailActivity.class);
+        i.putExtra("appInfo", appInfo.getComponentName());
+
+        ActivityOptionsCompat transitionActivityOptions = ActivityOptionsCompat.makeSceneTransitionAnimation(this, Pair.create((View) mFabButton, "fab"), Pair.create(appIcon, "appIcon"));
+        startActivity(i, transitionActivityOptions.toBundle());
     }
 
-    public void restoreActionBar() {
-        ActionBar actionBar = getActionBar();
-        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
-        actionBar.setDisplayShowTitleEnabled(true);
-        actionBar.setTitle(mTitle);
-    }
 
+    private class InitializeApplicationsTask extends AsyncTask<Void, Void, Void> {
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        if (!mNavigationDrawerFragment.isDrawerOpen()) {
-            // Only show items in the action bar relevant to this screen
-            // if the drawer is not showing. Otherwise, let the drawer
-            // decide what to show in the action bar.
-            getMenuInflater().inflate(R.menu.main_phone, menu);
-            restoreActionBar();
-            return true;
-        }
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
-    /**
-     * A placeholder fragment containing a simple view.
-     */
-    public static class PlaceholderFragment extends Fragment {
-        /**
-         * The fragment argument representing the section number for this
-         * fragment.
-         */
-        private static final String ARG_SECTION_NUMBER = "section_number";
-
-        /**
-         * Returns a new instance of this fragment for the given section
-         * number.
-         */
-        public static PlaceholderFragment newInstance(int sectionNumber) {
-            PlaceholderFragment fragment = new PlaceholderFragment();
-            Bundle args = new Bundle();
-            args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-            fragment.setArguments(args);
-            return fragment;
-        }
-
-        public PlaceholderFragment() {
+        @Override
+        protected void onPreExecute() {
+            mAdapter.clearApplications();
+            super.onPreExecute();
         }
 
         @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_main_phone, container, false);
-            return rootView;
+        protected Void doInBackground(Void... params) {
+            applicationList.clear();
+
+            //Query the applications
+            final Intent mainIntent = new Intent(Intent.ACTION_MAIN, null);
+            mainIntent.addCategory(Intent.CATEGORY_LAUNCHER);
+
+            List<ResolveInfo> ril = getPackageManager().queryIntentActivities(mainIntent, 0);
+            for (ResolveInfo ri : ril) {
+                applicationList.add(new AppInfo(MainPhoneActivity.this, ri));
+            }
+            Collections.sort(applicationList);
+
+            for (AppInfo appInfo : applicationList) {
+                //load icons before shown. so the list is smoother
+                appInfo.getIcon();
+            }
+
+            return null;
         }
 
         @Override
-        public void onAttach(Activity activity) {
-            super.onAttach(activity);
-            ((MainPhoneActivity) activity).onSectionAttached(
-                    getArguments().getInt(ARG_SECTION_NUMBER));
+        protected void onPostExecute(Void result) {
+            //handle visibility
+            mRecyclerView.setVisibility(View.VISIBLE);
+            mProgressBar.setVisibility(View.GONE);
+
+            //set data for list
+            mAdapter.addApplications(applicationList);
+            mSwipeRefreshLayout.setRefreshing(false);
+
+            super.onPostExecute(result);
         }
     }
-
 }
