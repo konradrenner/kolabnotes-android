@@ -20,4 +20,9 @@
     <string name="title_activity_phone">PhoneActivity</string>
 
     <string name="hello_world">Hello world!</string>
+
+    <string name="label">Kolab Notes</string>
+
+    <string name="signup_title">Create new account</string>
+    <string name="login_label">Log in</string>
 </resources>

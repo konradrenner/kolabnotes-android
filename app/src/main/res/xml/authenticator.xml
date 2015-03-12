@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<account-authenticator xmlns:android="http://schemas.android.com/apk/res/android"
+    android:accountType="kore.kolabnotes"
+    android:icon="@mipmap/ic_kjots"
+    android:smallIcon="@mipmap/ic_kjots"
+    android:label="@string/label"
+    android:accountPreferences="@xml/pref_general"/>

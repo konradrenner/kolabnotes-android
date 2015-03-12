@@ -14,11 +14,11 @@ import java.util.List;
 /**
  * Created by koni on 12.03.15.
  */
-public final class NotebookRepository {
+public final class NotebookContentResolver {
 
     private final static String BASE_URI = "content://kore.kolabnotes/notebook/";
 
-    private NotebookRepository(){
+    private NotebookContentResolver(){
         //Stateless class
     }
 
