@@ -14,6 +14,8 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.ImageButton;
@@ -52,7 +54,6 @@ public class MainPhoneActivity extends ActionBarActivity {
     private ImageButton mFabButton;
     private RecyclerView mRecyclerView;
     private SwipeRefreshLayout mSwipeRefreshLayout;
-    private ProgressBar mProgressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,9 +82,6 @@ public class MainPhoneActivity extends ActionBarActivity {
 
         // Handle DrawerList
         LinearLayout mDrawerList = (LinearLayout) findViewById(R.id.drawerList);
-
-        // Handle ProgressBar
-        mProgressBar = (ProgressBar) findViewById(R.id.progressBar);
 
         // Init DrawerElems NOTE Just don't do this in a live app :D
         final SharedPreferences pref = getSharedPreferences("com.mikepenz.applicationreader", 0);
@@ -137,7 +135,20 @@ public class MainPhoneActivity extends ActionBarActivity {
 
         //show progress
         mRecyclerView.setVisibility(View.GONE);
-        mProgressBar.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        super.onCreateOptionsMenu(menu);
+        getMenuInflater().inflate(R.menu.settings, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        Intent intent = new Intent(this, SettingsActivity.class);
+        startActivity(intent);
+        return true;
     }
 
     void initData(){
@@ -209,7 +220,6 @@ public class MainPhoneActivity extends ActionBarActivity {
         protected void onPostExecute(Void result) {
             //handle visibility
             mRecyclerView.setVisibility(View.VISIBLE);
-            mProgressBar.setVisibility(View.GONE);
 
             //set data for list
             mAdapter.addApplications(applicationList);
