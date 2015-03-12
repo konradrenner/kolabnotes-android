@@ -59,7 +59,7 @@ public class MainPhoneActivity extends ActionBarActivity {
         //supportRequestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_main_phone);
 
         // Set explode animation when enter and exit the activity
         //Utils.configureWindowEnterExitTransition(getWindow());

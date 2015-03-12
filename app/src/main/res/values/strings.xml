@@ -17,4 +17,7 @@
     <string name="dialog_nointernet">No internet connection!</string>
     <string name="dialog_uploading">Progress Sample&#8230;</string>
     <string name="dialog_processinganduploading">Showing a sample progress. Please be patient! (This does nothing. Just waiting 100ms / application)</string>
+    <string name="title_activity_phone">PhoneActivity</string>
+
+    <string name="hello_world">Hello world!</string>
 </resources>
