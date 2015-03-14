@@ -43,25 +43,34 @@ public class NotebookRepository {
         dbHelper.close();
     }
 
-    public Comment create(Notebook notebook) {
+    public void insert(Notebook notebook) {
         ContentValues values = new ContentValues();
-        //values.put(DatabaseHelper.COLUMN_COMMENT, notebook);
-        //long insertId = database.insert(DatabaseHelper.TABLE_COMMENTS, null,
-        //        values);
-        //Cursor cursor = database.query(DatabaseHelper.TABLE_COMMENTS,
-        //        allColumns, DatabaseHelper.COLUMN_ID + " = " + insertId, null,
-        //        null, null, null);
-        //cursor.moveToFirst();
-        //Comment newComment = cursorToComment(cursor);
-        //cursor.close();
-        return null;
+        values.put(DatabaseHelper.COLUMN_UID, notebook.getIdentification().getUid());
+        values.put(DatabaseHelper.COLUMN_PRODUCTID, notebook.getIdentification().getProductId());
+        values.put(DatabaseHelper.COLUMN_CREATIONDATE, notebook.getAuditInformation().getCreationDate().getTime());
+        values.put(DatabaseHelper.COLUMN_MODIFICATIONDATE, notebook.getAuditInformation().getCreationDate().getTime());
+        values.put(DatabaseHelper.COLUMN_SUMMARY, notebook.getSummary());
+        values.put(DatabaseHelper.COLUMN_DESCRIPTION, notebook.getDescription());
+        values.put(DatabaseHelper.COLUMN_CLASSIFICATION, notebook.getClassification().toString());
+
+        database.insert(DatabaseHelper.TABLE_NOTES, null,values);
+    }
+
+    public void update(Notebook notebook){
+        ContentValues values = new ContentValues();
+        values.put(DatabaseHelper.COLUMN_UID, notebook.getIdentification().getUid());
+        values.put(DatabaseHelper.COLUMN_PRODUCTID, notebook.getIdentification().getProductId());
+        values.put(DatabaseHelper.COLUMN_CREATIONDATE, notebook.getAuditInformation().getCreationDate().getTime());
+        values.put(DatabaseHelper.COLUMN_MODIFICATIONDATE, notebook.getAuditInformation().getCreationDate().getTime());
+        values.put(DatabaseHelper.COLUMN_SUMMARY, notebook.getSummary());
+        values.put(DatabaseHelper.COLUMN_DESCRIPTION, notebook.getDescription());
+        values.put(DatabaseHelper.COLUMN_CLASSIFICATION, notebook.getClassification().toString());
+
+        database.update(DatabaseHelper.TABLE_NOTES, values,DatabaseHelper.COLUMN_UID + " = " + notebook.getIdentification().getUid(),null);
     }
 
     public void delete(Notebook notebook) {
-       //long id = comment.getId();
-       // System.out.println("Comment deleted with id: " + id);
-       //database.delete(DatabaseHelper.TABLE_COMMENTS, DatabaseHelper.COLUMN_ID
-       //        + " = " + id, null);
+       database.delete(DatabaseHelper.TABLE_NOTES, DatabaseHelper.COLUMN_UID + " = " + notebook.getIdentification().getUid(), null);
     }
 
     public List<Notebook> getAll() {
@@ -69,8 +78,8 @@ public class NotebookRepository {
 
         Cursor cursor = database.query(DatabaseHelper.TABLE_NOTES,
                 allColumns,
-                DatabaseHelper.COLUMN_DISCRIMINATOR+"=?",
-                new String[]{DatabaseHelper.DESCRIMINATOR_NOTEBOOK},
+                DatabaseHelper.COLUMN_DISCRIMINATOR+"="+DatabaseHelper.DESCRIMINATOR_NOTEBOOK,
+                null,
                 null,
                 null,
                 null);
