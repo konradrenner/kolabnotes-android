@@ -5,10 +5,12 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
+import org.kore.kolab.notes.Note;
 import org.kore.kolab.notes.Notebook;
 import org.w3c.dom.Comment;
 
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,7 +23,13 @@ public class NotebookRepository {
     private SQLiteDatabase database;
     private DatabaseHelper dbHelper;
     private String[] allColumns = { DatabaseHelper.COLUMN_ID,
-            DatabaseHelper.COLUMN_COMMENT };
+            DatabaseHelper.COLUMN_UID,
+            DatabaseHelper.COLUMN_PRODUCTID ,
+            DatabaseHelper.COLUMN_CREATIONDATE ,
+            DatabaseHelper.COLUMN_MODIFICATIONDATE ,
+            DatabaseHelper.COLUMN_SUMMARY ,
+            DatabaseHelper.COLUMN_DESCRIPTION ,
+            DatabaseHelper.COLUMN_CLASSIFICATION };
 
     public NotebookRepository(Context context) {
         dbHelper = new DatabaseHelper(context);
@@ -59,24 +67,38 @@ public class NotebookRepository {
     public List<Notebook> getAll() {
         List<Notebook> notebooks = new ArrayList<Notebook>();
 
-        Cursor cursor = database.query(DatabaseHelper.TABLE_COMMENTS,
-                allColumns, null, null, null, null, null);
+        Cursor cursor = database.query(DatabaseHelper.TABLE_NOTES,
+                allColumns,
+                DatabaseHelper.COLUMN_DISCRIMINATOR+"=?",
+                new String[]{DatabaseHelper.DESCRIMINATOR_NOTEBOOK},
+                null,
+                null,
+                null);
 
-        cursor.moveToFirst();
-        while (!cursor.isAfterLast()) {
+        while (cursor.moveToNext()) {
             Notebook notebook = cursorToComment(cursor);
             notebooks.add(notebook);
-            cursor.moveToNext();
         }
-        // make sure to close the cursor
         cursor.close();
         return notebooks;
     }
 
     private Notebook cursorToComment(Cursor cursor) {
-        //Comment comment = new Comment();
-        //comment.setId(cursor.getLong(0));
-        //comment.setComment(cursor.getString(1));
+        String uid = cursor.getString(1);
+        String productId = cursor.getString(2);
+        Long creationDate = cursor.getLong(3);
+        Long modificationDate = cursor.getLong(4);
+        String summary = cursor.getString(5);
+        String description = cursor.getString(6);
+        String classification = cursor.getString(7);
+
+        Note.AuditInformation audit = new Note.AuditInformation(new Timestamp(creationDate),new Timestamp(modificationDate));
+        Note.Identification ident = new Note.Identification(uid,productId);
+
+        Notebook notebook = new Notebook(ident,audit, Note.Classification.valueOf(classification),description);
+        notebook.setSummary(summary);
+        //TODO
+        notebook.addCategories(null);
         return null;
     }
 }
