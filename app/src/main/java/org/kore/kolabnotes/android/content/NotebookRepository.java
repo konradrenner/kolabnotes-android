@@ -31,10 +31,12 @@ public class NotebookRepository {
             DatabaseHelper.COLUMN_SUMMARY ,
             DatabaseHelper.COLUMN_DESCRIPTION ,
             DatabaseHelper.COLUMN_CLASSIFICATION };
+    private ModificationRepository modificationRepository;
 
     public NotebookRepository(Context context) {
         dbHelper = new DatabaseHelper(context);
         this.context = context;
+        this.modificationRepository = new ModificationRepository(context);
     }
 
     public void open() throws SQLException {
@@ -56,6 +58,12 @@ public class NotebookRepository {
         values.put(DatabaseHelper.COLUMN_CLASSIFICATION, notebook.getClassification().toString());
 
         database.insert(DatabaseHelper.TABLE_NOTES, null,values);
+
+        Modification modification = modificationRepository.getByUID(notebook.getIdentification().getUid());
+
+        if(modification == null){
+            modificationRepository.insert(notebook.getIdentification().getUid(), ModificationRepository.ModificationType.INS);
+        }
     }
 
     public void update(Notebook notebook){
@@ -69,10 +77,22 @@ public class NotebookRepository {
         values.put(DatabaseHelper.COLUMN_CLASSIFICATION, notebook.getClassification().toString());
 
         database.update(DatabaseHelper.TABLE_NOTES, values,DatabaseHelper.COLUMN_UID + " = " + notebook.getIdentification().getUid(),null);
+
+        Modification modification = modificationRepository.getByUID(notebook.getIdentification().getUid());
+
+        if(modification == null){
+            modificationRepository.insert(notebook.getIdentification().getUid(), ModificationRepository.ModificationType.UPD);
+        }
     }
 
     public void delete(Notebook notebook) {
        database.delete(DatabaseHelper.TABLE_NOTES, DatabaseHelper.COLUMN_UID + " = " + notebook.getIdentification().getUid(), null);
+
+        Modification modification = modificationRepository.getByUID(notebook.getIdentification().getUid());
+
+        if(modification == null){
+            modificationRepository.insert(notebook.getIdentification().getUid(), ModificationRepository.ModificationType.DEL);
+        }
     }
 
     public List<Notebook> getAll() {
