@@ -20,7 +20,6 @@ import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.Switch;
 
 import org.kore.kolab.notes.Note;
@@ -28,8 +27,8 @@ import org.kore.kolab.notes.Notebook;
 import org.kore.kolab.notes.NotesRepository;
 import org.kore.kolab.notes.local.LocalNotesRepository;
 import org.kore.kolab.notes.v3.KolabNotesParserV3;
-import org.kore.kolabnotes.android.adapter.ApplicationAdapter;
-import org.kore.kolabnotes.android.entity.AppInfo;
+import org.kore.kolabnotes.android.adapter.NoteAdapter;
+import org.kore.kolabnotes.android.content.NoteRepository;
 import org.kore.kolabnotes.android.itemanimator.CustomItemAnimator;
 
 import java.util.ArrayList;
@@ -39,21 +38,17 @@ import java.util.List;
 import java.util.Map;
 
 public class MainPhoneActivity extends ActionBarActivity {
-    private final static Map<String, NotesRepository> REPO_CACHE = new HashMap<>();
     private String selectedNotebook;
     private String selectedNote;
 
-    static{
-        //At the moment there are just notebooks supported which are in the Notes folder
-        REPO_CACHE.put("Notes",new LocalNotesRepository(new KolabNotesParserV3(),"Notes"));
-    }
+    private List<Note> notesList = new ArrayList<Note>();
 
-    private List<AppInfo> applicationList = new ArrayList<AppInfo>();
-
-    private ApplicationAdapter mAdapter;
+    private NoteAdapter mAdapter;
     private ImageButton mFabButton;
     private RecyclerView mRecyclerView;
     private SwipeRefreshLayout mSwipeRefreshLayout;
+
+    private NoteRepository notesRepository = new NoteRepository(this);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -114,7 +109,7 @@ public class MainPhoneActivity extends ActionBarActivity {
         mRecyclerView.setItemAnimator(new CustomItemAnimator());
         //mRecyclerView.setItemAnimator(new ReboundItemAnimator());
 
-        mAdapter = new ApplicationAdapter(new ArrayList<AppInfo>(), R.layout.row_application, this);
+        mAdapter = new NoteAdapter(new ArrayList<Note>(), R.layout.row_application, this);
         mRecyclerView.setAdapter(mAdapter);
 
         mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_container);
@@ -151,19 +146,6 @@ public class MainPhoneActivity extends ActionBarActivity {
         return true;
     }
 
-    void initData(){
-        NotesRepository notes = REPO_CACHE.get("Notes");
-        Notebook notebook = notes.createNotebook("Book1", "Book1");
-        Note note = notebook.createNote("Note1", "Note1");
-        note.setDescription("This is note 1");
-        note = notebook.createNote("Note2", "Note2");
-        note.setDescription("This is note 2");
-
-        notebook = notes.createNotebook("Book2", "Book2");
-        note = notebook.createNote("Note21", "Note21");
-        note.setDescription("Hallo");
-    }
-
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
@@ -177,9 +159,9 @@ public class MainPhoneActivity extends ActionBarActivity {
     };
 
 
-    public void animateActivity(AppInfo appInfo, View appIcon) {
+    public void animateActivity(Note appInfo, View appIcon) {
         Intent i = new Intent(this, DetailActivity.class);
-        i.putExtra("appInfo", appInfo.getComponentName());
+        i.putExtra("appInfo", appInfo.getSummary());
 
         ActivityOptionsCompat transitionActivityOptions = ActivityOptionsCompat.makeSceneTransitionAnimation(this, Pair.create((View) mFabButton, "fab"), Pair.create(appIcon, "appIcon"));
         startActivity(i, transitionActivityOptions.toBundle());
@@ -190,28 +172,23 @@ public class MainPhoneActivity extends ActionBarActivity {
 
         @Override
         protected void onPreExecute() {
-            mAdapter.clearApplications();
+            mAdapter.clearNotes();
             super.onPreExecute();
         }
 
         @Override
         protected Void doInBackground(Void... params) {
-            applicationList.clear();
+            notesList.clear();
 
             //Query the applications
             final Intent mainIntent = new Intent(Intent.ACTION_MAIN, null);
             mainIntent.addCategory(Intent.CATEGORY_LAUNCHER);
 
-            List<ResolveInfo> ril = getPackageManager().queryIntentActivities(mainIntent, 0);
-            for (ResolveInfo ri : ril) {
-                applicationList.add(new AppInfo(MainPhoneActivity.this, ri));
+            List<Note> notes = notesRepository.getAll();
+            for(Note note : notes){
+                notesList.add(note);
             }
-            Collections.sort(applicationList);
-
-            for (AppInfo appInfo : applicationList) {
-                //load icons before shown. so the list is smoother
-                appInfo.getIcon();
-            }
+            Collections.sort(notesList);
 
             return null;
         }
@@ -222,7 +199,7 @@ public class MainPhoneActivity extends ActionBarActivity {
             mRecyclerView.setVisibility(View.VISIBLE);
 
             //set data for list
-            mAdapter.addApplications(applicationList);
+            mAdapter.addNotes(notesList);
             mSwipeRefreshLayout.setRefreshing(false);
 
             super.onPostExecute(result);

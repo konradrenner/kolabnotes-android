@@ -18,7 +18,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import org.kore.kolabnotes.android.entity.AppInfo;
+import org.kore.kolab.notes.Note;
 
 import java.util.Date;
 
@@ -29,7 +29,7 @@ public class DetailActivity extends ActionBarActivity {
     private Toolbar toolbar;
     private LinearLayout rowContainer;
 
-    private AppInfo appInfo = null;
+    private Note note = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,6 +75,7 @@ public class DetailActivity extends ActionBarActivity {
             componentName = (ComponentName) getIntent().getExtras().get("appInfo");
         }
 
+        /*
         if (componentName != null) {
             Intent intent = new Intent();
             intent.setComponent(componentName);
@@ -105,11 +106,12 @@ public class DetailActivity extends ActionBarActivity {
             view = rowContainer.findViewById(R.id.row_moments);
             fillRow(view, "Moments", "First installed: " + new Date(appInfo.getFirstInstallTime()) + "\nLast updated: " + new Date(appInfo.getLastUpdateTime()));
         }
+        */
     }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        outState.putParcelable("appInfo", appInfo.getComponentName());
+        //outState.putParcelable("appInfo", appInfo.getComponentName());
         super.onSaveInstanceState(outState);
     }
 

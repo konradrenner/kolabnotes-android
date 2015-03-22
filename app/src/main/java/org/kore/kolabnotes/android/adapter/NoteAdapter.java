@@ -7,39 +7,39 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import org.kore.kolab.notes.Note;
 import org.kore.kolabnotes.android.MainPhoneActivity;
 import org.kore.kolabnotes.android.R;
-import org.kore.kolabnotes.android.entity.AppInfo;
 
 import java.util.List;
 
-public class ApplicationAdapter extends RecyclerView.Adapter<ApplicationAdapter.ViewHolder> {
+public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.ViewHolder> {
 
-    private List<AppInfo> applications;
+    private List<Note> notes;
     private int rowLayout;
     private MainPhoneActivity mAct;
 
-    public ApplicationAdapter(List<AppInfo> applications, int rowLayout, MainPhoneActivity act) {
-        this.applications = applications;
+    public NoteAdapter(List<Note> notes, int rowLayout, MainPhoneActivity act) {
+        this.notes = notes;
         this.rowLayout = rowLayout;
         this.mAct = act;
     }
 
 
-    public void clearApplications() {
-        int size = this.applications.size();
+    public void clearNotes() {
+        int size = this.notes.size();
         if (size > 0) {
             for (int i = 0; i < size; i++) {
-                applications.remove(0);
+                notes.remove(0);
             }
 
             this.notifyItemRangeRemoved(0, size);
         }
     }
 
-    public void addApplications(List<AppInfo> applications) {
-        this.applications.addAll(applications);
-        this.notifyItemRangeInserted(0, applications.size() - 1);
+    public void addNotes(List<Note> notes) {
+        this.notes.addAll(notes);
+        this.notifyItemRangeInserted(0, notes.size() - 1);
     }
 
     @Override
@@ -50,9 +50,9 @@ public class ApplicationAdapter extends RecyclerView.Adapter<ApplicationAdapter.
 
     @Override
     public void onBindViewHolder(final ViewHolder viewHolder, int i) {
-        final AppInfo appInfo = applications.get(i);
-        viewHolder.name.setText(appInfo.getName());
-        viewHolder.image.setImageDrawable(appInfo.getIcon());
+        final Note appInfo = notes.get(i);
+        viewHolder.name.setText(appInfo.getSummary());
+        //viewHolder.image.setImageDrawable(appInfo.getIcon());
 
         viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -64,7 +64,7 @@ public class ApplicationAdapter extends RecyclerView.Adapter<ApplicationAdapter.
 
     @Override
     public int getItemCount() {
-        return applications == null ? 0 : applications.size();
+        return notes == null ? 0 : notes.size();
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
