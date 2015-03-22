@@ -53,19 +53,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String CREATE_TAGS = "create table "
             + TABLE_TAGS +
             "(" + COLUMN_ID+ " integer primary key autoincrement, "
-            + COLUMN_TAGNAME + " text not null);";
+            + COLUMN_UID + " text not null, "
+            + COLUMN_TAGNAME + " text not null unique );";
 
     private static final String CREATE_MODIFICATION = "create table "
             + TABLE_MODIFICATION +
             "(" + COLUMN_ID+ " integer primary key autoincrement, "
             + COLUMN_UID + " text not null unique, "
+            + COLUMN_MODIFICATIONDATE + " integer, " //milliseconds
             + COLUMN_MODIFICATIONTYPE + " text not null);";
 
-    private static final String CREATE_NOTE_TAGS = "create table "
-            + TABLE_MODIFICATION +
-            "(" + COLUMN_ID+ " integer primary key autoincrement, "
-            + COLUMN_IDNOTE + " integer not null, "
-            + COLUMN_IDTAG + " integer not null);";
 
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -76,7 +73,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         database.execSQL(CREATE_NOTES);
         database.execSQL(CREATE_TAGS);
         database.execSQL(CREATE_MODIFICATION);
-        database.execSQL(CREATE_NOTE_TAGS);
     }
 
     @Override

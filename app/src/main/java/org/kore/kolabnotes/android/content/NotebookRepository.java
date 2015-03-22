@@ -20,6 +20,7 @@ import java.util.List;
 public class NotebookRepository {
 
     // Database fields
+    private Context context;
     private SQLiteDatabase database;
     private DatabaseHelper dbHelper;
     private String[] allColumns = { DatabaseHelper.COLUMN_ID,
@@ -33,6 +34,7 @@ public class NotebookRepository {
 
     public NotebookRepository(Context context) {
         dbHelper = new DatabaseHelper(context);
+        this.context = context;
     }
 
     public void open() throws SQLException {
@@ -48,7 +50,7 @@ public class NotebookRepository {
         values.put(DatabaseHelper.COLUMN_UID, notebook.getIdentification().getUid());
         values.put(DatabaseHelper.COLUMN_PRODUCTID, notebook.getIdentification().getProductId());
         values.put(DatabaseHelper.COLUMN_CREATIONDATE, notebook.getAuditInformation().getCreationDate().getTime());
-        values.put(DatabaseHelper.COLUMN_MODIFICATIONDATE, notebook.getAuditInformation().getCreationDate().getTime());
+        values.put(DatabaseHelper.COLUMN_MODIFICATIONDATE, notebook.getAuditInformation().getLastModificationDate().getTime());
         values.put(DatabaseHelper.COLUMN_SUMMARY, notebook.getSummary());
         values.put(DatabaseHelper.COLUMN_DESCRIPTION, notebook.getDescription());
         values.put(DatabaseHelper.COLUMN_CLASSIFICATION, notebook.getClassification().toString());
@@ -106,8 +108,13 @@ public class NotebookRepository {
 
         Notebook notebook = new Notebook(ident,audit, Note.Classification.valueOf(classification),description);
         notebook.setSummary(summary);
-        //TODO
-        notebook.addCategories(null);
-        return null;
+
+        List<String> tags = new TagRepository(context).getTagsFor(uid);
+
+        if(tags != null && tags.size() > 0) {
+            notebook.addCategories(tags.toArray(new String[tags.size()]));
+        }
+
+        return notebook;
     }
 }
