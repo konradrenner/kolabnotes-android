@@ -17,10 +17,20 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.Switch;
+
+import com.mikepenz.materialdrawer.Drawer;
+import com.mikepenz.materialdrawer.accountswitcher.AccountHeader;
+import com.mikepenz.materialdrawer.model.DividerDrawerItem;
+import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
+import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
+import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
+import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
+import com.mikepenz.materialdrawer.model.interfaces.IProfile;
 
 import org.kore.kolab.notes.Note;
 import org.kore.kolab.notes.Notebook;
@@ -31,6 +41,7 @@ import org.kore.kolabnotes.android.adapter.NoteAdapter;
 import org.kore.kolabnotes.android.content.NoteRepository;
 import org.kore.kolabnotes.android.itemanimator.CustomItemAnimator;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -47,6 +58,7 @@ public class MainPhoneActivity extends ActionBarActivity {
     private ImageButton mFabButton;
     private RecyclerView mRecyclerView;
     private SwipeRefreshLayout mSwipeRefreshLayout;
+    private Drawer.Result mDrawer;
 
     private NoteRepository notesRepository = new NoteRepository(this);
 
@@ -65,38 +77,37 @@ public class MainPhoneActivity extends ActionBarActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        // Handle DrawerLayout
-        DrawerLayout mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer);
+        AccountHeader.Result headerResult = new AccountHeader()
+                .withActivity(this)
+                .withHeaderBackground(R.drawable.drawer_header_background)
+                .addProfiles(
+                        new ProfileDrawerItem().withName("Konrad Renner").withEmail("konrad.renner@kolabnow.com")
+                )
+                .withOnAccountHeaderListener(new AccountHeader.OnAccountHeaderListener() {
+                    @Override
+                    public boolean onProfileChanged(View view, IProfile profile, boolean currentProfile) {
+                        return false;
+                    }
+                })
+                .build();
 
-        // Handle ActionBarDrawerToggle
-        ActionBarDrawerToggle actionBarDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, toolbar, R.string.drawer_open, R.string.drawer_close);
-        actionBarDrawerToggle.syncState();
+        mDrawer = new Drawer()
+                .withActivity(this)
+                .withToolbar(toolbar)
+                .withAccountHeader(headerResult)
+                .addDrawerItems(
+                        new PrimaryDrawerItem().withName(R.string.drawer_item_tags),
+                        new DividerDrawerItem(),
+                        new SecondaryDrawerItem().withName(R.string.drawer_item_notebooks)
+                )
+                .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view, int position, long id, IDrawerItem drawerItem) {
+                        // do something with the clicked item :D
+                    }
+                })
+                .build();
 
-        // Handle different Drawer States :D
-        mDrawerLayout.setDrawerListener(actionBarDrawerToggle);
-
-        // Handle DrawerList
-        LinearLayout mDrawerList = (LinearLayout) findViewById(R.id.drawerList);
-
-        // Init DrawerElems NOTE Just don't do this in a live app :D
-        final SharedPreferences pref = getSharedPreferences("com.mikepenz.applicationreader", 0);
-        ((Switch) mDrawerList.findViewById(R.id.drawer_autoupload)).setChecked(pref.getBoolean("autouploadenabled", false));
-        ((Switch) mDrawerList.findViewById(R.id.drawer_autoupload)).setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                SharedPreferences.Editor editor = pref.edit();
-                editor.putBoolean("autouploadenabled", isChecked);
-                editor.apply();
-            }
-        });
-
-        mDrawerList.findViewById(R.id.drawer_opensource).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //nothing at the moment
-            }
-        });
-        //((ImageView) mDrawerList.findViewById(R.id.drawer_opensource_icon)).setImageDrawable(new IconicsDrawable(this, FontAwesome.Icon.faw_github).colorRes(R.color.secondary).actionBarSize());
 
         // Fab Button
         mFabButton = (ImageButton) findViewById(R.id.fab_button);
@@ -184,11 +195,17 @@ public class MainPhoneActivity extends ActionBarActivity {
             final Intent mainIntent = new Intent(Intent.ACTION_MAIN, null);
             mainIntent.addCategory(Intent.CATEGORY_LAUNCHER);
 
-            List<Note> notes = notesRepository.getAll();
-            for(Note note : notes){
-                notesList.add(note);
+            try {
+                notesRepository.open();
+                List<Note> notes = notesRepository.getAll();
+                for (Note note : notes) {
+                    notesList.add(note);
+                }
+                Collections.sort(notesList);
+                notesRepository.close();
+            }catch (SQLException e){
+                e.printStackTrace();
             }
-            Collections.sort(notesList);
 
             return null;
         }

@@ -29,7 +29,8 @@ public class NoteRepository {
             DatabaseHelper.COLUMN_MODIFICATIONDATE ,
             DatabaseHelper.COLUMN_SUMMARY ,
             DatabaseHelper.COLUMN_DESCRIPTION ,
-            DatabaseHelper.COLUMN_CLASSIFICATION };
+            DatabaseHelper.COLUMN_CLASSIFICATION,
+            DatabaseHelper.COLUMN_DISCRIMINATOR };
     private ModificationRepository modificationRepository;
 
     public NoteRepository(Context context) {
@@ -48,6 +49,7 @@ public class NoteRepository {
 
     public void insert(Note note) {
         ContentValues values = new ContentValues();
+        values.put(DatabaseHelper.COLUMN_DISCRIMINATOR, DatabaseHelper.DESCRIMINATOR_NOTE);
         values.put(DatabaseHelper.COLUMN_UID, note.getIdentification().getUid());
         values.put(DatabaseHelper.COLUMN_PRODUCTID, note.getIdentification().getProductId());
         values.put(DatabaseHelper.COLUMN_CREATIONDATE, note.getAuditInformation().getCreationDate().getTime());
@@ -99,7 +101,7 @@ public class NoteRepository {
 
         Cursor cursor = database.query(DatabaseHelper.TABLE_NOTES,
                 allColumns,
-                DatabaseHelper.COLUMN_DISCRIMINATOR+"="+DatabaseHelper.DESCRIMINATOR_NOTE,
+                DatabaseHelper.COLUMN_DISCRIMINATOR+" = '"+DatabaseHelper.DESCRIMINATOR_NOTE+"' ",
                 null,
                 null,
                 null,

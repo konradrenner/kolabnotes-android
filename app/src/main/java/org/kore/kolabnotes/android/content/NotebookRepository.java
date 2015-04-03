@@ -30,7 +30,8 @@ public class NotebookRepository {
             DatabaseHelper.COLUMN_MODIFICATIONDATE ,
             DatabaseHelper.COLUMN_SUMMARY ,
             DatabaseHelper.COLUMN_DESCRIPTION ,
-            DatabaseHelper.COLUMN_CLASSIFICATION };
+            DatabaseHelper.COLUMN_CLASSIFICATION,
+            DatabaseHelper.COLUMN_DISCRIMINATOR};
     private ModificationRepository modificationRepository;
 
     public NotebookRepository(Context context) {
@@ -49,6 +50,7 @@ public class NotebookRepository {
 
     public void insert(Notebook notebook) {
         ContentValues values = new ContentValues();
+        values.put(DatabaseHelper.COLUMN_DISCRIMINATOR, DatabaseHelper.DESCRIMINATOR_NOTEBOOK);
         values.put(DatabaseHelper.COLUMN_UID, notebook.getIdentification().getUid());
         values.put(DatabaseHelper.COLUMN_PRODUCTID, notebook.getIdentification().getProductId());
         values.put(DatabaseHelper.COLUMN_CREATIONDATE, notebook.getAuditInformation().getCreationDate().getTime());
@@ -100,7 +102,7 @@ public class NotebookRepository {
 
         Cursor cursor = database.query(DatabaseHelper.TABLE_NOTES,
                 allColumns,
-                DatabaseHelper.COLUMN_DISCRIMINATOR+"="+DatabaseHelper.DESCRIMINATOR_NOTEBOOK,
+                DatabaseHelper.COLUMN_DISCRIMINATOR+"= '"+DatabaseHelper.DESCRIMINATOR_NOTEBOOK+"'",
                 null,
                 null,
                 null,

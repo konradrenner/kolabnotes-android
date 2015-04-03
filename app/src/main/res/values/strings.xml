@@ -10,8 +10,8 @@
 
     <string name="activity_detail_title">DetailActivity</string>
 
-    <string name="drawer_switch">SwitchSample</string>
-    <string name="drawer_opensource">Open Source</string>
+    <string name="drawer_item_tags">Tags</string>
+    <string name="drawer_item_notebooks">Notebooks</string>
 
 
     <string name="dialog_nointernet">No internet connection!</string>

@@ -78,7 +78,6 @@
             android:layout_width="match_parent"
             android:layout_height="@dimen/drawer_primary"
             android:id="@+id/drawer_autoupload"
-            android:text="@string/drawer_switch"
             android:textSize="@dimen/drawer_primary_text"
             android:textStyle="normal"
             android:textColor="@color/text"
@@ -109,7 +108,6 @@
 
             <TextView
                 android:id="@+id/drawer_opensource_title"
-                android:text="@string/drawer_opensource"
                 android:textSize="@dimen/drawer_secondary_text"
                 android:textStyle="normal"
                 android:layout_width="wrap_content"
