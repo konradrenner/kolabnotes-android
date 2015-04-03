@@ -57,7 +57,8 @@
                 android:elevation="8dp"
                 android:padding="14dp"
                 android:scaleType="fitCenter"
-                android:layout_gravity="right|bottom" />
+                android:layout_gravity="right|bottom"
+                android:layout_marginBottom="15dp" />
 
         </FrameLayout>
 

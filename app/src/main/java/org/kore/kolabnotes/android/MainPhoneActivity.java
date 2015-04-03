@@ -39,6 +39,7 @@ import org.kore.kolab.notes.local.LocalNotesRepository;
 import org.kore.kolab.notes.v3.KolabNotesParserV3;
 import org.kore.kolabnotes.android.adapter.NoteAdapter;
 import org.kore.kolabnotes.android.content.NoteRepository;
+import org.kore.kolabnotes.android.content.NotebookRepository;
 import org.kore.kolabnotes.android.itemanimator.CustomItemAnimator;
 
 import java.sql.SQLException;
@@ -61,6 +62,7 @@ public class MainPhoneActivity extends ActionBarActivity {
     private Drawer.Result mDrawer;
 
     private NoteRepository notesRepository = new NoteRepository(this);
+    private NotebookRepository notebookRepository = new NotebookRepository(this);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -191,7 +193,7 @@ public class MainPhoneActivity extends ActionBarActivity {
         protected Void doInBackground(Void... params) {
             notesList.clear();
 
-            //Query the applications
+            //Query the notes
             final Intent mainIntent = new Intent(Intent.ACTION_MAIN, null);
             mainIntent.addCategory(Intent.CATEGORY_LAUNCHER);
 
@@ -201,9 +203,24 @@ public class MainPhoneActivity extends ActionBarActivity {
                 for (Note note : notes) {
                     notesList.add(note);
                 }
+                Note note = new Note(null,null, Note.Classification.CONFIDENTIAL,"First test note");
+                notesList.add(note);
+                note = new Note(null,null, Note.Classification.CONFIDENTIAL,"Second test note");
+                notesList.add(note);
                 Collections.sort(notesList);
                 notesRepository.close();
             }catch (SQLException e){
+                e.printStackTrace();
+            }
+
+            //Query the notebooks
+            try {
+                notebookRepository.open();
+                for (Notebook notebook : notebookRepository.getAll()) {
+                    mDrawer.addItem(new SecondaryDrawerItem().withName(notebook.getSummary()));
+                }
+                mDrawer.addItem(new SecondaryDrawerItem().withName("First notebook"));
+            } catch (SQLException e) {
                 e.printStackTrace();
             }
 
