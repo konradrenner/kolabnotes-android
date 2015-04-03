@@ -41,54 +41,47 @@
         android:layout_below="@id/toolbar"
         android:layout_centerHorizontal="true">
 
-        <LinearLayout
-            android:layout_marginLeft="@dimen/activity_horizontal_margin"
-            android:layout_marginRight="@dimen/activity_horizontal_margin"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/row_container"
-            android:orientation="vertical">
+        <GridLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content">
 
-            <include
-                android:id="@+id/row_name"
-                layout="@layout/row_detailiconview"/>
+            <ExpandableListView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/notebookSelector"
+                android:layout_row="0"
+                android:layout_column="0"
+                android:choiceMode="singleChoice"
+                android:clickable="true"
+                style="@android:style/Widget.Material.ListView.DropDown" />
 
-            <include
-                android:id="@+id/row_package_name"
-                layout="@layout/row_detailview"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:text="@string/summary_text"
+                android:id="@+id/summary_text"
+                android:layout_row="1"
+                android:layout_column="0"
+                android:hint="@string/text_summary"
+                android:editable="true"
+                android:textColor="#ff000000"
+                android:singleLine="true" />
 
-            <include
-                android:id="@+id/row_activity"
-                layout="@layout/row_detailview"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="405dp"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="@string/description_text"
+                android:id="@+id/description_text"
+                android:layout_row="2"
+                android:layout_column="0"
+                android:textColor="#ff000000"
+                android:hint="@string/description_hint"
+                android:editable="true" />
 
-            <include
-                android:id="@+id/row_component_info"
-                layout="@layout/row_detailview"/>
-
-            <include
-                android:id="@+id/row_version"
-                layout="@layout/row_detailview"/>
-
-            <include
-                android:id="@+id/row_moments"
-                layout="@layout/row_detailview"/>
-        </LinearLayout>
+        </GridLayout>
     </ScrollView>
 
 
-    <ImageButton
-        android:id="@+id/fab_button"
-        android:layout_width="@dimen/fab_size"
-        android:transitionName="fab"
-        android:layout_height="@dimen/fab_size"
-        android:layout_marginEnd="@dimen/activity_horizontal_margin"
-        android:layout_marginRight="@dimen/activity_horizontal_margin"
-        android:layout_marginBottom="@dimen/activity_vertical_margin"
-        android:background="@drawable/button_round"
-        android:stateListAnimator="@anim/fab_anim"
-        android:elevation="8dp"
-        android:padding="14dp"
-        android:scaleType="fitCenter"
-        android:layout_centerHorizontal="true"
-        android:layout_alignParentBottom="true"/>
 </RelativeLayout>

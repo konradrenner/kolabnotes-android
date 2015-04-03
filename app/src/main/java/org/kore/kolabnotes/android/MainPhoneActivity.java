@@ -203,10 +203,6 @@ public class MainPhoneActivity extends ActionBarActivity {
                 for (Note note : notes) {
                     notesList.add(note);
                 }
-                Note note = new Note(null,null, Note.Classification.CONFIDENTIAL,"First test note");
-                notesList.add(note);
-                note = new Note(null,null, Note.Classification.CONFIDENTIAL,"Second test note");
-                notesList.add(note);
                 Collections.sort(notesList);
                 notesRepository.close();
             }catch (SQLException e){
@@ -219,7 +215,6 @@ public class MainPhoneActivity extends ActionBarActivity {
                 for (Notebook notebook : notebookRepository.getAll()) {
                     mDrawer.addItem(new SecondaryDrawerItem().withName(notebook.getSummary()));
                 }
-                mDrawer.addItem(new SecondaryDrawerItem().withName("First notebook"));
             } catch (SQLException e) {
                 e.printStackTrace();
             }

@@ -13,6 +13,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String TABLE_NOTES = "notes";
     public static final String COLUMN_ID = "_id";
     public static final String COLUMN_UID = "uid";
+    public static final String COLUMN_UID_NOTEBOOK = "uid_notebook";
     public static final String COLUMN_DISCRIMINATOR = "discriminator";
     public static final String COLUMN_PRODUCTID = "productId";
     public static final String COLUMN_CREATIONDATE = "creationDate";
@@ -47,6 +48,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + COLUMN_CREATIONDATE + " integer, "
             + COLUMN_MODIFICATIONDATE + " integer, " //milliseconds
             + COLUMN_CLASSIFICATION + " text, "
+            + COLUMN_UID_NOTEBOOK + " text, "
             + COLUMN_SUMMARY + " text not null, "
             + COLUMN_DESCRIPTION + " text);";
 

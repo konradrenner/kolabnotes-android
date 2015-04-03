@@ -47,7 +47,7 @@ public class NoteRepository {
         dbHelper.close();
     }
 
-    public void insert(Note note) {
+    public void insert(Note note, String uidNotebook) {
         ContentValues values = new ContentValues();
         values.put(DatabaseHelper.COLUMN_DISCRIMINATOR, DatabaseHelper.DESCRIMINATOR_NOTE);
         values.put(DatabaseHelper.COLUMN_UID, note.getIdentification().getUid());
@@ -56,6 +56,7 @@ public class NoteRepository {
         values.put(DatabaseHelper.COLUMN_MODIFICATIONDATE, note.getAuditInformation().getLastModificationDate().getTime());
         values.put(DatabaseHelper.COLUMN_SUMMARY, note.getSummary());
         values.put(DatabaseHelper.COLUMN_DESCRIPTION, note.getDescription());
+        values.put(DatabaseHelper.COLUMN_UID_NOTEBOOK, uidNotebook);
         values.put(DatabaseHelper.COLUMN_CLASSIFICATION, note.getClassification().toString());
 
         database.insert(DatabaseHelper.TABLE_NOTES, null,values);
