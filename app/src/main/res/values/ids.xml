@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <item name="settings_menu" type="id">settings_menu</item>
+    <item name="create_notebook_menu" type="id">create_notebook_menu</item>
+    <item name="create_tag_menu" type="id">create_tag_menu</item>
+    <item name="dialog_text_input_field" type="id">dialog_text_input_field</item>
 </resources>

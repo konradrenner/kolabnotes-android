@@ -34,7 +34,7 @@ public class ModificationRepository {
         dbHelper = new DatabaseHelper(context);
     }
 
-    public void open() throws SQLException {
+    public void open(){
         database = dbHelper.getWritableDatabase();
     }
 
@@ -43,11 +43,13 @@ public class ModificationRepository {
     }
 
     public void insert(String uid, ModificationType type) {
+        open();
         ContentValues values = new ContentValues();
         values.put(DatabaseHelper.COLUMN_UID, uid);
         values.put(DatabaseHelper.COLUMN_MODIFICATIONTYPE, type.toString());
 
         database.insert(DatabaseHelper.TABLE_MODIFICATION, null,values);
+        close();
     }
 
     public void deleteAll() {
@@ -55,6 +57,7 @@ public class ModificationRepository {
     }
 
     public List<Modification> getAll() {
+        open();
         List<Modification> modifications = new ArrayList<Modification>();
 
         Cursor cursor = database.query(DatabaseHelper.TABLE_MODIFICATION,
@@ -70,13 +73,15 @@ public class ModificationRepository {
             modifications.add(mod);
         }
         cursor.close();
+        close();
         return modifications;
     }
 
     public Modification getByUID(String uid) {
+        open();
         Cursor cursor = database.query(DatabaseHelper.TABLE_MODIFICATION,
                 allColumns,
-                DatabaseHelper.COLUMN_UID+" = "+uid,
+                DatabaseHelper.COLUMN_UID+" = '"+uid+"' ",
                 null,
                 null,
                 null,
@@ -87,6 +92,7 @@ public class ModificationRepository {
             mod = cursorToModification(cursor);
         }
         cursor.close();
+        close();
         return mod;
     }
 

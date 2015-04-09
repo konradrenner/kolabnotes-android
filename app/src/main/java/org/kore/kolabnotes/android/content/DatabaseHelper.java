@@ -55,7 +55,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String CREATE_TAGS = "create table "
             + TABLE_TAGS +
             "(" + COLUMN_ID+ " integer primary key autoincrement, "
-            + COLUMN_UID + " text not null, "
             + COLUMN_TAGNAME + " text not null unique );";
 
     private static final String CREATE_TAGS_NOTES = "create table "
@@ -90,6 +89,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 "Upgrading database from version " + oldVersion + " to "
                         + newVersion + ", which will destroy all old data");
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_NOTE_TAGS);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_TAGS);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_NOTES);
         onCreate(db);
     }

@@ -39,7 +39,7 @@ public class NoteRepository {
         this.modificationRepository = new ModificationRepository(context);
     }
 
-    public void open() throws SQLException {
+    public void open() {
         database = dbHelper.getWritableDatabase();
     }
 
@@ -48,6 +48,7 @@ public class NoteRepository {
     }
 
     public void insert(Note note, String uidNotebook) {
+        open();
         ContentValues values = new ContentValues();
         values.put(DatabaseHelper.COLUMN_DISCRIMINATOR, DatabaseHelper.DESCRIMINATOR_NOTE);
         values.put(DatabaseHelper.COLUMN_UID, note.getIdentification().getUid());
@@ -66,9 +67,11 @@ public class NoteRepository {
         if(modification == null){
             modificationRepository.insert(note.getIdentification().getUid(), ModificationRepository.ModificationType.INS);
         }
+        close();
     }
 
     public void update(Note note){
+        open();
         ContentValues values = new ContentValues();
         values.put(DatabaseHelper.COLUMN_UID, note.getIdentification().getUid());
         values.put(DatabaseHelper.COLUMN_PRODUCTID, note.getIdentification().getProductId());
@@ -85,9 +88,11 @@ public class NoteRepository {
         if(modification == null){
             modificationRepository.insert(note.getIdentification().getUid(), ModificationRepository.ModificationType.UPD);
         }
+        close();
     }
 
     public void delete(Note note) {
+        open();
        database.delete(DatabaseHelper.TABLE_NOTES, DatabaseHelper.COLUMN_UID + " = " + note.getIdentification().getUid(), null);
 
         Modification modification = modificationRepository.getByUID(note.getIdentification().getUid());
@@ -95,9 +100,11 @@ public class NoteRepository {
         if(modification == null){
             modificationRepository.insert(note.getIdentification().getUid(), ModificationRepository.ModificationType.DEL);
         }
+        close();
     }
 
     public List<Note> getAll() {
+        open();
         List<Note> notes = new ArrayList<Note>();
 
         Cursor cursor = database.query(DatabaseHelper.TABLE_NOTES,
@@ -109,14 +116,15 @@ public class NoteRepository {
                 null);
 
         while (cursor.moveToNext()) {
-            Note note = cursorToComment(cursor);
+            Note note = cursorToNote(cursor);
             notes.add(note);
         }
         cursor.close();
+        close();
         return notes;
     }
 
-    private Note cursorToComment(Cursor cursor) {
+    private Note cursorToNote(Cursor cursor) {
         String uid = cursor.getString(1);
         String productId = cursor.getString(2);
         Long creationDate = cursor.getLong(3);
@@ -131,11 +139,12 @@ public class NoteRepository {
         Note note = new Note(ident,audit, Note.Classification.valueOf(classification),description);
         note.setSummary(summary);
 
-        List<String> tags = new TagRepository(context).getTagsFor(uid);
+        //TODO
+        //List<String> tags = new TagRepository(context).getTagsFor(uid);
 
-        if(tags != null && tags.size() > 0) {
-            note.addCategories(tags.toArray(new String[tags.size()]));
-        }
+        //if(tags != null && tags.size() > 0) {
+        //    note.addCategories(tags.toArray(new String[tags.size()]));
+        //}
         return note;
     }
 }

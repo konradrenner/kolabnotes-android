@@ -40,7 +40,7 @@ public class NotebookRepository {
         this.modificationRepository = new ModificationRepository(context);
     }
 
-    public void open() throws SQLException {
+    public void open() {
         database = dbHelper.getWritableDatabase();
     }
 
@@ -49,6 +49,7 @@ public class NotebookRepository {
     }
 
     public void insert(Notebook notebook) {
+        open();
         ContentValues values = new ContentValues();
         values.put(DatabaseHelper.COLUMN_DISCRIMINATOR, DatabaseHelper.DESCRIMINATOR_NOTEBOOK);
         values.put(DatabaseHelper.COLUMN_UID, notebook.getIdentification().getUid());
@@ -66,9 +67,11 @@ public class NotebookRepository {
         if(modification == null){
             modificationRepository.insert(notebook.getIdentification().getUid(), ModificationRepository.ModificationType.INS);
         }
+        close();
     }
 
     public void update(Notebook notebook){
+        open();
         ContentValues values = new ContentValues();
         values.put(DatabaseHelper.COLUMN_UID, notebook.getIdentification().getUid());
         values.put(DatabaseHelper.COLUMN_PRODUCTID, notebook.getIdentification().getProductId());
@@ -85,9 +88,11 @@ public class NotebookRepository {
         if(modification == null){
             modificationRepository.insert(notebook.getIdentification().getUid(), ModificationRepository.ModificationType.UPD);
         }
+        close();
     }
 
     public void delete(Notebook notebook) {
+        open();
        database.delete(DatabaseHelper.TABLE_NOTES, DatabaseHelper.COLUMN_UID + " = " + notebook.getIdentification().getUid(), null);
 
         Modification modification = modificationRepository.getByUID(notebook.getIdentification().getUid());
@@ -95,9 +100,11 @@ public class NotebookRepository {
         if(modification == null){
             modificationRepository.insert(notebook.getIdentification().getUid(), ModificationRepository.ModificationType.DEL);
         }
+        close();
     }
 
     public List<Notebook> getAll() {
+        open();
         List<Notebook> notebooks = new ArrayList<Notebook>();
 
         Cursor cursor = database.query(DatabaseHelper.TABLE_NOTES,
@@ -113,6 +120,7 @@ public class NotebookRepository {
             notebooks.add(notebook);
         }
         cursor.close();
+        close();
         return notebooks;
     }
 
@@ -131,11 +139,11 @@ public class NotebookRepository {
         Notebook notebook = new Notebook(ident,audit, Note.Classification.valueOf(classification),description);
         notebook.setSummary(summary);
 
-        List<String> tags = new TagRepository(context).getTagsFor(uid);
+        //List<String> tags = new TagRepository(context).getTagsFor(uid);
 
-        if(tags != null && tags.size() > 0) {
-            notebook.addCategories(tags.toArray(new String[tags.size()]));
-        }
+        //if(tags != null && tags.size() > 0) {
+          //  notebook.addCategories(tags.toArray(new String[tags.size()]));
+        //}
 
         return notebook;
     }

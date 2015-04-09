@@ -20,14 +20,13 @@ public class TagRepository {
     private SQLiteDatabase database;
     private DatabaseHelper dbHelper;
     private String[] allColumns = { DatabaseHelper.COLUMN_ID,
-            DatabaseHelper.COLUMN_UID,
             DatabaseHelper.COLUMN_TAGNAME};
 
     public TagRepository(Context context) {
         dbHelper = new DatabaseHelper(context);
     }
 
-    public void open() throws SQLException {
+    public void open() {
         database = dbHelper.getWritableDatabase();
     }
 
@@ -35,33 +34,17 @@ public class TagRepository {
         dbHelper.close();
     }
 
-    public void insert(String uid, String tagname) {
+    public void insert(String tagname) {
+        open();
         ContentValues values = new ContentValues();
         values.put(DatabaseHelper.COLUMN_TAGNAME,tagname);
-        values.put(DatabaseHelper.COLUMN_UID, uid);
 
         database.insert(DatabaseHelper.TABLE_TAGS, null,values);
-    }
-    
-    public List<String> getTagsFor(String uid){
-        List<String> tags = new ArrayList<String>();
-
-        Cursor cursor = database.query(DatabaseHelper.TABLE_TAGS,
-                allColumns,
-                DatabaseHelper.COLUMN_UID + " = "+uid,
-                null,
-                null,
-                null,
-                null);
-
-        while (cursor.moveToNext()) {
-            tags.add(cursorToTag(cursor));
-        }
-        cursor.close();
-        return tags;
+        close();
     }
 
     public List<String> getAll() {
+        open();
         List<String> tags = new ArrayList<String>();
 
         Cursor cursor = database.query(DatabaseHelper.TABLE_TAGS,
@@ -76,11 +59,12 @@ public class TagRepository {
             tags.add(cursorToTag(cursor));
         }
         cursor.close();
+        close();
         return tags;
     }
 
     private String cursorToTag(Cursor cursor) {
-        return cursor.getString(3);
+        return cursor.getString(1);
     }
 
 }
