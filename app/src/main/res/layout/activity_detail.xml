@@ -27,7 +27,8 @@
             android:layout_height="wrap_content"
             android:id="@+id/spinner_notebook"
             android:spinnerMode="dialog"
-            android:theme="@android:style/Widget.Spinner" />
+            android:theme="@android:style/Widget.Spinner"
+            style="@style/Animation.AppCompat.DropDownUp" />
 
         <TextView
             android:layout_width="match_parent"
