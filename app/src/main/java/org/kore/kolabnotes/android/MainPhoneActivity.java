@@ -1,5 +1,6 @@
 package org.kore.kolabnotes.android;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ResolveInfo;
@@ -116,6 +117,7 @@ public class MainPhoneActivity extends ActionBarActivity {
         //mFabButton.setImageDrawable(new IconicsDrawable(this, FontAwesome.Icon.faw_upload).color(Color.WHITE).actionBarSize());
         mFabButton.setOnClickListener(fabClickListener);
         Utils.configureFab(mFabButton);
+        mFabButton.setOnClickListener(new CreateButtonListener());
 
         mRecyclerView = (RecyclerView) findViewById(R.id.list);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -232,6 +234,16 @@ public class MainPhoneActivity extends ActionBarActivity {
             mSwipeRefreshLayout.setRefreshing(false);
 
             super.onPostExecute(result);
+        }
+
+    }
+
+    class CreateButtonListener implements View.OnClickListener{
+        @Override
+        public void onClick(View v) {
+            Intent intent = new Intent(MainPhoneActivity.this,DetailActivity.class);
+
+            startActivity(intent);
         }
     }
 }

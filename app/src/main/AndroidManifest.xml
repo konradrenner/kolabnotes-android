@@ -29,6 +29,10 @@
             </intent-filter>
         </activity>
 
+        <activity android:name=".DetailActivity" android:label="Detail">
+
+        </activity>
+
         <activity android:name=".security.AuthenticatorActivity" android:label="@string/login_label"/>
 
         <service android:name=".security.KolabAuthenticatorService">

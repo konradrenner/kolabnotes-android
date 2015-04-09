@@ -15,6 +15,41 @@
         android:elevation="4dp"
         android:transitionName="actionBar"/>
 
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_below="@+id/toolbar"
+        android:weightSum="1">
+
+        <Spinner
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/spinner_notebook"
+            android:spinnerMode="dialog"
+            android:theme="@android:style/Widget.Spinner" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="@string/text_summary"
+            android:id="@+id/textView"
+            android:enabled="true"
+            android:editable="true"
+            style="@android:style/Widget.Material.TextView"
+            android:layout_weight="0.81"
+            android:singleLine="true" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="364dp"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="@string/text_description"
+            android:id="@+id/textView2"
+            style="@android:style/Widget.TextView" />
+    </LinearLayout>
+
     <!--
     <RelativeLayout
         android:id="@+id/holder_view"
@@ -30,58 +65,6 @@
                    android:layout_height="72dp"/>
     </RelativeLayout>
     -->
-
-    <ScrollView
-        android:scrollbars="none"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:paddingTop="@dimen/activity_vertical_margin"
-        android:paddingBottom="@dimen/activity_detail_vertical_margin"
-        android:clipToPadding="false"
-        android:layout_below="@id/toolbar"
-        android:layout_centerHorizontal="true">
-
-        <GridLayout
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content">
-
-            <ExpandableListView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/notebookSelector"
-                android:layout_row="0"
-                android:layout_column="0"
-                android:choiceMode="singleChoice"
-                android:clickable="true"
-                style="@android:style/Widget.Material.ListView.DropDown" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceLarge"
-                android:text="@string/summary_text"
-                android:id="@+id/summary_text"
-                android:layout_row="1"
-                android:layout_column="0"
-                android:hint="@string/text_summary"
-                android:editable="true"
-                android:textColor="#ff000000"
-                android:singleLine="true" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="405dp"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:text="@string/description_text"
-                android:id="@+id/description_text"
-                android:layout_row="2"
-                android:layout_column="0"
-                android:textColor="#ff000000"
-                android:hint="@string/description_hint"
-                android:editable="true" />
-
-        </GridLayout>
-    </ScrollView>
 
 
 </RelativeLayout>
