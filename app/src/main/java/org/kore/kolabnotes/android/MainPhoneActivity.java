@@ -130,7 +130,7 @@ public class MainPhoneActivity extends ActionBarActivity {
                 .withOnDrawerItemClickListener(drawerItemClickedListener)
                 .build();
 
-        mDrawer.setSelection(4);
+        mDrawer.setSelection(3);
         // Fab Button
         mFabButton = (ImageButton) findViewById(R.id.fab_button);
         //mFabButton.setImageDrawable(new IconicsDrawable(this, FontAwesome.Icon.faw_upload).color(Color.WHITE).actionBarSize());
@@ -184,12 +184,32 @@ public class MainPhoneActivity extends ActionBarActivity {
                 AlertDialog newTagDialog = createTagDialog();
                 newTagDialog.show();
                 break;
-            case R.id.settings_menu:
-                Intent intent = new Intent(this, SettingsActivity.class);
-                startActivity(intent);
+            case R.id.create_search_menu:
+                AlertDialog newSearchDialog = createSearchDialog();
+                newSearchDialog.show();
                 break;
         }
         return true;
+    }
+
+    private AlertDialog createSearchDialog(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+        builder.setTitle(R.string.dialog_input_text_search);
+
+        LayoutInflater inflater = getLayoutInflater();
+        View view = inflater.inflate(R.layout.dialog_search_note, null);
+
+        builder.setView(view);
+
+        builder.setPositiveButton(R.string.ok,new SearchNoteButtonListener((EditText)view.findViewById(R.id.dialog_search_input_field)));
+        builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                //nothing
+            }
+        });
+        return builder.create();
     }
 
     private AlertDialog createNotebookDialog(){
@@ -364,6 +384,50 @@ public class MainPhoneActivity extends ActionBarActivity {
             mDrawer.addItem(new SecondaryDrawerItem().withName(value).withTag("TAG"));
 
             orderDrawerItems(mDrawer);
+        }
+    }
+
+    public class SearchNoteButtonListener implements DialogInterface.OnClickListener{
+
+        private final EditText textField;
+
+        public SearchNoteButtonListener(EditText textField) {
+            this.textField = textField;
+        }
+
+        @Override
+        public void onClick(DialogInterface dialog, int which) {
+            if(textField == null || textField.getText() == null || textField.getText().toString().trim().length() == 0){
+                return;
+            }
+
+            IDrawerItem drawerItem = mDrawer.getDrawerItems().get(mDrawer.getCurrentSelection());
+            if(drawerItem instanceof BaseDrawerItem){
+                BaseDrawerItem item = (BaseDrawerItem)drawerItem;
+                String tag = item.getTag() == null || item.getTag().toString().trim().length() == 0 ? null : item.getTag().toString();
+
+                List<Note> notes;
+                if("NOTEBOOK".equalsIgnoreCase(tag)){
+                    notes = notesRepository.getFromNotebookWithSummary(SELECTED_ACCOUNT,
+                            SELECTED_ROOT_FOLDER,
+                            notebookRepository.getBySummary(SELECTED_ACCOUNT,SELECTED_ROOT_FOLDER,item.getName()).getIdentification().getUid(),
+                            textField.getText().toString());
+                }else if("TAG".equalsIgnoreCase(tag)){
+                    List<Note> unfiltered = notetagRepository.getNotesWith(SELECTED_ACCOUNT, SELECTED_ROOT_FOLDER, item.getName());
+                    notes = new ArrayList<Note>();
+                    for(Note note : unfiltered){
+                        String summary = note.getSummary().toLowerCase();
+                        if(summary.contains(textField.getText().toString().toLowerCase())){
+                            notes.add(note);
+                        }
+                    }
+                }else{
+                    notes = notesRepository.getFromNotebookWithSummary(SELECTED_ACCOUNT,SELECTED_ROOT_FOLDER,null,textField.getText().toString());
+                }
+
+                notesList.clear();
+                notesList.addAll(notes);
+            }
         }
     }
 

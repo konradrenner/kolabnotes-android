@@ -2,6 +2,7 @@
     <string name="title_activity_settings">Settings</string>
     <string name="title_create_notebook">New Notebook</string>
     <string name="title_create_tag">New Tag</string>
+    <string name="title_dialog_search">Search Note</string>
 
     <!-- Strings related to Settings -->
     <!-- Example General settings -->
