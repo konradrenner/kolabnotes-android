@@ -23,6 +23,8 @@ public class NoteRepository {
     private SQLiteDatabase database;
     private DatabaseHelper dbHelper;
     private String[] allColumns = { DatabaseHelper.COLUMN_ID,
+            DatabaseHelper.COLUMN_ACCOUNT,
+            DatabaseHelper.COLUMN_ROOT_FOLDER,
             DatabaseHelper.COLUMN_UID,
             DatabaseHelper.COLUMN_PRODUCTID ,
             DatabaseHelper.COLUMN_CREATIONDATE ,
@@ -43,14 +45,20 @@ public class NoteRepository {
         database = dbHelper.getWritableDatabase();
     }
 
+    public void openReadonly() {
+        database = dbHelper.getReadableDatabase();
+    }
+
     public void close() {
         dbHelper.close();
     }
 
-    public void insert(Note note, String uidNotebook) {
+    public void insert(String account, String rootFolder, Note note, String uidNotebook) {
         open();
         ContentValues values = new ContentValues();
         values.put(DatabaseHelper.COLUMN_DISCRIMINATOR, DatabaseHelper.DESCRIMINATOR_NOTE);
+        values.put(DatabaseHelper.COLUMN_ROOT_FOLDER, rootFolder);
+        values.put(DatabaseHelper.COLUMN_ACCOUNT, account);
         values.put(DatabaseHelper.COLUMN_UID, note.getIdentification().getUid());
         values.put(DatabaseHelper.COLUMN_PRODUCTID, note.getIdentification().getProductId());
         values.put(DatabaseHelper.COLUMN_CREATIONDATE, note.getAuditInformation().getCreationDate().getTime());
@@ -62,18 +70,20 @@ public class NoteRepository {
 
         database.insert(DatabaseHelper.TABLE_NOTES, null,values);
 
-        Modification modification = modificationRepository.getByUID(note.getIdentification().getUid());
+        Modification modification = modificationRepository.getUnique(account,rootFolder,note.getIdentification().getUid());
 
         if(modification == null){
-            modificationRepository.insert(note.getIdentification().getUid(), ModificationRepository.ModificationType.INS);
+            modificationRepository.insert(account,rootFolder,note.getIdentification().getUid(), ModificationRepository.ModificationType.INS);
         }
         close();
     }
 
-    public void update(Note note){
+    public void update(String account, String rootFolder,Note note){
         open();
         ContentValues values = new ContentValues();
         values.put(DatabaseHelper.COLUMN_UID, note.getIdentification().getUid());
+        values.put(DatabaseHelper.COLUMN_ROOT_FOLDER, rootFolder);
+        values.put(DatabaseHelper.COLUMN_ACCOUNT, account);
         values.put(DatabaseHelper.COLUMN_PRODUCTID, note.getIdentification().getProductId());
         values.put(DatabaseHelper.COLUMN_CREATIONDATE, note.getAuditInformation().getCreationDate().getTime());
         values.put(DatabaseHelper.COLUMN_MODIFICATIONDATE, note.getAuditInformation().getCreationDate().getTime());
@@ -81,34 +91,46 @@ public class NoteRepository {
         values.put(DatabaseHelper.COLUMN_DESCRIPTION, note.getDescription());
         values.put(DatabaseHelper.COLUMN_CLASSIFICATION, note.getClassification().toString());
 
-        database.update(DatabaseHelper.TABLE_NOTES, values,DatabaseHelper.COLUMN_UID + " = " + note.getIdentification().getUid(),null);
+        database.update(DatabaseHelper.TABLE_NOTES,
+                values,
+                DatabaseHelper.COLUMN_ACCOUNT + " = '" + account+"' AND "+
+                DatabaseHelper.COLUMN_ROOT_FOLDER + " = '" + rootFolder+"' AND "+
+                DatabaseHelper.COLUMN_UID + " = '" + note.getIdentification().getUid()+"' AND ",
+                null);
 
-        Modification modification = modificationRepository.getByUID(note.getIdentification().getUid());
+        Modification modification = modificationRepository.getUnique(account,rootFolder,note.getIdentification().getUid());
 
         if(modification == null){
-            modificationRepository.insert(note.getIdentification().getUid(), ModificationRepository.ModificationType.UPD);
+            modificationRepository.insert(account,rootFolder,note.getIdentification().getUid(), ModificationRepository.ModificationType.UPD);
         }
         close();
     }
 
-    public void delete(Note note) {
+    public void delete(String account, String rootFolder,Note note) {
         open();
-       database.delete(DatabaseHelper.TABLE_NOTES, DatabaseHelper.COLUMN_UID + " = " + note.getIdentification().getUid(), null);
+       database.delete(DatabaseHelper.TABLE_NOTES,
+               DatabaseHelper.COLUMN_ACCOUNT + " = '" + account+"' AND "+
+               DatabaseHelper.COLUMN_ROOT_FOLDER + " = '" + rootFolder+"' AND "+
+               DatabaseHelper.COLUMN_UID + " = '" + note.getIdentification().getUid()+"' ",
+               null);
 
-        Modification modification = modificationRepository.getByUID(note.getIdentification().getUid());
+        Modification modification = modificationRepository.getUnique(account,rootFolder,note.getIdentification().getUid());
 
         if(modification == null){
-            modificationRepository.insert(note.getIdentification().getUid(), ModificationRepository.ModificationType.DEL);
+            modificationRepository.insert(account,rootFolder,note.getIdentification().getUid(), ModificationRepository.ModificationType.DEL);
         }
         close();
     }
 
-    public List<Note> getAll() {
-        open();
+    public List<Note> getFromNotebook(String account, String rootFolder,String uidNotebook) {
+        openReadonly();
         List<Note> notes = new ArrayList<Note>();
 
         Cursor cursor = database.query(DatabaseHelper.TABLE_NOTES,
                 allColumns,
+                DatabaseHelper.COLUMN_ACCOUNT + " = '" + account+"' AND "+
+                DatabaseHelper.COLUMN_ROOT_FOLDER + " = '" + rootFolder+"' AND "+
+                DatabaseHelper.COLUMN_UID_NOTEBOOK + " = '" + uidNotebook+"' AND "+
                 DatabaseHelper.COLUMN_DISCRIMINATOR+" = '"+DatabaseHelper.DESCRIMINATOR_NOTE+"' ",
                 null,
                 null,
@@ -116,7 +138,7 @@ public class NoteRepository {
                 null);
 
         while (cursor.moveToNext()) {
-            Note note = cursorToNote(cursor);
+            Note note = cursorToNote(account,rootFolder,cursor);
             notes.add(note);
         }
         cursor.close();
@@ -124,14 +146,58 @@ public class NoteRepository {
         return notes;
     }
 
-    private Note cursorToNote(Cursor cursor) {
-        String uid = cursor.getString(1);
-        String productId = cursor.getString(2);
-        Long creationDate = cursor.getLong(3);
-        Long modificationDate = cursor.getLong(4);
-        String summary = cursor.getString(5);
-        String description = cursor.getString(6);
-        String classification = cursor.getString(7);
+    public List<Note> getAll(String account, String rootFolder) {
+        openReadonly();
+        List<Note> notes = new ArrayList<Note>();
+
+        Cursor cursor = database.query(DatabaseHelper.TABLE_NOTES,
+                allColumns,
+                DatabaseHelper.COLUMN_ACCOUNT + " = '" + account+"' AND "+
+                        DatabaseHelper.COLUMN_ROOT_FOLDER + " = '" + rootFolder+"' AND "+
+                        DatabaseHelper.COLUMN_DISCRIMINATOR+" = '"+DatabaseHelper.DESCRIMINATOR_NOTE+"' ",
+                null,
+                null,
+                null,
+                null);
+
+        while (cursor.moveToNext()) {
+            Note note = cursorToNote(account,rootFolder,cursor);
+            notes.add(note);
+        }
+        cursor.close();
+        close();
+        return notes;
+    }
+
+    public Note getByUID(String account, String rootFolder,String uid) {
+        openReadonly();
+        Cursor cursor = database.query(DatabaseHelper.TABLE_NOTES,
+                allColumns,
+                DatabaseHelper.COLUMN_ACCOUNT + " = '" + account+"' AND "+
+                DatabaseHelper.COLUMN_ROOT_FOLDER + " = '" + rootFolder+"' AND "+
+                DatabaseHelper.COLUMN_UID + " = '" + uid+"' AND "+
+                DatabaseHelper.COLUMN_DISCRIMINATOR+" = '"+DatabaseHelper.DESCRIMINATOR_NOTE+"' ",
+                null,
+                null,
+                null,
+                null);
+
+        if (cursor.moveToNext()) {
+            return cursorToNote(account,rootFolder,cursor);
+        }
+        cursor.close();
+        close();
+        return null;
+    }
+
+    private Note cursorToNote(String account, String rootFolder,Cursor cursor) {
+        String uid = cursor.getString(3);
+        String productId = cursor.getString(4);
+        Long creationDate = cursor.getLong(5);
+        Long modificationDate = cursor.getLong(6);
+        String summary = cursor.getString(7);
+        String description = cursor.getString(8);
+        String classification = cursor.getString(9);
 
         Note.AuditInformation audit = new Note.AuditInformation(new Timestamp(creationDate),new Timestamp(modificationDate));
         Note.Identification ident = new Note.Identification(uid,productId);
@@ -139,12 +205,11 @@ public class NoteRepository {
         Note note = new Note(ident,audit, Note.Classification.valueOf(classification),description);
         note.setSummary(summary);
 
-        //TODO
-        //List<String> tags = new TagRepository(context).getTagsFor(uid);
+        List<String> tags = new NoteTagRepository(context).getTagsFor(account,rootFolder,uid);
 
-        //if(tags != null && tags.size() > 0) {
-        //    note.addCategories(tags.toArray(new String[tags.size()]));
-        //}
+        if(tags != null && tags.size() > 0) {
+            note.addCategories(tags.toArray(new String[tags.size()]));
+        }
         return note;
     }
 }

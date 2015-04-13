@@ -10,6 +10,9 @@ import android.util.Log;
  */
 public class DatabaseHelper extends SQLiteOpenHelper {
 
+    public static final String COLUMN_ROOT_FOLDER = "rootFolder";
+    public static final String COLUMN_ACCOUNT = "account";
+
     public static final String TABLE_NOTES = "notes";
     public static final String COLUMN_ID = "_id";
     public static final String COLUMN_UID = "uid";
@@ -42,6 +45,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String CREATE_NOTES = "create table "
             + TABLE_NOTES +
             "(" + COLUMN_ID+ " integer primary key autoincrement, "
+            + COLUMN_ACCOUNT + " text not null, "
+            + COLUMN_ROOT_FOLDER + " text not null, "
             + COLUMN_DISCRIMINATOR + " text not null, "
             + COLUMN_UID + " text not null unique, "
             + COLUMN_PRODUCTID + " text not null, "
@@ -60,12 +65,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String CREATE_TAGS_NOTES = "create table "
             + TABLE_NOTE_TAGS +
             "(" + COLUMN_ID+ " integer primary key autoincrement, "
-            + COLUMN_IDNOTE + " integer not null, "
-            + COLUMN_IDTAG + " integer not null);";
+            + COLUMN_ACCOUNT + " text not null, "
+            + COLUMN_ROOT_FOLDER + " text not null, "
+            + COLUMN_IDNOTE + " text not null, "
+            + COLUMN_IDTAG + " text not null);";
 
     private static final String CREATE_MODIFICATION = "create table "
             + TABLE_MODIFICATION +
             "(" + COLUMN_ID+ " integer primary key autoincrement, "
+            + COLUMN_ACCOUNT + " text not null, "
+            + COLUMN_ROOT_FOLDER + " text not null, "
             + COLUMN_UID + " text not null unique, "
             + COLUMN_MODIFICATIONDATE + " integer, " //milliseconds
             + COLUMN_MODIFICATIONTYPE + " text not null);";
@@ -88,6 +97,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         Log.w(DatabaseHelper.class.getName(),
                 "Upgrading database from version " + oldVersion + " to "
                         + newVersion + ", which will destroy all old data");
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_MODIFICATION);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_NOTE_TAGS);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_TAGS);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_NOTES);

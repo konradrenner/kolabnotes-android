@@ -7,11 +7,15 @@ import java.sql.Timestamp;
  */
 public class Modification {
     private String uid;
+    private String rootFolder;
+    private String account;
     private ModificationRepository.ModificationType type;
     private Timestamp modificationDate;
 
-    public Modification(String uid, ModificationRepository.ModificationType type, Timestamp modificationDate) {
+    public Modification(String account, String rootFolder, String uid, ModificationRepository.ModificationType type, Timestamp modificationDate) {
         this.uid = uid;
+        this.rootFolder = rootFolder;
+        this.account = account;
         this.type = type;
         this.modificationDate = modificationDate;
     }
@@ -52,5 +56,9 @@ public class Modification {
 
     public Timestamp getModificationDate() {
         return modificationDate;
+    }
+
+    public String getRootFolder() {
+        return rootFolder;
     }
 }

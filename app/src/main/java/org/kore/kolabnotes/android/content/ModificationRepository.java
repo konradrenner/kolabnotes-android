@@ -27,8 +27,11 @@ public class ModificationRepository {
     private SQLiteDatabase database;
     private DatabaseHelper dbHelper;
     private String[] allColumns = { DatabaseHelper.COLUMN_ID,
+            DatabaseHelper.COLUMN_ACCOUNT,
+            DatabaseHelper.COLUMN_ROOT_FOLDER,
             DatabaseHelper.COLUMN_UID,
-            DatabaseHelper.COLUMN_MODIFICATIONTYPE };
+            DatabaseHelper.COLUMN_MODIFICATIONTYPE,
+            DatabaseHelper.COLUMN_MODIFICATIONDATE };
 
     public ModificationRepository(Context context) {
         dbHelper = new DatabaseHelper(context);
@@ -42,11 +45,14 @@ public class ModificationRepository {
         dbHelper.close();
     }
 
-    public void insert(String uid, ModificationType type) {
+    public void insert(String account, String rootFolder, String uid, ModificationType type) {
         open();
         ContentValues values = new ContentValues();
         values.put(DatabaseHelper.COLUMN_UID, uid);
+        values.put(DatabaseHelper.COLUMN_ACCOUNT, account);
+        values.put(DatabaseHelper.COLUMN_ROOT_FOLDER, rootFolder);
         values.put(DatabaseHelper.COLUMN_MODIFICATIONTYPE, type.toString());
+        values.put(DatabaseHelper.COLUMN_MODIFICATIONDATE, new Timestamp(System.currentTimeMillis()).getTime());
 
         database.insert(DatabaseHelper.TABLE_MODIFICATION, null,values);
         close();
@@ -77,10 +83,12 @@ public class ModificationRepository {
         return modifications;
     }
 
-    public Modification getByUID(String uid) {
+    public Modification getUnique(String account, String rootFolder,String uid) {
         open();
         Cursor cursor = database.query(DatabaseHelper.TABLE_MODIFICATION,
                 allColumns,
+                DatabaseHelper.COLUMN_ACCOUNT+" = '"+account+"' AND "+
+                DatabaseHelper.COLUMN_ROOT_FOLDER+" = '"+rootFolder+"' AND "+
                 DatabaseHelper.COLUMN_UID+" = '"+uid+"' ",
                 null,
                 null,
@@ -97,11 +105,13 @@ public class ModificationRepository {
     }
 
     private Modification cursorToModification(Cursor cursor) {
-        String uid = cursor.getString(1);
-        ModificationRepository.ModificationType type = ModificationRepository.ModificationType.valueOf(cursor.getString(3));
-        Long modDate = cursor.getLong(3);
+        String account = cursor.getString(1);
+        String rootFolder = cursor.getString(2);
+        String uid = cursor.getString(3);
+        ModificationRepository.ModificationType type = ModificationRepository.ModificationType.valueOf(cursor.getString(4));
+        Long modDate = cursor.getLong(5);
 
-        Modification modification = new Modification(uid, type, new Timestamp(modDate));
+        Modification modification = new Modification(account, rootFolder,uid, type, new Timestamp(modDate));
         return modification;
     }
 }

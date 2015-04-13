@@ -45,6 +45,7 @@ import org.kore.kolab.notes.local.LocalNotesRepository;
 import org.kore.kolab.notes.v3.KolabNotesParserV3;
 import org.kore.kolabnotes.android.adapter.NoteAdapter;
 import org.kore.kolabnotes.android.content.NoteRepository;
+import org.kore.kolabnotes.android.content.NoteTagRepository;
 import org.kore.kolabnotes.android.content.NotebookRepository;
 import org.kore.kolabnotes.android.content.TagRepository;
 import org.kore.kolabnotes.android.itemanimator.CustomItemAnimator;
@@ -60,6 +61,9 @@ import java.util.UUID;
 
 public class MainPhoneActivity extends ActionBarActivity {
 
+    public static String SELECTED_ACCOUNT = "local";
+    public static String SELECTED_ROOT_FOLDER = "Notes";
+
     private final DrawerItemClickedListener drawerItemClickedListener = new DrawerItemClickedListener();
 
     private List<Note> notesList = new ArrayList<Note>();
@@ -73,6 +77,7 @@ public class MainPhoneActivity extends ActionBarActivity {
     private NoteRepository notesRepository = new NoteRepository(this);
     private NotebookRepository notebookRepository = new NotebookRepository(this);
     private TagRepository tagRepository = new TagRepository(this);
+    private NoteTagRepository notetagRepository = new NoteTagRepository(this);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,12 +98,20 @@ public class MainPhoneActivity extends ActionBarActivity {
                 .withActivity(this)
                 .withHeaderBackground(R.drawable.drawer_header_background)
                 .addProfiles(
-                        new ProfileDrawerItem().withName("Konrad Renner").withEmail("konrad.renner@kolabnow.com")
+                        new ProfileDrawerItem().withName(getResources().getString(R.string.drawer_account_local))
                 )
                 .withOnAccountHeaderListener(new AccountHeader.OnAccountHeaderListener() {
                     @Override
                     public boolean onProfileChanged(View view, IProfile profile, boolean currentProfile) {
-                        return false;
+                        boolean changed;
+                        if(profile.getEmail() == null || profile.getEmail().trim().length() == 0){
+                            changed = !SELECTED_ACCOUNT.equalsIgnoreCase("local");
+                            SELECTED_ACCOUNT = "local";
+                        }else{
+                            changed = !SELECTED_ACCOUNT.equalsIgnoreCase(profile.getEmail());
+                            SELECTED_ACCOUNT = profile.getEmail();
+                        }
+                        return changed;
                     }
                 })
                 .build();
@@ -109,7 +122,6 @@ public class MainPhoneActivity extends ActionBarActivity {
                 .withAccountHeader(headerResult)
                 .addDrawerItems(
                         new PrimaryDrawerItem().withName(getResources().getString(R.string.drawer_item_tags)).withTag("HEADING_TAG").setEnabled(false).withDisabledTextColor(R.color.material_drawer_dark_header_selection_text),
-                        new SecondaryDrawerItem().withName(getResources().getString(R.string.drawer_item_alltags)).withTag("ALL_TAG"),
                         new DividerDrawerItem(),
                         new PrimaryDrawerItem().withName(getResources().getString(R.string.drawer_item_notebooks)).withTag("HEADING_NOTEBOOK").setEnabled(false).withDisabledTextColor(R.color.material_drawer_dark_header_selection_text),
                         new SecondaryDrawerItem().withName(getResources().getString(R.string.drawer_item_allnotes)).withTag("ALL_NOTEBOOK")
@@ -245,11 +257,30 @@ public class MainPhoneActivity extends ActionBarActivity {
     private class DrawerItemClickedListener implements Drawer.OnDrawerItemClickListener{
         @Override
         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l, IDrawerItem iDrawerItem) {
-            changeNoteSelection();
+            if(iDrawerItem instanceof  BaseDrawerItem) {
+                changeNoteSelection((BaseDrawerItem) iDrawerItem);
+            }
         }
 
-        public void changeNoteSelection(){
-            //TODO
+        public void changeNoteSelection(BaseDrawerItem drawerItem){
+            if(drawerItem == null){
+                return;
+            }
+
+            String tag = drawerItem.getTag() == null || drawerItem.getTag().toString().trim().length() == 0 ? "ALL_NOTEBOOK" :  drawerItem.getTag().toString();
+            List<Note> notes;
+            if("NOTEBOOK".equalsIgnoreCase(tag)){
+                Notebook notebook = notebookRepository.getBySummary(SELECTED_ACCOUNT, SELECTED_ROOT_FOLDER, drawerItem.getName());
+                notes = notesRepository.getFromNotebook(SELECTED_ACCOUNT,SELECTED_ROOT_FOLDER,notebook.getIdentification().getUid());
+            }else if("TAG".equalsIgnoreCase(tag)){
+                notes = notetagRepository.getNotesWith(SELECTED_ACCOUNT, SELECTED_ROOT_FOLDER, drawerItem.getName());
+            }else{
+                notes = notesRepository.getAll(SELECTED_ACCOUNT,SELECTED_ROOT_FOLDER);
+            }
+
+            notesList.clear();
+
+            notesList.addAll(notes);
         }
     }
 
@@ -269,7 +300,7 @@ public class MainPhoneActivity extends ActionBarActivity {
             final Intent mainIntent = new Intent(Intent.ACTION_MAIN, null);
             mainIntent.addCategory(Intent.CATEGORY_LAUNCHER);
 
-            List<Note> notes = notesRepository.getAll();
+            List<Note> notes = notesRepository.getAll(SELECTED_ACCOUNT,SELECTED_ROOT_FOLDER);
             for (Note note : notes) {
                 notesList.add(note);
             }
@@ -282,7 +313,7 @@ public class MainPhoneActivity extends ActionBarActivity {
             }
 
             //Query the notebooks
-            for (Notebook notebook : notebookRepository.getAll()) {
+            for (Notebook notebook : notebookRepository.getAll(SELECTED_ACCOUNT,SELECTED_ROOT_FOLDER)) {
                 mDrawer.addItem(new SecondaryDrawerItem().withName(notebook.getSummary()).withTag("NOTEBOOK"));
             }
 
@@ -358,7 +389,7 @@ public class MainPhoneActivity extends ActionBarActivity {
 
             Notebook nb = new Notebook(ident,audit, Note.Classification.PUBLIC, value);
             nb.setDescription(value);
-            notebookRepository.insert(nb);
+            notebookRepository.insert(SELECTED_ACCOUNT, SELECTED_ROOT_FOLDER, nb);
 
             mDrawer.addItem(new SecondaryDrawerItem().withName(value).withTag("NOTEBOOK"));
 
@@ -400,10 +431,6 @@ public class MainPhoneActivity extends ActionBarActivity {
                     if(selection == 0){
                         selected = base.getName();
                     }
-                }else if(type.equalsIgnoreCase("ALL_TAG")){
-                    if(selection == 0){
-                        selected = base.getName();
-                    }
                 }
             }
             selection--;
@@ -420,9 +447,8 @@ public class MainPhoneActivity extends ActionBarActivity {
         drawer.getDrawerItems().clear();
 
         drawer.getDrawerItems().add(new PrimaryDrawerItem().withName(getResources().getString(R.string.drawer_item_tags)).withTag("HEADING_TAG").setEnabled(false).withDisabledTextColor(R.color.material_drawer_dark_header_selection_text));
-        drawer.getDrawerItems().add(new SecondaryDrawerItem().withName(getResources().getString(R.string.drawer_item_alltags)).withTag("ALL_TAG"));
 
-        int idx = 1;
+        int idx = 0;
         for(String tag : tags){
             drawer.getDrawerItems().add(new SecondaryDrawerItem().withName(tag).withTag("TAG"));
 
@@ -441,16 +467,19 @@ public class MainPhoneActivity extends ActionBarActivity {
         if(notebookSelected){
             selection = idx;
         }
+        BaseDrawerItem selectedItem = null;
         for(String notebook : notebooks){
-            drawer.getDrawerItems().add(new SecondaryDrawerItem().withName(notebook).withTag("NOTEBOOK"));
+            BaseDrawerItem item = new SecondaryDrawerItem().withName(notebook).withTag("NOTEBOOK");
+            drawer.getDrawerItems().add(item);
 
             idx++;
             if(notebookSelected && notebook.equalsIgnoreCase(selected)){
                 selection = idx;
+                selectedItem = item;
             }
         }
 
         drawer.setSelection(selection);
-        drawerItemClickedListener.changeNoteSelection();
+        drawerItemClickedListener.changeNoteSelection(selectedItem);
     }
 }
