@@ -36,7 +36,7 @@
     <string name="description_hint">Description</string>
     <string name="text_description">Medium Text</string>
 
-    <string name="dialog_input_text_hint">Description</string>
+    <string name="dialog_input_text_hint">Summary</string>
     <string name="dialog_input_text_search_hint">Search notes with summary</string>
     <string name="dialog_input_text_notebook">New Notebook</string>
     <string name="dialog_input_text_search">Search Note</string>

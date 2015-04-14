@@ -13,18 +13,23 @@ import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.ViewPropertyAnimator;
+import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import org.kore.kolab.notes.Note;
+import org.kore.kolab.notes.Notebook;
+import org.kore.kolabnotes.android.content.NotebookRepository;
 
 import java.util.Date;
+import java.util.List;
 
 public class DetailActivity extends ActionBarActivity {
 
-    private static final int SCALE_DELAY = 30;
+    private NotebookRepository notebookRepository = new NotebookRepository(this);
 
     private Toolbar toolbar;
 
@@ -34,8 +39,6 @@ public class DetailActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
-
-        //Utils.configureWindowEnterExitTransition(getWindow());
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitle("");
@@ -49,6 +52,24 @@ public class DetailActivity extends ActionBarActivity {
                 DetailActivity.this.onBackPressed();
             }
         });
+
+        initSpinner();
+    }
+
+    void initSpinner(){
+        Spinner spinner = (Spinner) findViewById(R.id.spinner_notebook);
+
+        List<Notebook> notebooks = notebookRepository.getAll(MainPhoneActivity.SELECTED_ACCOUNT, MainPhoneActivity.SELECTED_ROOT_FOLDER);
+
+        String[] notebookArr = new String[notebooks.size()];
+
+        for(int i=0; i<notebooks.size();i++){
+            notebookArr[i] = notebooks.get(i).getSummary();
+        }
+
+        ArrayAdapter<CharSequence> adapter = new ArrayAdapter<CharSequence>(this,android.R.layout.simple_spinner_item,notebookArr);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(adapter);
     }
 
     @Override
@@ -63,24 +84,6 @@ public class DetailActivity extends ActionBarActivity {
            //nothing at them moment
         }
     };
-
-    public void fillRow(View view, final String title, final String description) {
-        TextView titleView = (TextView) view.findViewById(R.id.title);
-        titleView.setText(title);
-
-        TextView descriptionView = (TextView) view.findViewById(R.id.description);
-        descriptionView.setText(description);
-
-        view.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ClipboardManager clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
-                ClipData clip = ClipData.newPlainText("AppInfo", description);
-                clipboard.setPrimaryClip(clip);
-
-            }
-        });
-    }
 
     @Override
     public void onBackPressed() {
