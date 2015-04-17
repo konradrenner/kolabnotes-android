@@ -8,6 +8,11 @@
         android:title="@string/title_share"
         app:actionProviderClass="android.support.v7.widget.ShareActionProvider"/>
 
+    <item android:id="@id/edit_tag_menu"
+        app:showAsAction="ifRoom"
+        android:icon="@drawable/ic_action_labels_white"
+        android:title="@string/title_edit_tag" />
+
     <item android:id="@id/delete_menu"
         app:showAsAction="ifRoom"
         android:icon="@drawable/ic_action_discard"

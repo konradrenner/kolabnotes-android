@@ -11,6 +11,9 @@
     <string name="ok">Ok</string>
     <string name="cancel">Cancel</string>
 
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+
     <string name="activity_detail_title">DetailActivity</string>
 
     <string name="drawer_item_tags">Tags</string>
@@ -41,6 +44,9 @@
     <string name="dialog_input_text_search_hint">Search notes with summary</string>
     <string name="dialog_input_text_notebook">New Notebook</string>
     <string name="dialog_input_text_search">Search Note</string>
+    <string name="dialog_delete_note">Delete Note</string>
     <string name="dialog_input_text_tag">New Tag</string>
     <string name="add">add</string>
+    <string name="title_edit_tag">Edit Tags</string>
+    <string name="dialog_question_delete">Do you really want to delete this note?</string>
 </resources>

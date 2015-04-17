@@ -34,7 +34,7 @@
         <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/detail_summary"
+            android:id="@id/detail_summary"
             android:layout_gravity="center_horizontal"
             android:inputType="text"
             android:enabled="true"
@@ -46,7 +46,7 @@
         <EditText
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:id="@+id/detail_description"
+            android:id="@id/detail_description"
             android:layout_gravity="center_horizontal"
             android:inputType="textMultiLine|textWebEditText"
             android:autoText="false"

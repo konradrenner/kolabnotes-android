@@ -142,12 +142,13 @@ public class NotebookRepository {
                 null,
                 null);
 
+        Notebook nb = null;
         if (cursor.moveToNext()) {
-            return cursorToNote(account,rootFolder,cursor);
+            nb = cursorToNote(account,rootFolder,cursor);
         }
         cursor.close();
         close();
-        return null;
+        return nb;
     }
 
     public List<Notebook> getAll(String account, String rootFolder) {

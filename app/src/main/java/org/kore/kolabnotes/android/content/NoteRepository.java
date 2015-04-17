@@ -32,6 +32,7 @@ public class NoteRepository {
             DatabaseHelper.COLUMN_SUMMARY ,
             DatabaseHelper.COLUMN_DESCRIPTION ,
             DatabaseHelper.COLUMN_CLASSIFICATION,
+            DatabaseHelper.COLUMN_UID_NOTEBOOK,
             DatabaseHelper.COLUMN_DISCRIMINATOR };
     private ModificationRepository modificationRepository;
 
@@ -212,12 +213,35 @@ public class NoteRepository {
                 null,
                 null);
 
+        Note note = null;
         if (cursor.moveToNext()) {
-            return cursorToNote(account,rootFolder,cursor);
+            note = cursorToNote(account,rootFolder,cursor);
         }
         cursor.close();
         close();
-        return null;
+        return note;
+    }
+
+    public String getSummaryofNotebook(String account, String rootFolder,String uid) {
+        openReadonly();
+        Cursor cursor = database.query(DatabaseHelper.TABLE_NOTES,
+                allColumns,
+                DatabaseHelper.COLUMN_ACCOUNT + " = '" + account+"' AND "+
+                        DatabaseHelper.COLUMN_ROOT_FOLDER + " = '" + rootFolder+"' AND "+
+                        DatabaseHelper.COLUMN_UID + " = '" + uid+"' AND "+
+                        DatabaseHelper.COLUMN_DISCRIMINATOR+" = '"+DatabaseHelper.DESCRIMINATOR_NOTE+"' ",
+                null,
+                null,
+                null,
+                null);
+
+        String summary = null;
+        if (cursor.moveToNext()) {
+            summary = cursor.getString(10);
+        }
+        cursor.close();
+        close();
+        return summary;
     }
 
     private Note cursorToNote(String account, String rootFolder,Cursor cursor) {

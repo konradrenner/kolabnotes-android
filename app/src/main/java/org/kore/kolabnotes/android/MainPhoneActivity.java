@@ -512,7 +512,7 @@ public class MainPhoneActivity extends ActionBarActivity {
             drawer.getDrawerItems().add(new SecondaryDrawerItem().withName(tag).withTag("TAG"));
 
             idx++;
-            if(!notebookSelected && !allnotesSelected && tag.equalsIgnoreCase(selected)){
+            if(!notebookSelected && !allnotesSelected && tag.equals(selected)){
                 selection = idx;
             }
         }
@@ -531,7 +531,7 @@ public class MainPhoneActivity extends ActionBarActivity {
             drawer.getDrawerItems().add(item);
 
             idx++;
-            if((allnotesSelected || notebookSelected) && notebook.equalsIgnoreCase(selected)){
+            if((allnotesSelected || notebookSelected) && notebook.equals(selected)){
                 selection = idx;
                 selectedItem = item;
             }
