@@ -332,6 +332,7 @@ public class MainPhoneActivity extends ActionBarActivity {
             mRecyclerView.setVisibility(View.VISIBLE);
 
             //set data for list
+            mAdapter.clearNotes();
             mAdapter.addNotes(notesList);
             mSwipeRefreshLayout.setRefreshing(false);
 
