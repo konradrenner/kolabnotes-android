@@ -1,19 +1,14 @@
 package org.kore.kolabnotes.android;
 
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.content.pm.ResolveInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.util.Pair;
-import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarActivity;
-import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -22,11 +17,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
-import android.widget.Switch;
 
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.accountswitcher.AccountHeader;
@@ -40,9 +32,6 @@ import com.mikepenz.materialdrawer.model.interfaces.IProfile;
 
 import org.kore.kolab.notes.Note;
 import org.kore.kolab.notes.Notebook;
-import org.kore.kolab.notes.NotesRepository;
-import org.kore.kolab.notes.local.LocalNotesRepository;
-import org.kore.kolab.notes.v3.KolabNotesParserV3;
 import org.kore.kolabnotes.android.adapter.NoteAdapter;
 import org.kore.kolabnotes.android.content.NoteRepository;
 import org.kore.kolabnotes.android.content.NoteTagRepository;
@@ -50,13 +39,10 @@ import org.kore.kolabnotes.android.content.NotebookRepository;
 import org.kore.kolabnotes.android.content.TagRepository;
 import org.kore.kolabnotes.android.itemanimator.CustomItemAnimator;
 
-import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 public class MainPhoneActivity extends ActionBarActivity {
@@ -121,16 +107,17 @@ public class MainPhoneActivity extends ActionBarActivity {
                 .withToolbar(toolbar)
                 .withAccountHeader(headerResult)
                 .addDrawerItems(
-                        new PrimaryDrawerItem().withName(getResources().getString(R.string.drawer_item_tags)).withTag("HEADING_TAG").setEnabled(false).withDisabledTextColor(R.color.material_drawer_dark_header_selection_text),
+                        new PrimaryDrawerItem().withName(getResources().getString(R.string.drawer_item_allaccount_notes)).withTag("ALL_NOTES").withIcon(R.drawable.ic_action_group),
+                        new SecondaryDrawerItem().withName(getResources().getString(R.string.drawer_item_allnotes)).withTag("ALL_NOTEBOOK").withIcon(R.drawable.ic_action_person),
                         new DividerDrawerItem(),
-                        new PrimaryDrawerItem().withName(getResources().getString(R.string.drawer_item_notebooks)).withTag("HEADING_NOTEBOOK").setEnabled(false).withDisabledTextColor(R.color.material_drawer_dark_header_selection_text),
-                        new SecondaryDrawerItem().withName(getResources().getString(R.string.drawer_item_allnotes)).withTag("ALL_NOTEBOOK")
-
+                        new PrimaryDrawerItem().withName(getResources().getString(R.string.drawer_item_tags)).withTag("HEADING_TAG").setEnabled(false).withDisabledTextColor(R.color.material_drawer_dark_header_selection_text).withIcon(R.drawable.ic_action_labels),
+                        new DividerDrawerItem(),
+                        new PrimaryDrawerItem().withName(getResources().getString(R.string.drawer_item_notebooks)).withTag("HEADING_NOTEBOOK").setEnabled(false).withDisabledTextColor(R.color.material_drawer_dark_header_selection_text).withIcon(R.drawable.ic_action_collection)
                 )
                 .withOnDrawerItemClickListener(drawerItemClickedListener)
                 .build();
 
-        mDrawer.setSelection(3);
+        mDrawer.setSelection(1);
         // Fab Button
         mFabButton = (ImageButton) findViewById(R.id.fab_button);
         //mFabButton.setImageDrawable(new IconicsDrawable(this, FontAwesome.Icon.faw_upload).color(Color.WHITE).actionBarSize());
@@ -169,7 +156,7 @@ public class MainPhoneActivity extends ActionBarActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
-        getMenuInflater().inflate(R.menu.settings, menu);
+        getMenuInflater().inflate(R.menu.main_toolbar, menu);
         return true;
     }
 
@@ -472,6 +459,7 @@ public class MainPhoneActivity extends ActionBarActivity {
         List<String> notebooks = new ArrayList<>();
 
         boolean notebookSelected = true;
+        boolean allnotesSelected = false;
         String selected = null;
 
         int selection = drawer.getCurrentSelection();
@@ -493,6 +481,8 @@ public class MainPhoneActivity extends ActionBarActivity {
                     }
                 }else if(type.equalsIgnoreCase("ALL_NOTEBOOK")){
                     if(selection == 0){
+                        notebookSelected = false;
+                        allnotesSelected = true;
                         selected = base.getName();
                     }
                 }
@@ -510,24 +500,26 @@ public class MainPhoneActivity extends ActionBarActivity {
 
         drawer.getDrawerItems().clear();
 
-        drawer.getDrawerItems().add(new PrimaryDrawerItem().withName(getResources().getString(R.string.drawer_item_tags)).withTag("HEADING_TAG").setEnabled(false).withDisabledTextColor(R.color.material_drawer_dark_header_selection_text));
+        drawer.getDrawerItems().add(new PrimaryDrawerItem().withName(getResources().getString(R.string.drawer_item_allaccount_notes)).withTag("ALL_NOTES").withIcon(R.drawable.ic_action_group));
+        drawer.getDrawerItems().add(new SecondaryDrawerItem().withName(getResources().getString(R.string.drawer_item_allnotes)).withTag("ALL_NOTEBOOK").withIcon(R.drawable.ic_action_person));
+        drawer.getDrawerItems().add(new DividerDrawerItem());
+        drawer.getDrawerItems().add(new PrimaryDrawerItem().withName(getResources().getString(R.string.drawer_item_tags)).withTag("HEADING_TAG").setEnabled(false).withDisabledTextColor(R.color.material_drawer_dark_header_selection_text).withIcon(R.drawable.ic_action_labels));
 
-        int idx = 0;
+        int idx = 4;
         for(String tag : tags){
             drawer.getDrawerItems().add(new SecondaryDrawerItem().withName(tag).withTag("TAG"));
 
             idx++;
-            if(!notebookSelected && tag.equalsIgnoreCase(selected)){
+            if(!notebookSelected && !allnotesSelected && tag.equalsIgnoreCase(selected)){
                 selection = idx;
             }
         }
 
         drawer.getDrawerItems().add(new DividerDrawerItem());
 
-        drawer.getDrawerItems().add(new PrimaryDrawerItem().withName(getResources().getString(R.string.drawer_item_notebooks)).withTag("HEADING_NOTEBOOK").setEnabled(false).withDisabledTextColor(R.color.material_drawer_dark_header_selection_text));
-        drawer.getDrawerItems().add(new SecondaryDrawerItem().withName(getResources().getString(R.string.drawer_item_allnotes)).withTag("ALL_NOTEBOOK"));
+        drawer.getDrawerItems().add(new PrimaryDrawerItem().withName(getResources().getString(R.string.drawer_item_notebooks)).withTag("HEADING_NOTEBOOK").setEnabled(false).withDisabledTextColor(R.color.material_drawer_dark_header_selection_text).withIcon(R.drawable.ic_action_collection));
 
-        idx = idx+3;
+        idx = idx+2;
         if(notebookSelected){
             selection = idx;
         }
@@ -537,10 +529,15 @@ public class MainPhoneActivity extends ActionBarActivity {
             drawer.getDrawerItems().add(item);
 
             idx++;
-            if(notebookSelected && notebook.equalsIgnoreCase(selected)){
+            if((allnotesSelected || notebookSelected) && notebook.equalsIgnoreCase(selected)){
                 selection = idx;
                 selectedItem = item;
             }
+        }
+
+        if(selection < 1){
+            //default if nothing is selected, choose "all notes form actual account"
+            selection = 1;
         }
 
         drawer.setSelection(selection);

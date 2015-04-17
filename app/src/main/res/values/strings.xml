@@ -15,7 +15,8 @@
 
     <string name="drawer_item_tags">Tags</string>
     <string name="drawer_item_notebooks">Notebooks</string>
-    <string name="drawer_item_allnotes">All Notes</string>
+    <string name="drawer_item_allnotes">Notes from selected account</string>
+    <string name="drawer_item_allaccount_notes">Notes from all accounts</string>
     <string name="drawer_account_local">Local Account</string>
 
 
@@ -41,4 +42,5 @@
     <string name="dialog_input_text_notebook">New Notebook</string>
     <string name="dialog_input_text_search">Search Note</string>
     <string name="dialog_input_text_tag">New Tag</string>
+    <string name="add">add</string>
 </resources>

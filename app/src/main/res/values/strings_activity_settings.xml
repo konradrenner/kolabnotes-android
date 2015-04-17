@@ -3,9 +3,12 @@
     <string name="title_create_notebook">New Notebook</string>
     <string name="title_create_tag">New Tag</string>
     <string name="title_dialog_search">Search Note</string>
+    <string name="title_ok">OK</string>
+    <string name="title_share">Share</string>
+    <string name="title_delete">Delete</string>
 
     <!-- Strings related to Settings -->
-    <!-- Example General settings -->
+    <!-- Example General main_toolbar -->
     <string name="pref_header_general">General</string>
 
     <string name="pref_title_social_recommendations">Enable social recommendations</string>
@@ -28,7 +31,7 @@
         <item>-1</item>
     </string-array>
 
-    <!-- Example settings for Data & Sync -->
+    <!-- Example main_toolbar for Data & Sync -->
     <string name="pref_header_data_sync">Data &amp; sync</string>
 
     <string name="pref_title_sync_frequency">Sync frequency</string>
@@ -51,7 +54,7 @@
 
     <string name="pref_title_system_sync_settings">System sync settings</string>
 
-    <!-- Example settings for Notifications -->
+    <!-- Example main_toolbar for Notifications -->
     <string name="pref_header_notifications">Notifications</string>
 
     <string name="pref_title_new_message_notifications">New message notifications</string>

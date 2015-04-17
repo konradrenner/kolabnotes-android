@@ -11,6 +11,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
 import android.view.View;
 import android.view.ViewPropertyAnimator;
 import android.widget.ArrayAdapter;
@@ -54,6 +55,13 @@ public class DetailActivity extends ActionBarActivity {
         });
 
         initSpinner();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        super.onCreateOptionsMenu(menu);
+        getMenuInflater().inflate(R.menu.detail_toolbar, menu);
+        return true;
     }
 
     void initSpinner(){

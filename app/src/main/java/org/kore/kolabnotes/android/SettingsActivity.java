@@ -21,20 +21,20 @@ import android.text.TextUtils;
 import java.util.List;
 
 /**
- * A {@link PreferenceActivity} that presents a set of application settings. On
- * handset devices, settings are presented as a single list. On tablets,
- * settings are split by category, with category headers shown to the left of
- * the list of settings.
+ * A {@link PreferenceActivity} that presents a set of application main_toolbar. On
+ * handset devices, main_toolbar are presented as a single list. On tablets,
+ * main_toolbar are split by category, with category headers shown to the left of
+ * the list of main_toolbar.
  * <p/>
- * See <a href="http://developer.android.com/design/patterns/settings.html">
+ * See <a href="http://developer.android.com/design/patterns/main_toolbar.html">
  * Android Design: Settings</a> for design guidelines and the <a
- * href="http://developer.android.com/guide/topics/ui/settings.html">Settings
+ * href="http://developer.android.com/guide/topics/ui/main_toolbar.html">Settings
  * API Guide</a> for more information on developing a Settings UI.
  */
 public class SettingsActivity extends PreferenceActivity {
     /**
-     * Determines whether to always show the simplified settings UI, where
-     * settings are presented in a single list. When false, settings are shown
+     * Determines whether to always show the simplified main_toolbar UI, where
+     * main_toolbar are presented in a single list. When false, main_toolbar are shown
      * as a master/detail two-pane view on tablets. When true, a single pane is
      * shown on tablets.
      */
@@ -49,7 +49,7 @@ public class SettingsActivity extends PreferenceActivity {
     }
 
     /**
-     * Shows the simplified settings UI if the device configuration if the
+     * Shows the simplified main_toolbar UI if the device configuration if the
      * device configuration dictates that a simplified, single-pane UI should be
      * shown.
      */
@@ -103,11 +103,11 @@ public class SettingsActivity extends PreferenceActivity {
     }
 
     /**
-     * Determines whether the simplified settings UI should be shown. This is
+     * Determines whether the simplified main_toolbar UI should be shown. This is
      * true if this is forced via {@link #ALWAYS_SIMPLE_PREFS}, or the device
      * doesn't have newer APIs like {@link PreferenceFragment}, or the device
      * doesn't have an extra-large screen. In these cases, a single-pane
-     * "simplified" settings UI should be shown.
+     * "simplified" main_toolbar UI should be shown.
      */
     private static boolean isSimplePreferences(Context context) {
         return ALWAYS_SIMPLE_PREFS
@@ -201,7 +201,7 @@ public class SettingsActivity extends PreferenceActivity {
 
     /**
      * This fragment shows general preferences only. It is used when the
-     * activity is showing a two-pane settings UI.
+     * activity is showing a two-pane main_toolbar UI.
      */
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     public static class GeneralPreferenceFragment extends PreferenceFragment {
@@ -221,7 +221,7 @@ public class SettingsActivity extends PreferenceActivity {
 
     /**
      * This fragment shows notification preferences only. It is used when the
-     * activity is showing a two-pane settings UI.
+     * activity is showing a two-pane main_toolbar UI.
      */
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     public static class NotificationPreferenceFragment extends PreferenceFragment {
@@ -240,7 +240,7 @@ public class SettingsActivity extends PreferenceActivity {
 
     /**
      * This fragment shows data and sync preferences only. It is used when the
-     * activity is showing a two-pane settings UI.
+     * activity is showing a two-pane main_toolbar UI.
      */
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     public static class DataSyncPreferenceFragment extends PreferenceFragment {

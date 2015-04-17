@@ -48,10 +48,7 @@
                 android:layout_height="@dimen/fab_size"
                 android:layout_marginEnd="@dimen/activity_horizontal_margin"
                 android:layout_marginRight="@dimen/activity_horizontal_margin"
-                android:layout_below="@+id/toolbar"
                 android:layout_marginTop="-28dp"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentRight="true"
                 android:background="@drawable/button_round"
                 android:stateListAnimator="@anim/fab_anim"
                 android:elevation="8dp"
@@ -59,8 +56,8 @@
                 android:scaleType="fitCenter"
                 android:layout_gravity="right|bottom"
                 android:layout_marginBottom="15dp"
-                android:contentDescription="add"
-                android:src="@android:drawable/ic_menu_edit" />
+                android:contentDescription="@string/add"
+                android:src="@drawable/ic_action_edit" />
 
         </FrameLayout>
 
