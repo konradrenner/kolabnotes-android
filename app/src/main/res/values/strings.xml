@@ -14,6 +14,10 @@
     <string name="yes">Yes</string>
     <string name="no">No</string>
 
+    <string name="radio_public">Public</string>
+    <string name="radio_confidential">Confidential</string>
+    <string name="radio_private">Private</string>
+
     <string name="activity_detail_title">DetailActivity</string>
 
     <string name="drawer_item_tags">Tags</string>
@@ -46,6 +50,8 @@
     <string name="dialog_input_text_search">Search Note</string>
     <string name="dialog_delete_note">Delete Note</string>
     <string name="dialog_input_text_tag">New Tag</string>
+    <string name="dialog_change_classification">Edit Classification</string>
+    <string name="dialog_change_tags">Edit Tags</string>
     <string name="add">add</string>
     <string name="title_edit_tag">Edit Tags</string>
     <string name="dialog_question_delete">Do you really want to delete this note?</string>

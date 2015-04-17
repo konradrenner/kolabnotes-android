@@ -14,6 +14,7 @@ import android.os.Bundle;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -24,6 +25,8 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.support.v7.widget.ShareActionProvider;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
 import android.widget.TextView;
@@ -32,11 +35,17 @@ import android.widget.Toast;
 import org.kore.kolab.notes.Note;
 import org.kore.kolab.notes.Notebook;
 import org.kore.kolabnotes.android.content.NoteRepository;
+import org.kore.kolabnotes.android.content.NoteTagRepository;
 import org.kore.kolabnotes.android.content.NotebookRepository;
+import org.kore.kolabnotes.android.content.TagRepository;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 public class DetailActivity extends ActionBarActivity implements ShareActionProvider.OnShareTargetSelectedListener{
@@ -45,6 +54,8 @@ public class DetailActivity extends ActionBarActivity implements ShareActionProv
 
     private NotebookRepository notebookRepository = new NotebookRepository(this);
     private NoteRepository noteRepository = new NoteRepository(this);
+    private NoteTagRepository noteTagRepository = new NoteTagRepository(this);
+    private TagRepository tagRepository = new TagRepository(this);
 
     private Toolbar toolbar;
 
@@ -53,6 +64,12 @@ public class DetailActivity extends ActionBarActivity implements ShareActionProv
     private ShareActionProvider shareActionProvider;
 
     private Intent shareIntent;
+
+    private Note.Classification selectedClassification;
+
+    private Set<String> selectedTags = new LinkedHashSet<>();
+
+    private List<String> allTags = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,6 +95,8 @@ public class DetailActivity extends ActionBarActivity implements ShareActionProv
 
         initSpinner();
 
+        allTags.addAll(tagRepository.getAll());
+
         Intent startIntent = getIntent();
         String uid = startIntent.getStringExtra(NOTE_UID);
         if(uid != null){
@@ -87,6 +106,9 @@ public class DetailActivity extends ActionBarActivity implements ShareActionProv
             EditText description =(EditText) findViewById(R.id.detail_description);
             summary.setText(note.getSummary());
             description.setText(note.getDescription());
+
+            selectedClassification = note.getClassification();
+            selectedTags.addAll(note.getCategories());
 
             Spinner spinner = (Spinner) findViewById(R.id.spinner_notebook);
             SpinnerAdapter adapter = spinner.getAdapter();
@@ -134,11 +156,116 @@ public class DetailActivity extends ActionBarActivity implements ShareActionProv
     }
 
     void editClassification(){
-        //TODO
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+        builder.setTitle(R.string.dialog_change_classification);
+
+        LayoutInflater inflater = getLayoutInflater();
+        View view = inflater.inflate(R.layout.dialog_classification, null);
+
+        builder.setView(view);
+
+        builder.setPositiveButton(R.string.ok, new OnClassificationChange(view));
+        builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                //nothing
+            }
+        });
+
+        if(selectedClassification == null){
+            ((RadioButton) view.findViewById(R.id.radio_public)).toggle();
+        }else {
+
+            switch (selectedClassification) {
+                case PUBLIC:
+                    ((RadioButton) view.findViewById(R.id.radio_public)).toggle();
+                    break;
+                case CONFIDENTIAL:
+                    ((RadioButton) view.findViewById(R.id.radio_confidential)).toggle();
+                    break;
+                case PRIVATE:
+                    ((RadioButton) view.findViewById(R.id.radio_private)).toggle();
+                    break;
+            }
+        }
+
+        builder.show();
+    }
+
+    class OnClassificationChange implements DialogInterface.OnClickListener {
+
+        private final View view;
+
+        public OnClassificationChange(View view){
+            this.view = view;
+        }
+
+        @Override
+        public void onClick(DialogInterface dialog, int which) {
+            RadioGroup group = (RadioGroup) view.findViewById(R.id.dialog_classification);
+            switch(group.getCheckedRadioButtonId()){
+                case R.id.radio_public:
+                    DetailActivity.this.selectedClassification = Note.Classification.PUBLIC;
+                    break;
+                case R.id.radio_confidential:
+                    DetailActivity.this.selectedClassification = Note.Classification.CONFIDENTIAL;
+                    break;
+                case R.id.radio_private:
+                    DetailActivity.this.selectedClassification = Note.Classification.PRIVATE;
+                    break;
+            }
+        }
     }
 
     void editTags(){
-        //TODO
+        final ArrayList<Integer> selectedItems=new ArrayList<Integer> ();
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(R.string.dialog_change_tags);
+
+        final String[] tagArr = allTags.toArray(new String[allTags.size()]);
+        final boolean[] selectionArr = new boolean[tagArr.length];
+
+        for(int i=0;i<tagArr.length;i++){
+            if(selectedTags.contains(tagArr[i])){
+                selectionArr[i] = true;
+            }
+        }
+
+        builder.setMultiChoiceItems(tagArr, selectionArr,
+                new DialogInterface.OnMultiChoiceClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int indexSelected,
+                                        boolean isChecked) {
+                        if (isChecked) {
+                            // If the user checked the item, add it to the selected items
+                            selectedItems.add(indexSelected);
+                        } else if (selectedItems.contains(indexSelected)) {
+                            // Else, if the item is already in the array, remove it
+                            selectedItems.remove(Integer.valueOf(indexSelected));
+                        }
+                    }
+                })
+                // Set the action buttons
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int id) {
+                        selectedTags.clear();
+                        for (int i = 0; i < selectedItems.size(); i++) {
+                            selectedTags.add(tagArr[selectedItems.get(i)]);
+                        }
+                    }
+                })
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int id) {
+                        // nothing
+
+                    }
+                });
+
+        builder.show();
     }
 
     void saveNote(){
@@ -146,11 +273,12 @@ public class DetailActivity extends ActionBarActivity implements ShareActionProv
         EditText description =(EditText) findViewById(R.id.detail_description);
 
         if(note == null){
-            Note.Identification ident = new Note.Identification(UUID.randomUUID().toString(),"kolabnotes-android");
+            final String uuid = UUID.randomUUID().toString();
+            Note.Identification ident = new Note.Identification(uuid,"kolabnotes-android");
             Timestamp now = new Timestamp(System.currentTimeMillis());
             Note.AuditInformation audit = new Note.AuditInformation(now,now);
 
-            note = new Note(ident,audit, Note.Classification.PUBLIC, summary.getText().toString());
+            note = new Note(ident,audit, selectedClassification == null ? Note.Classification.PUBLIC : selectedClassification, summary.getText().toString());
             note.setDescription(description.getText().toString());
 
             Spinner spinner = (Spinner) findViewById(R.id.spinner_notebook);
@@ -159,11 +287,27 @@ public class DetailActivity extends ActionBarActivity implements ShareActionProv
             Notebook book =  notebookRepository.getBySummary(MainPhoneActivity.SELECTED_ACCOUNT,MainPhoneActivity.SELECTED_ROOT_FOLDER,notebookName);
 
             noteRepository.insert(MainPhoneActivity.SELECTED_ACCOUNT,MainPhoneActivity.SELECTED_ROOT_FOLDER,note,book.getIdentification().getUid());
+            noteTagRepository.delete(MainPhoneActivity.SELECTED_ACCOUNT,MainPhoneActivity.SELECTED_ROOT_FOLDER,uuid);
+            for(String tag : selectedTags){
+                noteTagRepository.insert(MainPhoneActivity.SELECTED_ACCOUNT,MainPhoneActivity.SELECTED_ROOT_FOLDER,uuid,tag);
+            }
         }else{
+            final String uuid = note.getIdentification().getUid();
             note.setSummary(summary.getText().toString());
             note.setDescription(description.getText().toString());
+            note.setClassification(selectedClassification);
 
-            noteRepository.update(MainPhoneActivity.SELECTED_ACCOUNT,MainPhoneActivity.SELECTED_ROOT_FOLDER,note);
+            Spinner spinner = (Spinner) findViewById(R.id.spinner_notebook);
+            String notebookName = spinner.getSelectedItem().toString();
+
+            Notebook book =  notebookRepository.getBySummary(MainPhoneActivity.SELECTED_ACCOUNT,MainPhoneActivity.SELECTED_ROOT_FOLDER,notebookName);
+
+            noteRepository.update(MainPhoneActivity.SELECTED_ACCOUNT,MainPhoneActivity.SELECTED_ROOT_FOLDER,note,book.getIdentification().getUid());
+
+            noteTagRepository.delete(MainPhoneActivity.SELECTED_ACCOUNT,MainPhoneActivity.SELECTED_ROOT_FOLDER,uuid);
+            for(String tag : selectedTags){
+                noteTagRepository.insert(MainPhoneActivity.SELECTED_ACCOUNT,MainPhoneActivity.SELECTED_ROOT_FOLDER,uuid,tag);
+            }
         }
 
         Intent intent = new Intent(DetailActivity.this,MainPhoneActivity.class);

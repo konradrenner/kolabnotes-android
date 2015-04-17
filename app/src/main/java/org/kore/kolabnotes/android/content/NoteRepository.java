@@ -79,7 +79,7 @@ public class NoteRepository {
         close();
     }
 
-    public void update(String account, String rootFolder,Note note){
+    public void update(String account, String rootFolder,Note note,String uidNotebook){
         open();
         ContentValues values = new ContentValues();
         values.put(DatabaseHelper.COLUMN_UID, note.getIdentification().getUid());
@@ -90,6 +90,7 @@ public class NoteRepository {
         values.put(DatabaseHelper.COLUMN_MODIFICATIONDATE, note.getAuditInformation().getCreationDate().getTime());
         values.put(DatabaseHelper.COLUMN_SUMMARY, note.getSummary());
         values.put(DatabaseHelper.COLUMN_DESCRIPTION, note.getDescription());
+        values.put(DatabaseHelper.COLUMN_UID_NOTEBOOK, uidNotebook);
         values.put(DatabaseHelper.COLUMN_CLASSIFICATION, note.getClassification().toString());
 
         database.update(DatabaseHelper.TABLE_NOTES,

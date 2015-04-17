@@ -199,7 +199,7 @@ public class MainPhoneActivity extends ActionBarActivity {
         return builder.create();
     }
 
-    private AlertDialog createNotebookDialog(){
+    private AlertDialog createNotebookDialog(Intent startActivity){
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
         builder.setTitle(R.string.dialog_input_text_notebook);
@@ -209,7 +209,7 @@ public class MainPhoneActivity extends ActionBarActivity {
 
         builder.setView(view);
 
-        builder.setPositiveButton(R.string.ok,new CreateNotebookButtonListener((EditText)view.findViewById(R.id.dialog_text_input_field)));
+        builder.setPositiveButton(R.string.ok,new CreateNotebookButtonListener(startActivity, (EditText)view.findViewById(R.id.dialog_text_input_field)));
         builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -217,6 +217,10 @@ public class MainPhoneActivity extends ActionBarActivity {
             }
         });
         return builder.create();
+    }
+
+    private AlertDialog createNotebookDialog(){
+        return  createNotebookDialog(null);
     }
 
     private AlertDialog createTagDialog(){
@@ -278,9 +282,10 @@ public class MainPhoneActivity extends ActionBarActivity {
                 notes = notesRepository.getAll(SELECTED_ACCOUNT,SELECTED_ROOT_FOLDER);
             }
 
-            notesList.clear();
-
-            notesList.addAll(notes);
+            if(mAdapter != null) {
+                mAdapter.clearNotes();
+                mAdapter.addNotes(notes);
+            }
         }
     }
 
@@ -339,8 +344,12 @@ public class MainPhoneActivity extends ActionBarActivity {
         @Override
         public void onClick(View v) {
             Intent intent = new Intent(MainPhoneActivity.this,DetailActivity.class);
-
-            startActivity(intent);
+            if(notebookRepository.getAll(SELECTED_ACCOUNT,SELECTED_ROOT_FOLDER).isEmpty()){
+                //Create first a notebook, so that note creation is possible
+                createNotebookDialog(intent).show();
+            }else{
+                startActivity(intent);
+            }
         }
     }
 
@@ -415,9 +424,11 @@ public class MainPhoneActivity extends ActionBarActivity {
     public class CreateNotebookButtonListener implements DialogInterface.OnClickListener{
 
         private final EditText textField;
+        private Intent intent;
 
-        public CreateNotebookButtonListener(EditText textField) {
+        public CreateNotebookButtonListener(Intent startActivity, EditText textField) {
             this.textField = textField;
+            intent = startActivity;
         }
 
         @Override
@@ -439,6 +450,10 @@ public class MainPhoneActivity extends ActionBarActivity {
                 mDrawer.addItem(new SecondaryDrawerItem().withName(value).withTag("NOTEBOOK"));
 
                 orderDrawerItems(mDrawer, value);
+            }
+
+            if(intent != null){
+                startActivity(intent);
             }
         }
     }
