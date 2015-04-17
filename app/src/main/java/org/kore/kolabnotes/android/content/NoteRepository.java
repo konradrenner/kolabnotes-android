@@ -96,7 +96,7 @@ public class NoteRepository {
                 values,
                 DatabaseHelper.COLUMN_ACCOUNT + " = '" + account+"' AND "+
                 DatabaseHelper.COLUMN_ROOT_FOLDER + " = '" + rootFolder+"' AND "+
-                DatabaseHelper.COLUMN_UID + " = '" + note.getIdentification().getUid()+"' AND ",
+                DatabaseHelper.COLUMN_UID + " = '" + note.getIdentification().getUid()+"' ",
                 null);
 
         Modification modification = modificationRepository.getUnique(account,rootFolder,note.getIdentification().getUid());

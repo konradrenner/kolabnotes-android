@@ -38,6 +38,7 @@ import org.kore.kolabnotes.android.content.NoteTagRepository;
 import org.kore.kolabnotes.android.content.NotebookRepository;
 import org.kore.kolabnotes.android.content.TagRepository;
 import org.kore.kolabnotes.android.itemanimator.CustomItemAnimator;
+import org.kore.kolabnotes.android.itemanimator.ReboundItemAnimator;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -121,7 +122,6 @@ public class MainPhoneActivity extends ActionBarActivity {
         // Fab Button
         mFabButton = (ImageButton) findViewById(R.id.fab_button);
         //mFabButton.setImageDrawable(new IconicsDrawable(this, FontAwesome.Icon.faw_upload).color(Color.WHITE).actionBarSize());
-        mFabButton.setOnClickListener(fabClickListener);
         Utils.configureFab(mFabButton);
         mFabButton.setOnClickListener(new CreateButtonListener());
 
@@ -244,17 +244,10 @@ public class MainPhoneActivity extends ActionBarActivity {
         super.onSaveInstanceState(outState);
     }
 
-    View.OnClickListener fabClickListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View view) {
-            //nothing at the moment
-        }
-    };
 
-
-    public void animateActivity(Note appInfo, View appIcon) {
+    public void animateActivity(Note note, View appIcon) {
         Intent i = new Intent(this, DetailActivity.class);
-        i.putExtra("appInfo", appInfo.getSummary());
+        i.putExtra(DetailActivity.NOTE_UID, note.getIdentification().getUid());
 
         ActivityOptionsCompat transitionActivityOptions = ActivityOptionsCompat.makeSceneTransitionAnimation(this, Pair.create((View) mFabButton, "fab"), Pair.create(appIcon, "appIcon"));
         startActivity(i, transitionActivityOptions.toBundle());

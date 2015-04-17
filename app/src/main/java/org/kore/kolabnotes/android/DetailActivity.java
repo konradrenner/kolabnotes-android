@@ -158,6 +158,10 @@ public class DetailActivity extends ActionBarActivity implements ShareActionProv
 
             noteRepository.update(MainPhoneActivity.SELECTED_ACCOUNT,MainPhoneActivity.SELECTED_ROOT_FOLDER,note);
         }
+
+        Intent intent = new Intent(DetailActivity.this,MainPhoneActivity.class);
+
+        startActivity(intent);
     }
 
     void deleteNote(){

@@ -10,4 +10,6 @@
     <item name="dialog_text_input_field" type="id">dialog_text_input_field</item>
     <item name="dialog_search_input_field" type="id">dialog_search_input_field</item>
     <item name="edit_tag_menu" type="id">edit_tag_menu</item>
+    <item name="detail_summary" type="id">detail_summary</item>
+    <item name="detail_description" type="id">detail_description</item>
 </resources>
