@@ -2,21 +2,26 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <item android:id="@+id/share"
+    <item android:id="@id/delete_menu"
         app:showAsAction="ifRoom"
-        android:icon="@drawable/ic_action_share"
-        android:title="@string/title_share"
-        app:actionProviderClass="android.support.v7.widget.ShareActionProvider"/>
+        android:icon="@drawable/ic_action_discard"
+        android:title="@string/title_delete" />
 
     <item android:id="@id/edit_tag_menu"
         app:showAsAction="ifRoom"
         android:icon="@drawable/ic_action_labels_white"
         android:title="@string/title_edit_tag" />
 
-    <item android:id="@id/delete_menu"
+    <item android:id="@id/change_classification"
         app:showAsAction="ifRoom"
-        android:icon="@drawable/ic_action_discard"
-        android:title="@string/title_delete" />
+        android:icon="@drawable/ic_action_not_secure"
+        android:title="@string/title_change_classification" />
+
+    <item android:id="@+id/share"
+        app:showAsAction="ifRoom"
+        android:icon="@drawable/ic_action_share"
+        android:title="@string/title_share"
+        app:actionProviderClass="android.support.v7.widget.ShareActionProvider"/>
 
     <item android:id="@id/ok_menu"
         app:showAsAction="always"

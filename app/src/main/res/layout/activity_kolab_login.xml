@@ -24,30 +24,39 @@
                 <EditText
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:id="@+id/editText2"
+                    android:id="@+id/accountName"
                     android:inputType="text"
                     android:enabled="true"
-                    android:editable="true" />
+                    android:editable="true"
+                    android:hint="@string/account_name" />
 
                 <EditText
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:id="@+id/editText"
-                    android:inputType="text" />
+                    android:id="@+id/imap_server_url"
+                    android:inputType="textUri"
+                    android:hint="@string/imap_server_url" />
+
+                <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/imap_root_folder"
+                    android:inputType="text"
+                    android:hint="@string/imap_root_folder" />
 
                 <AutoCompleteTextView android:id="@+id/email" android:layout_width="match_parent"
                     android:layout_height="wrap_content" android:hint="@string/prompt_email"
                     android:inputType="textEmailAddress" android:maxLines="1"
                     android:singleLine="true" />
 
-                <EditText android:id="@+id/password" android:layout_width="match_parent"
+                <EditText android:id="@+id/accountPassword" android:layout_width="match_parent"
                     android:layout_height="wrap_content" android:hint="@string/prompt_password"
                     android:imeActionId="@+id/login"
-                    android:imeActionLabel="@string/action_sign_in_short"
+                    android:imeActionLabel="@string/action_sign_in"
                     android:imeOptions="actionUnspecified" android:inputType="textPassword"
                     android:maxLines="1" android:singleLine="true" />
 
-                <Button android:id="@+id/email_sign_in_button" style="?android:textAppearanceSmall"
+                <Button android:id="@+id/submit" style="@style/TextAppearance.AppCompat.Button"
                     android:layout_width="match_parent" android:layout_height="wrap_content"
                     android:layout_marginTop="16dp" android:text="@string/action_sign_in"
                     android:textStyle="bold" />

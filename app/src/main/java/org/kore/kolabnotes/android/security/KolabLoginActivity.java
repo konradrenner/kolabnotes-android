@@ -25,6 +25,10 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 
+import org.kore.kolab.notes.AccountInformation;
+import org.kore.kolab.notes.RemoteNotesRepository;
+import org.kore.kolab.notes.imap.ImapNotesRepository;
+import org.kore.kolab.notes.v3.KolabNotesParserV3;
 import org.kore.kolabnotes.android.R;
 
 import java.util.ArrayList;
@@ -42,13 +46,6 @@ import java.util.List;
 public class KolabLoginActivity extends Activity implements LoaderCallbacks<Cursor> {
 
     /**
-     * A dummy authentication store containing known user names and passwords.
-     * TODO: remove after connecting to a real authentication system.
-     */
-    private static final String[] DUMMY_CREDENTIALS = new String[]{
-            "foo@example.com:hello", "bar@example.com:world"
-    };
-    /**
      * Keep track of the login task to ensure we can cancel it if requested.
      */
     private UserLoginTask mAuthTask = null;
@@ -57,9 +54,11 @@ public class KolabLoginActivity extends Activity implements LoaderCallbacks<Curs
     private AutoCompleteTextView mEmailView;
     private EditText mPasswordView;
     private View mProgressView;
-    private View mEmailLoginFormView;
-    private View mSignOutButtons;
     private View mLoginFormView;
+    private EditText mAccountNameView;
+    private EditText mRootFolderView;
+    private EditText mIMAPServerView;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,7 +69,7 @@ public class KolabLoginActivity extends Activity implements LoaderCallbacks<Curs
         mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
         populateAutoComplete();
 
-        mPasswordView = (EditText) findViewById(R.id.password);
+        mPasswordView = (EditText) findViewById(R.id.accountPassword);
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
@@ -82,7 +81,7 @@ public class KolabLoginActivity extends Activity implements LoaderCallbacks<Curs
             }
         });
 
-        Button mEmailSignInButton = (Button) findViewById(R.id.email_sign_in_button);
+        Button mEmailSignInButton = (Button) findViewById(R.id.submit);
         mEmailSignInButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -92,8 +91,9 @@ public class KolabLoginActivity extends Activity implements LoaderCallbacks<Curs
 
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
-        mEmailLoginFormView = findViewById(R.id.email_login_form);
-        mSignOutButtons = findViewById(R.id.plus_sign_out_buttons);
+        mAccountNameView = (EditText)findViewById(R.id.accountName);
+        mRootFolderView = (EditText)findViewById(R.id.imap_root_folder);
+        mIMAPServerView = (EditText)findViewById(R.id.imap_server_url);
     }
 
     private void populateAutoComplete() {
@@ -114,10 +114,16 @@ public class KolabLoginActivity extends Activity implements LoaderCallbacks<Curs
         // Reset errors.
         mEmailView.setError(null);
         mPasswordView.setError(null);
+        mAccountNameView.setError(null);
+        mRootFolderView.setError(null);
+        mIMAPServerView.setError(null);
 
         // Store values at the time of the login attempt.
         String email = mEmailView.getText().toString();
         String password = mPasswordView.getText().toString();
+        String accountName = mAccountNameView.getText().toString();
+        String rootFolder = mRootFolderView.getText().toString();
+        String imapServer = mIMAPServerView.getText().toString();
 
         boolean cancel = false;
         View focusView = null;
@@ -131,7 +137,19 @@ public class KolabLoginActivity extends Activity implements LoaderCallbacks<Curs
         }
 
         // Check for a valid email address.
-        if (TextUtils.isEmpty(email)) {
+        if (TextUtils.isEmpty(accountName)) {
+            mAccountNameView.setError(getString(R.string.error_field_required));
+            focusView = mAccountNameView;
+            cancel = true;
+        }else if (TextUtils.isEmpty(imapServer)) {
+            mIMAPServerView.setError(getString(R.string.error_field_required));
+            focusView = mIMAPServerView;
+            cancel = true;
+        }else if (TextUtils.isEmpty(rootFolder)) {
+            mRootFolderView.setError(getString(R.string.error_field_required));
+            focusView = mRootFolderView;
+            cancel = true;
+        }else if (TextUtils.isEmpty(email)) {
             mEmailView.setError(getString(R.string.error_field_required));
             focusView = mEmailView;
             cancel = true;
@@ -149,7 +167,7 @@ public class KolabLoginActivity extends Activity implements LoaderCallbacks<Curs
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             showProgress(true);
-            mAuthTask = new UserLoginTask(email, password);
+            mAuthTask = new UserLoginTask(imapServer, rootFolder, email, password);
             mAuthTask.execute((Void) null);
         }
     }
@@ -260,35 +278,30 @@ public class KolabLoginActivity extends Activity implements LoaderCallbacks<Curs
      */
     public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
 
+        private final String mAddress;
+        private final String mRootFolder;
         private final String mEmail;
         private final String mPassword;
 
-        UserLoginTask(String email, String password) {
+        UserLoginTask(String address,String rootFolder, String email, String password) {
             mEmail = email;
             mPassword = password;
+            mRootFolder = rootFolder;
+            mAddress = address;
         }
 
         @Override
         protected Boolean doInBackground(Void... params) {
-            // TODO: attempt authentication against a network service.
-
+            //Try fetch data from selected root folder to check if everything is valid
             try {
-                // Simulate network access.
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
+                AccountInformation info = AccountInformation.createForHost(mAddress).username(mEmail).password(mPassword).build();
+                ImapNotesRepository imapRepository = new ImapNotesRepository(new KolabNotesParserV3(), info, mRootFolder);
+                imapRepository.refresh();
+
+                return true;
+            }catch(RuntimeException e){
                 return false;
             }
-
-            for (String credential : DUMMY_CREDENTIALS) {
-                String[] pieces = credential.split(":");
-                if (pieces[0].equals(mEmail)) {
-                    // Account exists, return true if the password matches.
-                    return pieces[1].equals(mPassword);
-                }
-            }
-
-            // TODO: register the new account here.
-            return true;
         }
 
         @Override
@@ -299,7 +312,7 @@ public class KolabLoginActivity extends Activity implements LoaderCallbacks<Curs
             if (success) {
                 finish();
             } else {
-                mPasswordView.setError(getString(R.string.error_incorrect_password));
+                mPasswordView.setError(getString(R.string.error_connection));
                 mPasswordView.requestFocus();
             }
         }

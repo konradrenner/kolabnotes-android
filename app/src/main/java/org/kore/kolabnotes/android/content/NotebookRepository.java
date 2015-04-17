@@ -186,8 +186,8 @@ public class NotebookRepository {
         Note.AuditInformation audit = new Note.AuditInformation(new Timestamp(creationDate),new Timestamp(modificationDate));
         Note.Identification ident = new Note.Identification(uid,productId);
 
-        Notebook note = new Notebook(ident,audit, Note.Classification.valueOf(classification),description);
-        note.setSummary(summary);
+        Notebook note = new Notebook(ident,audit, Note.Classification.valueOf(classification),summary);
+        note.setDescription(description);
 
         return note;
     }

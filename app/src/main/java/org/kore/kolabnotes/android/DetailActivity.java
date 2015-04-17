@@ -126,8 +126,15 @@ public class DetailActivity extends ActionBarActivity implements ShareActionProv
             case R.id.edit_tag_menu:
                 editTags();
                 break;
+            case R.id.change_classification:
+                editClassification();
+                break;
         }
         return true;
+    }
+
+    void editClassification(){
+        //TODO
     }
 
     void editTags(){
@@ -174,6 +181,10 @@ public class DetailActivity extends ActionBarActivity implements ShareActionProv
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     DetailActivity.this.noteRepository.delete(MainPhoneActivity.SELECTED_ACCOUNT,MainPhoneActivity.SELECTED_ROOT_FOLDER,note);
+
+                    Intent intent = new Intent(DetailActivity.this,MainPhoneActivity.class);
+
+                    startActivity(intent);
                 }
             });
             builder.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
@@ -182,6 +193,7 @@ public class DetailActivity extends ActionBarActivity implements ShareActionProv
                     //nothing
                 }
             });
+            builder.show();
         }
     }
 

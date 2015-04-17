@@ -256,8 +256,8 @@ public class NoteRepository {
         Note.AuditInformation audit = new Note.AuditInformation(new Timestamp(creationDate),new Timestamp(modificationDate));
         Note.Identification ident = new Note.Identification(uid,productId);
 
-        Note note = new Note(ident,audit, Note.Classification.valueOf(classification),description);
-        note.setSummary(summary);
+        Note note = new Note(ident,audit, Note.Classification.valueOf(classification),summary);
+        note.setDescription(description);
 
         List<String> tags = new NoteTagRepository(context).getTagsFor(account,rootFolder,uid);
 

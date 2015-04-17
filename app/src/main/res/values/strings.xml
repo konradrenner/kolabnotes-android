@@ -49,4 +49,7 @@
     <string name="add">add</string>
     <string name="title_edit_tag">Edit Tags</string>
     <string name="dialog_question_delete">Do you really want to delete this note?</string>
+    <string name="account_name">Account name</string>
+    <string name="imap_root_folder">IMAP root folder</string>
+    <string name="imap_server_url">IMAP server url</string>
 </resources>

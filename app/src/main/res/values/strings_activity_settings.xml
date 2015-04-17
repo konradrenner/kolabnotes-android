@@ -6,6 +6,7 @@
     <string name="title_ok">OK</string>
     <string name="title_share">Share</string>
     <string name="title_delete">Delete</string>
+    <string name="title_change_classification">Edit Classification</string>
 
     <!-- Strings related to Settings -->
     <!-- Example General main_toolbar -->
