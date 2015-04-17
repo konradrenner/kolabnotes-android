@@ -34,13 +34,14 @@ public class TagRepository {
         dbHelper.close();
     }
 
-    public void insert(String tagname) {
+    public boolean insert(String tagname) {
         open();
         ContentValues values = new ContentValues();
         values.put(DatabaseHelper.COLUMN_TAGNAME,tagname);
 
-        database.insert(DatabaseHelper.TABLE_TAGS, null,values);
+        long rowId = database.insert(DatabaseHelper.TABLE_TAGS, null,values);
         close();
+        return rowId >= 0;
     }
 
     public List<String> getAll() {

@@ -54,10 +54,10 @@ public class NotebookRepository {
         dbHelper.close();
     }
 
-    public void insert(String account, String rootFolder, Notebook note) {
+    public boolean insert(String account, String rootFolder, Notebook note) {
         if(getBySummary(account,rootFolder,note.getSummary()) != null){
             //same logical as on Kolab-Server => don't create a new notebook if it exists with the summary
-            return;
+            return false;
         }
 
         open();
@@ -73,7 +73,7 @@ public class NotebookRepository {
         values.put(DatabaseHelper.COLUMN_DESCRIPTION, note.getDescription());
         values.put(DatabaseHelper.COLUMN_CLASSIFICATION, note.getClassification().toString());
 
-        database.insert(DatabaseHelper.TABLE_NOTES, null,values);
+        long rowId = database.insert(DatabaseHelper.TABLE_NOTES, null,values);
 
         Modification modification = modificationRepository.getUnique(account,rootFolder,note.getIdentification().getUid());
 
@@ -81,6 +81,7 @@ public class NotebookRepository {
             modificationRepository.insert(account,rootFolder,note.getIdentification().getUid(), ModificationRepository.ModificationType.INS);
         }
         close();
+        return rowId >= 0;
     }
 
     public void update(String account, String rootFolder,Notebook note){

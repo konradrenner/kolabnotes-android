@@ -26,29 +26,34 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/spinner_notebook"
-            android:spinnerMode="dialog"
-            android:theme="@android:style/Widget.Spinner"
-            style="@style/Animation.AppCompat.DropDownUp" />
+            android:spinnerMode="dropdown"
+            android:background="@color/primary_material_light"
+            android:clickable="false"
+            android:minHeight="@dimen/abc_text_size_headline_material" />
 
-        <TextView
+        <EditText
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="@string/text_summary"
-            android:id="@+id/textView"
+            android:layout_height="wrap_content"
+            android:id="@+id/detail_summary"
+            android:layout_gravity="center_horizontal"
+            android:inputType="text"
             android:enabled="true"
             android:editable="true"
-            style="@android:style/Widget.Material.TextView"
-            android:layout_weight="0.81"
-            android:singleLine="true" />
+            android:textColor="@color/primary_text_default_material_light"
+            android:hint="@string/text_summary"
+            android:textColorHint="@color/secondary_text_default_material_light" />
 
-        <TextView
+        <EditText
             android:layout_width="match_parent"
-            android:layout_height="364dp"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="@string/text_description"
-            android:id="@+id/textView2"
-            style="@android:style/Widget.TextView" />
+            android:layout_height="match_parent"
+            android:id="@+id/detail_description"
+            android:layout_gravity="center_horizontal"
+            android:inputType="textMultiLine|textWebEditText"
+            android:autoText="false"
+            android:textColor="@color/primary_text_default_material_light"
+            android:textColorHint="@color/secondary_text_default_material_light"
+            android:hint="@string/description_hint" />
+
     </LinearLayout>
 
     <!--

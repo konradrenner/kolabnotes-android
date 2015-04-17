@@ -366,11 +366,12 @@ public class MainPhoneActivity extends ActionBarActivity {
 
             String value = textField.getText().toString();
 
-            tagRepository.insert(value);
+            if(tagRepository.insert(value)) {
 
-            mDrawer.addItem(new SecondaryDrawerItem().withName(value).withTag("TAG"));
+                mDrawer.addItem(new SecondaryDrawerItem().withName(value).withTag("TAG"));
 
-            orderDrawerItems(mDrawer);
+                orderDrawerItems(mDrawer);
+            }
         }
     }
 
@@ -440,11 +441,12 @@ public class MainPhoneActivity extends ActionBarActivity {
 
             Notebook nb = new Notebook(ident,audit, Note.Classification.PUBLIC, value);
             nb.setDescription(value);
-            notebookRepository.insert(SELECTED_ACCOUNT, SELECTED_ROOT_FOLDER, nb);
+            if(notebookRepository.insert(SELECTED_ACCOUNT, SELECTED_ROOT_FOLDER, nb)) {
 
-            mDrawer.addItem(new SecondaryDrawerItem().withName(value).withTag("NOTEBOOK"));
+                mDrawer.addItem(new SecondaryDrawerItem().withName(value).withTag("NOTEBOOK"));
 
-            orderDrawerItems(mDrawer, value);
+                orderDrawerItems(mDrawer, value);
+            }
         }
     }
 

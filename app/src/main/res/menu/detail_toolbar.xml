@@ -2,10 +2,11 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <item android:id="@id/share_menu"
+    <item android:id="@+id/share"
         app:showAsAction="ifRoom"
         android:icon="@drawable/ic_action_share"
-        android:title="@string/title_share" />
+        android:title="@string/title_share"
+        app:actionProviderClass="android.support.v7.widget.ShareActionProvider"/>
 
     <item android:id="@id/delete_menu"
         app:showAsAction="ifRoom"
