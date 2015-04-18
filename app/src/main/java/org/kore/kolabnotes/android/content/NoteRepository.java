@@ -201,6 +201,27 @@ public class NoteRepository {
         return notes;
     }
 
+    public List<Note> getAll() {
+        openReadonly();
+        List<Note> notes = new ArrayList<Note>();
+
+        Cursor cursor = database.query(DatabaseHelper.TABLE_NOTES,
+                allColumns,
+                DatabaseHelper.COLUMN_DISCRIMINATOR+" = '"+DatabaseHelper.DESCRIMINATOR_NOTE+"' ",
+                null,
+                null,
+                null,
+                null);
+
+        while (cursor.moveToNext()) {
+            Note note = cursorToNote(null,null,cursor);
+            notes.add(note);
+        }
+        cursor.close();
+        close();
+        return notes;
+    }
+
     public Note getByUID(String account, String rootFolder,String uid) {
         openReadonly();
         Cursor cursor = database.query(DatabaseHelper.TABLE_NOTES,
@@ -260,10 +281,12 @@ public class NoteRepository {
         Note note = new Note(ident,audit, Note.Classification.valueOf(classification),summary);
         note.setDescription(description);
 
-        List<String> tags = new NoteTagRepository(context).getTagsFor(account,rootFolder,uid);
+        if(account != null && rootFolder != null) {
+            List<String> tags = new NoteTagRepository(context).getTagsFor(account, rootFolder, uid);
 
-        if(tags != null && tags.size() > 0) {
-            note.addCategories(tags.toArray(new String[tags.size()]));
+            if (tags != null && tags.size() > 0) {
+                note.addCategories(tags.toArray(new String[tags.size()]));
+            }
         }
         return note;
     }

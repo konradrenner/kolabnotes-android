@@ -270,6 +270,9 @@ public class MainPhoneActivity extends ActionBarActivity {
             if(drawerItem == null){
                 return;
             }
+            if(mAdapter != null) {
+                mAdapter.clearNotes();
+            }
 
             String tag = drawerItem.getTag() == null || drawerItem.getTag().toString().trim().length() == 0 ? "ALL_NOTEBOOK" :  drawerItem.getTag().toString();
             List<Note> notes;
@@ -278,13 +281,18 @@ public class MainPhoneActivity extends ActionBarActivity {
                 notes = notesRepository.getFromNotebook(SELECTED_ACCOUNT,SELECTED_ROOT_FOLDER,notebook.getIdentification().getUid());
             }else if("TAG".equalsIgnoreCase(tag)){
                 notes = notetagRepository.getNotesWith(SELECTED_ACCOUNT, SELECTED_ROOT_FOLDER, drawerItem.getName());
+            }else if("ALL_NOTES".equalsIgnoreCase(tag)){
+                notes = notesRepository.getAll();
             }else{
                 notes = notesRepository.getAll(SELECTED_ACCOUNT,SELECTED_ROOT_FOLDER);
             }
 
             if(mAdapter != null) {
-                mAdapter.clearNotes();
-                mAdapter.addNotes(notes);
+                if(notes.size() == 0){
+                    mAdapter.notifyDataSetChanged();
+                }else {
+                    mAdapter.addNotes(notes);
+                }
             }
         }
     }

@@ -135,13 +135,13 @@ public class NoteTagRepository {
     }
 
     private Note cursorToNote(Cursor cursor) {
-        String uid = cursor.getString(3);
-        String productId = cursor.getString(4);
-        Long creationDate = cursor.getLong(5);
-        Long modificationDate = cursor.getLong(6);
-        String summary = cursor.getString(7);
-        String description = cursor.getString(8);
-        String classification = cursor.getString(9);
+        String uid = cursor.getString(0);
+        String productId = cursor.getString(1);
+        Long creationDate = cursor.getLong(2);
+        Long modificationDate = cursor.getLong(3);
+        String summary = cursor.getString(4);
+        String description = cursor.getString(5);
+        String classification = cursor.getString(6);
 
         Note.AuditInformation audit = new Note.AuditInformation(new Timestamp(creationDate),new Timestamp(modificationDate));
         Note.Identification ident = new Note.Identification(uid,productId);
