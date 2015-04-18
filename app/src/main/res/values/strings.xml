@@ -61,5 +61,5 @@
     <string name="port_number">Port number (default is 993)</string>
 
     <string name="error_generic">An error occurred</string>
-    <string name="error_duplicate_account">Couldn't create account (account with this name already existing?)</string>
+    <string name="error_duplicate_account">Could not create account (account with this name already existing?)</string>
 </resources>
