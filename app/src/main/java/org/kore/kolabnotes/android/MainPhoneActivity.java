@@ -1,6 +1,9 @@
 package org.kore.kolabnotes.android;
 
+import android.accounts.Account;
+import android.accounts.AccountManager;
 import android.app.AlertDialog;
+import android.content.ContentResolver;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -39,6 +42,7 @@ import org.kore.kolabnotes.android.content.NotebookRepository;
 import org.kore.kolabnotes.android.content.TagRepository;
 import org.kore.kolabnotes.android.itemanimator.CustomItemAnimator;
 import org.kore.kolabnotes.android.itemanimator.ReboundItemAnimator;
+import org.kore.kolabnotes.android.security.AuthenticatorActivity;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -47,6 +51,12 @@ import java.util.List;
 import java.util.UUID;
 
 public class MainPhoneActivity extends ActionBarActivity {
+
+    public static final String AUTHORITY = "kore.kolabnotes";
+    // Sync interval constants
+    public static final long SECONDS_PER_MINUTE = 60L;
+    public static final long SYNC_INTERVAL_IN_MINUTES = 60L;
+    public static final long SYNC_INTERVAL = SYNC_INTERVAL_IN_MINUTES * SECONDS_PER_MINUTE;
 
     public static String SELECTED_ACCOUNT = "local";
     public static String SELECTED_ROOT_FOLDER = "Notes";
@@ -60,6 +70,7 @@ public class MainPhoneActivity extends ActionBarActivity {
     private RecyclerView mRecyclerView;
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private Drawer.Result mDrawer;
+    private AccountManager mAccountManager;
 
     private NoteRepository notesRepository = new NoteRepository(this);
     private NotebookRepository notebookRepository = new NotebookRepository(this);
@@ -81,12 +92,29 @@ public class MainPhoneActivity extends ActionBarActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+        mAccountManager = AccountManager.get(this);
+
+        Account[] accounts = mAccountManager.getAccountsByType(AuthenticatorActivity.ARG_ACCOUNT_TYPE);
+
+        ProfileDrawerItem[] profiles = new ProfileDrawerItem[accounts.length+1];
+        profiles[0] = new ProfileDrawerItem().withName(getResources().getString(R.string.drawer_account_local)).withTag("Notes");
+
+        for(int i=0;i<accounts.length;i++) {
+            ContentResolver.addPeriodicSync(accounts[i],
+                    AUTHORITY,
+                    Bundle.EMPTY,
+                    SYNC_INTERVAL);
+
+            String email = mAccountManager.getUserData(accounts[i],AuthenticatorActivity.KEY_EMAIL);
+            String rootFolder = mAccountManager.getUserData(accounts[i],AuthenticatorActivity.KEY_ROOT_FOLDER);
+
+            profiles[i] = new ProfileDrawerItem().withName(email).withTag(rootFolder);
+        }
+
         AccountHeader.Result headerResult = new AccountHeader()
                 .withActivity(this)
                 .withHeaderBackground(R.drawable.drawer_header_background)
-                .addProfiles(
-                        new ProfileDrawerItem().withName(getResources().getString(R.string.drawer_account_local))
-                )
+                .addProfiles(profiles)
                 .withOnAccountHeaderListener(new AccountHeader.OnAccountHeaderListener() {
                     @Override
                     public boolean onProfileChanged(View view, IProfile profile, boolean currentProfile) {
@@ -94,10 +122,31 @@ public class MainPhoneActivity extends ActionBarActivity {
                         if(profile.getEmail() == null || profile.getEmail().trim().length() == 0){
                             changed = !SELECTED_ACCOUNT.equalsIgnoreCase("local");
                             SELECTED_ACCOUNT = "local";
+                            SELECTED_ROOT_FOLDER = ((ProfileDrawerItem)profile).getTag().toString();
                         }else{
                             changed = !SELECTED_ACCOUNT.equalsIgnoreCase(profile.getEmail());
                             SELECTED_ACCOUNT = profile.getEmail();
+                            SELECTED_ROOT_FOLDER = ((ProfileDrawerItem)profile).getTag().toString();
                         }
+
+                        if(changed){
+                            if(mAdapter != null) {
+                                mAdapter.clearNotes();
+                            }
+
+                            List<Note> notes = notesRepository.getAll(SELECTED_ACCOUNT,SELECTED_ROOT_FOLDER);
+
+                            if(mAdapter != null) {
+                                if(notes.size() == 0){
+                                    mAdapter.notifyDataSetChanged();
+                                }else {
+                                    mAdapter.addNotes(notes);
+                                }
+                            }
+                            mDrawer.setSelection(1);
+                        }
+
+
                         return changed;
                     }
                 })

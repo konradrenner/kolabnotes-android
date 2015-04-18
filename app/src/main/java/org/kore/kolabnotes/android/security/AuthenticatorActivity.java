@@ -28,15 +28,15 @@ import org.kore.kolabnotes.android.R;
  */
 public class AuthenticatorActivity extends AccountAuthenticatorActivity {
 
-    public final static String ARG_ACCOUNT_TYPE = "KOLAB_NOTES";
+    public final static String ARG_ACCOUNT_TYPE = "kore.kolabnotes";
 
     public static final String KEY_ERROR_MESSAGE = "ERR_MSG";
 
-    private final static String KEY_ACCOUNT_NAME = "account_name";
-    private final static String KEY_ROOT_FOLDER = "root_folder";
-    private final static String KEY_SERVER = "server_url";
-    private final static String KEY_EMAIL = "email";
-    private final static String KEY_PORT = "port";
+    public final static String KEY_ACCOUNT_NAME = "account_name";
+    public final static String KEY_ROOT_FOLDER = "root_folder";
+    public final static String KEY_SERVER = "server_url";
+    public final static String KEY_EMAIL = "email";
+    public final static String KEY_PORT = "port";
 
 
     private final int REQ_SIGNUP = 1;

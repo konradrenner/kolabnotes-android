@@ -3,5 +3,4 @@
     android:accountType="kore.kolabnotes"
     android:icon="@mipmap/ic_kjots"
     android:smallIcon="@mipmap/ic_kjots"
-    android:label="@string/label"
-    android:accountPreferences="@xml/pref_general"/>
+    android:label="@string/label"/>

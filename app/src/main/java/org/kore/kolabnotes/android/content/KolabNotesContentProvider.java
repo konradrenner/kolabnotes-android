@@ -9,42 +9,55 @@ public class KolabNotesContentProvider extends ContentProvider {
     public KolabNotesContentProvider() {
     }
 
+    /*
+     * Always return true, indicating that the
+     * provider loaded correctly.
+     */
     @Override
-    public int delete(Uri uri, String selection, String[] selectionArgs) {
-        // Implement this to handle requests to delete one or more rows.
-        throw new UnsupportedOperationException("Not yet implemented");
+    public boolean onCreate() {
+        return true;
     }
 
     @Override
     public String getType(Uri uri) {
-        // TODO: Implement this to handle requests for the MIME type of the data
-        // at the given URI.
-        throw new UnsupportedOperationException("Not yet implemented");
+        return "kore.kolabnotes";
     }
 
+    /*
+         * query() always returns no results
+         *
+         */
+    @Override
+    public Cursor query(
+            Uri uri,
+            String[] projection,
+            String selection,
+            String[] selectionArgs,
+            String sortOrder) {
+        return null;
+    }
+    /*
+     * insert() always returns null (no URI)
+     */
     @Override
     public Uri insert(Uri uri, ContentValues values) {
-        // TODO: Implement this to handle requests to insert a new row.
-        throw new UnsupportedOperationException("Not yet implemented");
+        return null;
     }
-
+    /*
+     * delete() always returns "no rows affected" (0)
+     */
     @Override
-    public boolean onCreate() {
-        // TODO: Implement this to initialize your content provider on startup.
-        return false;
+    public int delete(Uri uri, String selection, String[] selectionArgs) {
+        return 0;
     }
-
-    @Override
-    public Cursor query(Uri uri, String[] projection, String selection,
-                        String[] selectionArgs, String sortOrder) {
-        // TODO: Implement this to handle query requests from clients.
-        throw new UnsupportedOperationException("Not yet implemented");
-    }
-
-    @Override
-    public int update(Uri uri, ContentValues values, String selection,
-                      String[] selectionArgs) {
-        // TODO: Implement this to handle requests to update one or more rows.
-        throw new UnsupportedOperationException("Not yet implemented");
+    /*
+     * update() always returns "no rows affected" (0)
+     */
+    public int update(
+            Uri uri,
+            ContentValues values,
+            String selection,
+            String[] selectionArgs) {
+        return 0;
     }
 }
