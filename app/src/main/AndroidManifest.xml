@@ -35,14 +35,6 @@
 
         <activity android:name=".security.AuthenticatorActivity" android:label="@string/login_label"/>
 
-        <service android:name=".security.KolabAuthenticatorService">
-            <intent-filter>
-                <action android:name="android.accounts.AccountAuthenticator" />
-            </intent-filter>
-            <meta-data android:name="android.accounts.AccountAuthenticator"
-                android:resource="@xml/authenticator" />
-        </service>
-
         <provider
             android:name=".content.KolabNotesContentProvider"
             android:authorities="kore.kolabnotes"
@@ -53,11 +45,6 @@
         <activity
             android:name=".SettingsActivity"
             android:label="@string/title_activity_settings" >
-        </activity>
-        <activity
-            android:name=".security.KolabLoginActivity"
-            android:label="@string/title_activity_kolab_login"
-            android:windowSoftInputMode="adjustResize|stateHidden" >
         </activity>
 
     </application>

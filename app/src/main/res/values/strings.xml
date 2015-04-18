@@ -57,5 +57,9 @@
     <string name="dialog_question_delete">Do you really want to delete this note?</string>
     <string name="account_name">Account name</string>
     <string name="imap_root_folder">IMAP root folder</string>
-    <string name="imap_server_url">IMAP server url</string>
+    <string name="imap_server_url">IMAP server url (without prefix)</string>
+    <string name="port_number">Port number (default is 993)</string>
+
+    <string name="error_generic">An error occurred</string>
+    <string name="error_duplicate_account">Couldn't create account (account with this name already existing?)</string>
 </resources>

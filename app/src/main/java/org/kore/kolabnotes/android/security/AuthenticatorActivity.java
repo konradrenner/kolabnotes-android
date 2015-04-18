@@ -6,11 +6,17 @@ import android.accounts.AccountManager;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.provider.SyncStateContract;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.widget.AutoCompleteTextView;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.kore.kolab.notes.AccountInformation;
+import org.kore.kolab.notes.RemoteNotesRepository;
 import org.kore.kolabnotes.android.R;
 
 /**
@@ -22,14 +28,16 @@ import org.kore.kolabnotes.android.R;
  */
 public class AuthenticatorActivity extends AccountAuthenticatorActivity {
 
-    public final static String ARG_ACCOUNT_TYPE = "ACCOUNT_TYPE";
-    public final static String ARG_AUTH_TYPE = "AUTH_TYPE";
-    public final static String ARG_ACCOUNT_NAME = "ACCOUNT_NAME";
-    public final static String ARG_IS_ADDING_NEW_ACCOUNT = "IS_ADDING_ACCOUNT";
+    public final static String ARG_ACCOUNT_TYPE = "KOLAB_NOTES";
 
     public static final String KEY_ERROR_MESSAGE = "ERR_MSG";
 
-    public final static String PARAM_USER_PASS = "USER_PASS";
+    private final static String KEY_ACCOUNT_NAME = "account_name";
+    private final static String KEY_ROOT_FOLDER = "root_folder";
+    private final static String KEY_SERVER = "server_url";
+    private final static String KEY_EMAIL = "email";
+    private final static String KEY_PORT = "port";
+
 
     private final int REQ_SIGNUP = 1;
 
@@ -47,15 +55,6 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
         setContentView(R.layout.activity_kolab_login);
         mAccountManager = AccountManager.get(getBaseContext());
 
-        String accountName = getIntent().getStringExtra(ARG_ACCOUNT_NAME);
-        mAuthTokenType = getIntent().getStringExtra(ARG_AUTH_TYPE);
-        if (mAuthTokenType == null)
-            mAuthTokenType = AccountGeneral.AUTHTOKEN_TYPE_FULL_ACCESS;
-
-        if (accountName != null) {
-            ((TextView)findViewById(R.id.accountName)).setText(accountName);
-        }
-
         findViewById(R.id.submit).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -63,85 +62,93 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
             }
         });
     }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-
-        // The sign up activity returned that the user has successfully created an account
-        if (requestCode == REQ_SIGNUP && resultCode == RESULT_OK) {
-            finishLogin(data);
-        } else
-            super.onActivityResult(requestCode, resultCode, data);
-    }
-
     public void submit() {
 
-        final String userName = ((TextView) findViewById(R.id.accountName)).getText().toString();
-        final String userPass = ((TextView) findViewById(R.id.accountPassword)).getText().toString();
+        final EditText mAccountNameView = (EditText)findViewById(R.id.accountName);
+        final EditText mRootFolderView = (EditText)findViewById(R.id.imap_root_folder);
+        final EditText mIMAPServerView = (EditText)findViewById(R.id.imap_server_url);
+        final AutoCompleteTextView mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
+        final EditText mPasswordView = (EditText) findViewById(R.id.accountPassword);
+        final EditText mPortView = (EditText) findViewById(R.id.port_number);
 
         final String accountType = getIntent().getStringExtra(ARG_ACCOUNT_TYPE);
 
-        new AsyncTask<String, Void, Intent>() {
+        Log.d("kolabnotes", TAG + "> Started authenticating");
 
-            @Override
-            protected Intent doInBackground(String... params) {
+        Bundle data = new Bundle();
+        try {
 
-                Log.d("kolabnotes", TAG + "> Started authenticating");
+            // Reset errors.
+            mEmailView.setError(null);
+            mPasswordView.setError(null);
+            mAccountNameView.setError(null);
+            mRootFolderView.setError(null);
+            mIMAPServerView.setError(null);
 
-                String authtoken = null;
-                Bundle data = new Bundle();
-                try {
-                    authtoken = AccountGeneral.sServerAuthenticate.userSignIn(userName, userPass, mAuthTokenType);
+            // Store values at the time of the login attempt.
+            String email = mEmailView.getText().toString();
+            String password = mPasswordView.getText().toString();
+            String accountName = mAccountNameView.getText().toString();
+            String rootFolder = mRootFolderView.getText().toString();
+            String imapServer = mIMAPServerView.getText().toString();
+            int port = mPortView.getText() == null || mPortView.getText().toString().trim().length() == 0 ? 993 : Integer.valueOf(mPortView.getText().toString());
 
-                    data.putString(AccountManager.KEY_ACCOUNT_NAME, userName);
-                    data.putString(AccountManager.KEY_ACCOUNT_TYPE, accountType);
-                    data.putString(AccountManager.KEY_AUTHTOKEN, authtoken);
-                    data.putString(PARAM_USER_PASS, userPass);
+            boolean cancel = false;
+            View focusView = null;
 
-                } catch (Exception e) {
-                    data.putString(KEY_ERROR_MESSAGE, e.getMessage());
-                }
-
-                final Intent res = new Intent();
-                res.putExtras(data);
-                return res;
+            // Check for a valid email address.
+            if (TextUtils.isEmpty(accountName)) {
+                mAccountNameView.setError(getString(R.string.error_field_required));
+                focusView = mAccountNameView;
+                cancel = true;
+            }else if (TextUtils.isEmpty(imapServer)) {
+                mIMAPServerView.setError(getString(R.string.error_field_required));
+                focusView = mIMAPServerView;
+                cancel = true;
+            }else if (TextUtils.isEmpty(rootFolder)) {
+                mRootFolderView.setError(getString(R.string.error_field_required));
+                focusView = mRootFolderView;
+                cancel = true;
+            }else if (TextUtils.isEmpty(email)) {
+                mEmailView.setError(getString(R.string.error_field_required));
+                focusView = mEmailView;
+                cancel = true;
+            }else if (TextUtils.isEmpty(password)) {
+                mPasswordView.setError(getString(R.string.error_field_required));
+                focusView = mPasswordView;
+                cancel = true;
             }
 
-            @Override
-            protected void onPostExecute(Intent intent) {
-                if (intent.hasExtra(KEY_ERROR_MESSAGE)) {
-                    Toast.makeText(getBaseContext(), intent.getStringExtra(KEY_ERROR_MESSAGE), Toast.LENGTH_SHORT).show();
-                } else {
-                    finishLogin(intent);
+
+            if (cancel) {
+                // There was an error; don't attempt login and focus the first
+                // form field with an error.
+                focusView.requestFocus();
+            } else {
+
+                Account account = new Account(accountName, ARG_ACCOUNT_TYPE);
+                AccountInformation accountInformation = AccountInformation.createForHost(imapServer).username(email).password(password).port(port).build();
+                KolabAccount serverInfo = new KolabAccount(accountName,rootFolder,accountInformation);
+
+                Bundle userData = createAuthBundle(serverInfo);
+
+                if (!mAccountManager.addAccountExplicitly(account, password, userData)) {
+                    Toast.makeText(getBaseContext(), R.string.error_duplicate_account, Toast.LENGTH_LONG).show();
                 }
             }
-        }.execute();
-    }
 
-    private void finishLogin(Intent intent) {
-        Log.d("kolabnotes", TAG + "> finishLogin");
-
-        String accountName = intent.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
-        String accountPassword = intent.getStringExtra(PARAM_USER_PASS);
-        final Account account = new Account(accountName, intent.getStringExtra(AccountManager.KEY_ACCOUNT_TYPE));
-
-        if (getIntent().getBooleanExtra(ARG_IS_ADDING_NEW_ACCOUNT, false)) {
-            Log.d("kolabnotes", TAG + "> finishLogin > addAccountExplicitly");
-            String authtoken = intent.getStringExtra(AccountManager.KEY_AUTHTOKEN);
-            String authtokenType = mAuthTokenType;
-
-            // Creating the account on the device and setting the auth token we got
-            // (Not setting the auth token will cause another call to the server to authenticate the user)
-            mAccountManager.addAccountExplicitly(account, accountPassword, null);
-            mAccountManager.setAuthToken(account, authtokenType, authtoken);
-        } else {
-            Log.d("kolabnotes", TAG + "> finishLogin > setPassword");
-            mAccountManager.setPassword(account, accountPassword);
+        } catch (Exception e) {
+            Toast.makeText(getBaseContext(), R.string.error_generic, Toast.LENGTH_LONG).show();
         }
-
-        setAccountAuthenticatorResult(intent.getExtras());
-        setResult(RESULT_OK, intent);
-        finish();
     }
 
+    private Bundle createAuthBundle(KolabAccount kolabAccount) {
+        Bundle bundle = new Bundle();
+        bundle.putString(KEY_ACCOUNT_NAME, kolabAccount.getAccountName());
+        bundle.putString(KEY_ROOT_FOLDER, kolabAccount.getRootFolder());
+        bundle.putString(KEY_SERVER, kolabAccount.getAccountInformation().getHost());
+        bundle.putString(KEY_EMAIL, kolabAccount.getAccountInformation().getUsername());
+        bundle.putInt(KEY_PORT, kolabAccount.getAccountInformation().getPort());
+        return bundle;
+    }
 }
