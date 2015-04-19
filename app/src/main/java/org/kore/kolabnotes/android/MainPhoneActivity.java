@@ -205,6 +205,8 @@ public class MainPhoneActivity extends ActionBarActivity {
                 }
 
                 reloadData();
+
+                mSwipeRefreshLayout.setRefreshing(false);
             }
         });
 
