@@ -17,6 +17,7 @@ import android.widget.Toast;
 
 import org.kore.kolab.notes.AccountInformation;
 import org.kore.kolab.notes.RemoteNotesRepository;
+import org.kore.kolabnotes.android.MainPhoneActivity;
 import org.kore.kolabnotes.android.R;
 
 /**
@@ -132,7 +133,13 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
 
                 Bundle userData = createAuthBundle(serverInfo);
 
-                if (!mAccountManager.addAccountExplicitly(account, password, userData)) {
+                if (mAccountManager.addAccountExplicitly(account, password, userData)) {
+                    Toast.makeText(getBaseContext(), R.string.signup_ok, Toast.LENGTH_SHORT).show();
+
+                    Intent intent = new Intent(this,MainPhoneActivity.class);
+
+                    startActivity(intent);
+                }else{
                     Toast.makeText(getBaseContext(), R.string.error_duplicate_account, Toast.LENGTH_LONG).show();
                 }
             }
@@ -148,7 +155,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
         bundle.putString(KEY_ROOT_FOLDER, kolabAccount.getRootFolder());
         bundle.putString(KEY_SERVER, kolabAccount.getAccountInformation().getHost());
         bundle.putString(KEY_EMAIL, kolabAccount.getAccountInformation().getUsername());
-        bundle.putInt(KEY_PORT, kolabAccount.getAccountInformation().getPort());
+        bundle.putString(KEY_PORT, Integer.toString(kolabAccount.getAccountInformation().getPort()));
         return bundle;
     }
 }

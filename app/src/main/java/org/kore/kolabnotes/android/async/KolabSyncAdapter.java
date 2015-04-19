@@ -69,7 +69,8 @@ public class KolabSyncAdapter extends AbstractThreadedSyncAdapter {
         String email = accountManager.getUserData(account, AuthenticatorActivity.KEY_EMAIL);
         String rootFolder = accountManager.getUserData(account,AuthenticatorActivity.KEY_ROOT_FOLDER);
         String url = accountManager.getUserData(account, AuthenticatorActivity.KEY_SERVER);
-        int port = Integer.valueOf(accountManager.getUserData(account,AuthenticatorActivity.KEY_PORT));
+        String sport = accountManager.getUserData(account,AuthenticatorActivity.KEY_PORT);
+        int port = Integer.valueOf(sport == null ? "993" : sport);
         String password = accountManager.getPassword(account);
 
         AccountInformation info = AccountInformation.createForHost(url).username(email).password(password).port(port).build();

@@ -108,9 +108,10 @@ public class MainPhoneActivity extends ActionBarActivity {
                     SYNC_INTERVAL);
 
             String email = mAccountManager.getUserData(accounts[i],AuthenticatorActivity.KEY_EMAIL);
+            String name = mAccountManager.getUserData(accounts[i],AuthenticatorActivity.KEY_ACCOUNT_NAME);
             String rootFolder = mAccountManager.getUserData(accounts[i],AuthenticatorActivity.KEY_ROOT_FOLDER);
 
-            profiles[i] = new ProfileDrawerItem().withName(email).withTag(rootFolder);
+            profiles[i+1] = new ProfileDrawerItem().withName(name).withTag(rootFolder).withEmail(email);
         }
 
         AccountHeader.Result headerResult = new AccountHeader()

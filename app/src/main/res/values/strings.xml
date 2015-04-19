@@ -37,6 +37,7 @@
     <string name="label">Kolab Notes</string>
 
     <string name="signup_title">Create new account</string>
+    <string name="signup_ok">Created new account</string>
     <string name="login_label">Log in</string>
     <string name="summary_text">Large Text</string>
     <string name="text_summary">Summary</string>
