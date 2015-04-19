@@ -76,6 +76,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + COLUMN_ACCOUNT + " text not null, "
             + COLUMN_ROOT_FOLDER + " text not null, "
             + COLUMN_UID + " text not null unique, "
+            + COLUMN_UID_NOTEBOOK + " text, "
+            + COLUMN_DISCRIMINATOR + " text, "
             + COLUMN_MODIFICATIONDATE + " integer, " //milliseconds
             + COLUMN_MODIFICATIONTYPE + " text not null);";
 

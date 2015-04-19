@@ -31,7 +31,9 @@ public class ModificationRepository {
             DatabaseHelper.COLUMN_ROOT_FOLDER,
             DatabaseHelper.COLUMN_UID,
             DatabaseHelper.COLUMN_MODIFICATIONTYPE,
-            DatabaseHelper.COLUMN_MODIFICATIONDATE };
+            DatabaseHelper.COLUMN_MODIFICATIONDATE,
+            DatabaseHelper.COLUMN_UID_NOTEBOOK,
+            DatabaseHelper.COLUMN_DISCRIMINATOR };
 
     public ModificationRepository(Context context) {
         dbHelper = new DatabaseHelper(context);
@@ -45,7 +47,7 @@ public class ModificationRepository {
         dbHelper.close();
     }
 
-    public void insert(String account, String rootFolder, String uid, ModificationType type) {
+    public void insert(String account, String rootFolder, String uid, ModificationType type, String uidNotebook, Modification.Descriminator desc) {
         open();
         ContentValues values = new ContentValues();
         values.put(DatabaseHelper.COLUMN_UID, uid);
@@ -53,8 +55,20 @@ public class ModificationRepository {
         values.put(DatabaseHelper.COLUMN_ROOT_FOLDER, rootFolder);
         values.put(DatabaseHelper.COLUMN_MODIFICATIONTYPE, type.toString());
         values.put(DatabaseHelper.COLUMN_MODIFICATIONDATE, new Timestamp(System.currentTimeMillis()).getTime());
+        values.put(DatabaseHelper.COLUMN_UID_NOTEBOOK, uidNotebook);
+        values.put(DatabaseHelper.COLUMN_DISCRIMINATOR, desc.toString());
 
         database.insert(DatabaseHelper.TABLE_MODIFICATION, null,values);
+        close();
+    }
+
+    void cleanAccount(String account, String rootFolder){
+        open();
+        database.delete(DatabaseHelper.TABLE_MODIFICATION,
+                DatabaseHelper.COLUMN_ACCOUNT + " = '" + account+"' AND "+
+                DatabaseHelper.COLUMN_ROOT_FOLDER + " = '" + rootFolder+"' ",
+                null);
+
         close();
     }
 
@@ -81,6 +95,28 @@ public class ModificationRepository {
         cursor.close();
         close();
         return modifications;
+    }
+
+    public List<Modification> getDeletions(String account, String rootFolder, Modification.Descriminator descriminator) {
+        open();
+        Cursor cursor = database.query(DatabaseHelper.TABLE_MODIFICATION,
+                allColumns,
+                DatabaseHelper.COLUMN_ACCOUNT+" = '"+account+"' AND "+
+                DatabaseHelper.COLUMN_ROOT_FOLDER+" = '"+rootFolder+"' AND "+
+                DatabaseHelper.COLUMN_DISCRIMINATOR+" = '"+descriminator.toString()+"' AND "+
+                DatabaseHelper.COLUMN_MODIFICATIONTYPE+" = '"+ModificationType.DEL.toString()+"' ",
+                null,
+                null,
+                null,
+                null);
+
+        ArrayList<Modification> mod = new ArrayList<>();
+        while (cursor.moveToNext()) {
+            mod.add(cursorToModification(cursor));
+        }
+        cursor.close();
+        close();
+        return mod;
     }
 
     public Modification getUnique(String account, String rootFolder,String uid) {
@@ -110,8 +146,10 @@ public class ModificationRepository {
         String uid = cursor.getString(3);
         ModificationRepository.ModificationType type = ModificationRepository.ModificationType.valueOf(cursor.getString(4));
         Long modDate = cursor.getLong(5);
+        String uidNotebook = cursor.getString(6);
+        Modification.Descriminator desc = Modification.Descriminator.valueOf(cursor.getString(7));
 
-        Modification modification = new Modification(account, rootFolder,uid, type, new Timestamp(modDate));
+        Modification modification = new Modification(account, rootFolder,uid, type, new Timestamp(modDate),uidNotebook,desc);
         return modification;
     }
 }

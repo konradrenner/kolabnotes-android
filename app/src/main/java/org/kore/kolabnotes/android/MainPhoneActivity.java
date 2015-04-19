@@ -6,6 +6,7 @@ import android.app.AlertDialog;
 import android.content.ContentResolver;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SyncResult;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.ActivityOptionsCompat;
@@ -36,6 +37,7 @@ import com.mikepenz.materialdrawer.model.interfaces.IProfile;
 import org.kore.kolab.notes.Note;
 import org.kore.kolab.notes.Notebook;
 import org.kore.kolabnotes.android.adapter.NoteAdapter;
+import org.kore.kolabnotes.android.async.KolabSyncAdapter;
 import org.kore.kolabnotes.android.content.NoteRepository;
 import org.kore.kolabnotes.android.content.NoteTagRepository;
 import org.kore.kolabnotes.android.content.NotebookRepository;
@@ -188,7 +190,21 @@ public class MainPhoneActivity extends ActionBarActivity {
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                new InitializeApplicationsTask().execute();
+                if(!"local".equalsIgnoreCase(SELECTED_ACCOUNT)) {
+                    Account[] accounts = mAccountManager.getAccountsByType(AuthenticatorActivity.ARG_ACCOUNT_TYPE);
+                    Account selectedAccount = null;
+
+                    for (Account acc : accounts) {
+                        String email = mAccountManager.getUserData(acc, AuthenticatorActivity.KEY_EMAIL);
+                        if (SELECTED_ACCOUNT.equalsIgnoreCase(email)) {
+                            selectedAccount = acc;
+                        }
+                    }
+
+                    new KolabSyncAdapter(getBaseContext(), true).syncNow(selectedAccount, null, new SyncResult());
+                }
+
+                //TODO
             }
         });
 
@@ -396,6 +412,27 @@ public class MainPhoneActivity extends ActionBarActivity {
             super.onPostExecute(result);
         }
 
+    }
+
+    void reloadData(){
+        mDrawer.getDrawerItems().clear();
+
+        //Query the tags
+        for (String tag : tagRepository.getAll()) {
+            mDrawer.addItem(new PrimaryDrawerItem().withName(tag).withTag("TAG"));
+        }
+
+        //Query the notebooks
+        for (Notebook notebook : notebookRepository.getAll(SELECTED_ACCOUNT,SELECTED_ROOT_FOLDER)) {
+            mDrawer.addItem(new SecondaryDrawerItem().withName(notebook.getSummary()).withTag("NOTEBOOK"));
+        }
+
+        if(mAdapter != null){
+            mAdapter.clearNotes();
+
+            List<Note> notes = notesRepository.getAll(SELECTED_ACCOUNT,SELECTED_ROOT_FOLDER);
+            mAdapter.addNotes(notes);
+        }
     }
 
     class CreateButtonListener implements View.OnClickListener{

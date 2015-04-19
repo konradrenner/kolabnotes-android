@@ -6,18 +6,27 @@ import java.sql.Timestamp;
  * Created by koni on 21.03.15.
  */
 public class Modification {
+
+    public enum Descriminator{
+        NOTE, NOTEBOOK;
+    }
+
     private String uid;
     private String rootFolder;
     private String account;
     private ModificationRepository.ModificationType type;
     private Timestamp modificationDate;
+    private String uidNotebook;
+    private Descriminator descriminator;
 
-    public Modification(String account, String rootFolder, String uid, ModificationRepository.ModificationType type, Timestamp modificationDate) {
+    public Modification(String account, String rootFolder, String uid, ModificationRepository.ModificationType type, Timestamp modificationDate,String uidNotebook, Descriminator desc) {
         this.uid = uid;
         this.rootFolder = rootFolder;
         this.account = account;
         this.type = type;
         this.modificationDate = modificationDate;
+        this.uidNotebook = uidNotebook;
+        this.descriminator = desc;
     }
 
     @Override
@@ -37,13 +46,12 @@ public class Modification {
         return uid != null ? uid.hashCode() : 0;
     }
 
-    @Override
-    public String toString() {
-        return "Modification{" +
-                "uid='" + uid + '\'' +
-                ", type=" + type +
-                ", modificationDate=" + modificationDate +
-                '}';
+    public String getAccount() {
+        return account;
+    }
+
+    public String getUidNotebook() {
+        return uidNotebook;
     }
 
     public String getUid() {
@@ -60,5 +68,22 @@ public class Modification {
 
     public String getRootFolder() {
         return rootFolder;
+    }
+
+    public Descriminator getDescriminator() {
+        return descriminator;
+    }
+
+    @Override
+    public String toString() {
+        return "Modification{" +
+                "uid='" + uid + '\'' +
+                ", rootFolder='" + rootFolder + '\'' +
+                ", account='" + account + '\'' +
+                ", type=" + type +
+                ", modificationDate=" + modificationDate +
+                ", uidNotebook='" + uidNotebook + '\'' +
+                ", descriminator=" + descriminator +
+                '}';
     }
 }

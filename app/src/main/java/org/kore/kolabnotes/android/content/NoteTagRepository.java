@@ -115,6 +115,16 @@ public class NoteTagRepository {
         return tags;
     }
 
+    void cleanAccount(String account, String rootFolder){
+        open();
+        database.delete(DatabaseHelper.TABLE_NOTE_TAGS,
+                DatabaseHelper.COLUMN_ACCOUNT + " = '" + account+"' AND "+
+                DatabaseHelper.COLUMN_ROOT_FOLDER + " = '" + rootFolder+"' ",
+                null);
+
+        close();
+    }
+
     public List<Note> getNotesWith(String account,String rootFolder,String tagname) {
         openReadonly();
         List<Note> notes = new ArrayList<Note>();

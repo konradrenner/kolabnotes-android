@@ -74,7 +74,7 @@ public class NoteRepository {
         Modification modification = modificationRepository.getUnique(account,rootFolder,note.getIdentification().getUid());
 
         if(modification == null){
-            modificationRepository.insert(account,rootFolder,note.getIdentification().getUid(), ModificationRepository.ModificationType.INS);
+            modificationRepository.insert(account,rootFolder,note.getIdentification().getUid(), ModificationRepository.ModificationType.INS,uidNotebook, Modification.Descriminator.NOTE);
         }
         close();
     }
@@ -87,7 +87,7 @@ public class NoteRepository {
         values.put(DatabaseHelper.COLUMN_ACCOUNT, account);
         values.put(DatabaseHelper.COLUMN_PRODUCTID, note.getIdentification().getProductId());
         values.put(DatabaseHelper.COLUMN_CREATIONDATE, note.getAuditInformation().getCreationDate().getTime());
-        values.put(DatabaseHelper.COLUMN_MODIFICATIONDATE, note.getAuditInformation().getCreationDate().getTime());
+        values.put(DatabaseHelper.COLUMN_MODIFICATIONDATE, note.getAuditInformation().getLastModificationDate().getTime());
         values.put(DatabaseHelper.COLUMN_SUMMARY, note.getSummary());
         values.put(DatabaseHelper.COLUMN_DESCRIPTION, note.getDescription());
         values.put(DatabaseHelper.COLUMN_UID_NOTEBOOK, uidNotebook);
@@ -103,13 +103,15 @@ public class NoteRepository {
         Modification modification = modificationRepository.getUnique(account,rootFolder,note.getIdentification().getUid());
 
         if(modification == null){
-            modificationRepository.insert(account,rootFolder,note.getIdentification().getUid(), ModificationRepository.ModificationType.UPD);
+            modificationRepository.insert(account,rootFolder,note.getIdentification().getUid(), ModificationRepository.ModificationType.UPD,uidNotebook, Modification.Descriminator.NOTE);
         }
         close();
     }
 
     public void delete(String account, String rootFolder,Note note) {
-        open();
+        String uidofNotebook = getUIDofNotebook(account, rootFolder, note.getIdentification().getUid());
+
+       open();
        database.delete(DatabaseHelper.TABLE_NOTES,
                DatabaseHelper.COLUMN_ACCOUNT + " = '" + account+"' AND "+
                DatabaseHelper.COLUMN_ROOT_FOLDER + " = '" + rootFolder+"' AND "+
@@ -119,8 +121,18 @@ public class NoteRepository {
         Modification modification = modificationRepository.getUnique(account,rootFolder,note.getIdentification().getUid());
 
         if(modification == null){
-            modificationRepository.insert(account,rootFolder,note.getIdentification().getUid(), ModificationRepository.ModificationType.DEL);
+            modificationRepository.insert(account,rootFolder,note.getIdentification().getUid(), ModificationRepository.ModificationType.DEL,uidofNotebook, Modification.Descriminator.NOTE);
         }
+        close();
+    }
+
+    void cleanAccount(String account, String rootFolder){
+        open();
+        database.delete(DatabaseHelper.TABLE_NOTES,
+                DatabaseHelper.COLUMN_ACCOUNT + " = '" + account+"' AND "+
+                DatabaseHelper.COLUMN_ROOT_FOLDER + " = '" + rootFolder+"' ",
+                null);
+
         close();
     }
 
@@ -244,7 +256,7 @@ public class NoteRepository {
         return note;
     }
 
-    public String getSummaryofNotebook(String account, String rootFolder,String uid) {
+    public String getUIDofNotebook(String account, String rootFolder,String uid) {
         openReadonly();
         Cursor cursor = database.query(DatabaseHelper.TABLE_NOTES,
                 allColumns,
@@ -257,13 +269,13 @@ public class NoteRepository {
                 null,
                 null);
 
-        String summary = null;
+        String uidNB = null;
         if (cursor.moveToNext()) {
-            summary = cursor.getString(10);
+            uidNB = cursor.getString(10);
         }
         cursor.close();
         close();
-        return summary;
+        return uidNB;
     }
 
     private Note cursorToNote(String account, String rootFolder,Cursor cursor) {

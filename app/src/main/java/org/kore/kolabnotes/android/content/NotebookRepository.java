@@ -78,7 +78,7 @@ public class NotebookRepository {
         Modification modification = modificationRepository.getUnique(account,rootFolder,note.getIdentification().getUid());
 
         if(modification == null){
-            modificationRepository.insert(account,rootFolder,note.getIdentification().getUid(), ModificationRepository.ModificationType.INS);
+            modificationRepository.insert(account,rootFolder,note.getIdentification().getUid(), ModificationRepository.ModificationType.INS,null, Modification.Descriminator.NOTEBOOK);
         }
         close();
         return rowId >= 0;
@@ -92,7 +92,7 @@ public class NotebookRepository {
         values.put(DatabaseHelper.COLUMN_ACCOUNT, account);
         values.put(DatabaseHelper.COLUMN_PRODUCTID, note.getIdentification().getProductId());
         values.put(DatabaseHelper.COLUMN_CREATIONDATE, note.getAuditInformation().getCreationDate().getTime());
-        values.put(DatabaseHelper.COLUMN_MODIFICATIONDATE, note.getAuditInformation().getCreationDate().getTime());
+        values.put(DatabaseHelper.COLUMN_MODIFICATIONDATE, note.getAuditInformation().getLastModificationDate().getTime());
         values.put(DatabaseHelper.COLUMN_SUMMARY, note.getSummary());
         values.put(DatabaseHelper.COLUMN_DESCRIPTION, note.getDescription());
         values.put(DatabaseHelper.COLUMN_CLASSIFICATION, note.getClassification().toString());
@@ -107,7 +107,7 @@ public class NotebookRepository {
         Modification modification = modificationRepository.getUnique(account,rootFolder,note.getIdentification().getUid());
 
         if(modification == null){
-            modificationRepository.insert(account,rootFolder,note.getIdentification().getUid(), ModificationRepository.ModificationType.UPD);
+            modificationRepository.insert(account,rootFolder,note.getIdentification().getUid(), ModificationRepository.ModificationType.UPD,null, Modification.Descriminator.NOTEBOOK);
         }
         close();
     }
@@ -123,9 +123,31 @@ public class NotebookRepository {
         Modification modification = modificationRepository.getUnique(account,rootFolder,note.getIdentification().getUid());
 
         if(modification == null){
-            modificationRepository.insert(account,rootFolder,note.getIdentification().getUid(), ModificationRepository.ModificationType.DEL);
+            modificationRepository.insert(account,rootFolder,note.getIdentification().getUid(), ModificationRepository.ModificationType.DEL,null, Modification.Descriminator.NOTEBOOK);
         }
         close();
+    }
+
+    public Notebook getByUID(String account, String rootFolder,String uid) {
+        openReadonly();
+        Cursor cursor = database.query(DatabaseHelper.TABLE_NOTES,
+                allColumns,
+                DatabaseHelper.COLUMN_ACCOUNT + " = '" + account+"' AND "+
+                        DatabaseHelper.COLUMN_ROOT_FOLDER + " = '" + rootFolder+"' AND "+
+                        DatabaseHelper.COLUMN_UID + " = '" + uid+"' AND "+
+                        DatabaseHelper.COLUMN_DISCRIMINATOR+" = '"+DatabaseHelper.DESCRIMINATOR_NOTEBOOK+"' ",
+                null,
+                null,
+                null,
+                null);
+
+        Notebook note = null;
+        if (cursor.moveToNext()) {
+            note = cursorToNote(account,rootFolder,cursor);
+        }
+        cursor.close();
+        close();
+        return note;
     }
 
     public Notebook getBySummary(String account, String rootFolder, String name) {

@@ -100,7 +100,7 @@ public class DetailActivity extends ActionBarActivity implements ShareActionProv
         Intent startIntent = getIntent();
         String uid = startIntent.getStringExtra(NOTE_UID);
         if(uid != null){
-            String notebookSummary = noteRepository.getSummaryofNotebook(MainPhoneActivity.SELECTED_ACCOUNT,MainPhoneActivity.SELECTED_ROOT_FOLDER,uid);
+            String notebookSummary = notebookRepository.getByUID(MainPhoneActivity.SELECTED_ACCOUNT,MainPhoneActivity.SELECTED_ROOT_FOLDER, noteRepository.getUIDofNotebook(MainPhoneActivity.SELECTED_ACCOUNT,MainPhoneActivity.SELECTED_ROOT_FOLDER,uid)).getSummary();
             note = noteRepository.getByUID(MainPhoneActivity.SELECTED_ACCOUNT,MainPhoneActivity.SELECTED_ROOT_FOLDER,uid);
             EditText summary = (EditText) findViewById(R.id.detail_summary);
             EditText description =(EditText) findViewById(R.id.detail_description);

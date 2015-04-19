@@ -74,9 +74,12 @@ public class KolabSyncAdapter extends AbstractThreadedSyncAdapter {
 
         AccountInformation info = AccountInformation.createForHost(url).username(email).password(password).port(port).build();
         ImapNotesRepository imapRepository = new ImapNotesRepository(new KolabNotesParserV3(), info, rootFolder);
+        imapRepository.refresh();
 
         RepositoryManager manager = new RepositoryManager(getContext(),imapRepository);
-        manager.syncFromNotesRepository();
-        manager.syncFromLocalData();
+        manager.sync(email,rootFolder);
+
+        //TODO one way sync in the first step
+        //imapRepository.merge();
     }
 }
