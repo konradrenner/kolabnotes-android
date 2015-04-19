@@ -8,8 +8,10 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.SyncResult;
 import android.os.Bundle;
+import android.util.Log;
 
 import org.kore.kolab.notes.AccountInformation;
+import org.kore.kolab.notes.RemoteNotesRepository;
 import org.kore.kolab.notes.imap.ImapNotesRepository;
 import org.kore.kolab.notes.v3.KolabNotesParserV3;
 import org.kore.kolabnotes.android.content.RepositoryManager;
@@ -75,12 +77,20 @@ public class KolabSyncAdapter extends AbstractThreadedSyncAdapter {
 
         AccountInformation info = AccountInformation.createForHost(url).username(email).password(password).port(port).build();
         ImapNotesRepository imapRepository = new ImapNotesRepository(new KolabNotesParserV3(), info, rootFolder);
-        imapRepository.refresh();
+        imapRepository.refresh(new RefreshListener());
 
         RepositoryManager manager = new RepositoryManager(getContext(),imapRepository);
-        manager.sync(email,rootFolder);
+        manager.sync(email, rootFolder);
 
         //TODO one way sync in the first step
         //imapRepository.merge();
+    }
+
+    static class RefreshListener implements RemoteNotesRepository.Listener{
+        @Override
+        public void onSyncUpdate(String s) {
+            final String tmp = s;
+            Log.d("onSyncUpdate","Starting download folder:"+s);
+        }
     }
 }

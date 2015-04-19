@@ -94,7 +94,7 @@
     <orderEntry type="library" exported="" name="appcompat-v7-22.0.0" level="project" />
     <orderEntry type="library" exported="" name="cardview-v7-21.0.3" level="project" />
     <orderEntry type="library" exported="" name="recyclerview-v7-21.0.3" level="project" />
-    <orderEntry type="library" exported="" name="kolabnotes-java-0.2.4" level="project" />
+    <orderEntry type="library" exported="" name="kolabnotes-java-0.3.0" level="project" />
   </component>
 </module>
 

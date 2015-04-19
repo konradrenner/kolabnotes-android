@@ -7,6 +7,7 @@ import android.content.ContentResolver;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SyncResult;
+import android.content.SyncStatusObserver;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.ActivityOptionsCompat;
@@ -52,7 +53,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
-public class MainPhoneActivity extends ActionBarActivity {
+public class MainPhoneActivity extends ActionBarActivity implements SyncStatusObserver{
 
     public static final String AUTHORITY = "kore.kolabnotes";
     // Sync interval constants
@@ -93,6 +94,8 @@ public class MainPhoneActivity extends ActionBarActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        ContentResolver.addStatusChangeListener(ContentResolver.SYNC_OBSERVER_TYPE_ACTIVE, this);
 
         mAccountManager = AccountManager.get(this);
 
@@ -199,15 +202,26 @@ public class MainPhoneActivity extends ActionBarActivity {
                         String email = mAccountManager.getUserData(acc, AuthenticatorActivity.KEY_EMAIL);
                         if (SELECTED_ACCOUNT.equalsIgnoreCase(email)) {
                             selectedAccount = acc;
+                            break;
                         }
                     }
 
-                    new KolabSyncAdapter(getBaseContext(), true).syncNow(selectedAccount, null, new SyncResult());
+                    if(selectedAccount == null){
+                        return;
+                    }
+
+                    Bundle settingsBundle = new Bundle();
+                    settingsBundle.putBoolean(
+                            ContentResolver.SYNC_EXTRAS_MANUAL, true);
+                    settingsBundle.putBoolean(
+                            ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
+
+                    ContentResolver.requestSync(selectedAccount, AUTHORITY, settingsBundle);
+                }else{
+                    reloadData();
+
+                    mSwipeRefreshLayout.setRefreshing(false);
                 }
-
-                reloadData();
-
-                mSwipeRefreshLayout.setRefreshing(false);
             }
         });
 
@@ -219,6 +233,32 @@ public class MainPhoneActivity extends ActionBarActivity {
 
         //show progress
         mRecyclerView.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void onStatusChanged(int which) {
+        AccountManager accountManager = AccountManager.get(this);
+        Account[] accounts = accountManager.getAccountsByType(AuthenticatorActivity.ARG_ACCOUNT_TYPE);
+
+        if (accounts.length <= 0) {
+            return;
+        }
+
+        Account selectedAccount = null;
+
+        for (Account acc : accounts) {
+            String email = mAccountManager.getUserData(acc, AuthenticatorActivity.KEY_EMAIL);
+            if (SELECTED_ACCOUNT.equalsIgnoreCase(email)) {
+                selectedAccount = acc;
+                break;
+            }
+        }
+
+        if(!ContentResolver.isSyncActive(selectedAccount,AUTHORITY)){
+            reloadData();
+
+            mSwipeRefreshLayout.setRefreshing(false);
+        }
     }
 
     @Override
@@ -365,7 +405,7 @@ public class MainPhoneActivity extends ActionBarActivity {
         }
     }
 
-    private class InitializeApplicationsTask extends AsyncTask<Void, Void, Void> {
+    private class InitializeApplicationsTask extends AsyncTask<Void, Void, Void> implements Runnable{
 
         @Override
         protected void onPreExecute() {
@@ -374,31 +414,32 @@ public class MainPhoneActivity extends ActionBarActivity {
         }
 
         @Override
-        protected Void doInBackground(Void... params) {
-            notesList.clear();
-
+        public void run() {
             //Query the notes
             final Intent mainIntent = new Intent(Intent.ACTION_MAIN, null);
             mainIntent.addCategory(Intent.CATEGORY_LAUNCHER);
 
             List<Note> notes = notesRepository.getAll(SELECTED_ACCOUNT,SELECTED_ROOT_FOLDER);
-            for (Note note : notes) {
-                notesList.add(note);
-            }
-            Collections.sort(notesList);
-            notesRepository.close();
+            ArrayList<Note> writeableNotes = new ArrayList<>(notes);
+            Collections.sort(writeableNotes);
+            mAdapter.addNotes(writeableNotes);
 
             //Query the tags
             for (String tag : tagRepository.getAll()) {
-                mDrawer.addItem(new PrimaryDrawerItem().withName(tag).withTag("TAG"));
+                mDrawer.getDrawerItems().add(new PrimaryDrawerItem().withName(tag).withTag("TAG"));
             }
 
             //Query the notebooks
             for (Notebook notebook : notebookRepository.getAll(SELECTED_ACCOUNT,SELECTED_ROOT_FOLDER)) {
-                mDrawer.addItem(new SecondaryDrawerItem().withName(notebook.getSummary()).withTag("NOTEBOOK"));
+                mDrawer.getDrawerItems().add(new SecondaryDrawerItem().withName(notebook.getSummary()).withTag("NOTEBOOK"));
             }
 
             orderDrawerItems(mDrawer);
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            runOnUiThread(this);
             return null;
         }
 
@@ -422,12 +463,12 @@ public class MainPhoneActivity extends ActionBarActivity {
 
         //Query the tags
         for (String tag : tagRepository.getAll()) {
-            mDrawer.addItem(new PrimaryDrawerItem().withName(tag).withTag("TAG"));
+            mDrawer.getDrawerItems().add(new PrimaryDrawerItem().withName(tag).withTag("TAG"));
         }
 
         //Query the notebooks
         for (Notebook notebook : notebookRepository.getAll(SELECTED_ACCOUNT,SELECTED_ROOT_FOLDER)) {
-            mDrawer.addItem(new SecondaryDrawerItem().withName(notebook.getSummary()).withTag("NOTEBOOK"));
+            mDrawer.getDrawerItems().add(new SecondaryDrawerItem().withName(notebook.getSummary()).withTag("NOTEBOOK"));
         }
 
         orderDrawerItems(mDrawer);
@@ -562,95 +603,110 @@ public class MainPhoneActivity extends ActionBarActivity {
         orderDrawerItems(drawer,null);
     }
 
-    void orderDrawerItems(Drawer.Result drawer, String selectionName){
-        ArrayList<IDrawerItem> items = drawer.getDrawerItems();
+    class Orderer implements Runnable{
+        private final Drawer.Result drawer;
+        private final String selectionName;
 
-        List<String> tags = new ArrayList<>();
-        List<String> notebooks = new ArrayList<>();
+        Orderer(Drawer.Result drawer, String selectionName) {
+            this.drawer = drawer;
+            this.selectionName = selectionName;
+        }
 
-        boolean notebookSelected = true;
-        boolean allnotesSelected = false;
-        String selected = null;
+        @Override
+        public void run() {
+            ArrayList<IDrawerItem> items = drawer.getDrawerItems();
 
-        int selection = drawer.getCurrentSelection();
-        for(IDrawerItem item : items){
-            if(item instanceof BaseDrawerItem){
-                BaseDrawerItem base = (BaseDrawerItem)item;
+            List<String> tags = new ArrayList<>();
+            List<String> notebooks = new ArrayList<>();
 
-                String type = base.getTag().toString();
-                if(type.equalsIgnoreCase("TAG")){
-                    tags.add(base.getName());
-                    if(selection == 0){
-                        notebookSelected = false;
-                        selected = base.getName();
-                    }
-                }else if(type.equalsIgnoreCase("NOTEBOOK")){
-                    notebooks.add(base.getName());
-                    if(selection == 0){
-                        selected = base.getName();
-                    }
-                }else if(type.equalsIgnoreCase("ALL_NOTEBOOK")){
-                    if(selection == 0){
-                        notebookSelected = false;
-                        allnotesSelected = true;
-                        selected = base.getName();
+            boolean notebookSelected = true;
+            boolean allnotesSelected = false;
+            String selected = null;
+
+            int selection = drawer.getCurrentSelection();
+            for(IDrawerItem item : items){
+                if(item instanceof BaseDrawerItem){
+                    BaseDrawerItem base = (BaseDrawerItem)item;
+
+                    String type = base.getTag().toString();
+                    if(type.equalsIgnoreCase("TAG")){
+                        tags.add(base.getName());
+                        if(selection == 0){
+                            notebookSelected = false;
+                            selected = base.getName();
+                        }
+                    }else if(type.equalsIgnoreCase("NOTEBOOK")){
+                        notebooks.add(base.getName());
+                        if(selection == 0){
+                            selected = base.getName();
+                        }
+                    }else if(type.equalsIgnoreCase("ALL_NOTEBOOK")){
+                        if(selection == 0){
+                            notebookSelected = false;
+                            allnotesSelected = true;
+                            selected = base.getName();
+                        }
                     }
                 }
+                selection--;
             }
-            selection--;
-        }
 
-        if(selectionName != null){
-            selected = selectionName;
-            notebookSelected = true;
-        }
+            if(selectionName != null){
+                selected = selectionName;
+                notebookSelected = true;
+            }
 
-        Collections.sort(tags);
-        Collections.sort(notebooks);
+            Collections.sort(tags);
+            Collections.sort(notebooks);
 
-        drawer.getDrawerItems().clear();
+            drawer.getDrawerItems().clear();
 
-        drawer.getDrawerItems().add(new PrimaryDrawerItem().withName(getResources().getString(R.string.drawer_item_allaccount_notes)).withTag("ALL_NOTES").withIcon(R.drawable.ic_action_group));
-        drawer.getDrawerItems().add(new SecondaryDrawerItem().withName(getResources().getString(R.string.drawer_item_allnotes)).withTag("ALL_NOTEBOOK").withIcon(R.drawable.ic_action_person));
-        drawer.getDrawerItems().add(new DividerDrawerItem());
-        drawer.getDrawerItems().add(new PrimaryDrawerItem().withName(getResources().getString(R.string.drawer_item_tags)).withTag("HEADING_TAG").setEnabled(false).withDisabledTextColor(R.color.material_drawer_dark_header_selection_text).withIcon(R.drawable.ic_action_labels));
+            drawer.getDrawerItems().add(new PrimaryDrawerItem().withName(getResources().getString(R.string.drawer_item_allaccount_notes)).withTag("ALL_NOTES").withIcon(R.drawable.ic_action_group));
+            drawer.getDrawerItems().add(new SecondaryDrawerItem().withName(getResources().getString(R.string.drawer_item_allnotes)).withTag("ALL_NOTEBOOK").withIcon(R.drawable.ic_action_person));
+            drawer.getDrawerItems().add(new DividerDrawerItem());
+            drawer.getDrawerItems().add(new PrimaryDrawerItem().withName(getResources().getString(R.string.drawer_item_tags)).withTag("HEADING_TAG").setEnabled(false).withDisabledTextColor(R.color.material_drawer_dark_header_selection_text).withIcon(R.drawable.ic_action_labels));
 
-        int idx = 4;
-        for(String tag : tags){
-            drawer.getDrawerItems().add(new SecondaryDrawerItem().withName(tag).withTag("TAG"));
+            int idx = 4;
+            for(String tag : tags){
+                drawer.getDrawerItems().add(new SecondaryDrawerItem().withName(tag).withTag("TAG"));
 
-            idx++;
-            if(!notebookSelected && !allnotesSelected && tag.equals(selected)){
+                idx++;
+                if(!notebookSelected && !allnotesSelected && tag.equals(selected)){
+                    selection = idx;
+                }
+            }
+
+            drawer.getDrawerItems().add(new DividerDrawerItem());
+
+            drawer.getDrawerItems().add(new PrimaryDrawerItem().withName(getResources().getString(R.string.drawer_item_notebooks)).withTag("HEADING_NOTEBOOK").setEnabled(false).withDisabledTextColor(R.color.material_drawer_dark_header_selection_text).withIcon(R.drawable.ic_action_collection));
+
+            idx = idx+2;
+            if(notebookSelected){
                 selection = idx;
             }
-        }
+            BaseDrawerItem selectedItem = null;
+            for(String notebook : notebooks){
+                BaseDrawerItem item = new SecondaryDrawerItem().withName(notebook).withTag("NOTEBOOK");
+                drawer.getDrawerItems().add(item);
 
-        drawer.getDrawerItems().add(new DividerDrawerItem());
-
-        drawer.getDrawerItems().add(new PrimaryDrawerItem().withName(getResources().getString(R.string.drawer_item_notebooks)).withTag("HEADING_NOTEBOOK").setEnabled(false).withDisabledTextColor(R.color.material_drawer_dark_header_selection_text).withIcon(R.drawable.ic_action_collection));
-
-        idx = idx+2;
-        if(notebookSelected){
-            selection = idx;
-        }
-        BaseDrawerItem selectedItem = null;
-        for(String notebook : notebooks){
-            BaseDrawerItem item = new SecondaryDrawerItem().withName(notebook).withTag("NOTEBOOK");
-            drawer.getDrawerItems().add(item);
-
-            idx++;
-            if((allnotesSelected || notebookSelected) && notebook.equals(selected)){
-                selection = idx;
-                selectedItem = item;
+                idx++;
+                if((allnotesSelected || notebookSelected) && notebook.equals(selected)){
+                    selection = idx;
+                    selectedItem = item;
+                }
             }
-        }
 
-        if(selection < 1){
-            //default if nothing is selected, choose "all notes form actual account"
-            selection = 1;
-        }
+            if(selection < 1){
+                //default if nothing is selected, choose "all notes form actual account"
+                selection = 1;
+            }
 
-        drawer.setSelection(selection);
-        drawerItemClickedListener.changeNoteSelection(selectedItem);
+            drawer.setSelection(selection);
+            drawerItemClickedListener.changeNoteSelection(selectedItem);
+        }
+    }
+
+    void orderDrawerItems(Drawer.Result drawer, String selectionName){
+        runOnUiThread(new Orderer(drawer,selectionName));
     }
 }
