@@ -204,7 +204,7 @@ public class MainPhoneActivity extends ActionBarActivity {
                     new KolabSyncAdapter(getBaseContext(), true).syncNow(selectedAccount, null, new SyncResult());
                 }
 
-                //TODO
+                reloadData();
             }
         });
 
@@ -426,6 +426,8 @@ public class MainPhoneActivity extends ActionBarActivity {
         for (Notebook notebook : notebookRepository.getAll(SELECTED_ACCOUNT,SELECTED_ROOT_FOLDER)) {
             mDrawer.addItem(new SecondaryDrawerItem().withName(notebook.getSummary()).withTag("NOTEBOOK"));
         }
+
+        orderDrawerItems(mDrawer);
 
         if(mAdapter != null){
             mAdapter.clearNotes();
