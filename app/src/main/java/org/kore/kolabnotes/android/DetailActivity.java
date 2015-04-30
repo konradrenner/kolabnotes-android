@@ -34,6 +34,7 @@ import android.widget.Toast;
 
 import org.kore.kolab.notes.Note;
 import org.kore.kolab.notes.Notebook;
+import org.kore.kolabnotes.android.content.ActiveAccountRepository;
 import org.kore.kolabnotes.android.content.NoteRepository;
 import org.kore.kolabnotes.android.content.NoteTagRepository;
 import org.kore.kolabnotes.android.content.NotebookRepository;
@@ -56,6 +57,7 @@ public class DetailActivity extends ActionBarActivity implements ShareActionProv
     private NoteRepository noteRepository = new NoteRepository(this);
     private NoteTagRepository noteTagRepository = new NoteTagRepository(this);
     private TagRepository tagRepository = new TagRepository(this);
+    private ActiveAccountRepository activeAccountRepository = new ActiveAccountRepository(this);
 
     private Toolbar toolbar;
 
@@ -100,8 +102,8 @@ public class DetailActivity extends ActionBarActivity implements ShareActionProv
         Intent startIntent = getIntent();
         String uid = startIntent.getStringExtra(NOTE_UID);
         if(uid != null){
-            String notebookSummary = notebookRepository.getByUID(MainPhoneActivity.SELECTED_ACCOUNT,MainPhoneActivity.SELECTED_ROOT_FOLDER, noteRepository.getUIDofNotebook(MainPhoneActivity.SELECTED_ACCOUNT,MainPhoneActivity.SELECTED_ROOT_FOLDER,uid)).getSummary();
-            note = noteRepository.getByUID(MainPhoneActivity.SELECTED_ACCOUNT,MainPhoneActivity.SELECTED_ROOT_FOLDER,uid);
+            String notebookSummary = notebookRepository.getByUID(  activeAccountRepository.getActiveAccount().getAccount(), activeAccountRepository.getActiveAccount().getRootFolder(), noteRepository.getUIDofNotebook(  activeAccountRepository.getActiveAccount().getAccount(), activeAccountRepository.getActiveAccount().getRootFolder(),uid)).getSummary();
+            note = noteRepository.getByUID(  activeAccountRepository.getActiveAccount().getAccount(), activeAccountRepository.getActiveAccount().getRootFolder(),uid);
             EditText summary = (EditText) findViewById(R.id.detail_summary);
             EditText description =(EditText) findViewById(R.id.detail_description);
             summary.setText(note.getSummary());
@@ -284,12 +286,12 @@ public class DetailActivity extends ActionBarActivity implements ShareActionProv
             Spinner spinner = (Spinner) findViewById(R.id.spinner_notebook);
             String notebookName = spinner.getSelectedItem().toString();
 
-            Notebook book =  notebookRepository.getBySummary(MainPhoneActivity.SELECTED_ACCOUNT,MainPhoneActivity.SELECTED_ROOT_FOLDER,notebookName);
+            Notebook book =  notebookRepository.getBySummary(  activeAccountRepository.getActiveAccount().getAccount(), activeAccountRepository.getActiveAccount().getRootFolder(),notebookName);
 
-            noteRepository.insert(MainPhoneActivity.SELECTED_ACCOUNT,MainPhoneActivity.SELECTED_ROOT_FOLDER,note,book.getIdentification().getUid());
-            noteTagRepository.delete(MainPhoneActivity.SELECTED_ACCOUNT,MainPhoneActivity.SELECTED_ROOT_FOLDER,uuid);
+            noteRepository.insert(  activeAccountRepository.getActiveAccount().getAccount(), activeAccountRepository.getActiveAccount().getRootFolder(),note,book.getIdentification().getUid());
+            noteTagRepository.delete(  activeAccountRepository.getActiveAccount().getAccount(), activeAccountRepository.getActiveAccount().getRootFolder(),uuid);
             for(String tag : selectedTags){
-                noteTagRepository.insert(MainPhoneActivity.SELECTED_ACCOUNT,MainPhoneActivity.SELECTED_ROOT_FOLDER,uuid,tag);
+                noteTagRepository.insert(  activeAccountRepository.getActiveAccount().getAccount(), activeAccountRepository.getActiveAccount().getRootFolder(),uuid,tag);
             }
         }else{
             final String uuid = note.getIdentification().getUid();
@@ -300,13 +302,13 @@ public class DetailActivity extends ActionBarActivity implements ShareActionProv
             Spinner spinner = (Spinner) findViewById(R.id.spinner_notebook);
             String notebookName = spinner.getSelectedItem().toString();
 
-            Notebook book =  notebookRepository.getBySummary(MainPhoneActivity.SELECTED_ACCOUNT,MainPhoneActivity.SELECTED_ROOT_FOLDER,notebookName);
+            Notebook book =  notebookRepository.getBySummary(  activeAccountRepository.getActiveAccount().getAccount(), activeAccountRepository.getActiveAccount().getRootFolder(),notebookName);
 
-            noteRepository.update(MainPhoneActivity.SELECTED_ACCOUNT,MainPhoneActivity.SELECTED_ROOT_FOLDER,note,book.getIdentification().getUid());
+            noteRepository.update(  activeAccountRepository.getActiveAccount().getAccount(), activeAccountRepository.getActiveAccount().getRootFolder(),note,book.getIdentification().getUid());
 
-            noteTagRepository.delete(MainPhoneActivity.SELECTED_ACCOUNT,MainPhoneActivity.SELECTED_ROOT_FOLDER,uuid);
+            noteTagRepository.delete(  activeAccountRepository.getActiveAccount().getAccount(), activeAccountRepository.getActiveAccount().getRootFolder(),uuid);
             for(String tag : selectedTags){
-                noteTagRepository.insert(MainPhoneActivity.SELECTED_ACCOUNT,MainPhoneActivity.SELECTED_ROOT_FOLDER,uuid,tag);
+                noteTagRepository.insert(  activeAccountRepository.getActiveAccount().getAccount(), activeAccountRepository.getActiveAccount().getRootFolder(),uuid,tag);
             }
         }
 
@@ -324,9 +326,9 @@ public class DetailActivity extends ActionBarActivity implements ShareActionProv
             builder.setPositiveButton(R.string.yes,new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    DetailActivity.this.noteRepository.delete(MainPhoneActivity.SELECTED_ACCOUNT,MainPhoneActivity.SELECTED_ROOT_FOLDER,note);
+                    DetailActivity.this.noteRepository.delete(  activeAccountRepository.getActiveAccount().getAccount(), activeAccountRepository.getActiveAccount().getRootFolder(),note);
 
-                    Intent intent = new Intent(DetailActivity.this,MainPhoneActivity.class);
+                    Intent intent = new Intent(DetailActivity.this, MainPhoneActivity.class);
 
                     startActivity(intent);
                 }
@@ -354,7 +356,7 @@ public class DetailActivity extends ActionBarActivity implements ShareActionProv
     void initSpinner(){
         Spinner spinner = (Spinner) findViewById(R.id.spinner_notebook);
 
-        List<Notebook> notebooks = notebookRepository.getAll(MainPhoneActivity.SELECTED_ACCOUNT, MainPhoneActivity.SELECTED_ROOT_FOLDER);
+        List<Notebook> notebooks = notebookRepository.getAll(  activeAccountRepository.getActiveAccount().getAccount(),  activeAccountRepository.getActiveAccount().getRootFolder());
 
         String[] notebookArr = new String[notebooks.size()];
 
@@ -382,7 +384,7 @@ public class DetailActivity extends ActionBarActivity implements ShareActionProv
 
     @Override
     public void onBackPressed() {
-        Intent intent = new Intent(DetailActivity.this,MainPhoneActivity.class);
+        Intent intent = new Intent(DetailActivity.this, MainPhoneActivity.class);
 
         startActivity(intent);
     }

@@ -39,6 +39,8 @@ import org.kore.kolab.notes.Note;
 import org.kore.kolab.notes.Notebook;
 import org.kore.kolabnotes.android.adapter.NoteAdapter;
 import org.kore.kolabnotes.android.async.KolabSyncAdapter;
+import org.kore.kolabnotes.android.content.ActiveAccount;
+import org.kore.kolabnotes.android.content.ActiveAccountRepository;
 import org.kore.kolabnotes.android.content.NoteRepository;
 import org.kore.kolabnotes.android.content.NoteTagRepository;
 import org.kore.kolabnotes.android.content.NotebookRepository;
@@ -61,9 +63,6 @@ public class MainPhoneActivity extends ActionBarActivity implements SyncStatusOb
     public static final long SYNC_INTERVAL_IN_MINUTES = 60L;
     public static final long SYNC_INTERVAL = SYNC_INTERVAL_IN_MINUTES * SECONDS_PER_MINUTE;
 
-    public static String SELECTED_ACCOUNT = "local";
-    public static String SELECTED_ROOT_FOLDER = "Notes";
-
     private final DrawerItemClickedListener drawerItemClickedListener = new DrawerItemClickedListener();
 
     private List<Note> notesList = new ArrayList<Note>();
@@ -79,6 +78,7 @@ public class MainPhoneActivity extends ActionBarActivity implements SyncStatusOb
     private NotebookRepository notebookRepository = new NotebookRepository(this);
     private TagRepository tagRepository = new TagRepository(this);
     private NoteTagRepository notetagRepository = new NoteTagRepository(this);
+    private ActiveAccountRepository activeAccountRepository = new ActiveAccountRepository(this);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -117,6 +117,8 @@ public class MainPhoneActivity extends ActionBarActivity implements SyncStatusOb
             profiles[i+1] = new ProfileDrawerItem().withName(name).withTag(rootFolder).withEmail(email);
         }
 
+        final ActiveAccount activeAccount = activeAccountRepository.getActiveAccount();
+
         AccountHeader.Result headerResult = new AccountHeader()
                 .withActivity(this)
                 .withHeaderBackground(R.drawable.drawer_header_background)
@@ -124,23 +126,27 @@ public class MainPhoneActivity extends ActionBarActivity implements SyncStatusOb
                 .withOnAccountHeaderListener(new AccountHeader.OnAccountHeaderListener() {
                     @Override
                     public boolean onProfileChanged(View view, IProfile profile, boolean currentProfile) {
+                        String account;
+                        String rootFolder;
                         boolean changed;
                         if(profile.getEmail() == null || profile.getEmail().trim().length() == 0){
-                            changed = !SELECTED_ACCOUNT.equalsIgnoreCase("local");
-                            SELECTED_ACCOUNT = "local";
-                            SELECTED_ROOT_FOLDER = ((ProfileDrawerItem)profile).getTag().toString();
+                            changed = !activeAccount.getAccount().equalsIgnoreCase("local");
+                            account = "local";
+                            rootFolder = ((ProfileDrawerItem)profile).getTag().toString();
                         }else{
-                            changed = !SELECTED_ACCOUNT.equalsIgnoreCase(profile.getEmail());
-                            SELECTED_ACCOUNT = profile.getEmail();
-                            SELECTED_ROOT_FOLDER = ((ProfileDrawerItem)profile).getTag().toString();
+                            changed = !activeAccount.getAccount().equalsIgnoreCase(profile.getEmail());
+                            account = profile.getEmail();
+                            rootFolder = ((ProfileDrawerItem)profile).getTag().toString();
                         }
 
                         if(changed){
+                            activeAccountRepository.switchAccount(account,rootFolder);
+
                             if(mAdapter != null) {
                                 mAdapter.clearNotes();
                             }
 
-                            List<Note> notes = notesRepository.getAll(SELECTED_ACCOUNT,SELECTED_ROOT_FOLDER);
+                            List<Note> notes = notesRepository.getAll(account,rootFolder);
 
                             if(mAdapter != null) {
                                 if(notes.size() == 0){
@@ -150,6 +156,8 @@ public class MainPhoneActivity extends ActionBarActivity implements SyncStatusOb
                                 }
                             }
                             mDrawer.setSelection(1);
+
+                            reloadData();
                         }
 
 
@@ -194,13 +202,13 @@ public class MainPhoneActivity extends ActionBarActivity implements SyncStatusOb
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                if(!"local".equalsIgnoreCase(SELECTED_ACCOUNT)) {
+                if(!"local".equalsIgnoreCase(activeAccountRepository.getActiveAccount().getAccount())) {
                     Account[] accounts = mAccountManager.getAccountsByType(AuthenticatorActivity.ARG_ACCOUNT_TYPE);
                     Account selectedAccount = null;
 
                     for (Account acc : accounts) {
                         String email = mAccountManager.getUserData(acc, AuthenticatorActivity.KEY_EMAIL);
-                        if (SELECTED_ACCOUNT.equalsIgnoreCase(email)) {
+                        if (activeAccountRepository.getActiveAccount().getAccount().equalsIgnoreCase(email)) {
                             selectedAccount = acc;
                             break;
                         }
@@ -248,7 +256,7 @@ public class MainPhoneActivity extends ActionBarActivity implements SyncStatusOb
 
         for (Account acc : accounts) {
             String email = mAccountManager.getUserData(acc, AuthenticatorActivity.KEY_EMAIL);
-            if (SELECTED_ACCOUNT.equalsIgnoreCase(email)) {
+            if (activeAccountRepository.getActiveAccount().getAccount().equalsIgnoreCase(email)) {
                 selectedAccount = acc;
                 break;
             }
@@ -385,14 +393,14 @@ public class MainPhoneActivity extends ActionBarActivity implements SyncStatusOb
             String tag = drawerItem.getTag() == null || drawerItem.getTag().toString().trim().length() == 0 ? "ALL_NOTEBOOK" :  drawerItem.getTag().toString();
             List<Note> notes;
             if("NOTEBOOK".equalsIgnoreCase(tag)){
-                Notebook notebook = notebookRepository.getBySummary(SELECTED_ACCOUNT, SELECTED_ROOT_FOLDER, drawerItem.getName());
-                notes = notesRepository.getFromNotebook(SELECTED_ACCOUNT,SELECTED_ROOT_FOLDER,notebook.getIdentification().getUid());
+                Notebook notebook = notebookRepository.getBySummary(activeAccountRepository.getActiveAccount().getAccount(), activeAccountRepository.getActiveAccount().getRootFolder(), drawerItem.getName());
+                notes = notesRepository.getFromNotebook(activeAccountRepository.getActiveAccount().getAccount(),activeAccountRepository.getActiveAccount().getRootFolder(),notebook.getIdentification().getUid());
             }else if("TAG".equalsIgnoreCase(tag)){
-                notes = notetagRepository.getNotesWith(SELECTED_ACCOUNT, SELECTED_ROOT_FOLDER, drawerItem.getName());
+                notes = notetagRepository.getNotesWith(activeAccountRepository.getActiveAccount().getAccount(), activeAccountRepository.getActiveAccount().getRootFolder(), drawerItem.getName());
             }else if("ALL_NOTES".equalsIgnoreCase(tag)){
                 notes = notesRepository.getAll();
             }else{
-                notes = notesRepository.getAll(SELECTED_ACCOUNT,SELECTED_ROOT_FOLDER);
+                notes = notesRepository.getAll(activeAccountRepository.getActiveAccount().getAccount(),activeAccountRepository.getActiveAccount().getRootFolder());
             }
 
             if(mAdapter != null) {
@@ -419,7 +427,7 @@ public class MainPhoneActivity extends ActionBarActivity implements SyncStatusOb
             final Intent mainIntent = new Intent(Intent.ACTION_MAIN, null);
             mainIntent.addCategory(Intent.CATEGORY_LAUNCHER);
 
-            List<Note> notes = notesRepository.getAll(SELECTED_ACCOUNT,SELECTED_ROOT_FOLDER);
+            List<Note> notes = notesRepository.getAll(activeAccountRepository.getActiveAccount().getAccount(),activeAccountRepository.getActiveAccount().getRootFolder());
             ArrayList<Note> writeableNotes = new ArrayList<>(notes);
             Collections.sort(writeableNotes);
             mAdapter.addNotes(writeableNotes);
@@ -430,7 +438,7 @@ public class MainPhoneActivity extends ActionBarActivity implements SyncStatusOb
             }
 
             //Query the notebooks
-            for (Notebook notebook : notebookRepository.getAll(SELECTED_ACCOUNT,SELECTED_ROOT_FOLDER)) {
+            for (Notebook notebook : notebookRepository.getAll(activeAccountRepository.getActiveAccount().getAccount(),activeAccountRepository.getActiveAccount().getRootFolder())) {
                 mDrawer.getDrawerItems().add(new SecondaryDrawerItem().withName(notebook.getSummary()).withTag("NOTEBOOK"));
             }
 
@@ -467,7 +475,7 @@ public class MainPhoneActivity extends ActionBarActivity implements SyncStatusOb
         }
 
         //Query the notebooks
-        for (Notebook notebook : notebookRepository.getAll(SELECTED_ACCOUNT,SELECTED_ROOT_FOLDER)) {
+        for (Notebook notebook : notebookRepository.getAll(activeAccountRepository.getActiveAccount().getAccount(),activeAccountRepository.getActiveAccount().getRootFolder())) {
             mDrawer.getDrawerItems().add(new SecondaryDrawerItem().withName(notebook.getSummary()).withTag("NOTEBOOK"));
         }
 
@@ -476,7 +484,7 @@ public class MainPhoneActivity extends ActionBarActivity implements SyncStatusOb
         if(mAdapter != null){
             mAdapter.clearNotes();
 
-            List<Note> notes = notesRepository.getAll(SELECTED_ACCOUNT,SELECTED_ROOT_FOLDER);
+            List<Note> notes = notesRepository.getAll(activeAccountRepository.getActiveAccount().getAccount(),activeAccountRepository.getActiveAccount().getRootFolder());
             mAdapter.addNotes(notes);
         }
     }
@@ -485,7 +493,7 @@ public class MainPhoneActivity extends ActionBarActivity implements SyncStatusOb
         @Override
         public void onClick(View v) {
             Intent intent = new Intent(MainPhoneActivity.this,DetailActivity.class);
-            if(notebookRepository.getAll(SELECTED_ACCOUNT,SELECTED_ROOT_FOLDER).isEmpty()){
+            if(notebookRepository.getAll(activeAccountRepository.getActiveAccount().getAccount(),activeAccountRepository.getActiveAccount().getRootFolder()).isEmpty()){
                 //Create first a notebook, so that note creation is possible
                 createNotebookDialog(intent).show();
             }else{
@@ -539,12 +547,12 @@ public class MainPhoneActivity extends ActionBarActivity implements SyncStatusOb
 
                 List<Note> notes;
                 if("NOTEBOOK".equalsIgnoreCase(tag)){
-                    notes = notesRepository.getFromNotebookWithSummary(SELECTED_ACCOUNT,
-                            SELECTED_ROOT_FOLDER,
-                            notebookRepository.getBySummary(SELECTED_ACCOUNT,SELECTED_ROOT_FOLDER,item.getName()).getIdentification().getUid(),
+                    notes = notesRepository.getFromNotebookWithSummary(activeAccountRepository.getActiveAccount().getAccount(),
+                            activeAccountRepository.getActiveAccount().getRootFolder(),
+                            notebookRepository.getBySummary(activeAccountRepository.getActiveAccount().getAccount(),activeAccountRepository.getActiveAccount().getRootFolder(),item.getName()).getIdentification().getUid(),
                             textField.getText().toString());
                 }else if("TAG".equalsIgnoreCase(tag)){
-                    List<Note> unfiltered = notetagRepository.getNotesWith(SELECTED_ACCOUNT, SELECTED_ROOT_FOLDER, item.getName());
+                    List<Note> unfiltered = notetagRepository.getNotesWith(activeAccountRepository.getActiveAccount().getAccount(), activeAccountRepository.getActiveAccount().getRootFolder(), item.getName());
                     notes = new ArrayList<Note>();
                     for(Note note : unfiltered){
                         String summary = note.getSummary().toLowerCase();
@@ -553,7 +561,7 @@ public class MainPhoneActivity extends ActionBarActivity implements SyncStatusOb
                         }
                     }
                 }else{
-                    notes = notesRepository.getFromNotebookWithSummary(SELECTED_ACCOUNT,SELECTED_ROOT_FOLDER,null,textField.getText().toString());
+                    notes = notesRepository.getFromNotebookWithSummary(activeAccountRepository.getActiveAccount().getAccount(),activeAccountRepository.getActiveAccount().getRootFolder(),null,textField.getText().toString());
                 }
 
                 notesList.clear();
@@ -586,7 +594,7 @@ public class MainPhoneActivity extends ActionBarActivity implements SyncStatusOb
 
             Notebook nb = new Notebook(ident,audit, Note.Classification.PUBLIC, value);
             nb.setDescription(value);
-            if(notebookRepository.insert(SELECTED_ACCOUNT, SELECTED_ROOT_FOLDER, nb)) {
+            if(notebookRepository.insert(activeAccountRepository.getActiveAccount().getAccount(), activeAccountRepository.getActiveAccount().getRootFolder(), nb)) {
 
                 mDrawer.addItem(new SecondaryDrawerItem().withName(value).withTag("NOTEBOOK"));
 
@@ -610,6 +618,11 @@ public class MainPhoneActivity extends ActionBarActivity implements SyncStatusOb
         Orderer(Drawer.Result drawer, String selectionName) {
             this.drawer = drawer;
             this.selectionName = selectionName;
+        }
+
+        private Orderer(Drawer.Result drawer) {
+            this.drawer = drawer;
+            this.selectionName = null;
         }
 
         @Override
