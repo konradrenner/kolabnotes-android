@@ -13,6 +13,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String COLUMN_ROOT_FOLDER = "rootFolder";
     public static final String COLUMN_ACCOUNT = "account";
 
+    public static final String TABLE_ACTIVEACCOUNT = "activeaccount";
+
     public static final String TABLE_NOTES = "notes";
     public static final String COLUMN_ID = "_id";
     public static final String COLUMN_UID = "uid";
@@ -81,6 +83,18 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + COLUMN_MODIFICATIONDATE + " integer, " //milliseconds
             + COLUMN_MODIFICATIONTYPE + " text not null);";
 
+    private static final String CREATE_ACTIVEACCOUNT = "create table "
+            + TABLE_ACTIVEACCOUNT +
+            "(" + COLUMN_ID+ " integer primary key autoincrement, "
+            + COLUMN_ACCOUNT + " text not null, "
+            + COLUMN_ROOT_FOLDER + " text not null );";
+
+    private static final String INIT_ACTIVEACCOUNT = "create table "
+            + TABLE_ACTIVEACCOUNT +
+            "(" + COLUMN_ACCOUNT + ", "
+            + COLUMN_ROOT_FOLDER + " )" +
+            "VALUES ('local','Notes');";
+
 
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -92,6 +106,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         database.execSQL(CREATE_TAGS);
         database.execSQL(CREATE_MODIFICATION);
         database.execSQL(CREATE_TAGS_NOTES);
+        database.execSQL(CREATE_ACTIVEACCOUNT);
+        database.execSQL(INIT_ACTIVEACCOUNT);
     }
 
     @Override
