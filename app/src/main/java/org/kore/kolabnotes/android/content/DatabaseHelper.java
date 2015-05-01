@@ -89,7 +89,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + COLUMN_ACCOUNT + " text not null, "
             + COLUMN_ROOT_FOLDER + " text not null );";
 
-    private static final String INIT_ACTIVEACCOUNT = "create table "
+    private static final String INIT_ACTIVEACCOUNT = "insert into "
             + TABLE_ACTIVEACCOUNT +
             "(" + COLUMN_ACCOUNT + ", "
             + COLUMN_ROOT_FOLDER + " )" +
@@ -119,6 +119,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_NOTE_TAGS);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_TAGS);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_NOTES);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_ACTIVEACCOUNT);
         onCreate(db);
     }
 

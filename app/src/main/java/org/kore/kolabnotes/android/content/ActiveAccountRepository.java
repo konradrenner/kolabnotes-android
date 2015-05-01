@@ -28,7 +28,9 @@ public class ActiveAccountRepository {
     }
 
     public void open(){
-        database = dbHelper.getWritableDatabase();
+        if(database == null || !database.isOpen()) {
+            database = dbHelper.getWritableDatabase();
+        }
     }
 
     public void close() {
@@ -36,7 +38,6 @@ public class ActiveAccountRepository {
     }
 
     public void switchAccount(String account, String rootFolder){
-        open();
         ContentValues values = new ContentValues();
         values.put(DatabaseHelper.COLUMN_ROOT_FOLDER, rootFolder);
         values.put(DatabaseHelper.COLUMN_ACCOUNT, account);
@@ -45,7 +46,6 @@ public class ActiveAccountRepository {
                 values,
                 null,
                 null);
-        close();
     }
 
     public ActiveAccount getActiveAccount() {
@@ -63,7 +63,6 @@ public class ActiveAccountRepository {
             account = new ActiveAccount(cursor.getString(1),cursor.getString(2));
         }
         cursor.close();
-        close();
         return account;
     }
 }

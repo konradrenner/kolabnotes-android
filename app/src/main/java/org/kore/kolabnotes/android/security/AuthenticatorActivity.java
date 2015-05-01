@@ -3,6 +3,7 @@ package org.kore.kolabnotes.android.security;
 import android.accounts.Account;
 import android.accounts.AccountAuthenticatorActivity;
 import android.accounts.AccountManager;
+import android.content.ContentResolver;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -11,6 +12,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.AutoCompleteTextView;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -31,21 +33,22 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
 
     public final static String ARG_ACCOUNT_TYPE = "kore.kolabnotes";
 
-    public static final String KEY_ERROR_MESSAGE = "ERR_MSG";
+    // Sync interval constants
+    public static final long SECONDS_PER_MINUTE = 60L;
+    public static final long SYNC_INTERVAL_IN_MINUTES = 60L;
+    public static final long SYNC_INTERVAL = SYNC_INTERVAL_IN_MINUTES * SECONDS_PER_MINUTE;
 
     public final static String KEY_ACCOUNT_NAME = "account_name";
     public final static String KEY_ROOT_FOLDER = "root_folder";
     public final static String KEY_SERVER = "server_url";
     public final static String KEY_EMAIL = "email";
     public final static String KEY_PORT = "port";
+    public final static String KEY_SSL = "enablessl";
 
-
-    private final int REQ_SIGNUP = 1;
 
     private final String TAG = this.getClass().getSimpleName();
 
     private AccountManager mAccountManager;
-    private String mAuthTokenType;
 
     /**
      * Called when the activity is first created.
@@ -71,6 +74,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
         final AutoCompleteTextView mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
         final EditText mPasswordView = (EditText) findViewById(R.id.accountPassword);
         final EditText mPortView = (EditText) findViewById(R.id.port_number);
+        final CheckBox mEnableSSLView = (CheckBox) findViewById(R.id.enable_ssl);
 
         final String accountType = getIntent().getStringExtra(ARG_ACCOUNT_TYPE);
 
@@ -90,7 +94,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
             String email = mEmailView.getText().toString();
             String password = mPasswordView.getText().toString();
             String accountName = mAccountNameView.getText().toString();
-            String rootFolder = mRootFolderView.getText().toString();
+            String rootFolder = mRootFolderView.getText() == null || mRootFolderView.getText().toString().trim().length() == 0 ? "Notes" : mRootFolderView.getText().toString();
             String imapServer = mIMAPServerView.getText().toString();
             int port = mPortView.getText() == null || mPortView.getText().toString().trim().length() == 0 ? 993 : Integer.valueOf(mPortView.getText().toString());
 
@@ -105,10 +109,6 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
             }else if (TextUtils.isEmpty(imapServer)) {
                 mIMAPServerView.setError(getString(R.string.error_field_required));
                 focusView = mIMAPServerView;
-                cancel = true;
-            }else if (TextUtils.isEmpty(rootFolder)) {
-                mRootFolderView.setError(getString(R.string.error_field_required));
-                focusView = mRootFolderView;
                 cancel = true;
             }else if (TextUtils.isEmpty(email)) {
                 mEmailView.setError(getString(R.string.error_field_required));
@@ -127,14 +127,28 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
                 focusView.requestFocus();
             } else {
 
+                AccountInformation.Builder builder = AccountInformation.createForHost(imapServer).username(email).password(password).port(port);
+
+                if(!mEnableSSLView.isChecked()){
+                    builder.disableSSL();
+                }
+
                 Account account = new Account(accountName, ARG_ACCOUNT_TYPE);
-                AccountInformation accountInformation = AccountInformation.createForHost(imapServer).username(email).password(password).port(port).build();
+                AccountInformation accountInformation = builder.build();
                 KolabAccount serverInfo = new KolabAccount(accountName,rootFolder,accountInformation);
 
                 Bundle userData = createAuthBundle(serverInfo);
 
                 if (mAccountManager.addAccountExplicitly(account, password, userData)) {
                     Toast.makeText(getBaseContext(), R.string.signup_ok, Toast.LENGTH_SHORT).show();
+
+                    ContentResolver.setIsSyncable(account, MainPhoneActivity.AUTHORITY, 1);
+                    ContentResolver.setSyncAutomatically(account, MainPhoneActivity.AUTHORITY, true);
+
+                    ContentResolver.addPeriodicSync(account,
+                            MainPhoneActivity.AUTHORITY,
+                            Bundle.EMPTY,
+                            SYNC_INTERVAL);
 
                     Intent intent = new Intent(this,MainPhoneActivity.class);
 
@@ -156,6 +170,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
         bundle.putString(KEY_SERVER, kolabAccount.getAccountInformation().getHost());
         bundle.putString(KEY_EMAIL, kolabAccount.getAccountInformation().getUsername());
         bundle.putString(KEY_PORT, Integer.toString(kolabAccount.getAccountInformation().getPort()));
+        bundle.putString(KEY_SSL, Boolean.toString(kolabAccount.getAccountInformation().isSSLEnabled()));
         return bundle;
     }
 }

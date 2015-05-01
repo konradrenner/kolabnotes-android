@@ -14,4 +14,5 @@
     <item name="edit_tag_menu" type="id">edit_tag_menu</item>
     <item name="detail_summary" type="id">detail_summary</item>
     <item name="detail_description" type="id">detail_description</item>
+    <item name="create_account_menu" type="id">create_account_menu</item>
 </resources>

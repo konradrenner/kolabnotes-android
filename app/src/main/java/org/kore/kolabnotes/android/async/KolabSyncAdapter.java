@@ -72,10 +72,18 @@ public class KolabSyncAdapter extends AbstractThreadedSyncAdapter {
         String rootFolder = accountManager.getUserData(account,AuthenticatorActivity.KEY_ROOT_FOLDER);
         String url = accountManager.getUserData(account, AuthenticatorActivity.KEY_SERVER);
         String sport = accountManager.getUserData(account,AuthenticatorActivity.KEY_PORT);
+        String sssl = accountManager.getUserData(account,AuthenticatorActivity.KEY_SSL);
         int port = Integer.valueOf(sport == null ? "993" : sport);
+        boolean sslEnabled = sssl == null ? true : Boolean.valueOf(sssl);
         String password = accountManager.getPassword(account);
 
-        AccountInformation info = AccountInformation.createForHost(url).username(email).password(password).port(port).build();
+        AccountInformation.Builder builder = AccountInformation.createForHost(url).username(email).password(password).port(port);
+
+        if(!sslEnabled){
+            builder.disableSSL();
+        }
+
+        AccountInformation info = builder.build();
         ImapNotesRepository imapRepository = new ImapNotesRepository(new KolabNotesParserV3(), info, rootFolder);
         imapRepository.refresh(new RefreshListener());
 
@@ -90,7 +98,7 @@ public class KolabSyncAdapter extends AbstractThreadedSyncAdapter {
         @Override
         public void onSyncUpdate(String s) {
             final String tmp = s;
-            Log.d("onSyncUpdate","Starting download folder:"+s);
+            Log.d("onSyncUpdate","Downloaded folder:"+s);
         }
     }
 }
