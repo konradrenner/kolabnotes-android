@@ -150,10 +150,15 @@ public class MainPhoneActivity extends ActionBarActivity implements SyncStatusOb
                             }
                             mDrawer.setSelection(1);
 
-                            reloadData();
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    reloadData();
+                                }
+                            });
                         }
 
-
+                        mDrawer.closeDrawer();
                         return changed;
                     }
                 })
@@ -220,9 +225,14 @@ public class MainPhoneActivity extends ActionBarActivity implements SyncStatusOb
 
                     ContentResolver.requestSync(selectedAccount, AUTHORITY, settingsBundle);
                 }else{
-                    reloadData();
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            reloadData();
 
-                    mSwipeRefreshLayout.setRefreshing(false);
+                            mSwipeRefreshLayout.setRefreshing(false);
+                        }
+                    });
                 }
             }
         });

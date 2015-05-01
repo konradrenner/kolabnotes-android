@@ -38,14 +38,20 @@ public class ActiveAccountRepository {
     }
 
     public void switchAccount(String account, String rootFolder){
-        ContentValues values = new ContentValues();
-        values.put(DatabaseHelper.COLUMN_ROOT_FOLDER, rootFolder);
-        values.put(DatabaseHelper.COLUMN_ACCOUNT, account);
+        database.beginTransaction();
+        try {
+            ContentValues values = new ContentValues();
+            values.put(DatabaseHelper.COLUMN_ROOT_FOLDER, rootFolder);
+            values.put(DatabaseHelper.COLUMN_ACCOUNT, account);
 
-        database.update(DatabaseHelper.TABLE_ACTIVEACCOUNT,
-                values,
-                null,
-                null);
+            database.update(DatabaseHelper.TABLE_ACTIVEACCOUNT,
+                    values,
+                    null,
+                    null);
+        }finally {
+            database.endTransaction();
+        }
+
     }
 
     public ActiveAccount getActiveAccount() {
