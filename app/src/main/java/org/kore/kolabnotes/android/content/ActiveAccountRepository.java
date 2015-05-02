@@ -16,6 +16,8 @@ import java.util.List;
  */
 public class ActiveAccountRepository {
 
+    private static ActiveAccount currentActive;
+
     // Database fields
     private SQLiteDatabase database;
     private DatabaseHelper dbHelper;
@@ -37,7 +39,8 @@ public class ActiveAccountRepository {
         dbHelper.close();
     }
 
-    public void switchAccount(String account, String rootFolder){
+    public ActiveAccount switchAccount(String account, String rootFolder){
+        open();
         database.beginTransaction();
         try {
             ContentValues values = new ContentValues();
@@ -48,27 +51,33 @@ public class ActiveAccountRepository {
                     values,
                     null,
                     null);
+
+            currentActive = new ActiveAccount(account,rootFolder);
         }finally {
             database.endTransaction();
+            close();
         }
 
+        return currentActive;
     }
 
     public ActiveAccount getActiveAccount() {
-        open();
-        Cursor cursor = database.query(DatabaseHelper.TABLE_ACTIVEACCOUNT,
-                allColumns,
-                null,
-                null,
-                null,
-                null,
-                null);
+        if(currentActive == null) {
+            open();
+            Cursor cursor = database.query(DatabaseHelper.TABLE_ACTIVEACCOUNT,
+                    allColumns,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null);
 
-        ActiveAccount account = null;
-        if (cursor.moveToNext()) {
-            account = new ActiveAccount(cursor.getString(1),cursor.getString(2));
+            if (cursor.moveToNext()) {
+                currentActive = new ActiveAccount(cursor.getString(1), cursor.getString(2));
+            }
+            cursor.close();
+            close();
         }
-        cursor.close();
-        return account;
+        return currentActive;
     }
 }
