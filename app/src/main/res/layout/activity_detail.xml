@@ -43,10 +43,18 @@
             android:hint="@string/text_summary"
             android:textColorHint="@color/secondary_text_default_material_light" />
 
-        <jp.wasabeef.richeditor.RichEditor
+        <EditText
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:id="@id/detail_description" />
+            android:id="@id/detail_description"
+            android:gravity="top"
+            android:inputType="textMultiLine|textWebEditText"
+            android:autoText="false"
+            android:textColor="@color/primary_text_default_material_light"
+            android:textColorHint="@color/secondary_text_default_material_light"
+            android:hint="@string/description_hint"
+            android:editable="true"
+            android:enabled="true" />
 
     </LinearLayout>
 

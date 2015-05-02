@@ -68,6 +68,7 @@ public class MainPhoneActivity extends ActionBarActivity implements SyncStatusOb
     private RecyclerView mRecyclerView;
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private Drawer.Result mDrawer;
+    private AccountHeader.Result mAccount;
     private AccountManager mAccountManager;
 
     private NoteRepository notesRepository = new NoteRepository(this);
@@ -107,17 +108,16 @@ public class MainPhoneActivity extends ActionBarActivity implements SyncStatusOb
 
             profiles[i+1] = new ProfileDrawerItem().withName(name).withTag(rootFolder).withEmail(email);
         }
-        AccountHeader.Result headerResult = new AccountHeader()
+        mAccount = new AccountHeader()
                 .withActivity(this)
                 .withHeaderBackground(R.drawable.drawer_header_background)
                 .addProfiles(profiles)
                 .withOnAccountHeaderListener(new ProfileChanger())
                 .build();
-
         mDrawer = new Drawer()
                 .withActivity(this)
                 .withToolbar(toolbar)
-                .withAccountHeader(headerResult)
+                .withAccountHeader(mAccount)
                 .withOnDrawerItemClickListener(drawerItemClickedListener)
                 .build();
 
@@ -220,7 +220,18 @@ public class MainPhoneActivity extends ActionBarActivity implements SyncStatusOb
     @Override
     public void onResume(){
         super.onResume();
-        new AccountChangeThread(activeAccountRepository.getActiveAccount()).start();
+        ActiveAccount activeAccount = activeAccountRepository.getActiveAccount();
+        for(IProfile profile : mAccount.getProfiles()){
+            if(profile instanceof ProfileDrawerItem){
+                ProfileDrawerItem item = (ProfileDrawerItem)profile;
+
+                if(activeAccount.getAccount().equals(item.getEmail()) && activeAccount.getRootFolder().equals(item.getTag().toString())){
+                    mAccount.setActiveProfile(profile);
+                    break;
+                }
+            }
+        }
+        new AccountChangeThread(activeAccount).run();
     }
 
     class AccountChangeThread extends Thread{
