@@ -118,16 +118,10 @@ public class MainPhoneActivity extends ActionBarActivity implements SyncStatusOb
                 .withActivity(this)
                 .withToolbar(toolbar)
                 .withAccountHeader(headerResult)
-                .addDrawerItems(
-                        new PrimaryDrawerItem().withName(getResources().getString(R.string.drawer_item_allaccount_notes)).withTag("ALL_NOTES").withIcon(R.drawable.ic_action_group),
-                        new SecondaryDrawerItem().withName(getResources().getString(R.string.drawer_item_allnotes)).withTag("ALL_NOTEBOOK").withIcon(R.drawable.ic_action_person),
-                        new DividerDrawerItem(),
-                        new PrimaryDrawerItem().withName(getResources().getString(R.string.drawer_item_tags)).withTag("HEADING_TAG").setEnabled(false).withDisabledTextColor(R.color.material_drawer_dark_header_selection_text).withIcon(R.drawable.ic_action_labels),
-                        new DividerDrawerItem(),
-                        new PrimaryDrawerItem().withName(getResources().getString(R.string.drawer_item_notebooks)).withTag("HEADING_NOTEBOOK").setEnabled(false).withDisabledTextColor(R.color.material_drawer_dark_header_selection_text).withIcon(R.drawable.ic_action_collection)
-                )
                 .withOnDrawerItemClickListener(drawerItemClickedListener)
                 .build();
+
+        addDrawerStandardItems(mDrawer);
 
         mDrawer.setSelection(1);
         // Fab Button
@@ -253,20 +247,7 @@ public class MainPhoneActivity extends ActionBarActivity implements SyncStatusOb
                 activeAccount = activeAccountRepository.switchAccount(account, rootFolder);
             }
 
-            if(mAdapter != null) {
-                mAdapter.clearNotes();
-            }
-
             List<Note> notes = notesRepository.getAll(account,rootFolder);
-
-            if(mAdapter != null) {
-                if(notes.size() == 0){
-                    mAdapter.notifyDataSetChanged();
-                }else {
-                    mAdapter.addNotes(notes);
-                }
-            }
-            mDrawer.setSelection(1);
 
             List<String> tags = tagRepository.getAll();
             List<Notebook> notebooks = notebookRepository.getAll(account, rootFolder);
@@ -538,7 +519,7 @@ public class MainPhoneActivity extends ActionBarActivity implements SyncStatusOb
     final void reloadData(ActiveAccount activeAccount, List<Notebook> notebooks, List<Note> notes, List<String> tags){
         mDrawer.getDrawerItems().clear();
 
-
+        addDrawerStandardItems(mDrawer);
         //Query the tags
         for (String tag : tags) {
             mDrawer.getDrawerItems().add(new PrimaryDrawerItem().withName(tag).withTag("TAG"));
@@ -551,10 +532,13 @@ public class MainPhoneActivity extends ActionBarActivity implements SyncStatusOb
 
         orderDrawerItems(mDrawer);
 
-        if(mAdapter != null){
+        if(mAdapter != null) {
             mAdapter.clearNotes();
-
-            mAdapter.addNotes(notes);
+            if(notes.size() == 0){
+                mAdapter.notifyDataSetChanged();
+            }else {
+                mAdapter.addNotes(notes);
+            }
         }
     }
 
@@ -753,10 +737,7 @@ public class MainPhoneActivity extends ActionBarActivity implements SyncStatusOb
 
             drawer.getDrawerItems().clear();
 
-            drawer.getDrawerItems().add(new PrimaryDrawerItem().withName(getResources().getString(R.string.drawer_item_allaccount_notes)).withTag("ALL_NOTES").withIcon(R.drawable.ic_action_group));
-            drawer.getDrawerItems().add(new SecondaryDrawerItem().withName(getResources().getString(R.string.drawer_item_allnotes)).withTag("ALL_NOTEBOOK").withIcon(R.drawable.ic_action_person));
-            drawer.getDrawerItems().add(new DividerDrawerItem());
-            drawer.getDrawerItems().add(new PrimaryDrawerItem().withName(getResources().getString(R.string.drawer_item_tags)).withTag("HEADING_TAG").setEnabled(false).withDisabledTextColor(R.color.material_drawer_dark_header_selection_text).withIcon(R.drawable.ic_action_labels));
+            addDrawerStandardItems(drawer);
 
             int idx = 4;
             for(String tag : tags){
@@ -796,6 +777,14 @@ public class MainPhoneActivity extends ActionBarActivity implements SyncStatusOb
             drawer.setSelection(selection);
             drawerItemClickedListener.changeNoteSelection(selectedItem);
         }
+    }
+
+    private final void addDrawerStandardItems(Drawer.Result drawer){
+        drawer.getDrawerItems().add(new PrimaryDrawerItem().withName(getResources().getString(R.string.drawer_item_allaccount_notes)).withTag("ALL_NOTES").withIcon(R.drawable.ic_action_group));
+        drawer.getDrawerItems().add(new SecondaryDrawerItem().withName(getResources().getString(R.string.drawer_item_allnotes)).withTag("ALL_NOTEBOOK").withIcon(R.drawable.ic_action_person));
+        drawer.getDrawerItems().add(new DividerDrawerItem());
+        drawer.getDrawerItems().add(new PrimaryDrawerItem().withName(getResources().getString(R.string.drawer_item_tags)).withTag("HEADING_TAG").setEnabled(false).withDisabledTextColor(R.color.material_drawer_dark_header_selection_text).withIcon(R.drawable.ic_action_labels));
+
     }
 
     void orderDrawerItems(Drawer.Result drawer, String selectionName){
