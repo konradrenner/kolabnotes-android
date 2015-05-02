@@ -49,6 +49,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
+import jp.wasabeef.richeditor.RichEditor;
+
 public class DetailActivity extends ActionBarActivity implements ShareActionProvider.OnShareTargetSelectedListener{
 
     public static final String NOTE_UID = "note_uid";
@@ -105,9 +107,9 @@ public class DetailActivity extends ActionBarActivity implements ShareActionProv
             String notebookSummary = notebookRepository.getByUID(  activeAccountRepository.getActiveAccount().getAccount(), activeAccountRepository.getActiveAccount().getRootFolder(), noteRepository.getUIDofNotebook(  activeAccountRepository.getActiveAccount().getAccount(), activeAccountRepository.getActiveAccount().getRootFolder(),uid)).getSummary();
             note = noteRepository.getByUID(  activeAccountRepository.getActiveAccount().getAccount(), activeAccountRepository.getActiveAccount().getRootFolder(),uid);
             EditText summary = (EditText) findViewById(R.id.detail_summary);
-            EditText description =(EditText) findViewById(R.id.detail_description);
+            RichEditor description =(RichEditor) findViewById(R.id.detail_description);
             summary.setText(note.getSummary());
-            description.setText(note.getDescription());
+            description.setHtml(note.getDescription());
 
             selectedClassification = note.getClassification();
             selectedTags.addAll(note.getCategories());
@@ -272,7 +274,7 @@ public class DetailActivity extends ActionBarActivity implements ShareActionProv
 
     void saveNote(){
         EditText summary = (EditText) findViewById(R.id.detail_summary);
-        EditText description =(EditText) findViewById(R.id.detail_description);
+        RichEditor description =(RichEditor) findViewById(R.id.detail_description);
 
         if(note == null){
             final String uuid = UUID.randomUUID().toString();
@@ -281,7 +283,7 @@ public class DetailActivity extends ActionBarActivity implements ShareActionProv
             Note.AuditInformation audit = new Note.AuditInformation(now,now);
 
             note = new Note(ident,audit, selectedClassification == null ? Note.Classification.PUBLIC : selectedClassification, summary.getText().toString());
-            note.setDescription(description.getText().toString());
+            note.setDescription(description.getHtml());
 
             Spinner spinner = (Spinner) findViewById(R.id.spinner_notebook);
             String notebookName = spinner.getSelectedItem().toString();
@@ -296,7 +298,7 @@ public class DetailActivity extends ActionBarActivity implements ShareActionProv
         }else{
             final String uuid = note.getIdentification().getUid();
             note.setSummary(summary.getText().toString());
-            note.setDescription(description.getText().toString());
+            note.setDescription(description.getHtml());
             note.setClassification(selectedClassification);
 
             Spinner spinner = (Spinner) findViewById(R.id.spinner_notebook);
