@@ -90,14 +90,12 @@ public class KolabSyncAdapter extends AbstractThreadedSyncAdapter {
         RepositoryManager manager = new RepositoryManager(getContext(),imapRepository);
         manager.sync(email, rootFolder);
 
-        //TODO one way sync in the first step
-        //imapRepository.merge();
+        imapRepository.merge();
     }
 
     static class RefreshListener implements RemoteNotesRepository.Listener{
         @Override
         public void onSyncUpdate(String s) {
-            final String tmp = s;
             Log.d("onSyncUpdate","Downloaded folder:"+s);
         }
     }

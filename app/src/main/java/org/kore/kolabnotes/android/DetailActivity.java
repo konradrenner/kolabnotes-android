@@ -34,6 +34,7 @@ import android.widget.Toast;
 
 import org.kore.kolab.notes.Note;
 import org.kore.kolab.notes.Notebook;
+import org.kore.kolabnotes.android.content.ActiveAccount;
 import org.kore.kolabnotes.android.content.ActiveAccountRepository;
 import org.kore.kolabnotes.android.content.NoteRepository;
 import org.kore.kolabnotes.android.content.NoteTagRepository;
@@ -52,6 +53,7 @@ import java.util.UUID;
 public class DetailActivity extends ActionBarActivity implements ShareActionProvider.OnShareTargetSelectedListener{
 
     public static final String NOTE_UID = "note_uid";
+    public static final String NOTEBOOK_UID = "notebook_uid";
 
     private NotebookRepository notebookRepository = new NotebookRepository(this);
     private NoteRepository noteRepository = new NoteRepository(this);
@@ -101,9 +103,11 @@ public class DetailActivity extends ActionBarActivity implements ShareActionProv
 
         Intent startIntent = getIntent();
         String uid = startIntent.getStringExtra(NOTE_UID);
+        String notebook = startIntent.getStringExtra(NOTEBOOK_UID);
         if(uid != null){
-            String notebookSummary = notebookRepository.getByUID(  activeAccountRepository.getActiveAccount().getAccount(), activeAccountRepository.getActiveAccount().getRootFolder(), noteRepository.getUIDofNotebook(  activeAccountRepository.getActiveAccount().getAccount(), activeAccountRepository.getActiveAccount().getRootFolder(),uid)).getSummary();
-            note = noteRepository.getByUID(  activeAccountRepository.getActiveAccount().getAccount(), activeAccountRepository.getActiveAccount().getRootFolder(),uid);
+            ActiveAccount activeAccount = activeAccountRepository.getActiveAccount();
+            String notebookSummary = notebookRepository.getByUID(  activeAccount.getAccount(), activeAccount.getRootFolder(), notebook).getSummary();
+            note = noteRepository.getByUID(activeAccount.getAccount(), activeAccount.getRootFolder(),uid);
             EditText summary = (EditText) findViewById(R.id.detail_summary);
             EditText description =(EditText) findViewById(R.id.detail_description);
             summary.setText(note.getSummary());
@@ -112,17 +116,26 @@ public class DetailActivity extends ActionBarActivity implements ShareActionProv
             selectedClassification = note.getClassification();
             selectedTags.addAll(note.getCategories());
 
-            Spinner spinner = (Spinner) findViewById(R.id.spinner_notebook);
-            SpinnerAdapter adapter = spinner.getAdapter();
-            for(int i=0;i<adapter.getCount();i++){
-                String nbsummary = adapter.getItem(i).toString();
-                if(nbsummary.equals(notebookSummary)){
-                    spinner.setSelection(i);
-                    break;
-                }
+            setSpinnerSelection(notebookSummary);
+        }else if(notebook != null){
+            ActiveAccount activeAccount = activeAccountRepository.getActiveAccount();
+            String notebookSummary = notebookRepository.getByUID(activeAccount.getAccount(), activeAccount.getRootFolder(), notebook).getSummary();
+            setSpinnerSelection(notebookSummary);
+        }
+    }
+
+    void setSpinnerSelection(String notebookSummary){
+        Spinner spinner = (Spinner) findViewById(R.id.spinner_notebook);
+        SpinnerAdapter adapter = spinner.getAdapter();
+        for(int i=0;i<adapter.getCount();i++){
+            String nbsummary = adapter.getItem(i).toString();
+            if(nbsummary.equals(notebookSummary)){
+                spinner.setSelection(i);
+                break;
             }
         }
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -274,6 +287,7 @@ public class DetailActivity extends ActionBarActivity implements ShareActionProv
         EditText summary = (EditText) findViewById(R.id.detail_summary);
         EditText description =(EditText) findViewById(R.id.detail_description);
 
+        String notebookName;
         if(note == null){
             final String uuid = UUID.randomUUID().toString();
             Note.Identification ident = new Note.Identification(uuid,"kolabnotes-android");
@@ -284,7 +298,7 @@ public class DetailActivity extends ActionBarActivity implements ShareActionProv
             note.setDescription(description.getText().toString());
 
             Spinner spinner = (Spinner) findViewById(R.id.spinner_notebook);
-            String notebookName = spinner.getSelectedItem().toString();
+            notebookName = spinner.getSelectedItem().toString();
 
             Notebook book =  notebookRepository.getBySummary(  activeAccountRepository.getActiveAccount().getAccount(), activeAccountRepository.getActiveAccount().getRootFolder(),notebookName);
 
@@ -300,7 +314,7 @@ public class DetailActivity extends ActionBarActivity implements ShareActionProv
             note.setClassification(selectedClassification);
 
             Spinner spinner = (Spinner) findViewById(R.id.spinner_notebook);
-            String notebookName = spinner.getSelectedItem().toString();
+            notebookName = spinner.getSelectedItem().toString();
 
             Notebook book =  notebookRepository.getBySummary(  activeAccountRepository.getActiveAccount().getAccount(), activeAccountRepository.getActiveAccount().getRootFolder(),notebookName);
 
@@ -312,9 +326,11 @@ public class DetailActivity extends ActionBarActivity implements ShareActionProv
             }
         }
 
-        Intent intent = new Intent(DetailActivity.this,MainPhoneActivity.class);
+        Intent returnIntent = new Intent();
+        returnIntent.putExtra("selectedNotebookName",notebookName);
+        setResult(RESULT_OK,returnIntent);
 
-        startActivity(intent);
+        finish();
     }
 
     void deleteNote(){
@@ -375,17 +391,11 @@ public class DetailActivity extends ActionBarActivity implements ShareActionProv
         super.onSaveInstanceState(outState);
     }
 
-    View.OnClickListener fabClickListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View view) {
-           //nothing at them moment
-        }
-    };
-
     @Override
     public void onBackPressed() {
-        Intent intent = new Intent(DetailActivity.this, MainPhoneActivity.class);
+        Intent returnIntent = new Intent();
+        setResult(RESULT_CANCELED,returnIntent);
 
-        startActivity(intent);
+        finish();
     }
 }

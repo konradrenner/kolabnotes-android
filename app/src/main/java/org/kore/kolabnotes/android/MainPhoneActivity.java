@@ -52,10 +52,14 @@ import org.kore.kolabnotes.android.security.AuthenticatorActivity;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 public class MainPhoneActivity extends ActionBarActivity implements SyncStatusObserver{
+
+    public static final int DETAIL_ACTIVITY_RESULT_CODE = 1;
 
     public static final String AUTHORITY = "kore.kolabnotes";
 
@@ -70,6 +74,8 @@ public class MainPhoneActivity extends ActionBarActivity implements SyncStatusOb
     private Drawer.Result mDrawer;
     private AccountHeader.Result mAccount;
     private AccountManager mAccountManager;
+    private String selectedNotebookName;
+    private boolean fromDetailActivity = false;
 
     private NoteRepository notesRepository = new NoteRepository(this);
     private NotebookRepository notebookRepository = new NotebookRepository(this);
@@ -218,6 +224,20 @@ public class MainPhoneActivity extends ActionBarActivity implements SyncStatusOb
     }
 
     @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        if (requestCode == DETAIL_ACTIVITY_RESULT_CODE) {
+            if(resultCode == RESULT_OK){
+                String nbName = data.getStringExtra("selectedNotebookName");
+                selectedNotebookName = nbName;
+                fromDetailActivity = true;
+            }else if (resultCode == RESULT_CANCELED) {
+                //do nothing at the moment
+            }
+        }
+    }
+
+    @Override
     public void onResume(){
         super.onResume();
         ActiveAccount activeAccount = activeAccountRepository.getActiveAccount();
@@ -231,7 +251,13 @@ public class MainPhoneActivity extends ActionBarActivity implements SyncStatusOb
                 }
             }
         }
-        new AccountChangeThread(activeAccount).run();
+
+        String notebookUID = null;
+        if(fromDetailActivity && selectedNotebookName != null){
+            notebookUID = notebookRepository.getBySummary(activeAccount.getAccount(),activeAccount.getRootFolder(),selectedNotebookName).getIdentification().getUid();
+            fromDetailActivity = false;
+        }
+        new AccountChangeThread(activeAccount,notebookUID).run();
     }
 
     class AccountChangeThread extends Thread{
@@ -239,16 +265,22 @@ public class MainPhoneActivity extends ActionBarActivity implements SyncStatusOb
         private final String account;
         private final String rootFolder;
         private ActiveAccount activeAccount;
+        private String notebookUID;
 
         AccountChangeThread(String account, String rootFolder) {
             this.account = account;
             this.rootFolder = rootFolder;
+            notebookUID = null;
         }
 
         AccountChangeThread(ActiveAccount activeAccount) {
-            this.account = activeAccount.getAccount();
-            this.rootFolder = activeAccount.getAccount();
+            this(activeAccount.getAccount(),activeAccount.getRootFolder());
             this.activeAccount = activeAccount;
+        }
+
+        AccountChangeThread(ActiveAccount activeAccount, String notebookUID) {
+            this(activeAccount);
+            this.notebookUID = notebookUID;
         }
 
         @Override
@@ -258,25 +290,28 @@ public class MainPhoneActivity extends ActionBarActivity implements SyncStatusOb
                 activeAccount = activeAccountRepository.switchAccount(account, rootFolder);
             }
 
-            List<Note> notes = notesRepository.getAll(account,rootFolder);
+            List<Note> notes;
+            if(notebookUID == null){
+                notes = notesRepository.getAll(account,rootFolder);
+            }else{
+                notes = notesRepository.getFromNotebook(account,rootFolder,notebookUID);
+            }
 
             List<String> tags = tagRepository.getAll();
             List<Notebook> notebooks = notebookRepository.getAll(account, rootFolder);
 
-            runOnUiThread(new ReloadDataThread(activeAccount,notebooks,notes,tags));
+            runOnUiThread(new ReloadDataThread(notebooks,notes,tags));
         }
     }
 
 
 
     class ReloadDataThread extends Thread{
-        private final ActiveAccount account;
         private final List<Notebook> notebooks;
         private final List<Note> notes;
         private final List<String> tags;
 
-        ReloadDataThread(ActiveAccount account, List<Notebook> notebooks, List<Note> notes, List<String> tags) {
-            this.account = account;
+        ReloadDataThread(List<Notebook> notebooks, List<Note> notes, List<String> tags) {
             this.notebooks = notebooks;
             this.notes = notes;
             this.tags = tags;
@@ -284,7 +319,7 @@ public class MainPhoneActivity extends ActionBarActivity implements SyncStatusOb
 
         @Override
         public void run() {
-            reloadData(account, notebooks, notes, tags);
+            reloadData(notebooks, notes, tags);
         }
     }
 
@@ -426,9 +461,11 @@ public class MainPhoneActivity extends ActionBarActivity implements SyncStatusOb
     public void animateActivity(Note note, View appIcon) {
         Intent i = new Intent(this, DetailActivity.class);
         i.putExtra(DetailActivity.NOTE_UID, note.getIdentification().getUid());
+        ActiveAccount activeAccount = activeAccountRepository.getActiveAccount();
+        i.putExtra(DetailActivity.NOTEBOOK_UID, notesRepository.getUIDofNotebook(activeAccount.getAccount(),activeAccount.getRootFolder(),note.getIdentification().getUid()));
 
         ActivityOptionsCompat transitionActivityOptions = ActivityOptionsCompat.makeSceneTransitionAnimation(this, Pair.create((View) mFabButton, "fab"), Pair.create(appIcon, "appIcon"));
-        startActivity(i, transitionActivityOptions.toBundle());
+        startActivityForResult(i,DETAIL_ACTIVITY_RESULT_CODE,transitionActivityOptions.toBundle());
     }
 
 
@@ -454,12 +491,16 @@ public class MainPhoneActivity extends ActionBarActivity implements SyncStatusOb
             if("NOTEBOOK".equalsIgnoreCase(tag)){
                 Notebook notebook = notebookRepository.getBySummary(activeAccount.getAccount(), activeAccount.getRootFolder(), drawerItem.getName());
                 notes = notesRepository.getFromNotebook(activeAccount.getAccount(),activeAccount.getRootFolder(),notebook.getIdentification().getUid());
+                selectedNotebookName = notebook.getSummary();
             }else if("TAG".equalsIgnoreCase(tag)){
                 notes = notetagRepository.getNotesWith(activeAccount.getAccount(), activeAccount.getRootFolder(), drawerItem.getName());
+                selectedNotebookName = null;
             }else if("ALL_NOTES".equalsIgnoreCase(tag)){
                 notes = notesRepository.getAll();
+                selectedNotebookName = null;
             }else{
                 notes = notesRepository.getAll(activeAccount.getAccount(),activeAccount.getRootFolder());
+                selectedNotebookName = null;
             }
 
             if(mAdapter != null) {
@@ -488,22 +529,7 @@ public class MainPhoneActivity extends ActionBarActivity implements SyncStatusOb
 
             ActiveAccount activeAccount = activeAccountRepository.getActiveAccount();
 
-            List<Note> notes = notesRepository.getAll(activeAccount.getAccount(),activeAccount.getRootFolder());
-            ArrayList<Note> writeableNotes = new ArrayList<>(notes);
-            Collections.sort(writeableNotes);
-            mAdapter.addNotes(writeableNotes);
-
-            //Query the tags
-            for (String tag : tagRepository.getAll()) {
-                mDrawer.getDrawerItems().add(new PrimaryDrawerItem().withName(tag).withTag("TAG"));
-            }
-
-            //Query the notebooks
-            for (Notebook notebook : notebookRepository.getAll(activeAccount.getAccount(),activeAccount.getRootFolder())) {
-                mDrawer.getDrawerItems().add(new SecondaryDrawerItem().withName(notebook.getSummary()).withTag("NOTEBOOK"));
-            }
-
-            orderDrawerItems(mDrawer);
+            new AccountChangeThread(activeAccount).run();
         }
 
         @Override
@@ -527,7 +553,7 @@ public class MainPhoneActivity extends ActionBarActivity implements SyncStatusOb
 
     }
 
-    final void reloadData(ActiveAccount activeAccount, List<Notebook> notebooks, List<Note> notes, List<String> tags){
+    final void reloadData(List<Notebook> notebooks, List<Note> notes, List<String> tags){
         mDrawer.getDrawerItems().clear();
 
         addDrawerStandardItems(mDrawer);
@@ -555,7 +581,7 @@ public class MainPhoneActivity extends ActionBarActivity implements SyncStatusOb
 
     final void reloadData(){
         ActiveAccount activeAccount = activeAccountRepository.getActiveAccount();
-        reloadData(activeAccount,notebookRepository.getAll(activeAccount.getAccount(), activeAccount.getRootFolder()),notesRepository.getAll(activeAccount.getAccount(),activeAccount.getRootFolder()),tagRepository.getAll());
+        reloadData(notebookRepository.getAll(activeAccount.getAccount(), activeAccount.getRootFolder()),notesRepository.getAll(activeAccount.getAccount(),activeAccount.getRootFolder()),tagRepository.getAll());
     }
 
     class CreateButtonListener implements View.OnClickListener{
@@ -563,11 +589,12 @@ public class MainPhoneActivity extends ActionBarActivity implements SyncStatusOb
         public void onClick(View v) {
             ActiveAccount activeAccount = activeAccountRepository.getActiveAccount();
             Intent intent = new Intent(MainPhoneActivity.this,DetailActivity.class);
+            intent.putExtra(DetailActivity.NOTEBOOK_UID,notebookRepository.getBySummary(activeAccount.getAccount(),activeAccount.getRootFolder(),selectedNotebookName));
             if(notebookRepository.getAll(activeAccount.getAccount(),activeAccount.getRootFolder()).isEmpty()){
                 //Create first a notebook, so that note creation is possible
                 createNotebookDialog(intent).show();
             }else{
-                startActivity(intent);
+                startActivityForResult(intent,DETAIL_ACTIVITY_RESULT_CODE);
             }
         }
     }
@@ -665,6 +692,7 @@ public class MainPhoneActivity extends ActionBarActivity implements SyncStatusOb
             Note.AuditInformation audit = new Note.AuditInformation(now,now);
 
             String value = textField.getText().toString();
+            selectedNotebookName = value;
 
             Notebook nb = new Notebook(ident,audit, Note.Classification.PUBLIC, value);
             nb.setDescription(value);
@@ -676,7 +704,7 @@ public class MainPhoneActivity extends ActionBarActivity implements SyncStatusOb
             }
 
             if(intent != null){
-                startActivity(intent);
+                startActivityForResult(intent,DETAIL_ACTIVITY_RESULT_CODE);
             }
         }
     }
@@ -738,7 +766,10 @@ public class MainPhoneActivity extends ActionBarActivity implements SyncStatusOb
                 selection--;
             }
 
-            if(selectionName != null){
+            if(selectedNotebookName != null){
+                selected = selectedNotebookName;
+                notebookSelected = true;
+            }else if(selectionName != null){
                 selected = selectionName;
                 notebookSelected = true;
             }
@@ -750,8 +781,13 @@ public class MainPhoneActivity extends ActionBarActivity implements SyncStatusOb
 
             addDrawerStandardItems(drawer);
 
-            int idx = 4;
+            int idx = 3;
+            Set<String> displayedTags = new HashSet<>();
             for(String tag : tags){
+                if(displayedTags.contains(tag)){
+                    continue;
+                }
+                displayedTags.add(tag);
                 drawer.getDrawerItems().add(new SecondaryDrawerItem().withName(tag).withTag("TAG"));
 
                 idx++;
@@ -780,7 +816,7 @@ public class MainPhoneActivity extends ActionBarActivity implements SyncStatusOb
                 }
             }
 
-            if(selection < 1 || selection >= drawer.getDrawerItems().size()){
+            if(selection < 1 || (selectedItem != null && selection >= drawer.getDrawerItems().size())){
                 //default if nothing is selected, choose "all notes form actual account"
                 selection = 1;
             }

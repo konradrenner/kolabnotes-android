@@ -78,7 +78,7 @@ public class RepositoryManager {
 
             if(modification != null){
                 Notebook localNotebook = notebookRepository.getByUID(email, rootFolder, noteRepository.getUIDofNotebook(email, rootFolder, note.getIdentification().getUid()));
-                Notebook remoteNotebook = repo.getNotebook(localNotebook.getIdentification().getUid());
+                Notebook remoteNotebook = repo.getNotebookBySummary(localNotebook.getSummary());
 
                 if(remoteNotebook == null){
                     remoteNotebook = repo.createNotebook(localNotebook.getIdentification().getUid(), localNotebook.getSummary());
@@ -111,7 +111,8 @@ public class RepositoryManager {
             Note remoteNote = repo.getNote(deletion.getUid());
 
             if(remoteNote != null && deletion.getModificationDate().after(remoteNote.getAuditInformation().getLastModificationDate())){
-                repo.getNotebook(deletion.getUidNotebook()).deleteNote(deletion.getUid());
+                Notebook localNotebook = notebookRepository.getByUID(email, rootFolder, deletion.getUidNotebook());
+                repo.getNotebookBySummary(localNotebook.getSummary()).deleteNote(deletion.getUid());
             }
         }
     }
