@@ -75,6 +75,8 @@ public class DetailActivity extends ActionBarActivity implements ShareActionProv
 
     private List<String> allTags = new ArrayList<>();
 
+    private String givenNotebook;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -117,10 +119,12 @@ public class DetailActivity extends ActionBarActivity implements ShareActionProv
             selectedTags.addAll(note.getCategories());
 
             setSpinnerSelection(notebookSummary);
+            givenNotebook = notebookSummary;
         }else if(notebook != null){
             ActiveAccount activeAccount = activeAccountRepository.getActiveAccount();
             String notebookSummary = notebookRepository.getByUID(activeAccount.getAccount(), activeAccount.getRootFolder(), notebook).getSummary();
             setSpinnerSelection(notebookSummary);
+            givenNotebook = notebookSummary;
         }
     }
 
@@ -394,6 +398,7 @@ public class DetailActivity extends ActionBarActivity implements ShareActionProv
     @Override
     public void onBackPressed() {
         Intent returnIntent = new Intent();
+        returnIntent.putExtra("selectedNotebookName",givenNotebook);
         setResult(RESULT_CANCELED,returnIntent);
 
         finish();

@@ -41,23 +41,17 @@ public class ActiveAccountRepository {
 
     public ActiveAccount switchAccount(String account, String rootFolder){
         open();
-        database.beginTransaction();
-        try {
-            ContentValues values = new ContentValues();
-            values.put(DatabaseHelper.COLUMN_ROOT_FOLDER, rootFolder);
-            values.put(DatabaseHelper.COLUMN_ACCOUNT, account);
+        ContentValues values = new ContentValues();
+        values.put(DatabaseHelper.COLUMN_ROOT_FOLDER, rootFolder);
+        values.put(DatabaseHelper.COLUMN_ACCOUNT, account);
 
-            database.update(DatabaseHelper.TABLE_ACTIVEACCOUNT,
-                    values,
-                    null,
-                    null);
+        int affectedRows = database.update(DatabaseHelper.TABLE_ACTIVEACCOUNT,
+                values,
+                null,
+                null);
 
-            currentActive = new ActiveAccount(account,rootFolder);
-        }finally {
-            database.endTransaction();
-            close();
-        }
-
+        currentActive = new ActiveAccount(account,rootFolder);
+        close();
         return currentActive;
     }
 

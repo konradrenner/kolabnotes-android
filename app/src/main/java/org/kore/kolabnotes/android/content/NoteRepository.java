@@ -144,7 +144,7 @@ public class NoteRepository {
         StringBuilder query = new StringBuilder(DatabaseHelper.COLUMN_ACCOUNT + " = '" + account+"' AND ");
         query.append(DatabaseHelper.COLUMN_ROOT_FOLDER + " = '" + rootFolder+"' AND ");
         query.append(DatabaseHelper.COLUMN_DISCRIMINATOR+" = '"+DatabaseHelper.DESCRIMINATOR_NOTE+"' AND ");
-        query.append(" LOWER("+DatabaseHelper.COLUMN_SUMMARY+") like '%"+summary.toLowerCase()+"%' ");
+        query.append(" "+DatabaseHelper.COLUMN_SUMMARY+" like '%"+summary.trim()+"%' COLLATE NOCASE ");
         if(uidNotebook != null){
             query.append(" AND "+DatabaseHelper.COLUMN_UID_NOTEBOOK + " = '" + uidNotebook+"' ");
         }

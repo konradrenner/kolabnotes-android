@@ -227,12 +227,10 @@ public class MainPhoneActivity extends ActionBarActivity implements SyncStatusOb
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
         if (requestCode == DETAIL_ACTIVITY_RESULT_CODE) {
-            if(resultCode == RESULT_OK){
+            if(resultCode == RESULT_OK || resultCode == RESULT_CANCELED){
                 String nbName = data.getStringExtra("selectedNotebookName");
                 selectedNotebookName = nbName;
                 fromDetailActivity = true;
-            }else if (resultCode == RESULT_CANCELED) {
-                //do nothing at the moment
             }
         }
     }
@@ -664,8 +662,10 @@ public class MainPhoneActivity extends ActionBarActivity implements SyncStatusOb
                     notes = notesRepository.getFromNotebookWithSummary(activeAccount.getAccount(),activeAccount.getRootFolder(),null,textField.getText().toString());
                 }
 
-                notesList.clear();
-                notesList.addAll(notes);
+                List<Notebook> notebooks = notebookRepository.getAll(activeAccount.getAccount(), activeAccount.getRootFolder());
+                List<String> tags = tagRepository.getAll();
+
+                runOnUiThread(new ReloadDataThread(notebooks,notes,tags));
             }
         }
     }
