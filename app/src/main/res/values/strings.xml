@@ -65,4 +65,7 @@
     <string name="error_duplicate_account">Could not create account (account with this name already existing?)</string>
     <string name="enable_ssl">SSL enabled</string>
     <string name="title_add_account">Add Account</string>
+    <string name="appwidget_text">EXAMPLE</string>
+    <string name="configure">Configure</string>
+    <string name="add_widget">Add widget</string>
 </resources>
