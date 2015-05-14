@@ -35,7 +35,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
 
     // Sync interval constants
     public static final long SECONDS_PER_MINUTE = 60L;
-    public static final long SYNC_INTERVAL_IN_MINUTES = 60L;
+    public static final long SYNC_INTERVAL_IN_MINUTES = 1440L;
     public static final long SYNC_INTERVAL = SYNC_INTERVAL_IN_MINUTES * SECONDS_PER_MINUTE;
 
     public final static String KEY_ACCOUNT_NAME = "account_name";

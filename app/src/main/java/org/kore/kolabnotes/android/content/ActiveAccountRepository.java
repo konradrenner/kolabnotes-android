@@ -39,7 +39,7 @@ public class ActiveAccountRepository {
         dbHelper.close();
     }
 
-    public ActiveAccount switchAccount(String account, String rootFolder){
+    public synchronized ActiveAccount switchAccount(String account, String rootFolder){
         open();
         ContentValues values = new ContentValues();
         values.put(DatabaseHelper.COLUMN_ROOT_FOLDER, rootFolder);
@@ -55,7 +55,7 @@ public class ActiveAccountRepository {
         return currentActive;
     }
 
-    public ActiveAccount getActiveAccount() {
+    public synchronized ActiveAccount getActiveAccount() {
         if(currentActive == null) {
             open();
             Cursor cursor = database.query(DatabaseHelper.TABLE_ACTIVEACCOUNT,

@@ -65,7 +65,6 @@ public class MainPhoneActivity extends ActionBarActivity implements SyncStatusOb
 
     private final DrawerItemClickedListener drawerItemClickedListener = new DrawerItemClickedListener();
 
-    private List<Note> notesList = new ArrayList<Note>();
 
     private NoteAdapter mAdapter;
     private ImageButton mFabButton;
@@ -541,9 +540,6 @@ public class MainPhoneActivity extends ActionBarActivity implements SyncStatusOb
             //handle visibility
             mRecyclerView.setVisibility(View.VISIBLE);
 
-            //set data for list
-            mAdapter.clearNotes();
-            mAdapter.addNotes(notesList);
             mSwipeRefreshLayout.setRefreshing(false);
 
             super.onPostExecute(result);
