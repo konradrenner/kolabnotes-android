@@ -14,6 +14,10 @@
     <string name="yes">Yes</string>
     <string name="no">No</string>
 
+    <string name="classification">Classification</string>
+    <string name="creationDate">Created</string>
+    <string name="modificationDate">Last modified</string>
+    <string name="tags">Tags</string>
     <string name="radio_public">Public</string>
     <string name="radio_confidential">Confidential</string>
     <string name="radio_private">Private</string>

@@ -455,13 +455,13 @@ public class MainPhoneActivity extends ActionBarActivity implements SyncStatusOb
     }
 
 
-    public void animateActivity(Note note, View appIcon) {
+    public void animateActivity(Note note) {
         Intent i = new Intent(this, DetailActivity.class);
         i.putExtra(DetailActivity.NOTE_UID, note.getIdentification().getUid());
         ActiveAccount activeAccount = activeAccountRepository.getActiveAccount();
         i.putExtra(DetailActivity.NOTEBOOK_UID, notesRepository.getUIDofNotebook(activeAccount.getAccount(),activeAccount.getRootFolder(),note.getIdentification().getUid()));
 
-        ActivityOptionsCompat transitionActivityOptions = ActivityOptionsCompat.makeSceneTransitionAnimation(this, Pair.create((View) mFabButton, "fab"), Pair.create(appIcon, "appIcon"));
+        ActivityOptionsCompat transitionActivityOptions = ActivityOptionsCompat.makeSceneTransitionAnimation(this, Pair.create((View) mFabButton, "fab"));
         startActivityForResult(i,DETAIL_ACTIVITY_RESULT_CODE,transitionActivityOptions.toBundle());
     }
 
