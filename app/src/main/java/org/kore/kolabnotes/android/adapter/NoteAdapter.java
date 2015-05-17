@@ -48,13 +48,7 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.ViewHolder> {
     @Override
     public ViewHolder onCreateViewHolder(final ViewGroup viewGroup, int i) {
         View v = LayoutInflater.from(viewGroup.getContext()).inflate(rowLayout, viewGroup, false);
-
         final Note note = notes.get(i);
-        if(note != null && note.getColor() != null){
-            //v.getBackground().setColorFilter(Color.parseColor(note.getColor().getHexcode()), PorterDuff.Mode.MULTIPLY);
-            CardView card = (CardView)v;
-            card.setCardBackgroundColor(Color.parseColor(note.getColor().getHexcode()));
-        }
 
         return new ViewHolder(v);
     }
@@ -77,6 +71,12 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.ViewHolder> {
             viewHolder.categories.setText(mAct.getResources().getString(R.string.notags));
         }
 
+        if(note != null && note.getColor() != null){
+            viewHolder.cardView.setCardBackgroundColor(Color.parseColor(note.getColor().getHexcode()));
+        }else{
+            viewHolder.cardView.setCardBackgroundColor(Color.WHITE);
+        }
+
 
         viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -97,6 +97,7 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.ViewHolder> {
         TextView createdDate;
         TextView modificationDate;
         TextView categories;
+        CardView cardView;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -105,6 +106,7 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.ViewHolder> {
             createdDate = (TextView) itemView.findViewById(R.id.createdDate);
             modificationDate = (TextView) itemView.findViewById(R.id.modificationDate);
             categories = (TextView) itemView.findViewById(R.id.categories);
+            cardView = (CardView)itemView;
         }
 
     }
