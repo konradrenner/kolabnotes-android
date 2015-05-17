@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
+import org.kore.kolab.notes.Colors;
 import org.kore.kolab.notes.Note;
 import org.kore.kolab.notes.Note;
 
@@ -33,7 +34,8 @@ public class NoteRepository {
             DatabaseHelper.COLUMN_DESCRIPTION ,
             DatabaseHelper.COLUMN_CLASSIFICATION,
             DatabaseHelper.COLUMN_UID_NOTEBOOK,
-            DatabaseHelper.COLUMN_DISCRIMINATOR };
+            DatabaseHelper.COLUMN_DISCRIMINATOR,
+            DatabaseHelper.COLUMN_COLOR};
     private ModificationRepository modificationRepository;
 
     public NoteRepository(Context context) {
@@ -67,6 +69,7 @@ public class NoteRepository {
         values.put(DatabaseHelper.COLUMN_SUMMARY, note.getSummary());
         values.put(DatabaseHelper.COLUMN_DESCRIPTION, note.getDescription());
         values.put(DatabaseHelper.COLUMN_UID_NOTEBOOK, uidNotebook);
+        values.put(DatabaseHelper.COLUMN_COLOR, note.getColor() == null ? null : note.getColor().getHexcode());
         values.put(DatabaseHelper.COLUMN_CLASSIFICATION, note.getClassification().toString());
 
         database.insert(DatabaseHelper.TABLE_NOTES, null,values);
@@ -91,6 +94,7 @@ public class NoteRepository {
         values.put(DatabaseHelper.COLUMN_SUMMARY, note.getSummary());
         values.put(DatabaseHelper.COLUMN_DESCRIPTION, note.getDescription());
         values.put(DatabaseHelper.COLUMN_UID_NOTEBOOK, uidNotebook);
+        values.put(DatabaseHelper.COLUMN_COLOR, note.getColor() == null ? null : note.getColor().getHexcode());
         values.put(DatabaseHelper.COLUMN_CLASSIFICATION, note.getClassification().toString());
 
         database.update(DatabaseHelper.TABLE_NOTES,
@@ -286,12 +290,14 @@ public class NoteRepository {
         String summary = cursor.getString(7);
         String description = cursor.getString(8);
         String classification = cursor.getString(9);
+        String color = cursor.getString(12);
 
         Note.AuditInformation audit = new Note.AuditInformation(new Timestamp(creationDate),new Timestamp(modificationDate));
         Note.Identification ident = new Note.Identification(uid,productId);
 
         Note note = new Note(ident,audit, Note.Classification.valueOf(classification),summary);
         note.setDescription(description);
+        note.setColor(Colors.getColor(color));
 
         if(account != null && rootFolder != null) {
             List<String> tags = new NoteTagRepository(context).getTagsFor(account, rootFolder, uid);

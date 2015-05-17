@@ -17,6 +17,11 @@
         android:icon="@drawable/ic_action_not_secure"
         android:title="@string/title_change_classification" />
 
+    <item android:id="@+id/colorpicker"
+        app:showAsAction="ifRoom"
+        android:icon="@android:drawable/ic_menu_view"
+        android:title="@string/title_colorpicker"/>
+
     <item android:id="@+id/share"
         app:showAsAction="ifRoom"
         android:icon="@drawable/ic_action_share"

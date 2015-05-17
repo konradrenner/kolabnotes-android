@@ -32,6 +32,7 @@ import android.widget.SpinnerAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.kore.kolab.notes.Colors;
 import org.kore.kolab.notes.Note;
 import org.kore.kolab.notes.Notebook;
 import org.kore.kolabnotes.android.content.ActiveAccount;
@@ -49,6 +50,8 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+
+import yuku.ambilwarna.AmbilWarnaDialog;
 
 public class DetailActivity extends ActionBarActivity implements ShareActionProvider.OnShareTargetSelectedListener{
 
@@ -70,6 +73,8 @@ public class DetailActivity extends ActionBarActivity implements ShareActionProv
     private Intent shareIntent;
 
     private Note.Classification selectedClassification;
+
+    private org.kore.kolab.notes.Color selectedColor;
 
     private Set<String> selectedTags = new LinkedHashSet<>();
 
@@ -120,6 +125,11 @@ public class DetailActivity extends ActionBarActivity implements ShareActionProv
 
             setSpinnerSelection(notebookSummary);
             givenNotebook = notebookSummary;
+
+            selectedColor = note.getColor();
+            if(selectedColor != null) {
+                toolbar.setBackgroundColor(Color.parseColor(selectedColor.getHexcode()));
+            }
         }else if(notebook != null){
             ActiveAccount activeAccount = activeAccountRepository.getActiveAccount();
             String notebookSummary = notebookRepository.getByUID(activeAccount.getAccount(), activeAccount.getRootFolder(), notebook).getSummary();
@@ -170,8 +180,30 @@ public class DetailActivity extends ActionBarActivity implements ShareActionProv
             case R.id.change_classification:
                 editClassification();
                 break;
+            case R.id.colorpicker:
+                chooseColor();
+                break;
         }
         return true;
+    }
+
+    void chooseColor(){
+
+        final int initialColor = selectedColor == null ? Color.WHITE : Color.parseColor(selectedColor.getHexcode());
+
+        AmbilWarnaDialog dialog = new AmbilWarnaDialog(this, initialColor, new AmbilWarnaDialog.OnAmbilWarnaListener() {
+            @Override
+            public void onOk(AmbilWarnaDialog dialog, int color) {
+                selectedColor = Colors.getColor(Integer.toHexString(color));
+                toolbar.setBackgroundColor(color);
+            }
+
+            @Override
+            public void onCancel(AmbilWarnaDialog dialog) {
+                // do nothing
+            }
+        });
+        dialog.show();
     }
 
     void editClassification(){
@@ -300,6 +332,7 @@ public class DetailActivity extends ActionBarActivity implements ShareActionProv
 
             note = new Note(ident,audit, selectedClassification == null ? Note.Classification.PUBLIC : selectedClassification, summary.getText().toString());
             note.setDescription(description.getText().toString());
+            note.setColor(selectedColor);
 
             Spinner spinner = (Spinner) findViewById(R.id.spinner_notebook);
             notebookName = spinner.getSelectedItem().toString();
@@ -311,11 +344,14 @@ public class DetailActivity extends ActionBarActivity implements ShareActionProv
             for(String tag : selectedTags){
                 noteTagRepository.insert(  activeAccountRepository.getActiveAccount().getAccount(), activeAccountRepository.getActiveAccount().getRootFolder(),uuid,tag);
             }
+
+            note.setColor(selectedColor);
         }else{
             final String uuid = note.getIdentification().getUid();
             note.setSummary(summary.getText().toString());
             note.setDescription(description.getText().toString());
             note.setClassification(selectedClassification);
+            note.setColor(selectedColor);
 
             Spinner spinner = (Spinner) findViewById(R.id.spinner_notebook);
             notebookName = spinner.getSelectedItem().toString();

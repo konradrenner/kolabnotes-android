@@ -95,6 +95,7 @@
     <orderEntry type="library" exported="" name="appcompat-v7-22.0.0" level="project" />
     <orderEntry type="library" exported="" name="cardview-v7-21.0.3" level="project" />
     <orderEntry type="library" exported="" name="recyclerview-v7-21.0.3" level="project" />
+    <orderEntry type="library" exported="" name="ambilwarna-2.0" level="project" />
   </component>
 </module>
 
