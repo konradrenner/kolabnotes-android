@@ -70,6 +70,8 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.ViewHolder> {
         }
         if(tags.length() > 0) {
             viewHolder.categories.setText(mAct.getResources().getString(R.string.tags)+": "+tags.substring(0, tags.length() - 2));
+        }else{
+            viewHolder.categories.setText(mAct.getResources().getString(R.string.notags));
         }
 
 

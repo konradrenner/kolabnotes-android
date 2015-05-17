@@ -26,15 +26,15 @@
             />
 
         <TextView
-            android:id="@+id/classification"
+            android:id="@+id/categories"
             android:layout_row="2"
-            style="@style/NoteOverviewInfoText"
+            style="@style/NoteOverviewTagText"
             android:clickable="false"
             android:background="@drawable/button_rect_list_normal"
             />
 
         <TextView
-            android:id="@+id/createdDate"
+            android:id="@+id/classification"
             android:layout_row="3"
             style="@style/NoteOverviewInfoText"
             android:clickable="false"
@@ -42,7 +42,7 @@
             />
 
         <TextView
-            android:id="@+id/modificationDate"
+            android:id="@+id/createdDate"
             android:layout_row="4"
             style="@style/NoteOverviewInfoText"
             android:clickable="false"
@@ -50,9 +50,9 @@
             />
 
         <TextView
-            android:id="@+id/categories"
+            android:id="@+id/modificationDate"
             android:layout_row="5"
-            style="@style/NoteOverviewTagText"
+            style="@style/NoteOverviewInfoText"
             android:clickable="false"
             android:background="@drawable/button_rect_list_normal"
             />

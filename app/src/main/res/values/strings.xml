@@ -18,6 +18,7 @@
     <string name="creationDate">Created</string>
     <string name="modificationDate">Last modified</string>
     <string name="tags">Tags</string>
+    <string name="notags">No Tags</string>
     <string name="radio_public">Public</string>
     <string name="radio_confidential">Confidential</string>
     <string name="radio_private">Private</string>
