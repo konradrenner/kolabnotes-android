@@ -37,9 +37,9 @@
         <item name="android:textColor">@color/primary_text</item>
         <item name="android:textSize">20sp</item>
         <item name="android:shadowColor">#ffffffff</item>
-        <item name="android:shadowDx">1</item>
-        <item name="android:shadowDy">1</item>
-        <item name="android:shadowRadius">1</item>
+        <item name="android:shadowDx">0</item>
+        <item name="android:shadowDy">0</item>
+        <item name="android:shadowRadius">6</item>
         <item name="android:focusable">true</item>
     </style>
 
@@ -49,9 +49,9 @@
         <item name="android:textColor">@color/secondary_text</item>
         <item name="android:textSize">10sp</item>
         <item name="android:shadowColor">#ffffffff</item>
-        <item name="android:shadowDx">1</item>
-        <item name="android:shadowDy">1</item>
-        <item name="android:shadowRadius">1</item>
+        <item name="android:shadowDx">0</item>
+        <item name="android:shadowDy">0</item>
+        <item name="android:shadowRadius">6</item>
         <item name="android:focusable">true</item>
     </style>
 
@@ -61,9 +61,9 @@
         <item name="android:textColor">@color/primary_text</item>
         <item name="android:textSize">13sp</item>
         <item name="android:shadowColor">#ffffffff</item>
-        <item name="android:shadowDx">1</item>
-        <item name="android:shadowDy">1</item>
-        <item name="android:shadowRadius">1</item>
+        <item name="android:shadowDx">0</item>
+        <item name="android:shadowDy">0</item>
+        <item name="android:shadowRadius">6</item>
         <item name="android:focusable">true</item>
     </style>
 </resources>

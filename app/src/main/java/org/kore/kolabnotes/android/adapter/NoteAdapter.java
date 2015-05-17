@@ -2,6 +2,7 @@ package org.kore.kolabnotes.android.adapter;
 
 import android.graphics.Color;
 import android.graphics.PorterDuff;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -50,7 +51,9 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.ViewHolder> {
 
         final Note note = notes.get(i);
         if(note != null && note.getColor() != null){
-            v.getBackground().setColorFilter(Color.parseColor(note.getColor().getHexcode()), PorterDuff.Mode.DARKEN);
+            //v.getBackground().setColorFilter(Color.parseColor(note.getColor().getHexcode()), PorterDuff.Mode.MULTIPLY);
+            CardView card = (CardView)v;
+            card.setCardBackgroundColor(Color.parseColor(note.getColor().getHexcode()));
         }
 
         return new ViewHolder(v);

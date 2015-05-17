@@ -194,7 +194,7 @@ public class DetailActivity extends ActionBarActivity implements ShareActionProv
         AmbilWarnaDialog dialog = new AmbilWarnaDialog(this, initialColor, new AmbilWarnaDialog.OnAmbilWarnaListener() {
             @Override
             public void onOk(AmbilWarnaDialog dialog, int color) {
-                selectedColor = Colors.getColor(Integer.toHexString(color));
+                selectedColor = Colors.getColor(String.format("#%06X", (0xFFFFFF & color)));
                 toolbar.setBackgroundColor(color);
             }
 

@@ -19,7 +19,7 @@
 
     <item android:id="@+id/colorpicker"
         app:showAsAction="ifRoom"
-        android:icon="@android:drawable/ic_menu_view"
+        android:icon="@drawable/ic_action_choose_color"
         android:title="@string/title_colorpicker"/>
 
     <item android:id="@+id/share"
