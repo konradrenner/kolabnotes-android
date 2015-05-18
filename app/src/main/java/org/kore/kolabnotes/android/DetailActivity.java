@@ -344,14 +344,13 @@ public class DetailActivity extends ActionBarActivity implements ShareActionProv
             for(String tag : selectedTags){
                 noteTagRepository.insert(  activeAccountRepository.getActiveAccount().getAccount(), activeAccountRepository.getActiveAccount().getRootFolder(),uuid,tag);
             }
-
-            note.setColor(selectedColor);
         }else{
             final String uuid = note.getIdentification().getUid();
             note.setSummary(summary.getText().toString());
             note.setDescription(description.getText().toString());
             note.setClassification(selectedClassification);
             note.setColor(selectedColor);
+            note.getAuditInformation().setLastModificationDate(System.currentTimeMillis());
 
             Spinner spinner = (Spinner) findViewById(R.id.spinner_notebook);
             notebookName = spinner.getSelectedItem().toString();

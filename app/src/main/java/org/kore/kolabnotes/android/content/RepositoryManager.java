@@ -102,6 +102,7 @@ public class RepositoryManager {
                         Set<String> localCategories = note.getCategories();
                         remoteNote.addCategories(localCategories.toArray(new String[localCategories.size()]));
                         remoteNote.setColor(note.getColor());
+                        remoteNote.getAuditInformation().setLastModificationDate(note.getAuditInformation().getLastModificationDate().getTime());
                     }
                 }
             }
