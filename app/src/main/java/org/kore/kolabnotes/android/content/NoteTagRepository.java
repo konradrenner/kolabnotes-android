@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.provider.ContactsContract;
 
+import org.kore.kolab.notes.Colors;
 import org.kore.kolab.notes.Note;
 
 import java.sql.Timestamp;
@@ -22,7 +23,8 @@ public class NoteTagRepository {
             ", note."+DatabaseHelper.COLUMN_MODIFICATIONDATE+
             ", note."+DatabaseHelper.COLUMN_SUMMARY+
             ", note."+DatabaseHelper.COLUMN_DESCRIPTION+
-            ", note."+DatabaseHelper.COLUMN_CLASSIFICATION;
+            ", note."+DatabaseHelper.COLUMN_CLASSIFICATION+
+            ", note."+DatabaseHelper.COLUMN_COLOR;
 
     private final static String QUERY_NOTES = "SELECT "+NOTES_COLUMNS+" from "+DatabaseHelper.TABLE_NOTES+" note, "+DatabaseHelper.TABLE_NOTE_TAGS+" notetags " +
             " where notetags."+DatabaseHelper.COLUMN_ACCOUNT+" = ? " +
@@ -30,7 +32,8 @@ public class NoteTagRepository {
             " and notetags."+DatabaseHelper.COLUMN_IDTAG+" = ? " +
             " and notetags."+DatabaseHelper.COLUMN_IDNOTE+" = note."+ DatabaseHelper.COLUMN_UID+" " +
             " and notetags."+DatabaseHelper.COLUMN_ACCOUNT+" = note."+ DatabaseHelper.COLUMN_ACCOUNT+" "+
-            " and notetags."+DatabaseHelper.COLUMN_ROOT_FOLDER+" = note."+ DatabaseHelper.COLUMN_ROOT_FOLDER+" ";
+            " and notetags."+DatabaseHelper.COLUMN_ROOT_FOLDER+" = note."+ DatabaseHelper.COLUMN_ROOT_FOLDER+" "+
+            " order by "+DatabaseHelper.COLUMN_MODIFICATIONDATE+" desc ";
 
 
     // Database fields
@@ -137,6 +140,16 @@ public class NoteTagRepository {
         }
         cursor.close();
         close();
+
+        //load the tags for each note
+        for(Note note : notes){
+            List<String> tags = getTagsFor(account, rootFolder, note.getIdentification().getUid());
+
+            if (tags != null && tags.size() > 0) {
+                note.addCategories(tags.toArray(new String[tags.size()]));
+            }
+        }
+
         return notes;
     }
 
@@ -152,12 +165,14 @@ public class NoteTagRepository {
         String summary = cursor.getString(4);
         String description = cursor.getString(5);
         String classification = cursor.getString(6);
+        String color = cursor.getString(7);
 
         Note.AuditInformation audit = new Note.AuditInformation(new Timestamp(creationDate),new Timestamp(modificationDate));
         Note.Identification ident = new Note.Identification(uid,productId);
 
         Note note = new Note(ident,audit, Note.Classification.valueOf(classification),description);
         note.setSummary(summary);
+        note.setColor(Colors.getColor(color));
 
         return note;
     }

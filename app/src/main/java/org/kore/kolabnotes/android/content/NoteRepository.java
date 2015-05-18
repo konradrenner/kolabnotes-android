@@ -159,7 +159,7 @@ public class NoteRepository {
                 null,
                 null,
                 null,
-                null);
+                DatabaseHelper.COLUMN_MODIFICATIONDATE+" DESC");
 
         while (cursor.moveToNext()) {
             Note note = cursorToNote(account,rootFolder,cursor);
@@ -183,7 +183,7 @@ public class NoteRepository {
                 null,
                 null,
                 null,
-                null);
+                DatabaseHelper.COLUMN_MODIFICATIONDATE+" DESC");
 
         while (cursor.moveToNext()) {
             Note note = cursorToNote(account,rootFolder,cursor);
@@ -206,7 +206,7 @@ public class NoteRepository {
                 null,
                 null,
                 null,
-                null);
+                DatabaseHelper.COLUMN_MODIFICATIONDATE+" DESC");
 
         while (cursor.moveToNext()) {
             Note note = cursorToNote(account,rootFolder,cursor);
@@ -227,7 +227,7 @@ public class NoteRepository {
                 null,
                 null,
                 null,
-                null);
+                DatabaseHelper.COLUMN_MODIFICATIONDATE+" DESC");
 
         while (cursor.moveToNext()) {
             Note note = cursorToNote(null,null,cursor);
@@ -249,7 +249,7 @@ public class NoteRepository {
                 null,
                 null,
                 null,
-                null);
+                DatabaseHelper.COLUMN_MODIFICATIONDATE+" DESC");
 
         Note note = null;
         if (cursor.moveToNext()) {

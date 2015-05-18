@@ -419,7 +419,7 @@ public class DetailActivity extends ActionBarActivity implements ShareActionProv
             notebookArr[i] = notebooks.get(i).getSummary();
         }
 
-        ArrayAdapter<CharSequence> adapter = new ArrayAdapter<CharSequence>(this,android.R.layout.simple_spinner_item,notebookArr);
+        ArrayAdapter<CharSequence> adapter = new ArrayAdapter<CharSequence>(this,R.layout.notebook_spinner_item,notebookArr);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
     }
