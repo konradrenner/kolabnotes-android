@@ -27,7 +27,8 @@
             android:layout_height="wrap_content"
             android:id="@+id/spinner_notebook"
             android:spinnerMode="dialog"
-            android:background="@color/theme_default_primary"
+            android:background="@color/theme_default_primary_dark"
+            android:dropDownSelector="@android:color/white"
             android:clickable="true"
             android:minHeight="@dimen/abc_text_size_headline_material" />
 
