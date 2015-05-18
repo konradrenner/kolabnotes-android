@@ -28,8 +28,6 @@
             android:id="@+id/spinner_notebook"
             android:spinnerMode="dialog"
             android:background="@color/theme_default_primary"
-            android:dropDownSelector="@color/primary_text_default_material_dark"
-
             android:clickable="true"
             android:minHeight="@dimen/abc_text_size_headline_material" />
 
