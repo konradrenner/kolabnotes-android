@@ -583,13 +583,16 @@ public class MainPhoneActivity extends ActionBarActivity implements SyncStatusOb
         public void onClick(View v) {
             ActiveAccount activeAccount = activeAccountRepository.getActiveAccount();
             Intent intent = new Intent(MainPhoneActivity.this,DetailActivity.class);
-            Notebook notebook = notebookRepository.getBySummary(activeAccount.getAccount(), activeAccount.getRootFolder(), selectedNotebookName);
+
+            Notebook notebook = selectedNotebookName == null ? null : notebookRepository.getBySummary(activeAccount.getAccount(), activeAccount.getRootFolder(), selectedNotebookName);
 
             if(notebookRepository.getAll(activeAccount.getAccount(),activeAccount.getRootFolder()).isEmpty()){
                 //Create first a notebook, so that note creation is possible
                 createNotebookDialog(intent).show();
             }else{
-                intent.putExtra(DetailActivity.NOTEBOOK_UID,notebook.getIdentification().getUid());
+                if(notebook != null) {
+                    intent.putExtra(DetailActivity.NOTEBOOK_UID, notebook.getIdentification().getUid());
+                }
                 startActivityForResult(intent,DETAIL_ACTIVITY_RESULT_CODE);
             }
         }

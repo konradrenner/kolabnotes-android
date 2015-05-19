@@ -14,6 +14,7 @@ import android.os.Bundle;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -44,6 +45,7 @@ import org.kore.kolabnotes.android.content.TagRepository;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -270,22 +272,26 @@ public class DetailActivity extends ActionBarActivity implements ShareActionProv
     }
 
     void editTags(){
-        final ArrayList<Integer> selectedItems=new ArrayList<Integer> ();
-
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle(R.string.dialog_change_tags);
 
         final String[] tagArr = allTags.toArray(new String[allTags.size()]);
         final boolean[] selectionArr = new boolean[tagArr.length];
 
+        final ArrayList<Integer> selectedItems=new ArrayList<Integer> ();
+
         for(int i=0;i<tagArr.length;i++){
             if(selectedTags.contains(tagArr[i])){
                 selectionArr[i] = true;
+                selectedItems.add(i);
             }
         }
 
         builder.setMultiChoiceItems(tagArr, selectionArr,
                 new DialogInterface.OnMultiChoiceClickListener() {
+
+
+
                     @Override
                     public void onClick(DialogInterface dialog, int indexSelected,
                                         boolean isChecked) {
@@ -323,7 +329,21 @@ public class DetailActivity extends ActionBarActivity implements ShareActionProv
         EditText summary = (EditText) findViewById(R.id.detail_summary);
         EditText description =(EditText) findViewById(R.id.detail_description);
 
-        String notebookName;
+        Spinner spinner = (Spinner) findViewById(R.id.spinner_notebook);
+
+        if(spinner.getSelectedItem() == null){
+            ((TextView)spinner.getSelectedView()).setError(getString(R.string.error_field_required));
+            spinner.requestFocus();
+
+            return;
+        }else if(TextUtils.isEmpty(summary.getText().toString())){
+            summary.setError(getString(R.string.error_field_required));
+            summary.requestFocus();
+            return;
+        }
+
+        String notebookName = spinner.getSelectedItem().toString();
+
         if(note == null){
             final String uuid = UUID.randomUUID().toString();
             Note.Identification ident = new Note.Identification(uuid,"kolabnotes-android");
@@ -333,9 +353,6 @@ public class DetailActivity extends ActionBarActivity implements ShareActionProv
             note = new Note(ident,audit, selectedClassification == null ? Note.Classification.PUBLIC : selectedClassification, summary.getText().toString());
             note.setDescription(description.getText().toString());
             note.setColor(selectedColor);
-
-            Spinner spinner = (Spinner) findViewById(R.id.spinner_notebook);
-            notebookName = spinner.getSelectedItem().toString();
 
             Notebook book =  notebookRepository.getBySummary(  activeAccountRepository.getActiveAccount().getAccount(), activeAccountRepository.getActiveAccount().getRootFolder(),notebookName);
 
@@ -351,9 +368,6 @@ public class DetailActivity extends ActionBarActivity implements ShareActionProv
             note.setClassification(selectedClassification);
             note.setColor(selectedColor);
             note.getAuditInformation().setLastModificationDate(System.currentTimeMillis());
-
-            Spinner spinner = (Spinner) findViewById(R.id.spinner_notebook);
-            notebookName = spinner.getSelectedItem().toString();
 
             Notebook book =  notebookRepository.getBySummary(  activeAccountRepository.getActiveAccount().getAccount(), activeAccountRepository.getActiveAccount().getRootFolder(),notebookName);
 
@@ -418,6 +432,8 @@ public class DetailActivity extends ActionBarActivity implements ShareActionProv
         for(int i=0; i<notebooks.size();i++){
             notebookArr[i] = notebooks.get(i).getSummary();
         }
+
+        Arrays.sort(notebookArr);
 
         ArrayAdapter<CharSequence> adapter = new ArrayAdapter<CharSequence>(this,R.layout.notebook_spinner_item,notebookArr);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
