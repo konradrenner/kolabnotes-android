@@ -14,6 +14,9 @@ import android.os.Bundle;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.Html;
+import android.text.Spannable;
+import android.text.Spanned;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -56,6 +59,11 @@ import java.util.UUID;
 import yuku.ambilwarna.AmbilWarnaDialog;
 
 public class DetailActivity extends ActionBarActivity implements ShareActionProvider.OnShareTargetSelectedListener{
+
+    private final static String HTMLSTART = "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">" +
+            "<html><head><meta name=\"kolabnotes-richtext\" content=\"1\" /><meta http-equiv=\"Content-Type\" /></head><body>";
+
+    private final static String HTMLEND = "</body></html>";
 
     public static final String NOTE_UID = "note_uid";
     public static final String NOTEBOOK_UID = "notebook_uid";
@@ -120,7 +128,10 @@ public class DetailActivity extends ActionBarActivity implements ShareActionProv
             EditText summary = (EditText) findViewById(R.id.detail_summary);
             EditText description =(EditText) findViewById(R.id.detail_description);
             summary.setText(note.getSummary());
-            description.setText(note.getDescription());
+
+            Spanned fromHtml = Html.fromHtml(note.getDescription());
+
+            description.setText(fromHtml, TextView.BufferType.SPANNABLE);
 
             selectedClassification = note.getClassification();
             selectedTags.addAll(note.getCategories());
@@ -344,6 +355,14 @@ public class DetailActivity extends ActionBarActivity implements ShareActionProv
 
         String notebookName = spinner.getSelectedItem().toString();
 
+        String descriptionValue = null;
+        if(description.getText() != null){
+            StringBuilder sb = new StringBuilder(HTMLSTART);
+            sb.append(Html.toHtml(description.getText()));
+            sb.append(HTMLEND);
+            descriptionValue = sb.toString();
+        }
+
         if(note == null){
             final String uuid = UUID.randomUUID().toString();
             Note.Identification ident = new Note.Identification(uuid,"kolabnotes-android");
@@ -351,7 +370,7 @@ public class DetailActivity extends ActionBarActivity implements ShareActionProv
             Note.AuditInformation audit = new Note.AuditInformation(now,now);
 
             note = new Note(ident,audit, selectedClassification == null ? Note.Classification.PUBLIC : selectedClassification, summary.getText().toString());
-            note.setDescription(description.getText().toString());
+            note.setDescription(descriptionValue);
             note.setColor(selectedColor);
 
             Notebook book =  notebookRepository.getBySummary(  activeAccountRepository.getActiveAccount().getAccount(), activeAccountRepository.getActiveAccount().getRootFolder(),notebookName);
@@ -364,7 +383,7 @@ public class DetailActivity extends ActionBarActivity implements ShareActionProv
         }else{
             final String uuid = note.getIdentification().getUid();
             note.setSummary(summary.getText().toString());
-            note.setDescription(description.getText().toString());
+            note.setDescription(descriptionValue);
             note.setClassification(selectedClassification);
             note.setColor(selectedColor);
             note.getAuditInformation().setLastModificationDate(System.currentTimeMillis());
