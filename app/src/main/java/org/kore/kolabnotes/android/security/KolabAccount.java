@@ -1,9 +1,6 @@
 package org.kore.kolabnotes.android.security;
 
 import org.kore.kolab.notes.AccountInformation;
-import org.kore.kolab.notes.Note;
-
-import java.net.URI;
 
 /**
  * Created by koni on 18.04.15.

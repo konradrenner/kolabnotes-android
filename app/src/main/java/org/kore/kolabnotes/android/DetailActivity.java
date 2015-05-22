@@ -1,44 +1,35 @@
 package org.kore.kolabnotes.android;
 
-import android.animation.Animator;
 import android.app.AlertDialog;
-import android.content.ClipData;
-import android.content.ClipboardManager;
-import android.content.ComponentName;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.ResolveInfo;
 import android.graphics.Color;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.ShareActionProvider;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
-import android.text.Spannable;
 import android.text.Spanned;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewPropertyAnimator;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
-import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.support.v7.widget.ShareActionProvider;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import org.kore.kolab.notes.AuditInformation;
 import org.kore.kolab.notes.Colors;
+import org.kore.kolab.notes.Identification;
 import org.kore.kolab.notes.Note;
 import org.kore.kolab.notes.Notebook;
+import org.kore.kolab.notes.Tag;
 import org.kore.kolabnotes.android.content.ActiveAccount;
 import org.kore.kolabnotes.android.content.ActiveAccountRepository;
 import org.kore.kolabnotes.android.content.NoteRepository;
@@ -49,8 +40,6 @@ import org.kore.kolabnotes.android.content.TagRepository;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -134,7 +123,9 @@ public class DetailActivity extends ActionBarActivity implements ShareActionProv
             description.setText(fromHtml, TextView.BufferType.SPANNABLE);
 
             selectedClassification = note.getClassification();
-            selectedTags.addAll(note.getCategories());
+            for(Tag tag : note.getCategories()){
+                selectedTags.add(tag.getName());
+            }
 
             setSpinnerSelection(notebookSummary);
             givenNotebook = notebookSummary;
@@ -365,9 +356,9 @@ public class DetailActivity extends ActionBarActivity implements ShareActionProv
 
         if(note == null){
             final String uuid = UUID.randomUUID().toString();
-            Note.Identification ident = new Note.Identification(uuid,"kolabnotes-android");
+            Identification ident = new Identification(uuid,"kolabnotes-android");
             Timestamp now = new Timestamp(System.currentTimeMillis());
-            Note.AuditInformation audit = new Note.AuditInformation(now,now);
+            AuditInformation audit = new AuditInformation(now,now);
 
             note = new Note(ident,audit, selectedClassification == null ? Note.Classification.PUBLIC : selectedClassification, summary.getText().toString());
             note.setDescription(descriptionValue);

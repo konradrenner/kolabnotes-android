@@ -5,6 +5,9 @@ import android.content.Context;
 import org.kore.kolab.notes.Note;
 import org.kore.kolab.notes.Notebook;
 import org.kore.kolab.notes.NotesRepository;
+import org.kore.kolab.notes.Tag;
+import org.kore.kolab.notes.imap.ImapNotesRepository;
+import org.kore.kolab.notes.imap.RemoteTags;
 
 import java.util.Collection;
 import java.util.List;
@@ -23,9 +26,9 @@ public class RepositoryManager {
     private final NotebookRepository notebookRepository;
     private final ModificationRepository modificationRepository;
 
-    private final NotesRepository repo;
+    private final ImapNotesRepository repo;
 
-    public RepositoryManager(Context context, NotesRepository repo) {
+    public RepositoryManager(Context context, ImapNotesRepository repo) {
         this.noteTagRepository = new NoteTagRepository(context);
         this.tagRepository = new TagRepository(context);
         this.noteRepository = new NoteRepository(context);
@@ -44,23 +47,25 @@ public class RepositoryManager {
     void putDataIntoDB(String email, String rootFolder){
         Collection<Notebook> notebooks = repo.getNotebooks();
 
-        List<String> localTags = tagRepository.getAll();
-
         for(Notebook book : notebooks){
             notebookRepository.insert(email,rootFolder,book);
 
             for(Note note : book.getNotes()){
                 noteRepository.insert(email,rootFolder,note,book.getIdentification().getUid());
+            }
+        }
 
-                Set<String> categories = note.getCategories();
+        RemoteTags remoteTags = repo.getRemoteTags();
+        List<String> localTags = tagRepository.getAll();
 
-                for(String tag : categories){
-                    if(!localTags.contains(tag)) {
-                        tagRepository.insert(tag);
-                    }
+        for(RemoteTags.TagDetails detail : remoteTags.getTags()){
+            String remoteName = detail.getTag().getName();
+            if(!localTags.contains(remoteName)){
+                tagRepository.insert(remoteName);
+            }
 
-                    noteTagRepository.insert(email,rootFolder,note.getIdentification().getUid(),tag);
-                }
+            for(String noteUid : detail.getMembers()){
+                noteTagRepository.insert(email,rootFolder,noteUid,remoteName);
             }
         }
     }
@@ -95,12 +100,12 @@ public class RepositoryManager {
                         remoteNote.setDescription(note.getDescription());
                         remoteNote.setSummary(note.getSummary());
 
-                        Set<String> remoteCategories = remoteNote.getCategories();
+                        Set<Tag> remoteCategories = remoteNote.getCategories();
 
-                        remoteNote.removeCategories(remoteCategories.toArray(new String[remoteCategories.size()]));
+                        remoteNote.removeCategories(remoteCategories.toArray(new Tag[remoteCategories.size()]));
 
-                        Set<String> localCategories = note.getCategories();
-                        remoteNote.addCategories(localCategories.toArray(new String[localCategories.size()]));
+                        Set<Tag> localCategories = note.getCategories();
+                        remoteNote.addCategories(localCategories.toArray(new Tag[localCategories.size()]));
                         remoteNote.setColor(note.getColor());
                         remoteNote.getAuditInformation().setLastModificationDate(note.getAuditInformation().getLastModificationDate().getTime());
                     }

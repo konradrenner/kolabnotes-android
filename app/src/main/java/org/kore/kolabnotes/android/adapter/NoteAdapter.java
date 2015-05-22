@@ -1,16 +1,15 @@
 package org.kore.kolabnotes.android.adapter;
 
 import android.graphics.Color;
-import android.graphics.PorterDuff;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.kore.kolab.notes.Note;
+import org.kore.kolab.notes.Tag;
 import org.kore.kolabnotes.android.MainPhoneActivity;
 import org.kore.kolabnotes.android.R;
 
@@ -61,8 +60,8 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.ViewHolder> {
         viewHolder.createdDate.setText(mAct.getResources().getString(R.string.creationDate)+": "+note.getAuditInformation().getCreationDate());
         viewHolder.modificationDate.setText(mAct.getResources().getString(R.string.modificationDate)+": "+note.getAuditInformation().getLastModificationDate());
         StringBuilder tags = new StringBuilder();
-        for(String tag : note.getCategories()){
-            tags.append(tag);
+        for(Tag tag : note.getCategories()){
+            tags.append(tag.getName());
             tags.append(", ");
         }
         if(tags.length() > 0) {

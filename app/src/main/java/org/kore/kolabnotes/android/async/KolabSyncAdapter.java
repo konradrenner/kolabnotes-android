@@ -13,12 +13,10 @@ import android.util.Log;
 import org.kore.kolab.notes.AccountInformation;
 import org.kore.kolab.notes.RemoteNotesRepository;
 import org.kore.kolab.notes.imap.ImapNotesRepository;
+import org.kore.kolab.notes.v3.KolabConfigurationParserV3;
 import org.kore.kolab.notes.v3.KolabNotesParserV3;
 import org.kore.kolabnotes.android.content.RepositoryManager;
-import org.kore.kolabnotes.android.repository.NotebookContentResolver;
 import org.kore.kolabnotes.android.security.AuthenticatorActivity;
-
-import java.lang.reflect.Array;
 
 /**
  * Created by koni on 18.04.15.
@@ -84,7 +82,7 @@ public class KolabSyncAdapter extends AbstractThreadedSyncAdapter {
         }
 
         AccountInformation info = builder.build();
-        ImapNotesRepository imapRepository = new ImapNotesRepository(new KolabNotesParserV3(), info, rootFolder);
+        ImapNotesRepository imapRepository = new ImapNotesRepository(new KolabNotesParserV3(), info, rootFolder, new KolabConfigurationParserV3());
         imapRepository.refresh(new RefreshListener());
 
         RepositoryManager manager = new RepositoryManager(getContext(),imapRepository);

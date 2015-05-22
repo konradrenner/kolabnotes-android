@@ -5,11 +5,12 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
+import org.kore.kolab.notes.AuditInformation;
 import org.kore.kolab.notes.Colors;
+import org.kore.kolab.notes.Identification;
 import org.kore.kolab.notes.Note;
-import org.kore.kolab.notes.Note;
+import org.kore.kolab.notes.Tag;
 
-import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
@@ -292,8 +293,8 @@ public class NoteRepository {
         String classification = cursor.getString(9);
         String color = cursor.getString(12);
 
-        Note.AuditInformation audit = new Note.AuditInformation(new Timestamp(creationDate),new Timestamp(modificationDate));
-        Note.Identification ident = new Note.Identification(uid,productId);
+        AuditInformation audit = new AuditInformation(new Timestamp(creationDate),new Timestamp(modificationDate));
+        Identification ident = new Identification(uid,productId);
 
         Note note = new Note(ident,audit, Note.Classification.valueOf(classification),summary);
         note.setDescription(description);
@@ -303,7 +304,9 @@ public class NoteRepository {
             List<String> tags = new NoteTagRepository(context).getTagsFor(account, rootFolder, uid);
 
             if (tags != null && tags.size() > 0) {
-                note.addCategories(tags.toArray(new String[tags.size()]));
+                for(String tag : tags){
+                    note.addCategories(new Tag(tag));
+                }
             }
         }
         return note;

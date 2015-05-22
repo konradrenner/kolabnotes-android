@@ -4,10 +4,12 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.provider.ContactsContract;
 
+import org.kore.kolab.notes.AuditInformation;
 import org.kore.kolab.notes.Colors;
+import org.kore.kolab.notes.Identification;
 import org.kore.kolab.notes.Note;
+import org.kore.kolab.notes.Tag;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -146,7 +148,9 @@ public class NoteTagRepository {
             List<String> tags = getTagsFor(account, rootFolder, note.getIdentification().getUid());
 
             if (tags != null && tags.size() > 0) {
-                note.addCategories(tags.toArray(new String[tags.size()]));
+                for(String tag : tags){
+                    note.addCategories(new Tag(tag));
+                }
             }
         }
 
@@ -167,8 +171,8 @@ public class NoteTagRepository {
         String classification = cursor.getString(6);
         String color = cursor.getString(7);
 
-        Note.AuditInformation audit = new Note.AuditInformation(new Timestamp(creationDate),new Timestamp(modificationDate));
-        Note.Identification ident = new Note.Identification(uid,productId);
+        AuditInformation audit = new AuditInformation(new Timestamp(creationDate),new Timestamp(modificationDate));
+        Identification ident = new Identification(uid,productId);
 
         Note note = new Note(ident,audit, Note.Classification.valueOf(classification),description);
         note.setSummary(summary);

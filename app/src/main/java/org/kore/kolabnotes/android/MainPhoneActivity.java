@@ -6,7 +6,6 @@ import android.app.AlertDialog;
 import android.content.ContentResolver;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SyncResult;
 import android.content.SyncStatusObserver;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -35,10 +34,11 @@ import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IProfile;
 
+import org.kore.kolab.notes.AuditInformation;
+import org.kore.kolab.notes.Identification;
 import org.kore.kolab.notes.Note;
 import org.kore.kolab.notes.Notebook;
 import org.kore.kolabnotes.android.adapter.NoteAdapter;
-import org.kore.kolabnotes.android.async.KolabSyncAdapter;
 import org.kore.kolabnotes.android.content.ActiveAccount;
 import org.kore.kolabnotes.android.content.ActiveAccountRepository;
 import org.kore.kolabnotes.android.content.NoteRepository;
@@ -46,7 +46,6 @@ import org.kore.kolabnotes.android.content.NoteTagRepository;
 import org.kore.kolabnotes.android.content.NotebookRepository;
 import org.kore.kolabnotes.android.content.TagRepository;
 import org.kore.kolabnotes.android.itemanimator.CustomItemAnimator;
-import org.kore.kolabnotes.android.itemanimator.ReboundItemAnimator;
 import org.kore.kolabnotes.android.security.AuthenticatorActivity;
 
 import java.sql.Timestamp;
@@ -531,7 +530,7 @@ public class MainPhoneActivity extends ActionBarActivity implements SyncStatusOb
 
         @Override
         protected Void doInBackground(Void... params) {
-            runOnUiThread(this);
+            run();
             return null;
         }
 
@@ -688,9 +687,9 @@ public class MainPhoneActivity extends ActionBarActivity implements SyncStatusOb
 
             ActiveAccount activeAccount = activeAccountRepository.getActiveAccount();
 
-            Note.Identification ident = new Note.Identification(UUID.randomUUID().toString(),"kolabnotes-android");
+            Identification ident = new Identification(UUID.randomUUID().toString(),"kolabnotes-android");
             Timestamp now = new Timestamp(System.currentTimeMillis());
-            Note.AuditInformation audit = new Note.AuditInformation(now,now);
+            AuditInformation audit = new AuditInformation(now,now);
 
             String value = textField.getText().toString();
             selectedNotebookName = value;

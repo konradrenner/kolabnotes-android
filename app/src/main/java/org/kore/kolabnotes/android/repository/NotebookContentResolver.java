@@ -1,8 +1,6 @@
 package org.kore.kolabnotes.android.repository;
 
-import android.content.ContentUris;
 import android.content.Context;
-import android.database.ContentObserver;
 import android.database.Cursor;
 import android.net.Uri;
 

@@ -1,7 +1,5 @@
 package org.kore.kolabnotes.android.content;
 
-import org.kore.kolab.notes.imap.ImapConnectionBuilder;
-
 import java.io.Serializable;
 
 /**

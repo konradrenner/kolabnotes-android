@@ -5,11 +5,11 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
+import org.kore.kolab.notes.AuditInformation;
+import org.kore.kolab.notes.Identification;
 import org.kore.kolab.notes.Note;
 import org.kore.kolab.notes.Notebook;
-import org.w3c.dom.Comment;
 
-import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
@@ -205,8 +205,8 @@ public class NotebookRepository {
         String description = cursor.getString(8);
         String classification = cursor.getString(9);
 
-        Note.AuditInformation audit = new Note.AuditInformation(new Timestamp(creationDate),new Timestamp(modificationDate));
-        Note.Identification ident = new Note.Identification(uid,productId);
+        AuditInformation audit = new AuditInformation(new Timestamp(creationDate),new Timestamp(modificationDate));
+        Identification ident = new Identification(uid,productId);
 
         Notebook note = new Notebook(ident,audit, Note.Classification.valueOf(classification),summary);
         note.setDescription(description);

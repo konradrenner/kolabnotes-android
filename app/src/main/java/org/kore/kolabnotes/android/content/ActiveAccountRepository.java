@@ -5,12 +5,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
-import org.kore.kolab.notes.Notebook;
-
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * Created by koni on 12.03.15.
  */
