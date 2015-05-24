@@ -16,6 +16,7 @@ import android.widget.Spinner;
 
 import org.kore.kolab.notes.Notebook;
 import org.kore.kolab.notes.Tag;
+import org.kore.kolabnotes.android.content.NoteRepository;
 import org.kore.kolabnotes.android.content.NotebookRepository;
 import org.kore.kolabnotes.android.content.TagRepository;
 import org.kore.kolabnotes.android.security.AuthenticatorActivity;
@@ -39,6 +40,7 @@ public class ListWidgetConfigureActivity extends Activity {
 
     private TagRepository tagRepository = new TagRepository(this);
     private NotebookRepository notebookRepository = new NotebookRepository(this);
+    private NoteRepository noteRepository = new NoteRepository(this);
     private AccountManager mAccountManager;
     private Spinner accountSpinner;
     private Spinner notebookSpinner;
@@ -94,11 +96,11 @@ public class ListWidgetConfigureActivity extends Activity {
             final Context context = ListWidgetConfigureActivity.this;
 
             // When the button is clicked, store the string locally
-            saveListWidgetPref(context, mAppWidgetId, mAccountManager.getUserData(selectedAccount,AuthenticatorActivity.KEY_ACCOUNT_NAME),selectedNotebook,selectedTag);
+            saveListWidgetPref(context, mAppWidgetId, mAccountManager.getUserData(selectedAccount, AuthenticatorActivity.KEY_ACCOUNT_NAME), selectedNotebook, selectedTag);
 
             // It is the responsibility of the configuration activity to update the app widget
             AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
-            ListWidget.updateAppWidget(context, appWidgetManager, mAppWidgetId);
+            ListWidget.updateAppWidget(context, appWidgetManager, mAppWidgetId,noteRepository,notebookRepository);
 
             // Make sure we pass back the original appWidgetId
             Intent resultValue = new Intent();

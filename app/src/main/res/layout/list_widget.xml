@@ -5,25 +5,36 @@
     tools:showIn="@layout/list_widget_info"
     android:orientation="vertical">
 
-    <LinearLayout
+    <RelativeLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="40dp"
         android:background="@color/theme_accent">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:id="@+id/widget_text" />
+            android:id="@+id/widget_text"
+            android:text="@string/no_selection"
+            android:textSize="25sp"
+            android:textStyle="bold"
+            android:layout_alignParentEnd="false"
+            android:layout_alignParentStart="true"
+            android:clickable="true"
+            android:elegantTextHeight="false"
+            android:enabled="true"
+            android:singleLine="true" />
 
         <ImageButton
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:id="@+id/imageButton_add"
             android:src="@drawable/ic_action_new"
             android:contentDescription="@string/button_add"
-            android:background="@android:color/transparent" />
-    </LinearLayout>
+            android:background="@android:color/transparent"
+            android:layout_alignParentEnd="true"
+            android:clickable="true" />
+    </RelativeLayout>
 
     <ListView
         android:layout_width="match_parent"
