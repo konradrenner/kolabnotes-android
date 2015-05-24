@@ -33,7 +33,9 @@ public class ListWidgetConfigureActivity extends Activity {
 
     int mAppWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID;
     public static final String PREFS_NAME = "org.kore.kolabnotes.android.ListWidget";
-    private static final String PREF_PREFIX_KEY = "appwidget_";
+    public static final String PREF_PREFIX_KEY_NOTEBOOK = "appwidget_notebook_";
+    public static final String PREF_PREFIX_KEY_TAG = "appwidget_tag_";
+    public static final String PREF_PREFIX_KEY_ACCOUNT = "appwidget_account_";
 
     private TagRepository tagRepository = new TagRepository(this);
     private NotebookRepository notebookRepository = new NotebookRepository(this);
@@ -85,7 +87,6 @@ public class ListWidgetConfigureActivity extends Activity {
 
         mAccountManager = AccountManager.get(this);
         initSpinners();
-        //mAppWidgetText.setText(loadTitlePref(ListWidgetConfigureActivity.this, mAppWidgetId));
     }
 
     View.OnClickListener mOnClickListener = new View.OnClickListener() {
@@ -93,8 +94,7 @@ public class ListWidgetConfigureActivity extends Activity {
             final Context context = ListWidgetConfigureActivity.this;
 
             // When the button is clicked, store the string locally
-            //String widgetText = mAppWidgetText.getText().toString();
-            //saveTitlePref(context, mAppWidgetId, widgetText);
+            saveListWidgetPref(context, mAppWidgetId, mAccountManager.getUserData(selectedAccount,AuthenticatorActivity.KEY_ACCOUNT_NAME),selectedNotebook,selectedTag);
 
             // It is the responsibility of the configuration activity to update the app widget
             AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
@@ -108,28 +108,34 @@ public class ListWidgetConfigureActivity extends Activity {
         }
     };
 
-    // Write the prefix to the SharedPreferences object for this widget
-    static void saveTitlePref(Context context, int appWidgetId,String text) {
+    static void saveListWidgetPref(Context context, int appWidgetId,String accountName, String notebook,String tag) {
         SharedPreferences.Editor prefs = context.getSharedPreferences(PREFS_NAME, 0).edit();
-        prefs.putString(PREF_PREFIX_KEY + appWidgetId, text);
+        prefs.putString(PREF_PREFIX_KEY_ACCOUNT + appWidgetId, accountName);
+        prefs.putString(PREF_PREFIX_KEY_NOTEBOOK + appWidgetId, notebook);
+        prefs.putString(PREF_PREFIX_KEY_TAG + appWidgetId, tag);
         prefs.commit();
     }
 
-    // Read the prefix from the SharedPreferences object for this widget.
-    // If there is no preference saved, get the default from a resource
-    static String loadTitlePref(Context context, int appWidgetId) {
+    static String loadListWidgetAccountPref(Context context, int appWidgetId) {
         SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, 0);
-        String titleValue = prefs.getString(PREF_PREFIX_KEY + appWidgetId, null);
-        if (titleValue != null) {
-            return titleValue;
-        } else {
-            return context.getString(R.string.appwidget_text);
-        }
+        return prefs.getString(PREF_PREFIX_KEY_ACCOUNT + appWidgetId, null);
     }
 
-    static void deleteTitlePref(Context context, int appWidgetId) {
+    static String loadListWidgetNotebookPref(Context context, int appWidgetId) {
+        SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, 0);
+        return prefs.getString(PREF_PREFIX_KEY_NOTEBOOK + appWidgetId, null);
+    }
+
+    static String loadListWidgetTagPref(Context context, int appWidgetId) {
+        SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, 0);
+        return prefs.getString(PREF_PREFIX_KEY_TAG + appWidgetId, null);
+    }
+
+    static void deleteListWidgetPref(Context context, int appWidgetId) {
         SharedPreferences.Editor prefs = context.getSharedPreferences(PREFS_NAME, 0).edit();
-        prefs.remove(PREF_PREFIX_KEY + appWidgetId);
+        prefs.remove(PREF_PREFIX_KEY_ACCOUNT + appWidgetId);
+        prefs.remove(PREF_PREFIX_KEY_NOTEBOOK + appWidgetId);
+        prefs.remove(PREF_PREFIX_KEY_TAG + appWidgetId);
         prefs.commit();
     }
 

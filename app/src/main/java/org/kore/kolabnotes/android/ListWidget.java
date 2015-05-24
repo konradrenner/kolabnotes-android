@@ -5,12 +5,16 @@ import android.appwidget.AppWidgetProvider;
 import android.content.Context;
 import android.widget.RemoteViews;
 
+import org.kore.kolabnotes.android.content.NoteRepository;
+
 
 /**
  * Implementation of App Widget functionality.
  * App Widget Configuration implemented in {@link ListWidgetConfigureActivity ListWidgetConfigureActivity}
  */
 public class ListWidget extends AppWidgetProvider {
+
+    //private NoteRepository notesRepository = new NoteRepository(this);
 
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
@@ -26,7 +30,7 @@ public class ListWidget extends AppWidgetProvider {
         // When the user deletes the widget, delete the preference associated with it.
         final int N = appWidgetIds.length;
         for (int i = 0; i < N; i++) {
-            ListWidgetConfigureActivity.deleteTitlePref(context, appWidgetIds[i]);
+            ListWidgetConfigureActivity.deleteListWidgetPref(context, appWidgetIds[i]);
         }
     }
 
@@ -43,10 +47,12 @@ public class ListWidget extends AppWidgetProvider {
     static void updateAppWidget(Context context, AppWidgetManager appWidgetManager,
                                 int appWidgetId) {
 
-        CharSequence widgetText = ListWidgetConfigureActivity.loadTitlePref(context, appWidgetId);
+        CharSequence account = ListWidgetConfigureActivity.loadListWidgetAccountPref(context, appWidgetId);
+        CharSequence notebook = ListWidgetConfigureActivity.loadListWidgetNotebookPref(context, appWidgetId);
+        CharSequence tag = ListWidgetConfigureActivity.loadListWidgetTagPref(context, appWidgetId);
         // Construct the RemoteViews object
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.list_widget);
-        //views.setTextViewText(R.id.appwidget_text, widgetText);
+        views.setTextViewText(R.id.widget_text, account);
 
         // Instruct the widget manager to update the widget
         appWidgetManager.updateAppWidget(appWidgetId, views);

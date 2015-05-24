@@ -9,12 +9,11 @@
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/background_floating_material_dark">
+        android:background="@color/theme_accent">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:text="New Text"
             android:id="@+id/widget_text" />
 
         <ImageButton
@@ -29,5 +28,7 @@
     <ListView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/list_notes" />
+        android:id="@+id/widtget_list_notes"
+        android:background="@color/background_material_dark"
+        android:alpha="0.5"/>
 </LinearLayout>
