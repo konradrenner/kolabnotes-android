@@ -13,6 +13,7 @@
 
     <string name="yes">Yes</string>
     <string name="no">No</string>
+    <string name="no_selection">No selection</string>
 
     <string name="classification">Classification</string>
     <string name="creationDate">Created</string>
@@ -74,4 +75,5 @@
     <string name="configure">Configure</string>
     <string name="add_widget">Add widget</string>
     <string name="title_colorpicker">Choose Color</string>
+    <string name="button_add">button_add</string>
 </resources>
