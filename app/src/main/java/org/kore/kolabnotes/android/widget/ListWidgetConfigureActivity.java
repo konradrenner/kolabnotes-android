@@ -1,4 +1,4 @@
-package org.kore.kolabnotes.android;
+package org.kore.kolabnotes.android.widget;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
@@ -11,11 +11,10 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.EditText;
 import android.widget.Spinner;
 
 import org.kore.kolab.notes.Notebook;
-import org.kore.kolab.notes.Tag;
+import org.kore.kolabnotes.android.R;
 import org.kore.kolabnotes.android.content.NoteRepository;
 import org.kore.kolabnotes.android.content.NotebookRepository;
 import org.kore.kolabnotes.android.content.TagRepository;
@@ -33,14 +32,13 @@ import java.util.List;
 public class ListWidgetConfigureActivity extends Activity {
 
     int mAppWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID;
-    public static final String PREFS_NAME = "org.kore.kolabnotes.android.ListWidget";
+    public static final String PREFS_NAME = "org.kore.kolabnotes.android.widget.ListWidget";
     public static final String PREF_PREFIX_KEY_NOTEBOOK = "appwidget_notebook_";
     public static final String PREF_PREFIX_KEY_TAG = "appwidget_tag_";
     public static final String PREF_PREFIX_KEY_ACCOUNT = "appwidget_account_";
 
     private TagRepository tagRepository = new TagRepository(this);
     private NotebookRepository notebookRepository = new NotebookRepository(this);
-    private NoteRepository noteRepository = new NoteRepository(this);
     private AccountManager mAccountManager;
     private Spinner accountSpinner;
     private Spinner notebookSpinner;
@@ -96,11 +94,15 @@ public class ListWidgetConfigureActivity extends Activity {
             final Context context = ListWidgetConfigureActivity.this;
 
             // When the button is clicked, store the string locally
-            saveListWidgetPref(context, mAppWidgetId, mAccountManager.getUserData(selectedAccount, AuthenticatorActivity.KEY_ACCOUNT_NAME), selectedNotebook, selectedTag);
+            if(selectedAccount == null){
+                saveListWidgetPref(context, mAppWidgetId, "local", selectedNotebook, selectedTag);
+            }else{
+                saveListWidgetPref(context, mAppWidgetId, mAccountManager.getUserData(selectedAccount, AuthenticatorActivity.KEY_ACCOUNT_NAME), selectedNotebook, selectedTag);
+            }
 
             // It is the responsibility of the configuration activity to update the app widget
             AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
-            ListWidget.updateAppWidget(context, appWidgetManager, mAppWidgetId,noteRepository,notebookRepository);
+            ListWidget.updateAppWidget(context, appWidgetManager, mAppWidgetId);
 
             // Make sure we pass back the original appWidgetId
             Intent resultValue = new Intent();

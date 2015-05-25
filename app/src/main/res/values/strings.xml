@@ -29,6 +29,7 @@
     <string name="drawer_item_tags">Tags</string>
     <string name="drawer_item_notebooks">Notebooks</string>
     <string name="drawer_item_allnotes">Notes from selected account</string>
+    <string name="widget_allnotes">All from account</string>
     <string name="drawer_item_allaccount_notes">Notes from all accounts</string>
     <string name="drawer_account_local">Local Account</string>
 

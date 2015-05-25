@@ -62,7 +62,10 @@
                 android:resource="@xml/authenticator" />
         </service>
 
-        <receiver android:name=".ListWidget"
+        <service android:name=".widget.ListWidgetService"
+            android:permission="android.permission.BIND_REMOTEVIEWS" />
+
+        <receiver android:name=".widget.ListWidget"
             android:icon="@mipmap/ic_kjots"
             android:label="@string/app_name">
             <intent-filter>
@@ -74,7 +77,7 @@
                 android:resource="@xml/list_widget_info" />
         </receiver>
 
-        <activity android:name=".ListWidgetConfigureActivity"
+        <activity android:name=".widget.ListWidgetConfigureActivity"
             android:icon="@mipmap/ic_kjots"
             android:label="@string/app_name">
             <intent-filter>

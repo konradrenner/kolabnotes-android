@@ -3,6 +3,6 @@
     android:minWidth="180dp" android:minHeight="40dp" android:updatePeriodMillis="86400000"
     android:previewImage="@mipmap/ic_kjots"
     android:initialLayout="@layout/list_widget"
-    android:configure="org.kore.kolabnotes.android.ListWidgetConfigureActivity"
+    android:configure="org.kore.kolabnotes.android.widget.ListWidgetConfigureActivity"
     android:resizeMode="horizontal|vertical" android:widgetCategory="home_screen|keyguard"
     android:initialKeyguardLayout="@layout/list_widget"></appwidget-provider>
