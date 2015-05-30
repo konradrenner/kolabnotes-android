@@ -58,7 +58,7 @@ public class StickyNoteWidgetConfigureActivity extends Activity {
         // out of the widget placement if the user presses the back button.
         setResult(RESULT_CANCELED);
 
-        setContentView(R.layout.list_widget_configure);
+        setContentView(R.layout.sticky_note_widget_configure);
         findViewById(R.id.add_button).setOnClickListener(mOnClickListener);
 
         accountSpinner = (Spinner) findViewById(R.id.spinner_account);
