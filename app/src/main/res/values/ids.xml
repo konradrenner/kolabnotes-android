@@ -16,4 +16,5 @@
     <item name="detail_summary" type="id">detail_summary</item>
     <item name="detail_description" type="id">detail_description</item>
     <item name="create_account_menu" type="id">create_account_menu</item>
+    <item name="list_note_row_summary" type="id">list_note_row_summary</item>
 </resources>

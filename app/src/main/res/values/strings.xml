@@ -3,6 +3,8 @@
 
     <string name="app_name">Kolab Notes</string>
 
+    <string name="sticky_note_name">Kolab Sticky-Note</string>
+
     <string name="drawer_open">Slider Menu Opened</string>
     <string name="drawer_close">Slider Menu Closed</string>
 

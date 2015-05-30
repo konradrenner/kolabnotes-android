@@ -1,0 +1,26 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:padding="@dimen/widget_margin"
+    android:orientation="vertical">
+
+    <TextView android:id="@+id/sticky_note_summary" android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="#000000" android:textSize="24sp" android:textStyle="bold|italic"
+        android:enabled="true"
+        android:background="@color/md_yellow_A700"
+        android:clickable="true"
+        android:singleLine="true"
+        android:layout_gravity="center" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:textColor="#000000"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:id="@+id/sticky_note_description"
+        android:gravity="top"
+        android:background="@color/md_yellow_A700"
+        android:enabled="true"
+        android:clickable="true" />
+
+</LinearLayout>

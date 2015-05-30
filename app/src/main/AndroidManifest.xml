@@ -61,13 +61,14 @@
                 android:name="android.accounts.AccountAuthenticator"
                 android:resource="@xml/authenticator" />
         </service>
-
-        <service android:name=".widget.ListWidgetService"
+        <service
+            android:name=".widget.ListWidgetService"
             android:permission="android.permission.BIND_REMOTEVIEWS" />
 
-        <receiver android:name=".widget.ListWidget"
+        <receiver
+            android:name=".widget.ListWidget"
             android:icon="@mipmap/ic_kjots"
-            android:label="@string/app_name">
+            android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
@@ -77,9 +78,30 @@
                 android:resource="@xml/list_widget_info" />
         </receiver>
 
-        <activity android:name=".widget.ListWidgetConfigureActivity"
+        <activity
+            android:name=".widget.ListWidgetConfigureActivity"
             android:icon="@mipmap/ic_kjots"
-            android:label="@string/app_name">
+            android:label="@string/app_name" >
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
+            </intent-filter>
+        </activity>
+
+        <receiver android:name=".widget.StickyNoteWidget"
+            android:icon="@mipmap/ic_kjots"
+            android:label="@string/sticky_note_name">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/sticky_note_widget_info" />
+        </receiver>
+
+        <activity android:name=".widget.StickyNoteWidgetConfigureActivity"
+            android:icon="@mipmap/ic_kjots"
+            android:label="@string/sticky_note_name">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
             </intent-filter>
