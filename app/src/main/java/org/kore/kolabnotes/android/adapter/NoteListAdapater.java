@@ -83,7 +83,7 @@ public class NoteListAdapater extends ArrayAdapter<Note> {
     public View getView(int position, View convertView, ViewGroup parent) {
         Note note = notes.get(position);
 
-        TextView textView = (TextView) convertView.findViewById(R.id.list_note_row_summary);
+        TextView textView = (TextView)convertView;
         textView.setText(note.getSummary());
 
         return convertView;
