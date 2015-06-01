@@ -1,6 +1,7 @@
 package org.kore.kolabnotes.android.adapter;
 
 import android.content.Context;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -23,9 +24,11 @@ import java.util.List;
 public class NoteListAdapater extends ArrayAdapter<Note> {
 
     private final ArrayList<Note> notes;
+    private final int layoutResourceId;
 
     public NoteListAdapater(Context context, int resource, List<Note> objects) {
         super(context, resource);
+        layoutResourceId = resource;
         notes = new ArrayList<>(objects);
     }
 
@@ -81,11 +84,27 @@ public class NoteListAdapater extends ArrayAdapter<Note> {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        Note note = notes.get(position);
+        View row = convertView;
+        NoteHolder holder;
 
-        TextView textView = (TextView)convertView;
-        textView.setText(note.getSummary());
+        if(row == null){
+            row = LayoutInflater.from(getContext()).inflate(layoutResourceId,parent,false);
+
+            holder = new NoteHolder();
+            holder.summaryText = (TextView)row.findViewById(R.id.list_note_row_summary);
+
+            row.setTag(holder);
+        }else{
+            holder = (NoteHolder)row.getTag();
+        }
+
+        holder.summaryText.setText(this.notes.get(position).getSummary());
 
         return convertView;
+    }
+
+    static class NoteHolder{
+
+        private TextView summaryText;
     }
 }
