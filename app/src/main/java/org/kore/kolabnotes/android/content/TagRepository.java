@@ -26,6 +26,10 @@ public class TagRepository {
         database = dbHelper.getWritableDatabase();
     }
 
+    public void openReadonly() {
+        database = dbHelper.getReadableDatabase();
+    }
+
     public void close() {
         dbHelper.close();
     }
@@ -41,7 +45,7 @@ public class TagRepository {
     }
 
     public List<String> getAll() {
-        open();
+        openReadonly();
         List<String> tags = new ArrayList<String>();
 
         Cursor cursor = database.query(DatabaseHelper.TABLE_TAGS,

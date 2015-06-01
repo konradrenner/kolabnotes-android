@@ -38,6 +38,11 @@ public class NoteListAdapater extends ArrayAdapter<Note> {
     }
 
     @Override
+    public View getDropDownView(int position, View convertView, ViewGroup parent) {
+        return getRow(position, convertView, parent);
+    }
+
+    @Override
     public int getPosition(Note item) {
         for(int i=0; i<notes.size();i++){
             if(item.equals(notes.get(i))){
@@ -82,8 +87,8 @@ public class NoteListAdapater extends ArrayAdapter<Note> {
         notes.remove(object);
     }
 
-    @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+
+    View getRow(int position, View convertView, ViewGroup parent){
         View row = convertView;
         NoteHolder holder;
 
@@ -96,11 +101,23 @@ public class NoteListAdapater extends ArrayAdapter<Note> {
             row.setTag(holder);
         }else{
             holder = (NoteHolder)row.getTag();
+
+            if(holder == null){
+                holder = new NoteHolder();
+                holder.summaryText = (TextView)row.findViewById(R.id.list_note_row_summary);
+
+                row.setTag(holder);
+            }
         }
 
         holder.summaryText.setText(this.notes.get(position).getSummary());
 
-        return convertView;
+        return row;
+    }
+
+    @Override
+    public View getView(int position, View convertView, ViewGroup parent) {
+        return getRow(position,convertView,parent);
     }
 
     static class NoteHolder{

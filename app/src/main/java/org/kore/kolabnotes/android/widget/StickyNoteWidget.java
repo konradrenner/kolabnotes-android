@@ -83,8 +83,10 @@ public class StickyNoteWidget extends AppWidgetProvider {
         views.setOnClickPendingIntent(R.id.sticky_note_summary, pendingIntentMainActivity);
         views.setOnClickPendingIntent(R.id.sticky_note_description, pendingIntentMainActivity);
 
-        views.setTextViewText(R.id.sticky_note_summary, note.getSummary());
-        views.setTextViewText(R.id.sticky_note_description, note.getDescription());
+        if(note != null) {
+            views.setTextViewText(R.id.sticky_note_summary, note.getSummary());
+            views.setTextViewText(R.id.sticky_note_description, note.getDescription());
+        }
 
 
         // Instruct the widget manager to update the widget

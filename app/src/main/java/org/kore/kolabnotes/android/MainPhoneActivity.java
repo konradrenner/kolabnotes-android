@@ -546,7 +546,7 @@ public class MainPhoneActivity extends ActionBarActivity implements SyncStatusOb
 
     }
 
-    final void reloadData(List<Notebook> notebooks, List<Note> notes, List<String> tags){
+    final synchronized void reloadData(List<Notebook> notebooks, List<Note> notes, List<String> tags){
         mDrawer.getDrawerItems().clear();
 
         addDrawerStandardItems(mDrawer);

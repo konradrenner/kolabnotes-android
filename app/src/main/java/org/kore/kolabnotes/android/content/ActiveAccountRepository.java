@@ -29,6 +29,12 @@ public class ActiveAccountRepository {
         }
     }
 
+    public void openReadonly() {
+        if(database == null || !database.isOpen()) {
+            database = dbHelper.getReadableDatabase();
+        }
+    }
+
     public void close() {
         dbHelper.close();
     }
@@ -51,7 +57,7 @@ public class ActiveAccountRepository {
 
     public synchronized ActiveAccount getActiveAccount() {
         if(currentActive == null) {
-            open();
+            openReadonly();
             Cursor cursor = database.query(DatabaseHelper.TABLE_ACTIVEACCOUNT,
                     allColumns,
                     null,
