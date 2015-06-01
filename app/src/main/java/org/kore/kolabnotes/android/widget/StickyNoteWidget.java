@@ -7,7 +7,10 @@ import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.Context;
 import android.content.Intent;
+import android.text.Html;
+import android.text.Spanned;
 import android.widget.RemoteViews;
+import android.widget.TextView;
 
 import org.kore.kolab.notes.Note;
 import org.kore.kolabnotes.android.DetailActivity;
@@ -85,7 +88,10 @@ public class StickyNoteWidget extends AppWidgetProvider {
 
         if(note != null) {
             views.setTextViewText(R.id.sticky_note_summary, note.getSummary());
-            views.setTextViewText(R.id.sticky_note_description, note.getDescription());
+
+            Spanned fromHtml = Html.fromHtml(note.getDescription());
+
+            views.setTextViewText(R.id.sticky_note_description, fromHtml);
         }
 
 
