@@ -102,7 +102,7 @@ public class StickyNoteWidgetConfigureActivity extends Activity {
 
                 // It is the responsibility of the configuration activity to update the app widget
                 AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
-                ListWidget.updateAppWidget(context, appWidgetManager, mAppWidgetId);
+                StickyNoteWidget.updateAppWidget(context, appWidgetManager, mAppWidgetId,noteRepository);
 
                 // Make sure we pass back the original appWidgetId
                 Intent resultValue = new Intent();
