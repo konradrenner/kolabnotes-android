@@ -50,7 +50,9 @@ public class NoteRepository {
     }
 
     public void openReadonly() {
-        database = dbHelper.getReadableDatabase();
+        if(database == null || !database.isOpen()) {
+            database = dbHelper.getReadableDatabase();
+        }
     }
 
     public void close() {

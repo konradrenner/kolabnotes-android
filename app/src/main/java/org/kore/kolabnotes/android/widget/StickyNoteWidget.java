@@ -84,7 +84,6 @@ public class StickyNoteWidget extends AppWidgetProvider {
 
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.sticky_note_widget);
         views.setOnClickPendingIntent(R.id.sticky_note_summary, pendingIntentMainActivity);
-        views.setOnClickPendingIntent(R.id.sticky_note_description, pendingIntentMainActivity);
 
         if(note != null) {
             views.setTextViewText(R.id.sticky_note_summary, note.getSummary());

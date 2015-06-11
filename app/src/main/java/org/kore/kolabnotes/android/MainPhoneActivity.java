@@ -39,8 +39,11 @@ import org.kore.kolab.notes.Identification;
 import org.kore.kolab.notes.Note;
 import org.kore.kolab.notes.Notebook;
 import org.kore.kolabnotes.android.adapter.NoteAdapter;
+import org.kore.kolabnotes.android.content.AccountIdentifier;
 import org.kore.kolabnotes.android.content.ActiveAccount;
 import org.kore.kolabnotes.android.content.ActiveAccountRepository;
+import org.kore.kolabnotes.android.content.DataCache;
+import org.kore.kolabnotes.android.content.DataCaches;
 import org.kore.kolabnotes.android.content.NoteRepository;
 import org.kore.kolabnotes.android.content.NoteTagRepository;
 import org.kore.kolabnotes.android.content.NotebookRepository;
@@ -74,6 +77,7 @@ public class MainPhoneActivity extends ActionBarActivity implements SyncStatusOb
     private AccountManager mAccountManager;
     private String selectedNotebookName;
     private boolean fromDetailActivity = false;
+    private DataCaches dataCache = new DataCaches(this);
 
     private NoteRepository notesRepository = new NoteRepository(this);
     private NotebookRepository notebookRepository = new NotebookRepository(this);
@@ -136,7 +140,7 @@ public class MainPhoneActivity extends ActionBarActivity implements SyncStatusOb
 
         mRecyclerView = (RecyclerView) findViewById(R.id.list);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        mRecyclerView.setItemAnimator(new CustomItemAnimator());
+        //mRecyclerView.setItemAnimator(new CustomItemAnimator());
         //mRecyclerView.setItemAnimator(new ReboundItemAnimator());
 
         mAdapter = new NoteAdapter(new ArrayList<Note>(), R.layout.row_application, this);
@@ -194,6 +198,7 @@ public class MainPhoneActivity extends ActionBarActivity implements SyncStatusOb
         //show progress
         mRecyclerView.setVisibility(View.GONE);
     }
+
 
     class ProfileChanger implements AccountHeader.OnAccountHeaderListener{
         @Override
@@ -287,14 +292,15 @@ public class MainPhoneActivity extends ActionBarActivity implements SyncStatusOb
             }
 
             List<Note> notes;
+            DataCache noteCache = dataCache.getNoteCache(activeAccount);
             if(notebookUID == null){
-                notes = notesRepository.getAll(account,rootFolder);
+                notes = noteCache.getNotes();
             }else{
-                notes = notesRepository.getFromNotebook(account,rootFolder,notebookUID);
+                notes = noteCache.getNotesFromNotebook(notebookUID);
             }
 
-            List<String> tags = tagRepository.getAll();
-            List<Notebook> notebooks = notebookRepository.getAll(account, rootFolder);
+            List<String> tags = dataCache.getTags();
+            List<Notebook> notebooks = noteCache.getNotebooks();
 
             runOnUiThread(new ReloadDataThread(notebooks,notes,tags));
         }
@@ -574,7 +580,10 @@ public class MainPhoneActivity extends ActionBarActivity implements SyncStatusOb
 
     final void reloadData(){
         ActiveAccount activeAccount = activeAccountRepository.getActiveAccount();
-        reloadData(notebookRepository.getAll(activeAccount.getAccount(), activeAccount.getRootFolder()),notesRepository.getAll(activeAccount.getAccount(),activeAccount.getRootFolder()),tagRepository.getAll());
+        DataCache noteCache = this.dataCache.getNoteCache(activeAccount);
+        noteCache.reloadData();
+        this.dataCache.reloadTags();
+        reloadData(noteCache.getNotebooks(), noteCache.getNotes(), dataCache.getTags());
     }
 
     class CreateButtonListener implements View.OnClickListener{
