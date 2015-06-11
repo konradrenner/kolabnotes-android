@@ -257,6 +257,10 @@ public class MainPhoneActivity extends ActionBarActivity implements SyncStatusOb
         if(fromDetailActivity && selectedNotebookName != null){
             notebookUID = notebookRepository.getBySummary(activeAccount.getAccount(),activeAccount.getRootFolder(),selectedNotebookName).getIdentification().getUid();
             fromDetailActivity = false;
+
+            //Refresh the loaded data because it could be that something changed, after coming back from detail activity
+            this.dataCache.reloadTags();
+            this.dataCache.getNoteCache(activeAccount).reloadData();
         }
         new AccountChangeThread(activeAccount,notebookUID).run();
     }
