@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.text.TextUtils;
+import android.view.View;
 import android.widget.RemoteViews;
 
 import org.apache.http.params.CoreConnectionPNames;
@@ -74,12 +75,13 @@ public class ListWidget extends AppWidgetProvider {
         intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
         intent.setData(Uri.parse(intent.toUri(Intent.URI_INTENT_SCHEME)));
         // Instantiate the RemoteViews object for the app widget layout.
+
         RemoteViews rv = new RemoteViews(context.getPackageName(), R.layout.list_widget);
         // Set up the RemoteViews object to use a RemoteViews adapter.
         // This adapter connects
         // to a RemoteViewsService  through the specified intent.
         // This is how you populate the data.
-        rv.setRemoteAdapter(appWidgetId, intent);
+        rv.setRemoteAdapter(appWidgetId,R.id.widget_list_notes, intent);
 
         // The empty view is displayed when the collection has no items.
         // It should be in the same layout used to instantiate the RemoteViews
@@ -113,7 +115,7 @@ public class ListWidget extends AppWidgetProvider {
 
             intent.putExtra(DetailActivity.NOTEBOOK_UID, new NotebookRepository(context).getBySummary(email,rootFolder,notebook));
         }
-        PendingIntent pendingIntentCreate = PendingIntent.getActivity(context, appWidgetId, intentCreate,Intent.FLAG_ACTIVITY_NEW_TASK);
+        PendingIntent pendingIntentCreate = PendingIntent.getActivity(context, appWidgetId, intentCreate,PendingIntent.FLAG_UPDATE_CURRENT);
 
         if(!TextUtils.isEmpty(notebook)){
             if(sb.length() > 0){
@@ -126,7 +128,7 @@ public class ListWidget extends AppWidgetProvider {
             rv.setTextViewText(R.id.widget_text_detail, sb.toString());
         }
         Intent intentMainActivity = new Intent(context, MainPhoneActivity.class);
-        PendingIntent pendingIntentMainActivity = PendingIntent.getActivity(context, appWidgetId, intentMainActivity,Intent.FLAG_ACTIVITY_NEW_TASK);
+        PendingIntent pendingIntentMainActivity = PendingIntent.getActivity(context, appWidgetId, intentMainActivity,PendingIntent.FLAG_UPDATE_CURRENT);
 
 
         rv.setOnClickPendingIntent(R.id.imageButton_icon,pendingIntentMainActivity);
