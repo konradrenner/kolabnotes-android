@@ -296,7 +296,12 @@ public class MainPhoneActivity extends ActionBarActivity implements SyncStatusOb
                 activeAccount = activeAccountRepository.switchAccount(account, rootFolder);
             }
 
-            toolbar.setTitle(Utils.getNameOfActiveAccount(MainPhoneActivity.this,activeAccount.getAccount(),activeAccount.getRootFolder()));
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    toolbar.setTitle(Utils.getNameOfActiveAccount(MainPhoneActivity.this,activeAccount.getAccount(),activeAccount.getRootFolder()));
+                }
+            });
 
             List<Note> notes;
             DataCache noteCache = dataCache.getNoteCache(activeAccount);
