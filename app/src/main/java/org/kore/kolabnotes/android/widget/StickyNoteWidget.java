@@ -12,6 +12,7 @@ import android.text.Spanned;
 import android.widget.RemoteViews;
 import android.widget.TextView;
 
+import org.kore.kolab.notes.Color;
 import org.kore.kolab.notes.Note;
 import org.kore.kolabnotes.android.DetailActivity;
 import org.kore.kolabnotes.android.MainPhoneActivity;
@@ -80,7 +81,7 @@ public class StickyNoteWidget extends AppWidgetProvider {
 
         Intent intentMainActivity = new Intent(context, DetailActivity.class);
         intentMainActivity.putExtra(DetailActivity.NOTE_UID,noteUID);
-        PendingIntent pendingIntentMainActivity = PendingIntent.getActivity(context, appWidgetId, intentMainActivity,Intent.FLAG_ACTIVITY_NEW_TASK);
+        PendingIntent pendingIntentMainActivity = PendingIntent.getActivity(context, appWidgetId, intentMainActivity,PendingIntent.FLAG_UPDATE_CURRENT);
 
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.sticky_note_widget);
         views.setOnClickPendingIntent(R.id.sticky_note_summary, pendingIntentMainActivity);
@@ -91,6 +92,14 @@ public class StickyNoteWidget extends AppWidgetProvider {
             Spanned fromHtml = Html.fromHtml(note.getDescription());
 
             views.setTextViewText(R.id.sticky_note_description, fromHtml);
+
+            Color noteColor = note.getColor();
+
+            if(noteColor != null) {
+                int color = android.graphics.Color.parseColor(noteColor.getHexcode());
+                views.setInt(R.id.sticky_note_summary, "setBackgroundColor", color);
+                views.setInt(R.id.sticky_note_description, "setBackgroundColor", color);
+            }
         }
 
 
