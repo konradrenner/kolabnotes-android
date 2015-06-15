@@ -12,6 +12,7 @@ import android.support.v7.widget.Toolbar;
 import android.text.Html;
 import android.text.Spanned;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -30,6 +31,7 @@ import org.kore.kolab.notes.Identification;
 import org.kore.kolab.notes.Note;
 import org.kore.kolab.notes.Notebook;
 import org.kore.kolab.notes.Tag;
+import org.kore.kolabnotes.android.content.AccountIdentifier;
 import org.kore.kolabnotes.android.content.ActiveAccount;
 import org.kore.kolabnotes.android.content.ActiveAccountRepository;
 import org.kore.kolabnotes.android.content.NoteRepository;
@@ -110,8 +112,22 @@ public class DetailActivity extends ActionBarActivity implements ShareActionProv
         Intent startIntent = getIntent();
         String uid = startIntent.getStringExtra(NOTE_UID);
         String notebook = startIntent.getStringExtra(NOTEBOOK_UID);
+
         if(uid != null){
-            ActiveAccount activeAccount = activeAccountRepository.getActiveAccount();
+
+            String accountEmail = startIntent.getStringExtra(Utils.INTENT_ACCOUNT_EMAIL);
+            String rootFolder = startIntent.getStringExtra(Utils.INTENT_ACCOUNT_ROOT_FOLDER);
+
+            ActiveAccount activeAccount;
+            if(accountEmail != null && rootFolder != null){
+                activeAccount = activeAccountRepository.switchAccount(accountEmail,rootFolder);
+            }else{
+                activeAccount = activeAccountRepository.getActiveAccount();
+            }
+
+            Log.d("onCreate","accountEmail:"+accountEmail);
+            Log.d("onCreate","rootFolder:"+rootFolder);
+
             String notebookSummary = notebookRepository.getByUID(  activeAccount.getAccount(), activeAccount.getRootFolder(), notebook).getSummary();
             note = noteRepository.getByUID(activeAccount.getAccount(), activeAccount.getRootFolder(),uid);
             EditText summary = (EditText) findViewById(R.id.detail_summary);

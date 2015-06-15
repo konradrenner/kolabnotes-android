@@ -17,6 +17,7 @@ import org.kore.kolab.notes.Note;
 import org.kore.kolabnotes.android.DetailActivity;
 import org.kore.kolabnotes.android.MainPhoneActivity;
 import org.kore.kolabnotes.android.R;
+import org.kore.kolabnotes.android.Utils;
 import org.kore.kolabnotes.android.content.NoteRepository;
 import org.kore.kolabnotes.android.security.AuthenticatorActivity;
 
@@ -81,6 +82,9 @@ public class StickyNoteWidget extends AppWidgetProvider {
 
         Intent intentMainActivity = new Intent(context, DetailActivity.class);
         intentMainActivity.putExtra(DetailActivity.NOTE_UID,noteUID);
+        intentMainActivity.putExtra(DetailActivity.NOTEBOOK_UID,notesRepository.getUIDofNotebook(account,rootFolder,noteUID));
+        intentMainActivity.putExtra(Utils.INTENT_ACCOUNT_EMAIL,accountEmail);
+        intentMainActivity.putExtra(Utils.INTENT_ACCOUNT_ROOT_FOLDER,rootFolder);
         PendingIntent pendingIntentMainActivity = PendingIntent.getActivity(context, appWidgetId, intentMainActivity,PendingIntent.FLAG_UPDATE_CURRENT);
 
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.sticky_note_widget);

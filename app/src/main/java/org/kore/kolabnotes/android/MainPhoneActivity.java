@@ -84,6 +84,7 @@ public class MainPhoneActivity extends ActionBarActivity implements SyncStatusOb
     private TagRepository tagRepository = new TagRepository(this);
     private NoteTagRepository notetagRepository = new NoteTagRepository(this);
     private ActiveAccountRepository activeAccountRepository = new ActiveAccountRepository(this);
+    private Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,7 +97,7 @@ public class MainPhoneActivity extends ActionBarActivity implements SyncStatusOb
         //Utils.configureWindowEnterExitTransition(getWindow());
 
         // Handle Toolbar
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
@@ -294,6 +295,8 @@ public class MainPhoneActivity extends ActionBarActivity implements SyncStatusOb
             if(activeAccount == null) {
                 activeAccount = activeAccountRepository.switchAccount(account, rootFolder);
             }
+
+            toolbar.setTitle(Utils.getNameOfActiveAccount(MainPhoneActivity.this,activeAccount.getAccount(),activeAccount.getRootFolder()));
 
             List<Note> notes;
             DataCache noteCache = dataCache.getNoteCache(activeAccount);
