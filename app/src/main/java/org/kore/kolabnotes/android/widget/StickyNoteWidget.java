@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.text.Html;
 import android.text.Spanned;
+import android.util.Log;
 import android.widget.RemoteViews;
 import android.widget.TextView;
 
@@ -79,13 +80,15 @@ public class StickyNoteWidget extends AppWidgetProvider {
         Note note = notesRepository.getByUID(accountEmail, rootFolder, noteUID);
 
         // Construct the RemoteViews object
-
+        String uidofNotebook = notesRepository.getUIDofNotebook(accountEmail, rootFolder, noteUID);
         Intent intentMainActivity = new Intent(context, DetailActivity.class);
         intentMainActivity.putExtra(DetailActivity.NOTE_UID,noteUID);
-        intentMainActivity.putExtra(DetailActivity.NOTEBOOK_UID,notesRepository.getUIDofNotebook(account,rootFolder,noteUID));
+        intentMainActivity.putExtra(DetailActivity.NOTEBOOK_UID,uidofNotebook);
         intentMainActivity.putExtra(Utils.INTENT_ACCOUNT_EMAIL,accountEmail);
         intentMainActivity.putExtra(Utils.INTENT_ACCOUNT_ROOT_FOLDER,rootFolder);
         PendingIntent pendingIntentMainActivity = PendingIntent.getActivity(context, appWidgetId, intentMainActivity,PendingIntent.FLAG_UPDATE_CURRENT);
+
+        Log.d("updateAppWidget","uiDofNotebook:"+uidofNotebook);
 
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.sticky_note_widget);
         views.setOnClickPendingIntent(R.id.sticky_note_summary, pendingIntentMainActivity);

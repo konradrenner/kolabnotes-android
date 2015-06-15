@@ -127,6 +127,7 @@ public class DetailActivity extends ActionBarActivity implements ShareActionProv
 
             Log.d("onCreate","accountEmail:"+accountEmail);
             Log.d("onCreate","rootFolder:"+rootFolder);
+            Log.d("onCreate","notebook-uid:"+notebook);
 
             String notebookSummary = notebookRepository.getByUID(  activeAccount.getAccount(), activeAccount.getRootFolder(), notebook).getSummary();
             note = noteRepository.getByUID(activeAccount.getAccount(), activeAccount.getRootFolder(),uid);

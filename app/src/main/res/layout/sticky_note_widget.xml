@@ -30,7 +30,7 @@
             android:textColor="#000000"
             android:isScrollContainer="true"
             android:scrollbars="vertical"
-            android:scrollbarFadeDuration="@integer/abc_config_activityDefaultDur"
+            android:scrollHorizontally="true"
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:id="@+id/sticky_note_description"
             android:inputType="textMultiLine|textWebEditText"
