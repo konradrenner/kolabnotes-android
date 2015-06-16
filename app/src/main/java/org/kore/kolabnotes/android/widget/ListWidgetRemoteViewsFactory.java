@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
+import org.kore.kolab.notes.Color;
 import org.kore.kolab.notes.Note;
 import org.kore.kolab.notes.Tag;
 import org.kore.kolabnotes.android.DetailActivity;
@@ -134,6 +135,13 @@ public class ListWidgetRemoteViewsFactory implements RemoteViewsService.RemoteVi
         i.putExtra(DetailActivity.NOTEBOOK_UID, correctNotebookUID);
 
         row.setOnClickFillInIntent(R.id.list_widget_row_summary, i);
+
+        Color noteColor = note.getColor();
+
+        if(noteColor != null) {
+            int color = android.graphics.Color.parseColor(noteColor.getHexcode());
+            row.setInt(R.id.list_widget_row_summary, "setBackgroundColor", color);
+        }
 
         return row;
     }

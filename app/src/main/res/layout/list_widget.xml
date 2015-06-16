@@ -5,10 +5,13 @@
     tools:showIn="@layout/list_widget_info"
     android:orientation="vertical">
 
+    <include android:id="@+id/widget_list_header"
+        layout="@layout/list_widget_header" />
+
     <ListView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/widget_list_notes"
         android:background="@color/background_material_dark"
-        android:alpha="0.5"/>
+        android:alpha="0.8"/>
 </LinearLayout>
