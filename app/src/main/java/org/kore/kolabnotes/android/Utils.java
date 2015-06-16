@@ -72,7 +72,7 @@ public class Utils {
     public static final AccountIdentifier getAccountIdentifierWithName(Context context, String account){
         String rootFolder = "Notes";
         String email = "local";
-        if(!account.equals("local")) {
+        if(account == null || !account.equals("local")) {
             AccountManager accountManager = AccountManager.get(context);
             Account[] accounts = AccountManager.get(context).getAccountsByType(AuthenticatorActivity.ARG_ACCOUNT_TYPE);
 
