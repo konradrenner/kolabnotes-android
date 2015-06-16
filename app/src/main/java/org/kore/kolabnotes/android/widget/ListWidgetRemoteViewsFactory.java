@@ -6,19 +6,16 @@ import android.app.Application;
 import android.appwidget.AppWidgetManager;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
 import org.kore.kolab.notes.Color;
 import org.kore.kolab.notes.Note;
 import org.kore.kolab.notes.Tag;
-import org.kore.kolabnotes.android.DetailActivity;
 import org.kore.kolabnotes.android.R;
-import org.kore.kolabnotes.android.content.ActiveAccount;
+import org.kore.kolabnotes.android.Utils;
 import org.kore.kolabnotes.android.content.NoteRepository;
 import org.kore.kolabnotes.android.content.NotebookRepository;
-import org.kore.kolabnotes.android.content.TagRepository;
 import org.kore.kolabnotes.android.security.AuthenticatorActivity;
 
 import java.util.ArrayList;
@@ -122,8 +119,9 @@ public class ListWidgetRemoteViewsFactory implements RemoteViewsService.RemoteVi
         row.setTextViewText(R.id.list_widget_row_summary, note.getSummary());
 
         Intent i = new Intent();
-        i.putExtra(DetailActivity.NOTE_UID, note.getIdentification().getUid());
-        String activeAccount = ListWidgetConfigureActivity.loadListWidgetAccountPref(app.getApplicationContext(),appWidgetId);
+        i.putExtra(Utils.NOTE_UID, note.getIdentification().getUid());
+        i.putExtra(Utils.INTENT_ACCOUNT_EMAIL,accountEmail);
+        i.putExtra(Utils.INTENT_ACCOUNT_ROOT_FOLDER,rootFolder);
 
         String correctNotebookUID;
         if(notebookUID == null){
@@ -132,7 +130,7 @@ public class ListWidgetRemoteViewsFactory implements RemoteViewsService.RemoteVi
             correctNotebookUID = notebookUID;
         }
 
-        i.putExtra(DetailActivity.NOTEBOOK_UID, correctNotebookUID);
+        i.putExtra(Utils.NOTEBOOK_UID, correctNotebookUID);
 
         row.setOnClickFillInIntent(R.id.list_widget_row_summary, i);
 

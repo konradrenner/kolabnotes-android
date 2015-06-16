@@ -9,22 +9,16 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.text.TextUtils;
-import android.view.View;
 import android.widget.RemoteViews;
 
-import org.apache.http.params.CoreConnectionPNames;
-import org.kore.kolab.notes.Note;
-import org.kore.kolab.notes.Tag;
+import org.kore.kolab.notes.Notebook;
 import org.kore.kolabnotes.android.DetailActivity;
 import org.kore.kolabnotes.android.MainPhoneActivity;
 import org.kore.kolabnotes.android.R;
-import org.kore.kolabnotes.android.content.NoteRepository;
+import org.kore.kolabnotes.android.Utils;
+import org.kore.kolabnotes.android.content.AccountIdentifier;
 import org.kore.kolabnotes.android.content.NotebookRepository;
 import org.kore.kolabnotes.android.security.AuthenticatorActivity;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 
 /**
@@ -94,30 +88,27 @@ public class ListWidget extends AppWidgetProvider {
         rv.setTextViewText(R.id.widget_text, correctAccountName);
 
         Intent intentCreate = new Intent(context, DetailActivity.class);
+        Intent intentMainActivity = new Intent(context, MainPhoneActivity.class);
+
+        AccountIdentifier accId = Utils.getAccountIdentifierWithName(context, account);
 
         StringBuilder sb = new StringBuilder();
+
         if(!TextUtils.isEmpty(notebook)){
             sb.append(notebook);
 
-            String rootFolder = "Notes";
-            String email = "local";
-            if(!account.equals("local")) {
-                AccountManager accountManager = AccountManager.get(context);
-                Account[] accounts = AccountManager.get(context).getAccountsByType(AuthenticatorActivity.ARG_ACCOUNT_TYPE);
+            Notebook bySummary = new NotebookRepository(context).getBySummary(accId.getAccount(), accId.getRootFolder(), notebook);
 
-                for (Account acc : accounts) {
-                    if(account.equals(accountManager.getUserData(acc, AuthenticatorActivity.KEY_ACCOUNT_NAME))){
-                        email = accountManager.getUserData(acc, AuthenticatorActivity.KEY_EMAIL);
-                        rootFolder = accountManager.getUserData(acc, AuthenticatorActivity.KEY_ROOT_FOLDER);
-                    }
-                }
-            }
-
-            intent.putExtra(DetailActivity.NOTEBOOK_UID, new NotebookRepository(context).getBySummary(email,rootFolder,notebook));
+            intent.putExtra(Utils.NOTEBOOK_UID, bySummary.getIdentification().getUid());
+            intentCreate.putExtra(Utils.NOTEBOOK_UID, bySummary.getIdentification().getUid());
+            intentMainActivity.putExtra(Utils.NOTEBOOK_UID, bySummary.getIdentification().getUid());
         }
+
+        intentCreate.putExtra(Utils.INTENT_ACCOUNT_EMAIL, accId.getAccount());
+        intentCreate.putExtra(Utils.INTENT_ACCOUNT_ROOT_FOLDER, accId.getRootFolder());
         PendingIntent pendingIntentCreate = PendingIntent.getActivity(context, appWidgetId, intentCreate,PendingIntent.FLAG_UPDATE_CURRENT);
 
-        if(!TextUtils.isEmpty(notebook)){
+        if(!TextUtils.isEmpty(tag)){
             if(sb.length() > 0){
                 sb.append(" / ");
             }
@@ -127,7 +118,9 @@ public class ListWidget extends AppWidgetProvider {
         if(sb.length() > 0){
             rv.setTextViewText(R.id.widget_text_detail, sb.toString());
         }
-        Intent intentMainActivity = new Intent(context, MainPhoneActivity.class);
+
+        intentMainActivity.putExtra(Utils.INTENT_ACCOUNT_EMAIL, accId.getAccount());
+        intentMainActivity.putExtra(Utils.INTENT_ACCOUNT_ROOT_FOLDER, accId.getRootFolder());
         PendingIntent pendingIntentMainActivity = PendingIntent.getActivity(context, appWidgetId, intentMainActivity,PendingIntent.FLAG_UPDATE_CURRENT);
 
 

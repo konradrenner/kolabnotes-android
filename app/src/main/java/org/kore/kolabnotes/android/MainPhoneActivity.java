@@ -39,7 +39,6 @@ import org.kore.kolab.notes.Identification;
 import org.kore.kolab.notes.Note;
 import org.kore.kolab.notes.Notebook;
 import org.kore.kolabnotes.android.adapter.NoteAdapter;
-import org.kore.kolabnotes.android.content.AccountIdentifier;
 import org.kore.kolabnotes.android.content.ActiveAccount;
 import org.kore.kolabnotes.android.content.ActiveAccountRepository;
 import org.kore.kolabnotes.android.content.DataCache;
@@ -48,7 +47,6 @@ import org.kore.kolabnotes.android.content.NoteRepository;
 import org.kore.kolabnotes.android.content.NoteTagRepository;
 import org.kore.kolabnotes.android.content.NotebookRepository;
 import org.kore.kolabnotes.android.content.TagRepository;
-import org.kore.kolabnotes.android.itemanimator.CustomItemAnimator;
 import org.kore.kolabnotes.android.security.AuthenticatorActivity;
 
 import java.sql.Timestamp;
@@ -242,7 +240,23 @@ public class MainPhoneActivity extends ActionBarActivity implements SyncStatusOb
     @Override
     public void onResume(){
         super.onResume();
-        ActiveAccount activeAccount = activeAccountRepository.getActiveAccount();
+
+        Intent startIntent = getIntent();
+        String email = startIntent.getStringExtra(Utils.INTENT_ACCOUNT_EMAIL);
+        String rootFolder = startIntent.getStringExtra(Utils.INTENT_ACCOUNT_ROOT_FOLDER);
+        String notebookUID = startIntent.getStringExtra(Utils.NOTEBOOK_UID);
+
+        ActiveAccount activeAccount;
+        if(email != null && rootFolder != null) {
+            activeAccount = activeAccountRepository.switchAccount(email,rootFolder);
+        }else{
+            activeAccount = activeAccountRepository.getActiveAccount();
+        }
+
+        if(notebookUID != null){
+            selectedNotebookName = notebookRepository.getByUID(activeAccount.getAccount(),activeAccount.getRootFolder(),notebookUID).getSummary();
+        }
+
         for(IProfile profile : mAccount.getProfiles()){
             if(profile instanceof ProfileDrawerItem){
                 ProfileDrawerItem item = (ProfileDrawerItem)profile;
@@ -254,7 +268,7 @@ public class MainPhoneActivity extends ActionBarActivity implements SyncStatusOb
             }
         }
 
-        String notebookUID = null;
+
         if(fromDetailActivity && selectedNotebookName != null){
             notebookUID = notebookRepository.getBySummary(activeAccount.getAccount(),activeAccount.getRootFolder(),selectedNotebookName).getIdentification().getUid();
             fromDetailActivity = false;
@@ -474,9 +488,9 @@ public class MainPhoneActivity extends ActionBarActivity implements SyncStatusOb
 
     public void animateActivity(Note note) {
         Intent i = new Intent(this, DetailActivity.class);
-        i.putExtra(DetailActivity.NOTE_UID, note.getIdentification().getUid());
+        i.putExtra(Utils.NOTE_UID, note.getIdentification().getUid());
         ActiveAccount activeAccount = activeAccountRepository.getActiveAccount();
-        i.putExtra(DetailActivity.NOTEBOOK_UID, notesRepository.getUIDofNotebook(activeAccount.getAccount(),activeAccount.getRootFolder(),note.getIdentification().getUid()));
+        i.putExtra(Utils.NOTEBOOK_UID, notesRepository.getUIDofNotebook(activeAccount.getAccount(),activeAccount.getRootFolder(),note.getIdentification().getUid()));
 
         ActivityOptionsCompat transitionActivityOptions = ActivityOptionsCompat.makeSceneTransitionAnimation(this, Pair.create((View) mFabButton, "fab"));
         startActivityForResult(i,DETAIL_ACTIVITY_RESULT_CODE,transitionActivityOptions.toBundle());
@@ -611,7 +625,7 @@ public class MainPhoneActivity extends ActionBarActivity implements SyncStatusOb
                 createNotebookDialog(intent).show();
             }else{
                 if(notebook != null) {
-                    intent.putExtra(DetailActivity.NOTEBOOK_UID, notebook.getIdentification().getUid());
+                    intent.putExtra(Utils.NOTEBOOK_UID, notebook.getIdentification().getUid());
                 }
                 startActivityForResult(intent,DETAIL_ACTIVITY_RESULT_CODE);
             }
@@ -725,7 +739,7 @@ public class MainPhoneActivity extends ActionBarActivity implements SyncStatusOb
             }
 
             if(intent != null){
-                intent.putExtra(DetailActivity.NOTEBOOK_UID,nb.getIdentification().getUid());
+                intent.putExtra(Utils.NOTEBOOK_UID,nb.getIdentification().getUid());
                 startActivityForResult(intent,DETAIL_ACTIVITY_RESULT_CODE);
             }
         }

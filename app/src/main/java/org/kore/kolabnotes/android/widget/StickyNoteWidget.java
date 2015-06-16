@@ -11,12 +11,10 @@ import android.text.Html;
 import android.text.Spanned;
 import android.util.Log;
 import android.widget.RemoteViews;
-import android.widget.TextView;
 
 import org.kore.kolab.notes.Color;
 import org.kore.kolab.notes.Note;
 import org.kore.kolabnotes.android.DetailActivity;
-import org.kore.kolabnotes.android.MainPhoneActivity;
 import org.kore.kolabnotes.android.R;
 import org.kore.kolabnotes.android.Utils;
 import org.kore.kolabnotes.android.content.NoteRepository;
@@ -82,8 +80,8 @@ public class StickyNoteWidget extends AppWidgetProvider {
         // Construct the RemoteViews object
         String uidofNotebook = notesRepository.getUIDofNotebook(accountEmail, rootFolder, noteUID);
         Intent intentMainActivity = new Intent(context, DetailActivity.class);
-        intentMainActivity.putExtra(DetailActivity.NOTE_UID,noteUID);
-        intentMainActivity.putExtra(DetailActivity.NOTEBOOK_UID,uidofNotebook);
+        intentMainActivity.putExtra(Utils.NOTE_UID,noteUID);
+        intentMainActivity.putExtra(Utils.NOTEBOOK_UID,uidofNotebook);
         intentMainActivity.putExtra(Utils.INTENT_ACCOUNT_EMAIL,accountEmail);
         intentMainActivity.putExtra(Utils.INTENT_ACCOUNT_ROOT_FOLDER,rootFolder);
         PendingIntent pendingIntentMainActivity = PendingIntent.getActivity(context, appWidgetId, intentMainActivity,PendingIntent.FLAG_UPDATE_CURRENT);

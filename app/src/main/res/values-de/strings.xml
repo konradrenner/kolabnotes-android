@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Kolab Notizen</string>
+
+    <string name="sticky_note_name">Kolab Klebezettel</string>
+
+    <string name="drawer_open">Menü geöffnet</string>
+    <string name="drawer_close">Menü geschlossen</string>
+
+    <string name="action_settings">Einstellungen</string>
+
+    <string name="ok">Ok</string>
+    <string name="cancel">Abbrechen</string>
+
+    <string name="yes">Ja</string>
+    <string name="no">Nein</string>
+    <string name="no_selection">Keine Auswahl</string>
+
+    <string name="classification">Klassifizierung</string>
+    <string name="creationDate">Erstellt</string>
+    <string name="modificationDate">Letzte Änderung</string>
+    <string name="tags">Kategorien</string>
+    <string name="notags">Keine Kategorien</string>
+    <string name="radio_public">Öffentlich</string>
+    <string name="radio_confidential">Vertraulich</string>
+    <string name="radio_private">Privat</string>
+
+    <string name="activity_detail_title">DetailActivity</string>
+
+    <string name="drawer_item_tags">Kategorien</string>
+    <string name="drawer_item_notebooks">Notizbücher</string>
+    <string name="drawer_item_allnotes">Alle Notizen des selektierten Kontos</string>
+    <string name="widget_allnotes">Alle des Kontos</string>
+    <string name="drawer_item_allaccount_notes">Notizen aller Konten</string>
+    <string name="drawer_account_local">Lokales Konto</string>
+
+    <string name="label">Kolab Notizen</string>
+
+    <string name="signup_title">Neues Konto</string>
+    <string name="signup_ok">Neues Konto erstellt</string>
+    <string name="login_label">Einloggen</string>
+    <string name="text_summary">Bezeichnung</string>
+    <string name="description_hint">Inhalt</string>
+
+    <string name="dialog_input_text_hint">Bezeichnung</string>
+    <string name="dialog_input_text_search_hint">Suche mit Bezeichnung</string>
+    <string name="dialog_input_text_notebook">Neues Notizbuch</string>
+    <string name="dialog_input_text_search">Notizsuche</string>
+    <string name="dialog_delete_note">Lösche Notiz</string>
+    <string name="dialog_cancel_warning">Abbruch</string>
+    <string name="dialog_input_text_tag">Neue Kategorie</string>
+    <string name="dialog_change_classification">Ändere Klassifizierung</string>
+    <string name="dialog_change_tags">Ändere Kategorien</string>
+    <string name="add">hinzufügen</string>
+    <string name="title_edit_tag">Ändere Kategorien</string>
+    <string name="dialog_question_delete">Wollen Sie die Notiz wirklich löschen?</string>
+    <string name="dialog_question_cancel">Alle Änderungen werden verworfen, sind Sie sicher?</string>
+    <string name="account_name">Name des Konto</string>
+    <string name="imap_root_folder">IMAP Wurzelordner (Standard ist Notes)</string>
+    <string name="imap_server_url">IMAP Server-URL (ohne prefix)</string>
+    <string name="port_number">Port-Nummer (Standard ist 993)</string>
+
+    <string name="error_generic">Ein Fehler ist aufgetreten</string>
+    <string name="error_duplicate_account">Kann Konto nicht erstellen (existiert bereits eines mit gleichem Namen?)</string>
+    <string name="enable_ssl">SSL aktiviert</string>
+    <string name="title_add_account">Konto hinzufügen</string>
+    <string name="configure">Konfigurieren</string>
+    <string name="add_widget">Widget hinzufügen</string>
+    <string name="title_colorpicker">Farbauswahl</string>
+</resources>

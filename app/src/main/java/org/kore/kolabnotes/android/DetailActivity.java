@@ -31,7 +31,6 @@ import org.kore.kolab.notes.Identification;
 import org.kore.kolab.notes.Note;
 import org.kore.kolab.notes.Notebook;
 import org.kore.kolab.notes.Tag;
-import org.kore.kolabnotes.android.content.AccountIdentifier;
 import org.kore.kolabnotes.android.content.ActiveAccount;
 import org.kore.kolabnotes.android.content.ActiveAccountRepository;
 import org.kore.kolabnotes.android.content.NoteRepository;
@@ -44,6 +43,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
@@ -55,9 +55,6 @@ public class DetailActivity extends ActionBarActivity implements ShareActionProv
             "<html><head><meta name=\"kolabnotes-richtext\" content=\"1\" /><meta http-equiv=\"Content-Type\" /></head><body>";
 
     private final static String HTMLEND = "</body></html>";
-
-    public static final String NOTE_UID = "note_uid";
-    public static final String NOTEBOOK_UID = "notebook_uid";
 
     private NotebookRepository notebookRepository = new NotebookRepository(this);
     private NoteRepository noteRepository = new NoteRepository(this);
@@ -110,8 +107,8 @@ public class DetailActivity extends ActionBarActivity implements ShareActionProv
         allTags.addAll(tagRepository.getAll());
 
         Intent startIntent = getIntent();
-        String uid = startIntent.getStringExtra(NOTE_UID);
-        String notebook = startIntent.getStringExtra(NOTEBOOK_UID);
+        String uid = startIntent.getStringExtra(Utils.NOTE_UID);
+        String notebook = startIntent.getStringExtra(Utils.NOTEBOOK_UID);
 
         if(uid != null){
 
@@ -344,9 +341,20 @@ public class DetailActivity extends ActionBarActivity implements ShareActionProv
         builder.show();
     }
 
+    String getDescriptionFromView(){
+        EditText description =(EditText) findViewById(R.id.detail_description);
+
+        if(description.getText() != null){
+            StringBuilder sb = new StringBuilder(HTMLSTART);
+            sb.append(Html.toHtml(description.getText()));
+            sb.append(HTMLEND);
+            return sb.toString();
+        }
+        return null;
+    }
+
     void saveNote(){
         EditText summary = (EditText) findViewById(R.id.detail_summary);
-        EditText description =(EditText) findViewById(R.id.detail_description);
 
         Spinner spinner = (Spinner) findViewById(R.id.spinner_notebook);
 
@@ -363,13 +371,8 @@ public class DetailActivity extends ActionBarActivity implements ShareActionProv
 
         String notebookName = spinner.getSelectedItem().toString();
 
-        String descriptionValue = null;
-        if(description.getText() != null){
-            StringBuilder sb = new StringBuilder(HTMLSTART);
-            sb.append(Html.toHtml(description.getText()));
-            sb.append(HTMLEND);
-            descriptionValue = sb.toString();
-        }
+        String descriptionValue = getDescriptionFromView();
+
 
         if(note == null){
             final String uuid = UUID.randomUUID().toString();
@@ -475,6 +478,54 @@ public class DetailActivity extends ActionBarActivity implements ShareActionProv
 
     @Override
     public void onBackPressed() {
+        if(note != null){
+
+            EditText summary = (EditText) findViewById(R.id.detail_summary);
+
+            Spinner spinner = (Spinner) findViewById(R.id.spinner_notebook);
+
+
+            Note newNote = new Note(note.getIdentification(),note.getAuditInformation(),selectedClassification == null ? Note.Classification.PUBLIC : selectedClassification, summary.getText().toString());
+            newNote.setDescription(getDescriptionFromView());
+            newNote.setColor(selectedColor);
+
+            Tag[] tags = new Tag[selectedTags.size()];
+            int i=0;
+            for(String tag : selectedTags){
+                tags[i++] = new Tag(tag);
+            }
+
+            newNote.addCategories(tags);
+
+            boolean differences = Utils.differentMutableData(note,newNote) || Objects.equals(givenNotebook,spinner.getSelectedItem().toString());
+
+            if(differences) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+                builder.setTitle(R.string.dialog_cancel_warning);
+                builder.setMessage(R.string.dialog_question_cancel);
+                builder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        goBack();
+                    }
+                });
+                builder.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        //nothing
+                    }
+                });
+                builder.show();
+            }else{
+                goBack();
+            }
+        }else{
+            goBack();
+        }
+    }
+
+    void goBack(){
         Intent returnIntent = new Intent();
         returnIntent.putExtra("selectedNotebookName",givenNotebook);
         setResult(RESULT_CANCELED,returnIntent);
