@@ -71,14 +71,20 @@ public class KolabSyncAdapter extends AbstractThreadedSyncAdapter {
         String url = accountManager.getUserData(account, AuthenticatorActivity.KEY_SERVER);
         String sport = accountManager.getUserData(account,AuthenticatorActivity.KEY_PORT);
         String sssl = accountManager.getUserData(account,AuthenticatorActivity.KEY_SSL);
+        String skolab = accountManager.getUserData(account,AuthenticatorActivity.KEY_KOLAB);
         int port = Integer.valueOf(sport == null ? "993" : sport);
         boolean sslEnabled = sssl == null ? true : Boolean.valueOf(sssl);
+        boolean kolabEnabled = skolab == null ? true : Boolean.valueOf(skolab);
         String password = accountManager.getPassword(account);
 
         AccountInformation.Builder builder = AccountInformation.createForHost(url).username(email).password(password).port(port);
 
         if(!sslEnabled){
             builder.disableSSL();
+        }
+
+        if(!kolabEnabled){
+            builder.disableFolderAnnotation();
         }
 
         AccountInformation info = builder.build();

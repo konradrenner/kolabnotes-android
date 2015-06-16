@@ -60,13 +60,17 @@
                     android:inputType="text"
                     android:hint="@string/imap_root_folder" />
 
-                <CheckBox
-                    android:layout_width="wrap_content"
+                <EditText
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/enable_ssl"
-                    android:id="@+id/enable_ssl"
-                    android:checked="true"
-                    android:clickable="true" />
+                    android:inputType="number"
+                    android:numeric="integer"
+                    android:ems="10"
+                    android:id="@+id/sync_intervall"
+                    android:layout_gravity="center_horizontal"
+                    android:editable="true"
+                    android:enabled="true"
+                    android:hint="@string/sync_intervall" />
 
                 <AutoCompleteTextView android:id="@+id/email" android:layout_width="match_parent"
                     android:layout_height="wrap_content" android:hint="@string/prompt_email"
@@ -79,6 +83,26 @@
                     android:imeActionLabel="@string/action_sign_in"
                     android:imeOptions="actionUnspecified" android:inputType="textPassword"
                     android:maxLines="1" android:singleLine="true" />
+
+                <CheckBox
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/enable_ssl"
+                    android:id="@+id/enable_ssl"
+                    android:paddingTop="5dp"
+                    android:paddingBottom="5dp"
+                    android:checked="true"
+                    android:clickable="true" />
+
+                <Switch
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/kolab_enabled"
+                    android:id="@+id/enable_kolab"
+                    android:checked="true"
+                    android:paddingTop="5dp"
+                    android:paddingBottom="5dp"
+                    android:clickable="true" />
 
                 <Button android:id="@+id/submit" style="@android:style/TextAppearance.Material.Widget.Button"
                     android:layout_width="match_parent" android:layout_height="wrap_content"

@@ -12,6 +12,7 @@ import android.view.View;
 import android.widget.AutoCompleteTextView;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.Switch;
 import android.widget.Toast;
 
 import org.kore.kolab.notes.AccountInformation;
@@ -31,8 +32,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
 
     // Sync interval constants
     public static final long SECONDS_PER_MINUTE = 60L;
-    public static final long SYNC_INTERVAL_IN_MINUTES = 1440L;
-    public static final long SYNC_INTERVAL = SYNC_INTERVAL_IN_MINUTES * SECONDS_PER_MINUTE;
+    public static final long MINUTES_PER_HOUR = 60L;
 
     public final static String KEY_ACCOUNT_NAME = "account_name";
     public final static String KEY_ROOT_FOLDER = "root_folder";
@@ -40,6 +40,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
     public final static String KEY_EMAIL = "email";
     public final static String KEY_PORT = "port";
     public final static String KEY_SSL = "enablessl";
+    public final static String KEY_KOLAB = "enablekolab";
 
 
     private final String TAG = this.getClass().getSimpleName();
@@ -71,8 +72,8 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
         final EditText mPasswordView = (EditText) findViewById(R.id.accountPassword);
         final EditText mPortView = (EditText) findViewById(R.id.port_number);
         final CheckBox mEnableSSLView = (CheckBox) findViewById(R.id.enable_ssl);
-
-        final String accountType = getIntent().getStringExtra(ARG_ACCOUNT_TYPE);
+        final EditText mSyncView = (EditText) findViewById(R.id.sync_intervall);
+        final Switch mKolabView = (Switch) findViewById(R.id.enable_kolab);
 
         Log.d("kolabnotes", TAG + "> Started authenticating");
 
@@ -85,6 +86,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
             mAccountNameView.setError(null);
             mRootFolderView.setError(null);
             mIMAPServerView.setError(null);
+            mSyncView.setError(null);
 
             // Store values at the time of the login attempt.
             String email = mEmailView.getText().toString();
@@ -92,6 +94,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
             String accountName = mAccountNameView.getText().toString();
             String rootFolder = mRootFolderView.getText() == null || mRootFolderView.getText().toString().trim().length() == 0 ? "Notes" : mRootFolderView.getText().toString();
             String imapServer = mIMAPServerView.getText().toString();
+            int syncIntervall = mSyncView.getText() == null || mSyncView.getText().toString().trim().length() == 0 ? 24 : Integer.valueOf(mSyncView.getText().toString());
             int port = mPortView.getText() == null || mPortView.getText().toString().trim().length() == 0 ? 993 : Integer.valueOf(mPortView.getText().toString());
 
             boolean cancel = false;
@@ -114,6 +117,10 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
                 mPasswordView.setError(getString(R.string.error_field_required));
                 focusView = mPasswordView;
                 cancel = true;
+            }else if (syncIntervall < 1 || syncIntervall > 90) {
+                mSyncView.setError(getString(R.string.error_field_to_low));
+                focusView = mSyncView;
+                cancel = true;
             }
 
 
@@ -127,6 +134,10 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
 
                 if(!mEnableSSLView.isChecked()){
                     builder.disableSSL();
+                }
+
+                if(!mKolabView.isChecked()){
+                    builder.disableFolderAnnotation();
                 }
 
                 Account account = new Account(accountName, ARG_ACCOUNT_TYPE);
@@ -144,7 +155,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
                     ContentResolver.addPeriodicSync(account,
                             MainPhoneActivity.AUTHORITY,
                             Bundle.EMPTY,
-                            SYNC_INTERVAL);
+                            syncIntervall*MINUTES_PER_HOUR*SECONDS_PER_MINUTE);
 
                     Intent intent = new Intent(this,MainPhoneActivity.class);
 
@@ -167,6 +178,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
         bundle.putString(KEY_EMAIL, kolabAccount.getAccountInformation().getUsername());
         bundle.putString(KEY_PORT, Integer.toString(kolabAccount.getAccountInformation().getPort()));
         bundle.putString(KEY_SSL, Boolean.toString(kolabAccount.getAccountInformation().isSSLEnabled()));
+        bundle.putString(KEY_KOLAB, Boolean.toString(kolabAccount.getAccountInformation().isFolderAnnotationEnabled()));
         return bundle;
     }
 }

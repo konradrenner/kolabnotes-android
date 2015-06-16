@@ -81,4 +81,6 @@
     <string name="add_widget">Add widget</string>
     <string name="title_colorpicker">Choose Color</string>
     <string name="button_add">button_add</string>
+    <string name="kolab_enabled">Kolab extensions</string>
+    <string name="sync_intervall">Sync intervall in hours (default 24)</string>
 </resources>

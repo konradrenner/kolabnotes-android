@@ -77,6 +77,7 @@
     <string name="dialog_uploading">Prozess Beispiel</string>
     <string name="error_connection">Ein Fehler ist bei der Verbindungsherstellung passiert</string>
     <string name="error_field_required">Hier muss eine Eingabe erfolgen</string>
+    <string name="error_field_to_low">Dieser Wert muss zwischen 1 und 90 liegen</string>
     <string name="error_incorrect_password">Passwort ist falsch</string>
     <string name="error_invalid_email">EMail ist ungültig</string>
     <string name="hello_world">Hallo Welt!</string>
@@ -109,4 +110,6 @@
     <string name="title_dialog_search">Notizsuche</string>
     <string name="title_ok">OK</string>
     <string name="title_share">Teilen</string>
+    <string name="kolab_enabled">Kolaberweiterungen</string>
+    <string name="sync_intervall">Sync-Intervall in Stunden (Standard 24)</string>
 </resources>
