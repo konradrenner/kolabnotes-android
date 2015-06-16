@@ -497,7 +497,9 @@ public class DetailActivity extends ActionBarActivity implements ShareActionProv
 
             newNote.addCategories(tags);
 
-            boolean differences = Utils.differentMutableData(note,newNote) || Objects.equals(givenNotebook,spinner.getSelectedItem().toString());
+            String nb = spinner.getSelectedItem().toString();
+
+            boolean differences = Utils.differentMutableData(note,newNote) || !Objects.equals(givenNotebook,nb);
 
             if(differences) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);

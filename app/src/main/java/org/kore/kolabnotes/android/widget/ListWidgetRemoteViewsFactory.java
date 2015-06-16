@@ -136,10 +136,11 @@ public class ListWidgetRemoteViewsFactory implements RemoteViewsService.RemoteVi
 
         Color noteColor = note.getColor();
 
-        if(noteColor != null) {
-            int color = android.graphics.Color.parseColor(noteColor.getHexcode());
-            row.setInt(R.id.list_widget_row_summary, "setBackgroundColor", color);
-        }
+        //Buggy, if one requests it, I will active it again
+        // if(noteColor != null) {
+        //    int color = android.graphics.Color.parseColor(noteColor.getHexcode());
+        //    row.setInt(R.id.list_widget_row_summary, "setBackgroundColor", color);
+        //}
 
         return row;
     }

@@ -594,13 +594,15 @@ public class MainPhoneActivity extends ActionBarActivity implements SyncStatusOb
 
         orderDrawerItems(mDrawer);
 
-        if(mAdapter != null) {
-            mAdapter.clearNotes();
-            if(notes.size() == 0){
-                mAdapter.notifyDataSetChanged();
-            }else {
-                mAdapter.addNotes(notes);
-            }
+        if(mAdapter == null){
+            mAdapter = new NoteAdapter(new ArrayList<Note>(), R.layout.row_application, this);
+        }
+
+        mAdapter.clearNotes();
+        if(notes.size() == 0){
+            mAdapter.notifyDataSetChanged();
+        }else {
+            mAdapter.addNotes(notes);
         }
     }
 
