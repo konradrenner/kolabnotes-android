@@ -32,7 +32,6 @@ public class ListWidgetRemoteViewsFactory implements RemoteViewsService.RemoteVi
     private List<Note> notes;
     private String rootFolder;
     private String accountEmail;
-    private String notebookUID;
     private NoteRepository notesRepository;
 
     public ListWidgetRemoteViewsFactory(Application app, Intent intent) {
@@ -79,7 +78,7 @@ public class ListWidgetRemoteViewsFactory implements RemoteViewsService.RemoteVi
         if(notebook == null){
             notes = notesRepository.getAll(accountEmail,rootFolder);
         }else{
-            notebookUID = notebookRepository.getBySummary(accountEmail,rootFolder,notebook).getIdentification().getUid();
+            String notebookUID = notebookRepository.getBySummary(accountEmail,rootFolder,notebook).getIdentification().getUid();
             notes = notesRepository.getFromNotebook(accountEmail,rootFolder, notebookUID);
         }
 
@@ -123,12 +122,7 @@ public class ListWidgetRemoteViewsFactory implements RemoteViewsService.RemoteVi
         i.putExtra(Utils.INTENT_ACCOUNT_EMAIL,accountEmail);
         i.putExtra(Utils.INTENT_ACCOUNT_ROOT_FOLDER,rootFolder);
 
-        String correctNotebookUID;
-        if(notebookUID == null){
-            correctNotebookUID = notesRepository.getUIDofNotebook(accountEmail,rootFolder,note.getIdentification().getUid());
-        }else{
-            correctNotebookUID = notebookUID;
-        }
+        String correctNotebookUID= notesRepository.getUIDofNotebook(accountEmail,rootFolder,note.getIdentification().getUid());
 
         i.putExtra(Utils.NOTEBOOK_UID, correctNotebookUID);
 

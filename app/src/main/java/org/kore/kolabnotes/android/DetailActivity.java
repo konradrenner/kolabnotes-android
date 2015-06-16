@@ -102,8 +102,6 @@ public class DetailActivity extends ActionBarActivity implements ShareActionProv
             }
         });
 
-        initSpinner();
-
         allTags.addAll(tagRepository.getAll());
 
         Intent startIntent = getIntent();
@@ -121,6 +119,8 @@ public class DetailActivity extends ActionBarActivity implements ShareActionProv
             }else{
                 activeAccount = activeAccountRepository.getActiveAccount();
             }
+
+            initSpinner();
 
             Log.d("onCreate","accountEmail:"+accountEmail);
             Log.d("onCreate","rootFolder:"+rootFolder);
@@ -150,6 +150,7 @@ public class DetailActivity extends ActionBarActivity implements ShareActionProv
             }
         }else if(notebook != null){
             ActiveAccount activeAccount = activeAccountRepository.getActiveAccount();
+            initSpinner();
             String notebookSummary = notebookRepository.getByUID(activeAccount.getAccount(), activeAccount.getRootFolder(), notebook).getSummary();
             setSpinnerSelection(notebookSummary);
             givenNotebook = notebookSummary;
