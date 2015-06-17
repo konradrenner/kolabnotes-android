@@ -107,24 +107,23 @@ public class DetailActivity extends ActionBarActivity implements ShareActionProv
         Intent startIntent = getIntent();
         String uid = startIntent.getStringExtra(Utils.NOTE_UID);
         String notebook = startIntent.getStringExtra(Utils.NOTEBOOK_UID);
+        String accountEmail = startIntent.getStringExtra(Utils.INTENT_ACCOUNT_EMAIL);
+        String rootFolder = startIntent.getStringExtra(Utils.INTENT_ACCOUNT_ROOT_FOLDER);
+
+        Log.d("onCreate","accountEmail:"+accountEmail);
+        Log.d("onCreate","rootFolder:"+rootFolder);
+        Log.d("onCreate","notebook-uid:"+notebook);
+
+        ActiveAccount activeAccount;
+        if(accountEmail != null && rootFolder != null){
+            activeAccount = activeAccountRepository.switchAccount(accountEmail,rootFolder);
+        }else{
+            activeAccount = activeAccountRepository.getActiveAccount();
+        }
+
+        initSpinner();
 
         if(uid != null){
-
-            String accountEmail = startIntent.getStringExtra(Utils.INTENT_ACCOUNT_EMAIL);
-            String rootFolder = startIntent.getStringExtra(Utils.INTENT_ACCOUNT_ROOT_FOLDER);
-
-            ActiveAccount activeAccount;
-            if(accountEmail != null && rootFolder != null){
-                activeAccount = activeAccountRepository.switchAccount(accountEmail,rootFolder);
-            }else{
-                activeAccount = activeAccountRepository.getActiveAccount();
-            }
-
-            initSpinner();
-
-            Log.d("onCreate","accountEmail:"+accountEmail);
-            Log.d("onCreate","rootFolder:"+rootFolder);
-            Log.d("onCreate","notebook-uid:"+notebook);
 
             String notebookSummary = notebookRepository.getByUID(  activeAccount.getAccount(), activeAccount.getRootFolder(), notebook).getSummary();
             note = noteRepository.getByUID(activeAccount.getAccount(), activeAccount.getRootFolder(),uid);
@@ -141,6 +140,8 @@ public class DetailActivity extends ActionBarActivity implements ShareActionProv
                 selectedTags.add(tag.getName());
             }
 
+            Log.d("onCreate","notebookSummary:"+notebookSummary);
+
             setSpinnerSelection(notebookSummary);
             givenNotebook = notebookSummary;
 
@@ -149,7 +150,6 @@ public class DetailActivity extends ActionBarActivity implements ShareActionProv
                 toolbar.setBackgroundColor(Color.parseColor(selectedColor.getHexcode()));
             }
         }else if(notebook != null){
-            ActiveAccount activeAccount = activeAccountRepository.getActiveAccount();
             initSpinner();
             String notebookSummary = notebookRepository.getByUID(activeAccount.getAccount(), activeAccount.getRootFolder(), notebook).getSummary();
             setSpinnerSelection(notebookSummary);
@@ -500,7 +500,8 @@ public class DetailActivity extends ActionBarActivity implements ShareActionProv
 
             String nb = spinner.getSelectedItem().toString();
 
-            boolean differences = Utils.differentMutableData(note,newNote) || !Objects.equals(givenNotebook,nb);
+            boolean nbSameNames = Objects.equals(givenNotebook,nb);
+            boolean differences = Utils.differentMutableData(note,newNote) || !nbSameNames;
 
             if(differences) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);

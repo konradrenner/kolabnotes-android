@@ -101,7 +101,8 @@ public class ListWidget extends AppWidgetProvider {
 
             intent.putExtra(Utils.NOTEBOOK_UID, bySummary.getIdentification().getUid());
             intentCreate.putExtra(Utils.NOTEBOOK_UID, bySummary.getIdentification().getUid());
-            intentMainActivity.putExtra(Utils.NOTEBOOK_UID, bySummary.getIdentification().getUid());
+            //does not work, if it is requested from somebody I will debug, but I don't need it at the moment
+            //intentMainActivity.putExtra(Utils.NOTEBOOK_UID, bySummary.getIdentification().getUid());
         }
 
         intentCreate.putExtra(Utils.INTENT_ACCOUNT_EMAIL, accId.getAccount());
