@@ -16,6 +16,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -90,6 +91,8 @@ public class MainPhoneActivity extends ActionBarActivity implements SyncStatusOb
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_phone);
+
+        initCachesAsync(activeAccountRepository.getActiveAccount());
 
         // Set explode animation when enter and exit the activity
         //Utils.configureWindowEnterExitTransition(getWindow());
@@ -198,6 +201,21 @@ public class MainPhoneActivity extends ActionBarActivity implements SyncStatusOb
         mRecyclerView.setVisibility(View.GONE);
     }
 
+    void initCachesAsync(final ActiveAccount account){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                dataCache.reloadTags();
+            }
+        }).start();
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                dataCache.getNoteCache(account).reloadData();
+            }
+        }).start();
+    }
 
     class ProfileChanger implements AccountHeader.OnAccountHeaderListener{
         @Override
@@ -270,7 +288,12 @@ public class MainPhoneActivity extends ActionBarActivity implements SyncStatusOb
 
 
         if(fromDetailActivity && selectedNotebookName != null){
-            notebookUID = notebookRepository.getBySummary(activeAccount.getAccount(),activeAccount.getRootFolder(),selectedNotebookName).getIdentification().getUid();
+            Notebook nb = notebookRepository.getBySummary(activeAccount.getAccount(),activeAccount.getRootFolder(),selectedNotebookName);
+
+            //GitHub Issue 31
+            if(nb != null) {
+                notebookUID = nb.getIdentification().getUid();
+            }
             fromDetailActivity = false;
 
             //Refresh the loaded data because it could be that something changed, after coming back from detail activity
@@ -305,7 +328,7 @@ public class MainPhoneActivity extends ActionBarActivity implements SyncStatusOb
 
         @Override
         public void run() {
-
+            long ts = System.currentTimeMillis();
             if(activeAccount == null) {
                 activeAccount = activeAccountRepository.switchAccount(account, rootFolder);
             }
@@ -490,7 +513,9 @@ public class MainPhoneActivity extends ActionBarActivity implements SyncStatusOb
         Intent i = new Intent(this, DetailActivity.class);
         i.putExtra(Utils.NOTE_UID, note.getIdentification().getUid());
         ActiveAccount activeAccount = activeAccountRepository.getActiveAccount();
-        i.putExtra(Utils.NOTEBOOK_UID, notesRepository.getUIDofNotebook(activeAccount.getAccount(),activeAccount.getRootFolder(),note.getIdentification().getUid()));
+        if(selectedNotebookName != null) {
+            i.putExtra(Utils.NOTEBOOK_UID, notebookRepository.getBySummary(activeAccount.getAccount(), activeAccount.getRootFolder(), selectedNotebookName).getIdentification().getUid());
+        }
 
         ActivityOptionsCompat transitionActivityOptions = ActivityOptionsCompat.makeSceneTransitionAnimation(this, Pair.create((View) mFabButton, "fab"));
         startActivityForResult(i,DETAIL_ACTIVITY_RESULT_CODE,transitionActivityOptions.toBundle());

@@ -8,8 +8,8 @@ android {
         applicationId "org.kore.kolabnotes.android"
         minSdkVersion 21
         targetSdkVersion 21
-        versionCode 1
-        versionName ""
+        versionCode 2
+        versionName "0.1.0-alpha2"
     }
     buildTypes {
         release {

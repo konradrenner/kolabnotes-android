@@ -112,4 +112,5 @@
     <string name="title_share">Teilen</string>
     <string name="kolab_enabled">Kolaberweiterungen</string>
     <string name="sync_intervall">Sync-Intervall in Stunden (Standard 24)</string>
+    <string name="note_not_found">Notiz nicht gefunden!</string>
 </resources>

@@ -1,6 +1,7 @@
 package org.kore.kolabnotes.android.content;
 
 import android.content.Context;
+import android.util.Log;
 
 import org.kore.kolab.notes.Note;
 import org.kore.kolab.notes.Notebook;
@@ -35,12 +36,15 @@ public class DataCache  implements Serializable{
     }
 
     public void reloadData(){
+        long ts = System.currentTimeMillis();
+        Log.d("DataCache - reloadData", "Start reloading data");
         this.notes.clear();
         this.notesPerNotebook.clear();
         this.notebooks.clear();
 
         this.notes.addAll(notesRepository.getAll(account.getAccount(),account.getRootFolder()));
         this.notebooks.addAll(notebookRepository.getAll(account.getAccount(),account.getRootFolder()));
+        Log.d("DataCache - reloadData","Reloading finished in "+(System.currentTimeMillis()-ts)+"ms");
     }
 
     private void initData(){

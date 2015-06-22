@@ -24,6 +24,7 @@ import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.kore.kolab.notes.AuditInformation;
 import org.kore.kolab.notes.Colors;
@@ -78,7 +79,11 @@ public class DetailActivity extends ActionBarActivity implements ShareActionProv
 
     private List<String> allTags = new ArrayList<>();
 
+    //Given notebook is set, if a notebook uid was in the start intent,
+    //intialNotebook ist the notebook-UID which is selected after setSpinnerSelection was called
     private String givenNotebook;
+    private String intialNotebookName;
+    private boolean isNewNote;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -123,38 +128,55 @@ public class DetailActivity extends ActionBarActivity implements ShareActionProv
 
         initSpinner();
 
-        if(uid != null){
+        if(uid != null) {
+            note = noteRepository.getByUID(activeAccount.getAccount(), activeAccount.getRootFolder(), uid);
 
-            String notebookSummary = notebookRepository.getByUID(  activeAccount.getAccount(), activeAccount.getRootFolder(), notebook).getSummary();
-            note = noteRepository.getByUID(activeAccount.getAccount(), activeAccount.getRootFolder(),uid);
-            EditText summary = (EditText) findViewById(R.id.detail_summary);
-            EditText description =(EditText) findViewById(R.id.detail_description);
-            summary.setText(note.getSummary());
+            //Maybe the note got deleted (sync happend after a click on a note was done) => Issues 34 on GitHub
+            if (note == null) {
+                Toast.makeText(this, R.string.note_not_found, Toast.LENGTH_LONG);
+            } else {
+                EditText summary = (EditText) findViewById(R.id.detail_summary);
+                EditText description = (EditText) findViewById(R.id.detail_description);
+                summary.setText(note.getSummary());
 
-            Spanned fromHtml = Html.fromHtml(note.getDescription());
+                Spanned fromHtml = Html.fromHtml(note.getDescription());
 
-            description.setText(fromHtml, TextView.BufferType.SPANNABLE);
+                description.setText(fromHtml, TextView.BufferType.SPANNABLE);
 
-            selectedClassification = note.getClassification();
-            for(Tag tag : note.getCategories()){
-                selectedTags.add(tag.getName());
+                selectedClassification = note.getClassification();
+                for (Tag tag : note.getCategories()) {
+                    selectedTags.add(tag.getName());
+                }
+
+                selectedColor = note.getColor();
+                if (selectedColor != null) {
+                    toolbar.setBackgroundColor(Color.parseColor(selectedColor.getHexcode()));
+                }
             }
+        }else{
+            isNewNote = true;
+        }
 
-            Log.d("onCreate","notebookSummary:"+notebookSummary);
+        setNotebook(activeAccount, notebook);
+        intialNotebookName = getNotebookSpinnerSelectionName();
+    }
 
-            setSpinnerSelection(notebookSummary);
-            givenNotebook = notebookSummary;
-
-            selectedColor = note.getColor();
-            if(selectedColor != null) {
-                toolbar.setBackgroundColor(Color.parseColor(selectedColor.getHexcode()));
-            }
-        }else if(notebook != null){
-            initSpinner();
-            String notebookSummary = notebookRepository.getByUID(activeAccount.getAccount(), activeAccount.getRootFolder(), notebook).getSummary();
+    void setNotebook(ActiveAccount activeAccount,String uid){
+        if(uid != null) {
+            String notebookSummary = notebookRepository.getByUID(activeAccount.getAccount(), activeAccount.getRootFolder(), uid).getSummary();
             setSpinnerSelection(notebookSummary);
             givenNotebook = notebookSummary;
         }
+    }
+
+    String getNotebookSpinnerSelectionName(){
+        Spinner spinner = (Spinner) findViewById(R.id.spinner_notebook);
+
+        if(spinner.getSelectedItem() == null){
+            return null;
+        }
+
+        return spinner.getSelectedItem().toString();
     }
 
     void setSpinnerSelection(String notebookSummary){
@@ -370,7 +392,7 @@ public class DetailActivity extends ActionBarActivity implements ShareActionProv
             return;
         }
 
-        String notebookName = spinner.getSelectedItem().toString();
+        String notebookName = getNotebookSpinnerSelectionName();
 
         String descriptionValue = getDescriptionFromView();
 
@@ -411,9 +433,12 @@ public class DetailActivity extends ActionBarActivity implements ShareActionProv
         }
 
         Intent returnIntent = new Intent();
-        returnIntent.putExtra("selectedNotebookName",notebookName);
-        setResult(RESULT_OK,returnIntent);
+        if(isNewNote || givenNotebook != null) {
+            returnIntent.putExtra("selectedNotebookName", notebookName);
+        }
+        Utils.updateWidgetsForChange(getApplication());
 
+        setResult(RESULT_OK,returnIntent);
         finish();
     }
 
@@ -428,9 +453,12 @@ public class DetailActivity extends ActionBarActivity implements ShareActionProv
                 public void onClick(DialogInterface dialog, int which) {
                     DetailActivity.this.noteRepository.delete(  activeAccountRepository.getActiveAccount().getAccount(), activeAccountRepository.getActiveAccount().getRootFolder(),note);
 
-                    Intent intent = new Intent(DetailActivity.this, MainPhoneActivity.class);
+                    Utils.updateWidgetsForChange(getApplication());
 
-                    startActivity(intent);
+                    Intent returnIntent = new Intent();
+                    returnIntent.putExtra("selectedNotebookName",givenNotebook);
+                    setResult(RESULT_OK,returnIntent);
+                    finish();
                 }
             });
             builder.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
@@ -500,7 +528,7 @@ public class DetailActivity extends ActionBarActivity implements ShareActionProv
 
             String nb = spinner.getSelectedItem().toString();
 
-            boolean nbSameNames = Objects.equals(givenNotebook,nb);
+            boolean nbSameNames = Objects.equals(intialNotebookName,nb);
             boolean differences = Utils.differentMutableData(note,newNote) || !nbSameNames;
 
             if(differences) {

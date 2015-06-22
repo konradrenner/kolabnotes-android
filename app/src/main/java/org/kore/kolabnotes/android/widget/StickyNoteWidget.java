@@ -77,21 +77,26 @@ public class StickyNoteWidget extends AppWidgetProvider {
 
         Note note = notesRepository.getByUID(accountEmail, rootFolder, noteUID);
 
-        // Construct the RemoteViews object
-        String uidofNotebook = notesRepository.getUIDofNotebook(accountEmail, rootFolder, noteUID);
-        Intent intentMainActivity = new Intent(context, DetailActivity.class);
-        intentMainActivity.putExtra(Utils.NOTE_UID,noteUID);
-        intentMainActivity.putExtra(Utils.NOTEBOOK_UID,uidofNotebook);
-        intentMainActivity.putExtra(Utils.INTENT_ACCOUNT_EMAIL,accountEmail);
-        intentMainActivity.putExtra(Utils.INTENT_ACCOUNT_ROOT_FOLDER,rootFolder);
-        PendingIntent pendingIntentMainActivity = PendingIntent.getActivity(context, appWidgetId, intentMainActivity,PendingIntent.FLAG_UPDATE_CURRENT);
-
-        Log.d("updateAppWidget","uiDofNotebook:"+uidofNotebook);
-
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.sticky_note_widget);
-        views.setOnClickPendingIntent(R.id.sticky_note_summary, pendingIntentMainActivity);
+        if(note == null){
+            views.setTextViewText(R.id.sticky_note_summary, context.getResources().getString(R.string.note_not_found));
 
-        if(note != null) {
+            views.setTextViewText(R.id.sticky_note_description, "");
+        }else {
+
+            // Construct the RemoteViews object
+            String uidofNotebook = notesRepository.getUIDofNotebook(accountEmail, rootFolder, noteUID);
+            Intent intentMainActivity = new Intent(context, DetailActivity.class);
+            intentMainActivity.putExtra(Utils.NOTE_UID, noteUID);
+            intentMainActivity.putExtra(Utils.NOTEBOOK_UID, uidofNotebook);
+            intentMainActivity.putExtra(Utils.INTENT_ACCOUNT_EMAIL, accountEmail);
+            intentMainActivity.putExtra(Utils.INTENT_ACCOUNT_ROOT_FOLDER, rootFolder);
+            PendingIntent pendingIntentMainActivity = PendingIntent.getActivity(context, appWidgetId, intentMainActivity, PendingIntent.FLAG_UPDATE_CURRENT);
+
+            Log.d("updateAppWidget", "uiDofNotebook:" + uidofNotebook);
+
+            views.setOnClickPendingIntent(R.id.sticky_note_summary, pendingIntentMainActivity);
+
             views.setTextViewText(R.id.sticky_note_summary, note.getSummary());
 
             Spanned fromHtml = Html.fromHtml(note.getDescription());
@@ -100,13 +105,12 @@ public class StickyNoteWidget extends AppWidgetProvider {
 
             Color noteColor = note.getColor();
 
-            if(noteColor != null) {
+            if (noteColor != null) {
                 int color = android.graphics.Color.parseColor(noteColor.getHexcode());
                 views.setInt(R.id.sticky_note_summary, "setBackgroundColor", color);
                 views.setInt(R.id.sticky_note_description, "setBackgroundColor", color);
             }
         }
-
 
         // Instruct the widget manager to update the widget
         appWidgetManager.updateAppWidget(appWidgetId, views);

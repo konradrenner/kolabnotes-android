@@ -1,6 +1,7 @@
 package org.kore.kolabnotes.android.content;
 
 import android.content.Context;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -32,7 +33,11 @@ public class DataCaches {
    }
 
     public synchronized void reloadTags(){
+        long ts = System.currentTimeMillis();
+        Log.d("DataCaches - reloadTags","Start reloading tags");
+        tags.clear();
         tags.addAll(new TagRepository(context).getAll());
+        Log.d("DataCaches - reloadTags","Reloading finished in "+(System.currentTimeMillis()-ts)+"ms");
     }
 
    public DataCache getNoteCache(AccountIdentifier account){

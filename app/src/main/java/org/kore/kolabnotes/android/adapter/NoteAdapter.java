@@ -13,6 +13,7 @@ import org.kore.kolab.notes.Tag;
 import org.kore.kolabnotes.android.MainPhoneActivity;
 import org.kore.kolabnotes.android.R;
 
+import java.util.Collections;
 import java.util.List;
 
 public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.ViewHolder> {
@@ -41,6 +42,7 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.ViewHolder> {
 
     public void addNotes(List<Note> notes) {
         this.notes.addAll(notes);
+        Collections.sort(this.notes);
         this.notifyItemRangeInserted(0, notes.size() - 1);
     }
 

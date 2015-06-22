@@ -3,7 +3,11 @@ package org.kore.kolabnotes.android;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.annotation.TargetApi;
+import android.app.Application;
+import android.appwidget.AppWidgetManager;
+import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Outline;
 import android.os.Build;
 import android.text.Html;
@@ -19,6 +23,8 @@ import org.kore.kolab.notes.Note;
 import org.kore.kolab.notes.Tag;
 import org.kore.kolabnotes.android.content.AccountIdentifier;
 import org.kore.kolabnotes.android.security.AuthenticatorActivity;
+import org.kore.kolabnotes.android.widget.ListWidget;
+import org.kore.kolabnotes.android.widget.StickyNoteWidget;
 
 import java.util.Objects;
 
@@ -103,6 +109,44 @@ public class Utils {
         note.addCategories(source.getCategories().toArray(new Tag[source.getCategories().size()]));
 
         return note;
+    }
+
+    public static void updateAllWidgets(Context context){
+        Class<StickyNoteWidget> stickyNoteWidgetClass = StickyNoteWidget.class;
+        Class<ListWidget> listWidgetClass = ListWidget.class;
+        Intent stickyIntent = new Intent(context,stickyNoteWidgetClass);
+        Intent listIntent = new Intent(context, listWidgetClass);
+
+        int[] stickyIds = AppWidgetManager.getInstance(context).getAppWidgetIds(new ComponentName(context, stickyNoteWidgetClass));
+        int[] listIds = AppWidgetManager.getInstance(context).getAppWidgetIds(new ComponentName(context, listWidgetClass));
+
+        stickyIntent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
+        stickyIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS,stickyIds);
+
+        listIntent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
+        listIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS,listIds);
+
+        context.sendBroadcast(stickyIntent);
+        context.sendBroadcast(listIntent);
+    }
+
+    public static void updateWidgetsForChange(Context context){
+        Class<StickyNoteWidget> stickyNoteWidgetClass = StickyNoteWidget.class;
+        Class<ListWidget> listWidgetClass = ListWidget.class;
+        Intent stickyIntent = new Intent(context,stickyNoteWidgetClass);
+        Intent listIntent = new Intent(context, listWidgetClass);
+
+        int[] stickyIds = AppWidgetManager.getInstance(context).getAppWidgetIds(new ComponentName(context, stickyNoteWidgetClass));
+        int[] listIds = AppWidgetManager.getInstance(context).getAppWidgetIds(new ComponentName(context, listWidgetClass));
+
+        stickyIntent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
+        stickyIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS,stickyIds);
+
+        listIntent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
+        listIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS,listIds);
+
+        context.sendBroadcast(stickyIntent);
+        //context.sendBroadcast(listIntent);
     }
 
     public static final boolean differentMutableData(Note one, Note two){
