@@ -88,7 +88,6 @@ public class MainPhoneActivity extends ActionBarActivity implements SyncStatusOb
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         //supportRequestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_phone);
 
