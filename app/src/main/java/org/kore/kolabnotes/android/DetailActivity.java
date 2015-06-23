@@ -79,6 +79,8 @@ public class DetailActivity extends ActionBarActivity implements ShareActionProv
 
     private List<String> allTags = new ArrayList<>();
 
+    private boolean notebookSelectionOK = true;
+
     //Given notebook is set, if a notebook uid was in the start intent,
     //intialNotebook ist the notebook-UID which is selected after setSpinnerSelection was called
     private String givenNotebook;
@@ -376,17 +378,74 @@ public class DetailActivity extends ActionBarActivity implements ShareActionProv
         return null;
     }
 
+    private AlertDialog createNotebookDialog(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+        builder.setTitle(R.string.dialog_input_text_notebook);
+
+        LayoutInflater inflater = getLayoutInflater();
+        View view = inflater.inflate(R.layout.dialog_text_input, null);
+
+        builder.setView(view);
+
+        builder.setPositiveButton(R.string.ok,new CreateNotebookButtonListener((EditText)view.findViewById(R.id.dialog_text_input_field)));
+        builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                notebookSelectionOK = false;
+            }
+        });
+        return builder.create();
+    }
+
+    public class CreateNotebookButtonListener implements DialogInterface.OnClickListener{
+
+        private final EditText textField;
+
+        public CreateNotebookButtonListener(EditText textField) {
+            this.textField = textField;
+        }
+
+
+        @Override
+        public void onClick(DialogInterface dialog, int which) {
+            if(textField == null || textField.getText() == null || textField.getText().toString().trim().length() == 0){
+                notebookSelectionOK = false;
+                return;
+            }
+
+            ActiveAccount activeAccount = activeAccountRepository.getActiveAccount();
+
+            Identification ident = new Identification(UUID.randomUUID().toString(),"kolabnotes-android");
+            Timestamp now = new Timestamp(System.currentTimeMillis());
+            AuditInformation audit = new AuditInformation(now,now);
+
+            String value = textField.getText().toString();
+
+            Notebook nb = new Notebook(ident,audit, Note.Classification.PUBLIC, value);
+            nb.setDescription(value);
+            notebookRepository.insert(activeAccount.getAccount(), activeAccount.getRootFolder(), nb);
+            notebookSelectionOK = true;
+        }
+    }
+
     void saveNote(){
         EditText summary = (EditText) findViewById(R.id.detail_summary);
 
         Spinner spinner = (Spinner) findViewById(R.id.spinner_notebook);
 
         if(spinner.getSelectedItem() == null){
-            ((TextView)spinner.getSelectedView()).setError(getString(R.string.error_field_required));
-            spinner.requestFocus();
+            //Just possible if there is no notebook created
+            AlertDialog notebookDialog = createNotebookDialog();
 
-            return;
-        }else if(TextUtils.isEmpty(summary.getText().toString())){
+            notebookDialog.show();
+
+            if(!notebookSelectionOK){
+                return;
+            }
+        }
+
+        if(TextUtils.isEmpty(summary.getText().toString())){
             summary.setError(getString(R.string.error_field_required));
             summary.requestFocus();
             return;
