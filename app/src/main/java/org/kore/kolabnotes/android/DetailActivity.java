@@ -26,8 +26,6 @@ import android.widget.SpinnerAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
-
 import org.kore.kolab.notes.AuditInformation;
 import org.kore.kolab.notes.Colors;
 import org.kore.kolab.notes.Identification;
