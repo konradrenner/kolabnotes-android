@@ -286,12 +286,14 @@ public class MainPhoneActivity extends ActionBarActivity implements SyncStatusOb
         }
 
 
-        if(fromDetailActivity && selectedNotebookName != null){
-            Notebook nb = notebookRepository.getBySummary(activeAccount.getAccount(),activeAccount.getRootFolder(),selectedNotebookName);
+        if(fromDetailActivity){
+            if(selectedNotebookName != null) {
+                Notebook nb = notebookRepository.getBySummary(activeAccount.getAccount(), activeAccount.getRootFolder(), selectedNotebookName);
 
-            //GitHub Issue 31
-            if(nb != null) {
-                notebookUID = nb.getIdentification().getUid();
+                //GitHub Issue 31
+                if (nb != null) {
+                    notebookUID = nb.getIdentification().getUid();
+                }
             }
             fromDetailActivity = false;
 
