@@ -71,8 +71,6 @@ public class OverviewFragment extends Fragment{
 
     public static final int DETAIL_ACTIVITY_RESULT_CODE = 1;
 
-    public static final String AUTHORITY = "kore.kolabnotes";
-
     private final DrawerItemClickedListener drawerItemClickedListener = new DrawerItemClickedListener();
 
 
@@ -193,7 +191,7 @@ public class OverviewFragment extends Fragment{
                     settingsBundle.putBoolean(
                             ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
 
-                    ContentResolver.requestSync(selectedAccount, AUTHORITY, settingsBundle);
+                    ContentResolver.requestSync(selectedAccount,MainActivity.AUTHORITY, settingsBundle);
                 }else{
                     getActivity().runOnUiThread(new Runnable() {
                         @Override
@@ -386,7 +384,7 @@ public class OverviewFragment extends Fragment{
     }
 
     public void refreshFinished(Account selectedAccount){
-        if(selectedAccount == null || !ContentResolver.isSyncActive(selectedAccount,AUTHORITY)){
+        if(selectedAccount == null || !ContentResolver.isSyncActive(selectedAccount,MainActivity.AUTHORITY)){
             getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
