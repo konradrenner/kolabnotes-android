@@ -67,7 +67,7 @@ import java.util.UUID;
 /**
  * Fragment which displays the notes overview and implements the logic for the overview
  */
-public class OverviewFragment extends Fragment{
+public class OverviewFragment extends Fragment implements NoteAdapter.NoteSelectedListener{
 
     public static final int DETAIL_ACTIVITY_RESULT_CODE = 1;
 
@@ -78,8 +78,7 @@ public class OverviewFragment extends Fragment{
     private ImageButton mFabButton;
     private RecyclerView mRecyclerView;
     private SwipeRefreshLayout mSwipeRefreshLayout;
-    private Drawer.Result mDrawer;
-    private AccountHeader.Result mAccount;
+
     private AccountManager mAccountManager;
     private String selectedNotebookName;
     private boolean fromDetailActivity = false;
@@ -95,10 +94,20 @@ public class OverviewFragment extends Fragment{
     private MainActivity activity;
 
     @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+    public View onCreateView(LayoutInflater inflater,
+                             ViewGroup container,
+                             Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.fragment_overview,
+                container,
+                false);
+    }
 
-        activity = (MainActivity)getActivity();
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+
+        this.activity = (MainActivity)activity;
 
         dataCache = new DataCaches(activity);
         notesRepository = new NoteRepository(activity);
@@ -108,6 +117,11 @@ public class OverviewFragment extends Fragment{
         activeAccountRepository = new ActiveAccountRepository(activity);
 
         initCachesAsync(activeAccountRepository.getActiveAccount());
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
 
         // Handle Toolbar
         toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
@@ -120,34 +134,6 @@ public class OverviewFragment extends Fragment{
 
         mAccountManager = AccountManager.get(activity);
 
-        Account[] accounts = mAccountManager.getAccountsByType(AuthenticatorActivity.ARG_ACCOUNT_TYPE);
-
-        ProfileDrawerItem[] profiles = new ProfileDrawerItem[accounts.length+1];
-        profiles[0] = new ProfileDrawerItem().withName(getResources().getString(R.string.drawer_account_local)).withTag("Notes");
-
-        for(int i=0;i<accounts.length;i++) {
-            String email = mAccountManager.getUserData(accounts[i],AuthenticatorActivity.KEY_EMAIL);
-            String name = mAccountManager.getUserData(accounts[i],AuthenticatorActivity.KEY_ACCOUNT_NAME);
-            String rootFolder = mAccountManager.getUserData(accounts[i],AuthenticatorActivity.KEY_ROOT_FOLDER);
-
-            profiles[i+1] = new ProfileDrawerItem().withName(name).withTag(rootFolder).withEmail(email);
-        }
-        mAccount = new AccountHeader()
-                .withActivity(activity)
-                .withHeaderBackground(R.drawable.drawer_header_background)
-                .addProfiles(profiles)
-                .withOnAccountHeaderListener(new ProfileChanger())
-                .build();
-        mDrawer = new Drawer()
-                .withActivity(activity)
-                .withToolbar(toolbar)
-                .withAccountHeader(mAccount)
-                .withOnDrawerItemClickListener(drawerItemClickedListener)
-                .build();
-
-        addDrawerStandardItems(mDrawer);
-
-        mDrawer.setSelection(1);
         // Fab Button
         mFabButton = (ImageButton) getActivity().findViewById(R.id.fab_button);
         //mFabButton.setImageDrawable(new IconicsDrawable(this, FontAwesome.Icon.faw_upload).color(Color.WHITE).actionBarSize());
@@ -159,7 +145,7 @@ public class OverviewFragment extends Fragment{
         //mRecyclerView.setItemAnimator(new CustomItemAnimator());
         //mRecyclerView.setItemAnimator(new ReboundItemAnimator());
 
-        mAdapter = new NoteAdapter(new ArrayList<Note>(), R.layout.row_application, activity);
+        mAdapter = new NoteAdapter(new ArrayList<Note>(), R.layout.row_application, activity, this);
         mRecyclerView.setAdapter(mAdapter);
 
         mSwipeRefreshLayout = (SwipeRefreshLayout) getActivity().findViewById(R.id.swipe_container);
@@ -231,30 +217,20 @@ public class OverviewFragment extends Fragment{
         }).start();
     }
 
-    class ProfileChanger implements AccountHeader.OnAccountHeaderListener{
-        @Override
-        public boolean onProfileChanged(View view, IProfile profile, boolean current) {
-            final ActiveAccount activeAccount = activeAccountRepository.getActiveAccount();
-            String account;
-            String rootFolder;
-            boolean changed;
-            if(profile.getEmail() == null || profile.getEmail().trim().length() == 0){
-                changed = !activeAccount.getAccount().equalsIgnoreCase("local");
-                account = "local";
-                rootFolder = ((ProfileDrawerItem)profile).getTag().toString();
-            }else{
-                changed = !activeAccount.getAccount().equalsIgnoreCase(profile.getEmail());
-                account = profile.getEmail();
-                rootFolder = ((ProfileDrawerItem)profile).getTag().toString();
-            }
+    public DrawerItemClickedListener getDrawerItemClickedListener(){
+        return drawerItemClickedListener;
+    }
 
-            if(changed){
-                new AccountChangeThread(account,rootFolder).start();
-            }
-
-            mDrawer.closeDrawer();
-            return changed;
+    @Override
+    public void onSelect(Note note) {
+        Intent i = new Intent(activity, DetailActivity.class);
+        i.putExtra(Utils.NOTE_UID, note.getIdentification().getUid());
+        ActiveAccount activeAccount = activeAccountRepository.getActiveAccount();
+        if(selectedNotebookName != null) {
+            i.putExtra(Utils.NOTEBOOK_UID, notebookRepository.getBySummary(activeAccount.getAccount(), activeAccount.getRootFolder(), selectedNotebookName).getIdentification().getUid());
         }
+
+        startActivityForResult(i,DETAIL_ACTIVITY_RESULT_CODE);
     }
 
     public void setNotebookNameFromDetail(String name){
@@ -282,12 +258,13 @@ public class OverviewFragment extends Fragment{
             selectedNotebookName = notebookRepository.getByUID(activeAccount.getAccount(),activeAccount.getRootFolder(),notebookUID).getSummary();
         }
 
-        for(IProfile profile : mAccount.getProfiles()){
+        AccountHeader.Result accountHeader = activity.getAccountHeader();
+        for(IProfile profile : accountHeader.getProfiles()){
             if(profile instanceof ProfileDrawerItem){
                 ProfileDrawerItem item = (ProfileDrawerItem)profile;
 
                 if(activeAccount.getAccount().equals(item.getEmail()) && activeAccount.getRootFolder().equals(item.getTag().toString())){
-                    mAccount.setActiveProfile(profile);
+                    accountHeader.setActiveProfile(profile);
                     break;
                 }
             }
@@ -310,6 +287,10 @@ public class OverviewFragment extends Fragment{
             this.dataCache.getNoteCache(activeAccount).reloadData();
         }
         new AccountChangeThread(activeAccount,notebookUID).run();
+    }
+
+    public AccountChangeThread createAccountChangeThread(String account, String rootFolder){
+        return new AccountChangeThread(account,rootFolder);
     }
 
     class AccountChangeThread extends Thread{
@@ -496,11 +477,6 @@ public class OverviewFragment extends Fragment{
     }
 
 
-    public String getSelectedNotebookName(){
-        return selectedNotebookName;
-    }
-
-
     private class DrawerItemClickedListener implements Drawer.OnDrawerItemClickListener{
         @Override
         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l, IDrawerItem iDrawerItem) {
@@ -583,9 +559,10 @@ public class OverviewFragment extends Fragment{
     }
 
     final synchronized void reloadData(List<Notebook> notebooks, List<Note> notes, List<String> tags){
+        Drawer.Result mDrawer = activity.getDrawer();
         mDrawer.getDrawerItems().clear();
 
-        addDrawerStandardItems(mDrawer);
+        activity.addDrawerStandardItems(mDrawer);
         //Query the tags
         for (String tag : tags) {
             mDrawer.getDrawerItems().add(new PrimaryDrawerItem().withName(tag).withTag("TAG"));
@@ -599,7 +576,7 @@ public class OverviewFragment extends Fragment{
         orderDrawerItems(mDrawer);
 
         if(mAdapter == null){
-            mAdapter = new NoteAdapter(new ArrayList<Note>(), R.layout.row_application, activity);
+            mAdapter = new NoteAdapter(new ArrayList<Note>(), R.layout.row_application, activity,this);
         }
 
         mAdapter.clearNotes();
@@ -654,6 +631,7 @@ public class OverviewFragment extends Fragment{
             String value = textField.getText().toString();
 
             if(tagRepository.insert(value)) {
+                Drawer.Result mDrawer = activity.getDrawer();
 
                 mDrawer.addItem(new SecondaryDrawerItem().withName(value).withTag("TAG"));
 
@@ -677,6 +655,7 @@ public class OverviewFragment extends Fragment{
             }
 
             ActiveAccount activeAccount = activeAccountRepository.getActiveAccount();
+            Drawer.Result mDrawer = activity.getDrawer();
 
             IDrawerItem drawerItem = mDrawer.getDrawerItems().get(mDrawer.getCurrentSelection());
             if(drawerItem instanceof BaseDrawerItem){
@@ -738,6 +717,8 @@ public class OverviewFragment extends Fragment{
             Notebook nb = new Notebook(ident,audit, Note.Classification.PUBLIC, value);
             nb.setDescription(value);
             if(notebookRepository.insert(activeAccount.getAccount(), activeAccount.getRootFolder(), nb)) {
+
+                Drawer.Result mDrawer = activity.getDrawer();
 
                 mDrawer.addItem(new SecondaryDrawerItem().withName(value).withTag("NOTEBOOK"));
 
@@ -821,7 +802,7 @@ public class OverviewFragment extends Fragment{
 
             drawer.getDrawerItems().clear();
 
-            addDrawerStandardItems(drawer);
+            activity.addDrawerStandardItems(drawer);
 
             int idx = 3;
             Set<String> displayedTags = new HashSet<>();
@@ -866,14 +847,6 @@ public class OverviewFragment extends Fragment{
             drawer.setSelection(selection);
             drawerItemClickedListener.changeNoteSelection(selectedItem);
         }
-    }
-
-    private final void addDrawerStandardItems(Drawer.Result drawer){
-        drawer.getDrawerItems().add(new PrimaryDrawerItem().withName(getResources().getString(R.string.drawer_item_allaccount_notes)).withTag("ALL_NOTES").withIcon(R.drawable.ic_action_group));
-        drawer.getDrawerItems().add(new SecondaryDrawerItem().withName(getResources().getString(R.string.drawer_item_allnotes)).withTag("ALL_NOTEBOOK").withIcon(R.drawable.ic_action_person));
-        drawer.getDrawerItems().add(new DividerDrawerItem());
-        drawer.getDrawerItems().add(new PrimaryDrawerItem().withName(getResources().getString(R.string.drawer_item_tags)).withTag("HEADING_TAG").setEnabled(false).withDisabledTextColor(R.color.material_drawer_dark_header_selection_text).withIcon(R.drawable.ic_action_labels));
-
     }
 
     void orderDrawerItems(Drawer.Result drawer, String selectionName){

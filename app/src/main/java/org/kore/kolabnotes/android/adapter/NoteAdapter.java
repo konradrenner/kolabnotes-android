@@ -1,5 +1,6 @@
 package org.kore.kolabnotes.android.adapter;
 
+import android.content.Context;
 import android.graphics.Color;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
@@ -20,12 +21,14 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.ViewHolder> {
 
     private List<Note> notes;
     private int rowLayout;
-    private MainActivity mAct;
+    private Context context;
+    private NoteSelectedListener listener;
 
-    public NoteAdapter(List<Note> notes, int rowLayout, MainActivity act) {
+    public NoteAdapter(List<Note> notes, int rowLayout, Context context, NoteSelectedListener listener) {
         this.notes = notes;
         this.rowLayout = rowLayout;
-        this.mAct = act;
+        this.context = context;
+        this.listener = listener;
     }
 
 
@@ -49,7 +52,6 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.ViewHolder> {
     @Override
     public ViewHolder onCreateViewHolder(final ViewGroup viewGroup, int i) {
         View v = LayoutInflater.from(viewGroup.getContext()).inflate(rowLayout, viewGroup, false);
-        final Note note = notes.get(i);
 
         return new ViewHolder(v);
     }
@@ -58,18 +60,18 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.ViewHolder> {
     public void onBindViewHolder(final ViewHolder viewHolder, int i) {
         final Note note = notes.get(i);
         viewHolder.name.setText(note.getSummary());
-        viewHolder.classification.setText(mAct.getResources().getString(R.string.classification)+": "+note.getClassification());
-        viewHolder.createdDate.setText(mAct.getResources().getString(R.string.creationDate)+": "+note.getAuditInformation().getCreationDate());
-        viewHolder.modificationDate.setText(mAct.getResources().getString(R.string.modificationDate)+": "+note.getAuditInformation().getLastModificationDate());
+        viewHolder.classification.setText(context.getResources().getString(R.string.classification)+": "+note.getClassification());
+        viewHolder.createdDate.setText(context.getResources().getString(R.string.creationDate)+": "+note.getAuditInformation().getCreationDate());
+        viewHolder.modificationDate.setText(context.getResources().getString(R.string.modificationDate)+": "+note.getAuditInformation().getLastModificationDate());
         StringBuilder tags = new StringBuilder();
         for(Tag tag : note.getCategories()){
             tags.append(tag.getName());
             tags.append(", ");
         }
         if(tags.length() > 0) {
-            viewHolder.categories.setText(mAct.getResources().getString(R.string.tags)+": "+tags.substring(0, tags.length() - 2));
+            viewHolder.categories.setText(context.getResources().getString(R.string.tags)+": "+tags.substring(0, tags.length() - 2));
         }else{
-            viewHolder.categories.setText(mAct.getResources().getString(R.string.notags));
+            viewHolder.categories.setText(context.getResources().getString(R.string.notags));
         }
 
         if(note != null && note.getColor() != null){
@@ -82,7 +84,7 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.ViewHolder> {
         viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mAct.animateActivity(note);
+                listener.onSelect(note);
             }
         });
     }
@@ -110,5 +112,9 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.ViewHolder> {
             cardView = (CardView)itemView;
         }
 
+    }
+
+    public interface NoteSelectedListener{
+        void onSelect(Note note);
     }
 }
