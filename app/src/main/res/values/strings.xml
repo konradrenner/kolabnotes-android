@@ -84,4 +84,7 @@
     <string name="kolab_enabled">Kolab extensions</string>
     <string name="sync_intervall">Sync intervall in hours (default 24)</string>
     <string name="note_not_found">Note not found!</string>
+
+<!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
