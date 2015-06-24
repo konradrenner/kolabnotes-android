@@ -426,6 +426,7 @@ public class DetailActivity extends ActionBarActivity implements ShareActionProv
             nb.setDescription(value);
             notebookRepository.insert(activeAccount.getAccount(), activeAccount.getRootFolder(), nb);
             notebookSelectionOK = true;
+            setSpinnerSelection(value);
         }
     }
 
