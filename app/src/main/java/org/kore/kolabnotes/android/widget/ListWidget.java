@@ -1,7 +1,5 @@
 package org.kore.kolabnotes.android.widget;
 
-import android.accounts.Account;
-import android.accounts.AccountManager;
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
@@ -13,12 +11,11 @@ import android.widget.RemoteViews;
 
 import org.kore.kolab.notes.Notebook;
 import org.kore.kolabnotes.android.DetailActivity;
-import org.kore.kolabnotes.android.MainPhoneActivity;
+import org.kore.kolabnotes.android.MainActivity;
 import org.kore.kolabnotes.android.R;
 import org.kore.kolabnotes.android.Utils;
 import org.kore.kolabnotes.android.content.AccountIdentifier;
 import org.kore.kolabnotes.android.content.NotebookRepository;
-import org.kore.kolabnotes.android.security.AuthenticatorActivity;
 
 
 /**
@@ -88,7 +85,7 @@ public class ListWidget extends AppWidgetProvider {
         rv.setTextViewText(R.id.widget_text, correctAccountName);
 
         Intent intentCreate = new Intent(context, DetailActivity.class);
-        Intent intentMainActivity = new Intent(context, MainPhoneActivity.class);
+        Intent intentMainActivity = new Intent(context, MainActivity.class);
 
         AccountIdentifier accId = Utils.getAccountIdentifierWithName(context, account);
 

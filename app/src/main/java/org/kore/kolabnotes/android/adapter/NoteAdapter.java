@@ -10,7 +10,7 @@ import android.widget.TextView;
 
 import org.kore.kolab.notes.Note;
 import org.kore.kolab.notes.Tag;
-import org.kore.kolabnotes.android.MainPhoneActivity;
+import org.kore.kolabnotes.android.MainActivity;
 import org.kore.kolabnotes.android.R;
 
 import java.util.Collections;
@@ -20,9 +20,9 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.ViewHolder> {
 
     private List<Note> notes;
     private int rowLayout;
-    private MainPhoneActivity mAct;
+    private MainActivity mAct;
 
-    public NoteAdapter(List<Note> notes, int rowLayout, MainPhoneActivity act) {
+    public NoteAdapter(List<Note> notes, int rowLayout, MainActivity act) {
         this.notes = notes;
         this.rowLayout = rowLayout;
         this.mAct = act;

@@ -16,7 +16,7 @@ import android.widget.Switch;
 import android.widget.Toast;
 
 import org.kore.kolab.notes.AccountInformation;
-import org.kore.kolabnotes.android.MainPhoneActivity;
+import org.kore.kolabnotes.android.MainActivity;
 import org.kore.kolabnotes.android.R;
 
 /**
@@ -149,15 +149,15 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
                 if (mAccountManager.addAccountExplicitly(account, password, userData)) {
                     Toast.makeText(getBaseContext(), R.string.signup_ok, Toast.LENGTH_SHORT).show();
 
-                    ContentResolver.setIsSyncable(account, MainPhoneActivity.AUTHORITY, 1);
-                    ContentResolver.setSyncAutomatically(account, MainPhoneActivity.AUTHORITY, true);
+                    ContentResolver.setIsSyncable(account, MainActivity.AUTHORITY, 1);
+                    ContentResolver.setSyncAutomatically(account, MainActivity.AUTHORITY, true);
 
                     ContentResolver.addPeriodicSync(account,
-                            MainPhoneActivity.AUTHORITY,
+                            MainActivity.AUTHORITY,
                             Bundle.EMPTY,
                             syncIntervall*MINUTES_PER_HOUR*SECONDS_PER_MINUTE);
 
-                    Intent intent = new Intent(this,MainPhoneActivity.class);
+                    Intent intent = new Intent(this,MainActivity.class);
 
                     startActivity(intent);
                 }else{

@@ -16,7 +16,6 @@ import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -58,7 +57,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
-public class MainPhoneActivity extends ActionBarActivity implements SyncStatusObserver{
+public class MainActivity extends ActionBarActivity implements SyncStatusObserver{
 
     public static final int DETAIL_ACTIVITY_RESULT_CODE = 1;
 
@@ -337,7 +336,7 @@ public class MainPhoneActivity extends ActionBarActivity implements SyncStatusOb
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    toolbar.setTitle(Utils.getNameOfActiveAccount(MainPhoneActivity.this,activeAccount.getAccount(),activeAccount.getRootFolder()));
+                    toolbar.setTitle(Utils.getNameOfActiveAccount(MainActivity.this,activeAccount.getAccount(),activeAccount.getRootFolder()));
                 }
             });
 
@@ -644,7 +643,7 @@ public class MainPhoneActivity extends ActionBarActivity implements SyncStatusOb
         @Override
         public void onClick(View v) {
             ActiveAccount activeAccount = activeAccountRepository.getActiveAccount();
-            Intent intent = new Intent(MainPhoneActivity.this,DetailActivity.class);
+            Intent intent = new Intent(MainActivity.this,DetailActivity.class);
 
             Notebook notebook = selectedNotebookName == null ? null : notebookRepository.getBySummary(activeAccount.getAccount(), activeAccount.getRootFolder(), selectedNotebookName);
 
