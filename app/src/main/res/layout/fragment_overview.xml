@@ -1,8 +1,6 @@
-<android.support.v4.widget.DrawerLayout
+<FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".MainPhoneActivity"
-    android:id="@+id/drawer"
+    android:id="@+id/overview_fragment"
     android:layout_height="match_parent"
     android:layout_width="match_parent">
 
@@ -11,18 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:minHeight="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
-            android:paddingTop="@dimen/tool_bar_top_padding"
-            android:elevation="4dp"
-            android:transitionName="actionBar"/>
-
         <FrameLayout
-            android:layout_below="@id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
             <android.support.v4.widget.SwipeRefreshLayout
@@ -58,66 +45,6 @@
                 android:layout_marginBottom="25dp"
                 android:contentDescription="@string/add"
                 android:src="@drawable/ic_action_edit" />
-
         </FrameLayout>
-
     </RelativeLayout>
-
-    <LinearLayout
-        android:paddingTop="@dimen/tool_bar_top_padding"
-        android:id="@+id/drawerList"
-        android:layout_width="@dimen/drawer_width"
-        android:layout_height="match_parent"
-        android:layout_gravity="start"
-        android:background="@color/list_background"
-        android:clickable="true"
-        android:orientation="vertical">
-
-        <Switch
-            android:background="@color/list_background_normal"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/drawer_primary"
-            android:id="@+id/drawer_autoupload"
-            android:textSize="@dimen/drawer_primary_text"
-            android:textStyle="normal"
-            android:textColor="@color/text"
-            android:gravity="center_vertical"
-            android:paddingStart="12dp"
-            android:paddingEnd="12dp"/>
-
-        <View android:clickable="false" android:layout_width="match_parent" android:layout_height="1px" android:background="@color/dividers"/>
-        <View android:clickable="false" android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1"/>
-        <View android:clickable="false" android:layout_width="match_parent" android:layout_height="1px" android:background="@color/dividers"/>
-
-        <RelativeLayout
-            android:id="@+id/drawer_opensource"
-            android:clickable="true"
-            android:background="@drawable/button_rect_list_secondary"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/drawer_secondary">
-
-            <ImageView
-                android:id="@+id/drawer_opensource_icon"
-                android:layout_width="@dimen/drawer_secondary_icon"
-                android:layout_height="wrap_content"
-                android:layout_alignParentStart="true"
-                android:layout_alignParentLeft="true"
-                android:layout_centerVertical="true"
-                android:layout_marginLeft="12dp"
-                android:layout_marginRight="12dp"/>
-
-            <TextView
-                android:id="@+id/drawer_opensource_title"
-                android:textSize="@dimen/drawer_secondary_text"
-                android:textStyle="normal"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_toEndOf="@id/drawer_opensource_icon"
-                android:layout_toRightOf="@id/drawer_opensource_icon"
-                android:gravity="center_vertical"
-                android:minHeight="44dp"
-                android:textColor="@color/secondary"/>
-
-        </RelativeLayout>
-    </LinearLayout>
-</android.support.v4.widget.DrawerLayout>
+</FrameLayout>
