@@ -30,10 +30,11 @@ import org.kore.kolab.notes.Note;
 import org.kore.kolabnotes.android.content.ActiveAccount;
 import org.kore.kolabnotes.android.content.ActiveAccountRepository;
 import org.kore.kolabnotes.android.content.NotebookRepository;
+import org.kore.kolabnotes.android.fragment.OnFragmentFinished;
 import org.kore.kolabnotes.android.fragment.OverviewFragment;
 import org.kore.kolabnotes.android.security.AuthenticatorActivity;
 
-public class MainActivity extends AppCompatActivity implements SyncStatusObserver{
+public class MainActivity extends AppCompatActivity implements SyncStatusObserver, OnFragmentFinished{
 
     public static final String AUTHORITY = "kore.kolabnotes";
 
@@ -58,6 +59,11 @@ public class MainActivity extends AppCompatActivity implements SyncStatusObserve
         return (getResources().getConfiguration().screenLayout
                 & Configuration.SCREENLAYOUT_SIZE_MASK)
                 >= Configuration.SCREENLAYOUT_SIZE_LARGE;
+    }
+
+    @Override
+    public void fragmentFinished(Intent resultIntent, ResultCode code) {
+        //nothing at the moment
     }
 
     @Override

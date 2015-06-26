@@ -1,80 +1,38 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:tools="http://schemas.android.com/tools"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                tools:context=".MyActivity"
-    >
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/activity_detail"
+    android:layout_height="match_parent"
+    android:layout_width="match_parent">
 
-    <android.support.v7.widget.Toolbar
-        android:id="@+id/toolbar"
+    <RelativeLayout
+        android:gravity="center"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:minHeight="?attr/actionBarSize"
-        android:background="?attr/colorPrimary"
-        android:paddingTop="@dimen/tool_bar_top_padding"
-        android:elevation="4dp"
-        android:transitionName="actionBar"/>
+        android:layout_height="match_parent">
 
-    <LinearLayout
-        android:orientation="vertical"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:layout_below="@+id/toolbar"
-        android:weightSum="1">
-
-        <Spinner
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/spinner_notebook"
-            android:spinnerMode="dialog"
-            android:background="@color/theme_default_primary_dark"
-            android:dropDownSelector="@android:color/white"
-            android:clickable="true"
-            android:minHeight="@dimen/abc_text_size_headline_material" />
+            android:minHeight="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            android:elevation="4dp"
+            android:paddingTop="@dimen/tool_bar_top_padding"
+            android:transitionName="actionBar"/>
 
-        <EditText
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@id/detail_summary"
-            android:layout_gravity="center_horizontal"
-            android:inputType="text"
-            android:enabled="true"
-            android:editable="true"
-            android:textColor="@color/primary_text_default_material_light"
-            android:hint="@string/text_summary"
-            android:textColorHint="@color/secondary_text_default_material_light" />
-
-        <EditText
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:id="@id/detail_description"
-            android:gravity="top"
-            android:inputType="textMultiLine|textWebEditText"
-            android:autoText="false"
-            android:textColor="@color/primary_text_default_material_light"
-            android:textColorHint="@color/secondary_text_default_material_light"
-            android:hint="@string/description_hint"
-            android:editable="true"
-            android:bufferType="spannable"
-            android:enabled="true" />
+            android:layout_below="@id/toolbar"
+            android:orientation="horizontal">
 
-    </LinearLayout>
+            <fragment
+                class="org.kore.kolabnotes.android.fragment.DetailFragment"
+                android:id="@+id/detail_fragment"
+                android:layout_weight="1"
+                android:layout_width="0px"
+                android:layout_height="match_parent"
+                />
 
-    <!--
-    <RelativeLayout
-        android:id="@+id/holder_view"
-        android:layout_width="match_parent"
-        android:layout_height="?android:attr/actionBarSize"
-        android:transitionName="actionBar"
-        android:background="?android:colorPrimary">
-        <ImageView android:id="@+id/appIcon"
-                   android:transitionName="appIcon"
-                   android:layout_marginTop="8dp"
-                   android:layout_marginBottom="8dp"
-                   android:layout_width="72dp"
-                   android:layout_height="72dp"/>
+        </LinearLayout>
     </RelativeLayout>
-    -->
-
-
-</RelativeLayout>
+</FrameLayout>
