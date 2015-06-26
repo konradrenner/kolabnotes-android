@@ -3,13 +3,17 @@ package org.kore.kolabnotes.android;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SyncStatusObserver;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.util.Pair;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 
 import com.mikepenz.materialdrawer.Drawer;
@@ -29,9 +33,7 @@ import org.kore.kolabnotes.android.content.NotebookRepository;
 import org.kore.kolabnotes.android.fragment.OverviewFragment;
 import org.kore.kolabnotes.android.security.AuthenticatorActivity;
 
-public class MainActivity extends ActionBarActivity implements SyncStatusObserver{
-
-    public static final int DETAIL_ACTIVITY_RESULT_CODE = 1;
+public class MainActivity extends AppCompatActivity implements SyncStatusObserver{
 
     public static final String AUTHORITY = "kore.kolabnotes";
 
@@ -47,17 +49,15 @@ public class MainActivity extends ActionBarActivity implements SyncStatusObserve
         overviewFragment = (OverviewFragment)getFragmentManager().findFragmentById(R.id.overview_fragment);
 
         mAccountManager = AccountManager.get(this);
+
+        boolean isTablet = isTablet();
+        Log.d("onCreate","isTablet:"+isTablet);
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-
-        if (requestCode == DETAIL_ACTIVITY_RESULT_CODE) {
-            if(resultCode == RESULT_OK || resultCode == RESULT_CANCELED){
-                String nbName = data.getStringExtra("selectedNotebookName");
-                overviewFragment.setNotebookNameFromDetail(nbName);
-            }
-        }
+    public boolean isTablet() {
+        return (getResources().getConfiguration().screenLayout
+                & Configuration.SCREENLAYOUT_SIZE_MASK)
+                >= Configuration.SCREENLAYOUT_SIZE_LARGE;
     }
 
     @Override

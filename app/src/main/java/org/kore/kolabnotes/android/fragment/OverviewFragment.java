@@ -266,6 +266,16 @@ public class OverviewFragment extends Fragment implements NoteAdapter.NoteSelect
         startActivityForResult(i,DETAIL_ACTIVITY_RESULT_CODE);
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == DETAIL_ACTIVITY_RESULT_CODE) {
+            String nbName = data.getStringExtra("selectedNotebookName");
+            setNotebookNameFromDetail(nbName);
+        }
+    }
+
     public void setNotebookNameFromDetail(String name){
         selectedNotebookName = name;
         fromDetailActivity = true;
