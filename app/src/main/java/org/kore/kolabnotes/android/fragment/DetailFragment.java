@@ -198,9 +198,16 @@ public class DetailFragment extends Fragment {
 
     void setNotebook(ActiveAccount activeAccount,String uid){
         if(uid != null) {
-            String notebookSummary = notebookRepository.getByUID(activeAccount.getAccount(), activeAccount.getRootFolder(), uid).getSummary();
-            setSpinnerSelection(notebookSummary);
-            givenNotebook = notebookSummary;
+            //GitHub Issue 37
+            Notebook notebook = notebookRepository.getByUID(activeAccount.getAccount(), activeAccount.getRootFolder(), uid);
+            if(notebook != null) {
+                String notebookSummary = notebook.getSummary();
+                setSpinnerSelection(notebookSummary);
+                givenNotebook = notebookSummary;
+            }else{
+                Spinner spinner = (Spinner) activity.findViewById(R.id.spinner_notebook);
+                spinner.setSelection(0);
+            }
         }
     }
 
