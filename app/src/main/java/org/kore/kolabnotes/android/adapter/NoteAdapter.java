@@ -25,13 +25,14 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.ViewHolder> {
     private Context context;
     private NoteSelectedListener listener;
     private DateFormat dateFormatter;
+    private Integer oldSelection;
 
     public NoteAdapter(List<Note> notes, int rowLayout, Context context, NoteSelectedListener listener) {
         this.notes = notes;
         this.rowLayout = rowLayout;
         this.context = context;
         this.listener = listener;
-        this.dateFormatter = DateFormat.getDateTimeInstance(DateFormat.SHORT,DateFormat.SHORT);
+        this.dateFormatter = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
     }
 
 
@@ -84,12 +85,26 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.ViewHolder> {
         }
 
 
-        viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                listener.onSelect(note);
+        viewHolder.itemView.setOnClickListener(new ClickListener(i));
+    }
+
+    class ClickListener implements View.OnClickListener{
+        public int index;
+
+        public ClickListener(int index) {
+            this.index = index;
+        }
+
+        @Override
+        public void onClick(View v) {
+            boolean same = false;
+            if(oldSelection != null){
+                same = oldSelection.intValue() == index;
             }
-        });
+            //v.setElevation(20);
+            listener.onSelect(notes.get(index),same);
+            oldSelection = index;
+        }
     }
 
     @Override
@@ -118,6 +133,6 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.ViewHolder> {
     }
 
     public interface NoteSelectedListener{
-        void onSelect(Note note);
+        void onSelect(Note note, boolean sameSelection);
     }
 }

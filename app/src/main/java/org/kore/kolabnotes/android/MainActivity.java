@@ -15,6 +15,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
@@ -54,7 +55,16 @@ public class MainActivity extends AppCompatActivity implements SyncStatusObserve
 
     @Override
     public void fragmentFinished(Intent resultIntent, ResultCode code) {
-        //nothing at the moment
+        if(ResultCode.DELETED == code){
+            Toast.makeText(this, R.string.note_deleted, Toast.LENGTH_LONG);
+            overviewFragment.displayBlankFragment();
+            overviewFragment.setFromDetail();
+            overviewFragment.onResume();
+        }else if(ResultCode.SAVED == code){
+            Toast.makeText(this, R.string.note_saved, Toast.LENGTH_LONG);
+            overviewFragment.setFromDetail();
+            overviewFragment.onResume();
+        }
     }
 
     @Override

@@ -275,18 +275,19 @@ public class OverviewFragment extends Fragment implements NoteAdapter.NoteSelect
     }
 
     @Override
-    public void onSelect(Note note) {
+    public void onSelect(Note note, boolean sameSelection) {
         if(tabletMode){
-            DetailFragment detail = (DetailFragment)getFragmentManager().findFragmentById(R.id.details_fragment);
-            if (detail == null || (detail.getNote() != null && !detail.getNote().equals(note))) {
+            DetailFragment detail = DetailFragment.newInstance(note.getIdentification().getUid(),null);
+
+            if (detail.getNote() == null || !sameSelection) {
 
                 String notebook = null;
                 if (selectedNotebookName != null) {
                     ActiveAccount activeAccount = activeAccountRepository.getActiveAccount();
                     notebook = notebookRepository.getBySummary(activeAccount.getAccount(), activeAccount.getRootFolder(), selectedNotebookName).getIdentification().getUid();
                 }
+                detail.setStartNotebook(notebook);
 
-                detail = DetailFragment.newInstance(note.getIdentification().getUid(),notebook);
                 FragmentTransaction ft = getFragmentManager(). beginTransaction();
                 ft.replace(R.id.details_fragment, detail);
                 ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
@@ -317,6 +318,10 @@ public class OverviewFragment extends Fragment implements NoteAdapter.NoteSelect
 
     public void setNotebookNameFromDetail(String name){
         selectedNotebookName = name;
+        fromDetailActivity = true;
+    }
+
+    public void setFromDetail(){
         fromDetailActivity = true;
     }
 
@@ -398,7 +403,6 @@ public class OverviewFragment extends Fragment implements NoteAdapter.NoteSelect
 
         @Override
         public void run() {
-            long ts = System.currentTimeMillis();
             if(activeAccount == null) {
                 activeAccount = activeAccountRepository.switchAccount(account, rootFolder);
             }
@@ -427,7 +431,7 @@ public class OverviewFragment extends Fragment implements NoteAdapter.NoteSelect
 
 
 
-    class ReloadDataThread extends Thread{
+    public class ReloadDataThread extends Thread{
         private final List<Notebook> notebooks;
         private final List<Note> notes;
         private final List<String> tags;

@@ -87,8 +87,6 @@ public class DetailFragment extends Fragment {
 
     private List<String> allTags = new ArrayList<>();
 
-    private boolean notebookSelectionOK = true;
-
     //Given notebook is set, if a notebook uid was in the start intent,
     //intialNotebook ist the notebook-UID which is selected after setSpinnerSelection was called
     private String givenNotebook;
@@ -456,7 +454,7 @@ public class DetailFragment extends Fragment {
         builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                notebookSelectionOK = false;
+                //nothing at the moment
             }
         });
         return builder.create();
@@ -474,7 +472,6 @@ public class DetailFragment extends Fragment {
         @Override
         public void onClick(DialogInterface dialog, int which) {
             if(textField == null || textField.getText() == null || textField.getText().toString().trim().length() == 0){
-                notebookSelectionOK = false;
                 return;
             }
 
@@ -489,7 +486,6 @@ public class DetailFragment extends Fragment {
             Notebook nb = new Notebook(ident,audit, Note.Classification.PUBLIC, value);
             nb.setDescription(value);
             notebookRepository.insert(activeAccount.getAccount(), activeAccount.getRootFolder(), nb);
-            notebookSelectionOK = true;
 
             initSpinner();
 
@@ -561,7 +557,7 @@ public class DetailFragment extends Fragment {
             }
             Utils.updateWidgetsForChange(activity.getApplication());
 
-            ((OnFragmentFinished) activity).fragmentFinished(returnIntent, OnFragmentFinished.ResultCode.OK);
+            ((OnFragmentFinished) activity).fragmentFinished(returnIntent, OnFragmentFinished.ResultCode.SAVED);
         }
     }
 
@@ -581,7 +577,7 @@ public class DetailFragment extends Fragment {
                     Intent returnIntent = new Intent();
                     returnIntent.putExtra("selectedNotebookName",givenNotebook);
 
-                    ((OnFragmentFinished)activity).fragmentFinished(returnIntent, OnFragmentFinished.ResultCode.OK);
+                    ((OnFragmentFinished)activity).fragmentFinished(returnIntent, OnFragmentFinished.ResultCode.DELETED);
                 }
             });
             builder.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {

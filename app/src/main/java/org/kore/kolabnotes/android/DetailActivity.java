@@ -28,7 +28,7 @@ public class DetailActivity extends AppCompatActivity implements OnFragmentFinis
 
     @Override
     public void fragmentFinished(Intent resultIntent, ResultCode code) {
-        if(ResultCode.OK == code){
+        if(ResultCode.OK == code || ResultCode.SAVED == code || ResultCode.DELETED == code){
             setResult(RESULT_OK,resultIntent);
         }else{
             setResult(RESULT_CANCELED,resultIntent);

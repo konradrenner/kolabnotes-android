@@ -34,6 +34,8 @@
 
             <FrameLayout
                 android:id="@+id/details_fragment"
+                android:background="@drawable/detail_fragment_border"
+                android:paddingLeft="1dp"
                 android:layout_weight="2"
                 android:layout_width="0px"
                 android:layout_height="match_parent"
