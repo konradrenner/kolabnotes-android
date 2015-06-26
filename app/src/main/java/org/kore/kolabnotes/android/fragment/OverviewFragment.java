@@ -456,7 +456,7 @@ public class OverviewFragment extends Fragment implements NoteAdapter.NoteSelect
 
         builder.setView(view);
 
-        builder.setPositiveButton(R.string.ok, new SearchNoteButtonListener((EditText) activity.findViewById(R.id.dialog_search_input_field)));
+        builder.setPositiveButton(R.string.ok, new SearchNoteButtonListener((EditText) view.findViewById(R.id.dialog_search_input_field)));
         builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -476,7 +476,7 @@ public class OverviewFragment extends Fragment implements NoteAdapter.NoteSelect
 
         builder.setView(view);
 
-        builder.setPositiveButton(R.string.ok,new CreateNotebookButtonListener(startActivity, (EditText)activity.findViewById(R.id.dialog_text_input_field)));
+        builder.setPositiveButton(R.string.ok,new CreateNotebookButtonListener(startActivity, (EditText)view.findViewById(R.id.dialog_text_input_field)));
         builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -500,7 +500,7 @@ public class OverviewFragment extends Fragment implements NoteAdapter.NoteSelect
 
         builder.setView(view);
 
-        builder.setPositiveButton(R.string.ok,new CreateTagButtonListener((EditText)activity.findViewById(R.id.dialog_text_input_field)));
+        builder.setPositiveButton(R.string.ok,new CreateTagButtonListener((EditText)view.findViewById(R.id.dialog_text_input_field)));
         builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
