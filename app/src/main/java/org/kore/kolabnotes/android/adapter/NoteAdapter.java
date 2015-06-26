@@ -14,6 +14,7 @@ import org.kore.kolab.notes.Tag;
 import org.kore.kolabnotes.android.MainActivity;
 import org.kore.kolabnotes.android.R;
 
+import java.text.DateFormat;
 import java.util.Collections;
 import java.util.List;
 
@@ -23,12 +24,14 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.ViewHolder> {
     private int rowLayout;
     private Context context;
     private NoteSelectedListener listener;
+    private DateFormat dateFormatter;
 
     public NoteAdapter(List<Note> notes, int rowLayout, Context context, NoteSelectedListener listener) {
         this.notes = notes;
         this.rowLayout = rowLayout;
         this.context = context;
         this.listener = listener;
+        this.dateFormatter = DateFormat.getDateTimeInstance(DateFormat.SHORT,DateFormat.SHORT);
     }
 
 
@@ -61,8 +64,8 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.ViewHolder> {
         final Note note = notes.get(i);
         viewHolder.name.setText(note.getSummary());
         viewHolder.classification.setText(context.getResources().getString(R.string.classification)+": "+note.getClassification());
-        viewHolder.createdDate.setText(context.getResources().getString(R.string.creationDate)+": "+note.getAuditInformation().getCreationDate());
-        viewHolder.modificationDate.setText(context.getResources().getString(R.string.modificationDate)+": "+note.getAuditInformation().getLastModificationDate());
+        viewHolder.createdDate.setText(context.getResources().getString(R.string.creationDate)+": "+ dateFormatter.format(note.getAuditInformation().getCreationDate()));
+        viewHolder.modificationDate.setText(context.getResources().getString(R.string.modificationDate)+": "+dateFormatter.format(note.getAuditInformation().getLastModificationDate()));
         StringBuilder tags = new StringBuilder();
         for(Tag tag : note.getCategories()){
             tags.append(tag.getName());
