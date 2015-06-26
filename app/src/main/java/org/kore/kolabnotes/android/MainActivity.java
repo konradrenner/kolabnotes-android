@@ -50,15 +50,6 @@ public class MainActivity extends AppCompatActivity implements SyncStatusObserve
         overviewFragment = (OverviewFragment)getFragmentManager().findFragmentById(R.id.overview_fragment);
 
         mAccountManager = AccountManager.get(this);
-
-        boolean isTablet = isTablet();
-        Log.d("onCreate","isTablet:"+isTablet);
-    }
-
-    public boolean isTablet() {
-        return (getResources().getConfiguration().screenLayout
-                & Configuration.SCREENLAYOUT_SIZE_MASK)
-                >= Configuration.SCREENLAYOUT_SIZE_LARGE;
     }
 
     @Override

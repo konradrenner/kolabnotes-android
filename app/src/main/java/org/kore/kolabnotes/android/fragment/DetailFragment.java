@@ -94,8 +94,21 @@ public class DetailFragment extends Fragment {
     private String givenNotebook;
     private String intialNotebookName;
     private boolean isNewNote;
+
+    //These two elements will be set by the activity or factory method when fragment is created
+    private String startUid;
+    private String startNotebook;
     
     private AppCompatActivity activity;
+
+    public static DetailFragment newInstance(String noteUid, String notebook){
+        DetailFragment f = new DetailFragment();
+        f.setStartUid(noteUid);
+        f.setStartNotebook(notebook);
+        Bundle args = new Bundle();
+        f.setArguments(args);
+        return f;
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater,
@@ -145,8 +158,8 @@ public class DetailFragment extends Fragment {
         allTags.addAll(tagRepository.getAll());
 
         Intent startIntent = activity.getIntent();
-        String uid = startIntent.getStringExtra(Utils.NOTE_UID);
-        String notebook = startIntent.getStringExtra(Utils.NOTEBOOK_UID);
+        String uid = startUid;
+        String notebook = startNotebook;
         String accountEmail = startIntent.getStringExtra(Utils.INTENT_ACCOUNT_EMAIL);
         String rootFolder = startIntent.getStringExtra(Utils.INTENT_ACCOUNT_ROOT_FOLDER);
 
@@ -194,6 +207,18 @@ public class DetailFragment extends Fragment {
 
         setNotebook(activeAccount, notebook);
         intialNotebookName = getNotebookSpinnerSelectionName();
+    }
+
+    public void setStartUid(String startUid) {
+        this.startUid = startUid;
+    }
+
+    public void setStartNotebook(String startNotebook) {
+        this.startNotebook = startNotebook;
+    }
+
+    public Note getNote(){
+        return note;
     }
 
     void setNotebook(ActiveAccount activeAccount,String uid){
@@ -427,7 +452,7 @@ public class DetailFragment extends Fragment {
 
         builder.setView(view);
 
-        builder.setPositiveButton(R.string.ok,new CreateNotebookButtonListener((EditText)activity.findViewById(R.id.dialog_text_input_field)));
+        builder.setPositiveButton(R.string.ok,new CreateNotebookButtonListener((EditText)view.findViewById(R.id.dialog_text_input_field)));
         builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -465,6 +490,9 @@ public class DetailFragment extends Fragment {
             nb.setDescription(value);
             notebookRepository.insert(activeAccount.getAccount(), activeAccount.getRootFolder(), nb);
             notebookSelectionOK = true;
+
+            initSpinner();
+
             setSpinnerSelection(value);
         }
     }
@@ -479,65 +507,62 @@ public class DetailFragment extends Fragment {
             AlertDialog notebookDialog = createNotebookDialog();
 
             notebookDialog.show();
+        }else {
 
-            if(!notebookSelectionOK){
+            if (TextUtils.isEmpty(summary.getText().toString())) {
+                summary.setError(getString(R.string.error_field_required));
+                summary.requestFocus();
                 return;
             }
-        }
 
-        if(TextUtils.isEmpty(summary.getText().toString())){
-            summary.setError(getString(R.string.error_field_required));
-            summary.requestFocus();
-            return;
-        }
+            String notebookName = getNotebookSpinnerSelectionName();
 
-        String notebookName = getNotebookSpinnerSelectionName();
-
-        String descriptionValue = getDescriptionFromView();
+            String descriptionValue = getDescriptionFromView();
 
 
-        if(note == null){
-            final String uuid = UUID.randomUUID().toString();
-            Identification ident = new Identification(uuid,"kolabnotes-android");
-            Timestamp now = new Timestamp(System.currentTimeMillis());
-            AuditInformation audit = new AuditInformation(now,now);
+            if (note == null) {
+                final String uuid = UUID.randomUUID().toString();
+                Identification ident = new Identification(uuid, "kolabnotes-android");
+                Timestamp now = new Timestamp(System.currentTimeMillis());
+                AuditInformation audit = new AuditInformation(now, now);
 
-            note = new Note(ident,audit, selectedClassification == null ? Note.Classification.PUBLIC : selectedClassification, summary.getText().toString());
-            note.setDescription(descriptionValue);
-            note.setColor(selectedColor);
+                note = new Note(ident, audit, selectedClassification == null ? Note.Classification.PUBLIC : selectedClassification, summary.getText().toString());
+                note.setDescription(descriptionValue);
+                note.setColor(selectedColor);
 
-            Notebook book =  notebookRepository.getBySummary(  activeAccountRepository.getActiveAccount().getAccount(), activeAccountRepository.getActiveAccount().getRootFolder(),notebookName);
+                Notebook book = notebookRepository.getBySummary(activeAccountRepository.getActiveAccount().getAccount(), activeAccountRepository.getActiveAccount().getRootFolder(), notebookName);
 
-            noteRepository.insert(  activeAccountRepository.getActiveAccount().getAccount(), activeAccountRepository.getActiveAccount().getRootFolder(),note,book.getIdentification().getUid());
-            noteTagRepository.delete(  activeAccountRepository.getActiveAccount().getAccount(), activeAccountRepository.getActiveAccount().getRootFolder(),uuid);
-            for(String tag : selectedTags){
-                noteTagRepository.insert(  activeAccountRepository.getActiveAccount().getAccount(), activeAccountRepository.getActiveAccount().getRootFolder(),uuid,tag);
+                noteRepository.insert(activeAccountRepository.getActiveAccount().getAccount(), activeAccountRepository.getActiveAccount().getRootFolder(), note, book.getIdentification().getUid());
+                noteTagRepository.delete(activeAccountRepository.getActiveAccount().getAccount(), activeAccountRepository.getActiveAccount().getRootFolder(), uuid);
+                for (String tag : selectedTags) {
+                    noteTagRepository.insert(activeAccountRepository.getActiveAccount().getAccount(), activeAccountRepository.getActiveAccount().getRootFolder(), uuid, tag);
+                }
+            } else {
+                final String uuid = note.getIdentification().getUid();
+                note.setSummary(summary.getText().toString());
+                note.setDescription(descriptionValue);
+                note.setClassification(selectedClassification);
+                note.setColor(selectedColor);
+                note.getAuditInformation().setLastModificationDate(System.currentTimeMillis());
+
+                Notebook book = notebookRepository.getBySummary(activeAccountRepository.getActiveAccount().getAccount(), activeAccountRepository.getActiveAccount().getRootFolder(), notebookName);
+
+                noteRepository.update(activeAccountRepository.getActiveAccount().getAccount(), activeAccountRepository.getActiveAccount().getRootFolder(), note, book.getIdentification().getUid());
+
+                noteTagRepository.delete(activeAccountRepository.getActiveAccount().getAccount(), activeAccountRepository.getActiveAccount().getRootFolder(), uuid);
+                for (String tag : selectedTags) {
+                    noteTagRepository.insert(activeAccountRepository.getActiveAccount().getAccount(), activeAccountRepository.getActiveAccount().getRootFolder(), uuid, tag);
+                }
             }
-        }else{
-            final String uuid = note.getIdentification().getUid();
-            note.setSummary(summary.getText().toString());
-            note.setDescription(descriptionValue);
-            note.setClassification(selectedClassification);
-            note.setColor(selectedColor);
-            note.getAuditInformation().setLastModificationDate(System.currentTimeMillis());
 
-            Notebook book =  notebookRepository.getBySummary(  activeAccountRepository.getActiveAccount().getAccount(), activeAccountRepository.getActiveAccount().getRootFolder(),notebookName);
-
-            noteRepository.update(  activeAccountRepository.getActiveAccount().getAccount(), activeAccountRepository.getActiveAccount().getRootFolder(),note,book.getIdentification().getUid());
-
-            noteTagRepository.delete(  activeAccountRepository.getActiveAccount().getAccount(), activeAccountRepository.getActiveAccount().getRootFolder(),uuid);
-            for(String tag : selectedTags){
-                noteTagRepository.insert(  activeAccountRepository.getActiveAccount().getAccount(), activeAccountRepository.getActiveAccount().getRootFolder(),uuid,tag);
+            Intent returnIntent = new Intent();
+            if (isNewNote || givenNotebook != null) {
+                returnIntent.putExtra("selectedNotebookName", notebookName);
             }
-        }
+            Utils.updateWidgetsForChange(activity.getApplication());
 
-        Intent returnIntent = new Intent();
-        if(isNewNote || givenNotebook != null) {
-            returnIntent.putExtra("selectedNotebookName", notebookName);
+            ((OnFragmentFinished) activity).fragmentFinished(returnIntent, OnFragmentFinished.ResultCode.OK);
         }
-        Utils.updateWidgetsForChange(activity.getApplication());
-
-        ((OnFragmentFinished)activity).fragmentFinished(returnIntent, OnFragmentFinished.ResultCode.OK);
     }
 
     void deleteNote(){

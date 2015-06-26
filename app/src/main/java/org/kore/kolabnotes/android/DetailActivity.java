@@ -17,6 +17,13 @@ public class DetailActivity extends AppCompatActivity implements OnFragmentFinis
         setContentView(R.layout.activity_detail);
 
         detailFragment = (DetailFragment)getFragmentManager().findFragmentById(R.id.detail_fragment);
+
+        Intent startIntent = getIntent();
+        String uid = startIntent.getStringExtra(Utils.NOTE_UID);
+        String notebook = startIntent.getStringExtra(Utils.NOTEBOOK_UID);
+
+        detailFragment.setStartNotebook(notebook);
+        detailFragment.setStartUid(uid);
     }
 
     @Override

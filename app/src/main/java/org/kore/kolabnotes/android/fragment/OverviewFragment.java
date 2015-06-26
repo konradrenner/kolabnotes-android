@@ -5,15 +5,18 @@ import android.accounts.AccountManager;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Fragment;
+import android.app.FragmentTransaction;
 import android.content.ContentResolver;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -92,6 +95,7 @@ public class OverviewFragment extends Fragment implements NoteAdapter.NoteSelect
 
     private Drawer mDrawer;
     private AccountHeader mAccount;
+    private boolean tabletMode;
 
     private MainActivity activity;
 
@@ -129,6 +133,8 @@ public class OverviewFragment extends Fragment implements NoteAdapter.NoteSelect
         toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
         activity.setSupportActionBar(toolbar);
         activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        tabletMode = isTablet();
 
         setHasOptionsMenu(true);
 
@@ -234,6 +240,20 @@ public class OverviewFragment extends Fragment implements NoteAdapter.NoteSelect
         mRecyclerView.setVisibility(View.GONE);
     }
 
+    public void displayBlankFragment(){
+        Log.d("displayBlankFragment","tabletMode:"+tabletMode);
+        if(tabletMode){
+            BlankFragment blank = (BlankFragment)getFragmentManager().findFragmentById(R.id.details_fragment);
+            if (blank == null) {
+                blank = BlankFragment.newInstance();
+                FragmentTransaction ft = getFragmentManager(). beginTransaction();
+                ft.replace(R.id.details_fragment, blank);
+                ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+                ft.commit();
+            }
+        }
+    }
+
     void initCachesAsync(final ActiveAccount account){
         new Thread(new Runnable() {
             @Override
@@ -256,14 +276,33 @@ public class OverviewFragment extends Fragment implements NoteAdapter.NoteSelect
 
     @Override
     public void onSelect(Note note) {
-        Intent i = new Intent(activity, DetailActivity.class);
-        i.putExtra(Utils.NOTE_UID, note.getIdentification().getUid());
-        ActiveAccount activeAccount = activeAccountRepository.getActiveAccount();
-        if(selectedNotebookName != null) {
-            i.putExtra(Utils.NOTEBOOK_UID, notebookRepository.getBySummary(activeAccount.getAccount(), activeAccount.getRootFolder(), selectedNotebookName).getIdentification().getUid());
-        }
+        if(tabletMode){
+            DetailFragment detail = (DetailFragment)getFragmentManager().findFragmentById(R.id.details_fragment);
+            if (detail == null || (detail.getNote() != null && !detail.getNote().equals(note))) {
 
-        startActivityForResult(i,DETAIL_ACTIVITY_RESULT_CODE);
+                String notebook = null;
+                if (selectedNotebookName != null) {
+                    ActiveAccount activeAccount = activeAccountRepository.getActiveAccount();
+                    notebook = notebookRepository.getBySummary(activeAccount.getAccount(), activeAccount.getRootFolder(), selectedNotebookName).getIdentification().getUid();
+                }
+
+                detail = DetailFragment.newInstance(note.getIdentification().getUid(),notebook);
+                FragmentTransaction ft = getFragmentManager(). beginTransaction();
+                ft.replace(R.id.details_fragment, detail);
+                ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+                ft.commit();
+            }
+        }else {
+            Intent i = new Intent(activity, DetailActivity.class);
+            i.putExtra(Utils.NOTE_UID, note.getIdentification().getUid());
+
+            if (selectedNotebookName != null) {
+                ActiveAccount activeAccount = activeAccountRepository.getActiveAccount();
+                i.putExtra(Utils.NOTEBOOK_UID, notebookRepository.getBySummary(activeAccount.getAccount(), activeAccount.getRootFolder(), selectedNotebookName).getIdentification().getUid());
+            }
+
+            startActivityForResult(i, DETAIL_ACTIVITY_RESULT_CODE);
+        }
     }
 
     @Override
@@ -284,6 +323,8 @@ public class OverviewFragment extends Fragment implements NoteAdapter.NoteSelect
     @Override
     public void onResume(){
         super.onResume();
+
+        displayBlankFragment();
 
         Intent startIntent = getActivity().getIntent();
         String email = startIntent.getStringExtra(Utils.INTENT_ACCOUNT_EMAIL);
@@ -648,10 +689,24 @@ public class OverviewFragment extends Fragment implements NoteAdapter.NoteSelect
                 //Create first a notebook, so that note creation is possible
                 createNotebookDialog(intent).show();
             }else{
-                if(notebook != null) {
-                    intent.putExtra(Utils.NOTEBOOK_UID, notebook.getIdentification().getUid());
+
+                if(tabletMode){
+                    String notebookUID = null;
+                    if (notebook != null) {
+                        notebookUID = notebook.getIdentification().getUid();
+                    }
+
+                    DetailFragment detail = DetailFragment.newInstance(null,notebookUID);
+                    FragmentTransaction ft = getFragmentManager(). beginTransaction();
+                    ft.replace(R.id.details_fragment, detail);
+                    ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+                    ft.commit();
+                }else {
+                    if (notebook != null) {
+                        intent.putExtra(Utils.NOTEBOOK_UID, notebook.getIdentification().getUid());
+                    }
+                    startActivityForResult(intent, DETAIL_ACTIVITY_RESULT_CODE);
                 }
-                startActivityForResult(intent,DETAIL_ACTIVITY_RESULT_CODE);
             }
         }
     }
@@ -762,8 +817,17 @@ public class OverviewFragment extends Fragment implements NoteAdapter.NoteSelect
             }
 
             if(intent != null){
-                intent.putExtra(Utils.NOTEBOOK_UID,nb.getIdentification().getUid());
-                startActivityForResult(intent,DETAIL_ACTIVITY_RESULT_CODE);
+                if(tabletMode){
+                    DetailFragment detail = DetailFragment.newInstance(null,nb.getIdentification().getUid());
+                    FragmentTransaction ft = getFragmentManager(). beginTransaction();
+                    ft.replace(R.id.details_fragment, detail);
+                    ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+                    ft.commit();
+                }else {
+
+                    intent.putExtra(Utils.NOTEBOOK_UID, nb.getIdentification().getUid());
+                    startActivityForResult(intent, DETAIL_ACTIVITY_RESULT_CODE);
+                }
             }
         }
     }
@@ -925,5 +989,9 @@ public class OverviewFragment extends Fragment implements NoteAdapter.NoteSelect
         drawer.getDrawerItems().add(new DividerDrawerItem());
         drawer.getDrawerItems().add(new PrimaryDrawerItem().withName(getResources().getString(R.string.drawer_item_tags)).withTag("HEADING_TAG").setEnabled(false).withDisabledTextColor(R.color.material_drawer_dark_header_selection_text).withIcon(R.drawable.ic_action_labels));
 
+    }
+
+    public boolean isTablet() {
+        return getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE;
     }
 }
