@@ -4,9 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
-import org.kore.kolabnotes.android.fragment.DetailFragment;
-import org.kore.kolabnotes.android.fragment.OnFragmentFinished;
-
 public class DetailActivity extends AppCompatActivity implements OnFragmentFinished{
 
     private DetailFragment detailFragment;
