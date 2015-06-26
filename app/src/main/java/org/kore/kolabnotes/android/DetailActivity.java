@@ -16,7 +16,7 @@ public class DetailActivity extends AppCompatActivity implements OnFragmentFinis
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
 
-        detailFragment = (DetailFragment)getFragmentManager().findFragmentById(R.id.overview_fragment);
+        detailFragment = (DetailFragment)getFragmentManager().findFragmentById(R.id.detail_fragment);
     }
 
     @Override

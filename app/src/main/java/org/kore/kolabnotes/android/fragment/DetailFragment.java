@@ -300,18 +300,18 @@ public class DetailFragment extends Fragment {
         });
 
         if(selectedClassification == null){
-            ((RadioButton) activity.findViewById(R.id.radio_public)).toggle();
+            ((RadioButton) view.findViewById(R.id.radio_public)).toggle();
         }else {
 
             switch (selectedClassification) {
                 case PUBLIC:
-                    ((RadioButton) activity.findViewById(R.id.radio_public)).toggle();
+                    ((RadioButton) view.findViewById(R.id.radio_public)).toggle();
                     break;
                 case CONFIDENTIAL:
-                    ((RadioButton) activity.findViewById(R.id.radio_confidential)).toggle();
+                    ((RadioButton) view.findViewById(R.id.radio_confidential)).toggle();
                     break;
                 case PRIVATE:
-                    ((RadioButton) activity.findViewById(R.id.radio_private)).toggle();
+                    ((RadioButton) view.findViewById(R.id.radio_private)).toggle();
                     break;
             }
         }
@@ -329,7 +329,7 @@ public class DetailFragment extends Fragment {
 
         @Override
         public void onClick(DialogInterface dialog, int which) {
-            RadioGroup group = (RadioGroup) activity.findViewById(R.id.dialog_classification);
+            RadioGroup group = (RadioGroup) view.findViewById(R.id.dialog_classification);
             switch(group.getCheckedRadioButtonId()){
                 case R.id.radio_public:
                     DetailFragment.this.selectedClassification = Note.Classification.PUBLIC;
