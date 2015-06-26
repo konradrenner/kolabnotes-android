@@ -8,8 +8,8 @@ android {
         applicationId "org.kore.kolabnotes.android"
         minSdkVersion 21
         targetSdkVersion 21
-        versionCode 3
-        versionName "0.1.0-alpha3"
+        versionCode 4
+        versionName "0.1.0-alpha4"
     }
     buildTypes {
         release {
@@ -34,6 +34,8 @@ dependencies {
     compile 'com.android.support:appcompat-v7:22.0.0'
     compile 'com.android.support:recyclerview-v7:21.0.3'
     compile 'com.android.support:cardview-v7:21.0.3'
-    compile 'com.mikepenz.materialdrawer:library:2.7.0'
     compile 'jp.wasabeef:richeditor-android:0.0.6@aar'
+    compile('com.mikepenz:materialdrawer:3.0.8@aar') {
+        transitive = true
+    }
 }
