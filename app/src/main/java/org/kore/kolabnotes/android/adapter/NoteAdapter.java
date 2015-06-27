@@ -101,7 +101,7 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.ViewHolder> {
             if(oldSelection != null){
                 same = oldSelection.intValue() == index;
             }
-            //v.setElevation(20);
+            //v.setElevation(30);
             listener.onSelect(notes.get(index),same);
             oldSelection = index;
         }

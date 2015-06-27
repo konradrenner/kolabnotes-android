@@ -135,7 +135,6 @@ public class DetailFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
 
         toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
-        toolbar.setTitle("");
         activity.setSupportActionBar(toolbar);
         activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
@@ -172,6 +171,8 @@ public class DetailFragment extends Fragment {
             activeAccount = activeAccountRepository.getActiveAccount();
         }
 
+        toolbar.setTitle(Utils.getNameOfActiveAccount(activity, activeAccount.getAccount(), activeAccount.getRootFolder()));
+
         initSpinner();
 
         if(uid != null) {
@@ -197,13 +198,19 @@ public class DetailFragment extends Fragment {
                 selectedColor = note.getColor();
                 if (selectedColor != null) {
                     toolbar.setBackgroundColor(Color.parseColor(selectedColor.getHexcode()));
+                }else{
+                    toolbar.setBackgroundColor(getResources().getColor(R.color.theme_default_primary));
+                }
+
+                if(notebook == null){
+                    notebook = noteRepository.getUIDofNotebook(activeAccount.getAccount(), activeAccount.getRootFolder(), uid);
                 }
             }
         }else{
             isNewNote = true;
         }
 
-        setNotebook(activeAccount, notebook);
+        setNotebook(activeAccount, notebook, startNotebook != null);
         intialNotebookName = getNotebookSpinnerSelectionName();
     }
 
@@ -219,14 +226,16 @@ public class DetailFragment extends Fragment {
         return note;
     }
 
-    void setNotebook(ActiveAccount activeAccount,String uid){
+    void setNotebook(ActiveAccount activeAccount,String uid, boolean setGivenNotebook){
         if(uid != null) {
             //GitHub Issue 37
             Notebook notebook = notebookRepository.getByUID(activeAccount.getAccount(), activeAccount.getRootFolder(), uid);
             if(notebook != null) {
                 String notebookSummary = notebook.getSummary();
                 setSpinnerSelection(notebookSummary);
-                givenNotebook = notebookSummary;
+                if(setGivenNotebook){
+                    givenNotebook = notebookSummary;
+                }
             }else{
                 Spinner spinner = (Spinner) activity.findViewById(R.id.spinner_notebook);
                 spinner.setSelection(0);
@@ -616,28 +625,7 @@ public class DetailFragment extends Fragment {
 
     public void onBackPressed() {
         if(note != null){
-
-            EditText summary = (EditText) activity.findViewById(R.id.detail_summary);
-
-            Spinner spinner = (Spinner) activity.findViewById(R.id.spinner_notebook);
-
-
-            Note newNote = new Note(note.getIdentification(),note.getAuditInformation(),selectedClassification == null ? Note.Classification.PUBLIC : selectedClassification, summary.getText().toString());
-            newNote.setDescription(getDescriptionFromView());
-            newNote.setColor(selectedColor);
-
-            Tag[] tags = new Tag[selectedTags.size()];
-            int i=0;
-            for(String tag : selectedTags){
-                tags[i++] = new Tag(tag);
-            }
-
-            newNote.addCategories(tags);
-
-            String nb = spinner.getSelectedItem().toString();
-
-            boolean nbSameNames = Objects.equals(intialNotebookName, nb);
-            boolean differences = Utils.differentMutableData(note,newNote) || !nbSameNames;
+            boolean differences = checkDifferences();
 
             if(differences) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(activity);
@@ -665,11 +653,39 @@ public class DetailFragment extends Fragment {
         }
     }
 
+    public boolean checkDifferences(){
+        EditText summary = (EditText) activity.findViewById(R.id.detail_summary);
+
+        Spinner spinner = (Spinner) activity.findViewById(R.id.spinner_notebook);
+
+        boolean differences = false;
+        if(summary != null && spinner != null){
+
+            Note newNote = new Note(note.getIdentification(), note.getAuditInformation(), selectedClassification == null ? Note.Classification.PUBLIC : selectedClassification, summary.getText().toString());
+            newNote.setDescription(getDescriptionFromView());
+            newNote.setColor(selectedColor);
+
+            Tag[] tags = new Tag[selectedTags.size()];
+            int i = 0;
+            for (String tag : selectedTags) {
+                tags[i++] = new Tag(tag);
+            }
+
+            newNote.addCategories(tags);
+
+            String nb = spinner.getSelectedItem().toString();
+
+            boolean nbSameNames = Objects.equals(intialNotebookName, nb);
+            differences = Utils.differentMutableData(note, newNote) || !nbSameNames;
+        }
+        return  differences;
+    }
+
     private void goBack(){
         Intent returnIntent = new Intent();
         returnIntent.putExtra("selectedNotebookName",givenNotebook);
 
-        ((OnFragmentFinished)activity).fragmentFinished(returnIntent, OnFragmentFinished.ResultCode.OK);
+        ((OnFragmentFinished)activity).fragmentFinished(returnIntent, OnFragmentFinished.ResultCode.BACK);
     }
 
 

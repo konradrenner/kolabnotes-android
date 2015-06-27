@@ -7,7 +7,7 @@ import android.content.Intent;
  */
 public interface OnFragmentFinished {
     enum ResultCode{
-        OK, SAVED, DELETED, CANCEL;
+        OK, SAVED, DELETED, CANCEL, BACK;
     }
 
     void fragmentFinished(Intent resultIntent,ResultCode code);

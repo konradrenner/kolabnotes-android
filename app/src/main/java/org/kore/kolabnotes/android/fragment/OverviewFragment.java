@@ -240,17 +240,18 @@ public class OverviewFragment extends Fragment implements NoteAdapter.NoteSelect
         mRecyclerView.setVisibility(View.GONE);
     }
 
+    public void openDrawer(){
+        mDrawer.openDrawer();
+    }
+
     public void displayBlankFragment(){
         Log.d("displayBlankFragment","tabletMode:"+tabletMode);
         if(tabletMode){
-            BlankFragment blank = (BlankFragment)getFragmentManager().findFragmentById(R.id.details_fragment);
-            if (blank == null) {
-                blank = BlankFragment.newInstance();
-                FragmentTransaction ft = getFragmentManager(). beginTransaction();
-                ft.replace(R.id.details_fragment, blank);
-                ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-                ft.commit();
-            }
+            BlankFragment blank = BlankFragment.newInstance();
+            FragmentTransaction ft = getFragmentManager(). beginTransaction();
+            ft.replace(R.id.details_fragment, blank);
+            ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+            ft.commit();
         }
     }
 
@@ -274,24 +275,55 @@ public class OverviewFragment extends Fragment implements NoteAdapter.NoteSelect
         return drawerItemClickedListener;
     }
 
+    void setDetailFragment(Note note, boolean sameSelection){
+        DetailFragment detail = DetailFragment.newInstance(note.getIdentification().getUid(),null);
+        if (detail.getNote() == null || !sameSelection) {
+
+            String notebook = null;
+            if (selectedNotebookName != null) {
+                ActiveAccount activeAccount = activeAccountRepository.getActiveAccount();
+                notebook = notebookRepository.getBySummary(activeAccount.getAccount(), activeAccount.getRootFolder(), selectedNotebookName).getIdentification().getUid();
+            }
+            detail.setStartNotebook(notebook);
+
+            FragmentTransaction ft = getFragmentManager(). beginTransaction();
+            ft.replace(R.id.details_fragment, detail);
+            ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+            ft.commit();
+        }
+    }
+
     @Override
-    public void onSelect(Note note, boolean sameSelection) {
+    public void onSelect(final Note note,final boolean sameSelection) {
         if(tabletMode){
-            DetailFragment detail = DetailFragment.newInstance(note.getIdentification().getUid(),null);
+            Fragment fragment = getFragmentManager().findFragmentById(R.id.details_fragment);
+            if(fragment instanceof  DetailFragment){
+                DetailFragment detail = (DetailFragment)fragment;
+                boolean changes = detail.checkDifferences();
 
-            if (detail.getNote() == null || !sameSelection) {
+                if(changes) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(activity);
 
-                String notebook = null;
-                if (selectedNotebookName != null) {
-                    ActiveAccount activeAccount = activeAccountRepository.getActiveAccount();
-                    notebook = notebookRepository.getBySummary(activeAccount.getAccount(), activeAccount.getRootFolder(), selectedNotebookName).getIdentification().getUid();
+                    builder.setTitle(R.string.dialog_cancel_warning);
+                    builder.setMessage(R.string.dialog_question_cancel);
+                    builder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            setDetailFragment(note,sameSelection);
+                        }
+                    });
+                    builder.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            //nothing
+                        }
+                    });
+                    builder.show();
+                }else{
+                    setDetailFragment(note,sameSelection);
                 }
-                detail.setStartNotebook(notebook);
-
-                FragmentTransaction ft = getFragmentManager(). beginTransaction();
-                ft.replace(R.id.details_fragment, detail);
-                ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-                ft.commit();
+            }else{
+                setDetailFragment(note,sameSelection);
             }
         }else {
             Intent i = new Intent(activity, DetailActivity.class);
@@ -329,7 +361,8 @@ public class OverviewFragment extends Fragment implements NoteAdapter.NoteSelect
     public void onResume(){
         super.onResume();
 
-        displayBlankFragment();
+        toolbar.setBackgroundColor(getResources().getColor(R.color.theme_default_primary));
+        //displayBlankFragment();
 
         Intent startIntent = getActivity().getIntent();
         String email = startIntent.getStringExtra(Utils.INTENT_ACCOUNT_EMAIL);
@@ -360,7 +393,7 @@ public class OverviewFragment extends Fragment implements NoteAdapter.NoteSelect
         }
 
 
-        if(fromDetailActivity){
+        if(fromDetailActivity || tabletMode){
             if(selectedNotebookName != null) {
                 Notebook nb = notebookRepository.getBySummary(activeAccount.getAccount(), activeAccount.getRootFolder(), selectedNotebookName);
 
@@ -425,6 +458,8 @@ public class OverviewFragment extends Fragment implements NoteAdapter.NoteSelect
             List<String> tags = dataCache.getTags();
             List<Notebook> notebooks = noteCache.getNotebooks();
 
+            displayBlankFragment();
+
             getActivity().runOnUiThread(new ReloadDataThread(notebooks, notes, tags));
         }
     }
@@ -486,6 +521,9 @@ public class OverviewFragment extends Fragment implements NoteAdapter.NoteSelect
                 Intent intent = new Intent(activity,AuthenticatorActivity.class);
 
                 startActivity(intent);
+                break;
+            default:
+                activity.dispatchMenuEvent(item);
                 break;
         }
         return true;
@@ -735,6 +773,8 @@ public class OverviewFragment extends Fragment implements NoteAdapter.NoteSelect
                 mDrawer.addItem(new SecondaryDrawerItem().withName(value).withTag("TAG"));
 
                 orderDrawerItems(mDrawer);
+
+                displayBlankFragment();
             }
         }
     }
@@ -781,6 +821,8 @@ public class OverviewFragment extends Fragment implements NoteAdapter.NoteSelect
 
                 List<Notebook> notebooks = notebookRepository.getAll(activeAccount.getAccount(), activeAccount.getRootFolder());
                 List<String> tags = tagRepository.getAll();
+
+                displayBlankFragment();
 
                 getActivity().runOnUiThread(new ReloadDataThread(notebooks, notes, tags));
             }
@@ -832,6 +874,8 @@ public class OverviewFragment extends Fragment implements NoteAdapter.NoteSelect
                     intent.putExtra(Utils.NOTEBOOK_UID, nb.getIdentification().getUid());
                     startActivityForResult(intent, DETAIL_ACTIVITY_RESULT_CODE);
                 }
+            }else{
+                displayBlankFragment();
             }
         }
     }
@@ -996,6 +1040,8 @@ public class OverviewFragment extends Fragment implements NoteAdapter.NoteSelect
     }
 
     public boolean isTablet() {
-        return getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE;
+        return (getResources().getConfiguration().screenLayout
+                & Configuration.SCREENLAYOUT_SIZE_MASK)
+                >= Configuration.SCREENLAYOUT_SIZE_LARGE;
     }
 }

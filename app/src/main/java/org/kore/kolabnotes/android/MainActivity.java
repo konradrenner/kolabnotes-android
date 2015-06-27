@@ -2,6 +2,7 @@ package org.kore.kolabnotes.android;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
+import android.app.Fragment;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
@@ -14,6 +15,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
@@ -31,6 +33,7 @@ import org.kore.kolab.notes.Note;
 import org.kore.kolabnotes.android.content.ActiveAccount;
 import org.kore.kolabnotes.android.content.ActiveAccountRepository;
 import org.kore.kolabnotes.android.content.NotebookRepository;
+import org.kore.kolabnotes.android.fragment.DetailFragment;
 import org.kore.kolabnotes.android.fragment.OnFragmentFinished;
 import org.kore.kolabnotes.android.fragment.OverviewFragment;
 import org.kore.kolabnotes.android.security.AuthenticatorActivity;
@@ -64,6 +67,20 @@ public class MainActivity extends AppCompatActivity implements SyncStatusObserve
             Toast.makeText(this, R.string.note_saved, Toast.LENGTH_LONG);
             overviewFragment.setFromDetail();
             overviewFragment.onResume();
+        }else if(ResultCode.BACK == code){
+            overviewFragment.setFromDetail();
+            overviewFragment.onResume();
+            overviewFragment.openDrawer();
+        }
+    }
+
+    public void dispatchMenuEvent(MenuItem item){
+        Fragment fragment = getFragmentManager().findFragmentById(R.id.details_fragment);
+
+        if(fragment instanceof DetailFragment){
+            DetailFragment detail = (DetailFragment)fragment;
+
+            detail.onOptionsItemSelected(item);
         }
     }
 
