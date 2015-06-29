@@ -111,25 +111,6 @@ public class Utils {
         return note;
     }
 
-    public static void updateAllWidgets(Context context){
-        Class<StickyNoteWidget> stickyNoteWidgetClass = StickyNoteWidget.class;
-        Class<ListWidget> listWidgetClass = ListWidget.class;
-        Intent stickyIntent = new Intent(context,stickyNoteWidgetClass);
-        Intent listIntent = new Intent(context, listWidgetClass);
-
-        int[] stickyIds = AppWidgetManager.getInstance(context).getAppWidgetIds(new ComponentName(context, stickyNoteWidgetClass));
-        int[] listIds = AppWidgetManager.getInstance(context).getAppWidgetIds(new ComponentName(context, listWidgetClass));
-
-        stickyIntent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
-        stickyIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS,stickyIds);
-
-        listIntent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
-        listIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS,listIds);
-
-        context.sendBroadcast(stickyIntent);
-        context.sendBroadcast(listIntent);
-    }
-
     public static void updateWidgetsForChange(Context context){
         Class<StickyNoteWidget> stickyNoteWidgetClass = StickyNoteWidget.class;
         Class<ListWidget> listWidgetClass = ListWidget.class;
@@ -146,7 +127,7 @@ public class Utils {
         listIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS,listIds);
 
         context.sendBroadcast(stickyIntent);
-        //context.sendBroadcast(listIntent);
+        context.sendBroadcast(listIntent);
     }
 
     public static final boolean differentMutableData(Note one, Note two){

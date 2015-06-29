@@ -95,7 +95,7 @@ public class KolabSyncAdapter extends AbstractThreadedSyncAdapter {
         RepositoryManager manager = new RepositoryManager(getContext(),imapRepository);
         manager.sync(email, rootFolder);
 
-        Utils.updateAllWidgets(getContext());
+        Utils.updateWidgetsForChange(getContext());
 
         imapRepository.merge();
     }
