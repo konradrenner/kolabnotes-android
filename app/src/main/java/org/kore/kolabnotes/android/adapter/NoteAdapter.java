@@ -83,6 +83,7 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.ViewHolder> {
         }else{
             viewHolder.cardView.setCardBackgroundColor(Color.WHITE);
         }
+        viewHolder.cardView.setElevation(5);
 
 
         viewHolder.itemView.setOnClickListener(new ClickListener(i));
@@ -102,7 +103,7 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.ViewHolder> {
             if(parent instanceof RecyclerView){
                 RecyclerView recyclerView = (RecyclerView)parent;
                 for(int i=0; i < recyclerView.getChildCount(); i++){
-                    recyclerView.getChildAt(i).setElevation(0);
+                    recyclerView.getChildAt(i).setElevation(5);
                 }
             }
             v.setElevation(30);

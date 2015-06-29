@@ -34,7 +34,7 @@ public class Utils {
     public static final String INTENT_ACCOUNT_ROOT_FOLDER = "intent_account_rootfolder";
     public static final String NOTE_UID = "note_uid";
     public static final String NOTEBOOK_UID = "notebook_uid";
-
+    public static final String SELECTED_NOTEBOOK_NAME = "selectedNotebookName";
     /*
     public static void configureWindowEnterExitTransition(Window w) {
         Explode ex = new Explode();

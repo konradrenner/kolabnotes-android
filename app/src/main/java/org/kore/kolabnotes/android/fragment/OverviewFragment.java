@@ -7,8 +7,10 @@ import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -97,6 +99,8 @@ public class OverviewFragment extends Fragment implements NoteAdapter.NoteSelect
     private AccountHeader mAccount;
     private boolean tabletMode;
 
+    private boolean initPhase;
+
     private MainActivity activity;
 
     @Override
@@ -129,6 +133,7 @@ public class OverviewFragment extends Fragment implements NoteAdapter.NoteSelect
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+        initPhase = true;
         // Handle Toolbar
         toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
         activity.setSupportActionBar(toolbar);
@@ -179,7 +184,7 @@ public class OverviewFragment extends Fragment implements NoteAdapter.NoteSelect
         Utils.configureFab(mFabButton);
         mFabButton.setOnClickListener(new CreateButtonListener());
 
-        mRecyclerView = (RecyclerView) getActivity().findViewById(R.id.list);
+        mRecyclerView = (RecyclerView) activity.findViewById(R.id.list);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(activity));
         //mRecyclerView.setItemAnimator(new CustomItemAnimator());
         //mRecyclerView.setItemAnimator(new ReboundItemAnimator());
@@ -367,7 +372,10 @@ public class OverviewFragment extends Fragment implements NoteAdapter.NoteSelect
         Intent startIntent = getActivity().getIntent();
         String email = startIntent.getStringExtra(Utils.INTENT_ACCOUNT_EMAIL);
         String rootFolder = startIntent.getStringExtra(Utils.INTENT_ACCOUNT_ROOT_FOLDER);
-        String notebookUID = startIntent.getStringExtra(Utils.NOTEBOOK_UID);
+        //String notebookUID = startIntent.getStringExtra(Utils.NOTEBOOK_UID);
+
+        SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
+        selectedNotebookName = sharedPref.getString(Utils.SELECTED_NOTEBOOK_NAME,null);
 
         ActiveAccount activeAccount;
         if(email != null && rootFolder != null) {
@@ -376,9 +384,6 @@ public class OverviewFragment extends Fragment implements NoteAdapter.NoteSelect
             activeAccount = activeAccountRepository.getActiveAccount();
         }
 
-        if(notebookUID != null){
-            selectedNotebookName = notebookRepository.getByUID(activeAccount.getAccount(),activeAccount.getRootFolder(),notebookUID).getSummary();
-        }
 
         AccountHeader accountHeader = mAccount;
         for(IProfile profile : accountHeader.getProfiles()){
@@ -392,7 +397,12 @@ public class OverviewFragment extends Fragment implements NoteAdapter.NoteSelect
             }
         }
 
+        if(initPhase){
+            initPhase = false;
+            return;
+        }
 
+        String notebookUID = null;
         if(fromDetailActivity || tabletMode){
             if(selectedNotebookName != null) {
                 Notebook nb = notebookRepository.getBySummary(activeAccount.getAccount(), activeAccount.getRootFolder(), selectedNotebookName);
@@ -637,19 +647,25 @@ public class OverviewFragment extends Fragment implements NoteAdapter.NoteSelect
             String tag = drawerItem.getTag() == null || drawerItem.getTag().toString().trim().length() == 0 ? "ALL_NOTEBOOK" :  drawerItem.getTag().toString();
             List<Note> notes;
             ActiveAccount activeAccount = activeAccountRepository.getActiveAccount();
+            SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
             if("NOTEBOOK".equalsIgnoreCase(tag)){
                 Notebook notebook = notebookRepository.getBySummary(activeAccount.getAccount(), activeAccount.getRootFolder(), drawerItem.getName());
                 notes = notesRepository.getFromNotebook(activeAccount.getAccount(),activeAccount.getRootFolder(),notebook.getIdentification().getUid());
                 selectedNotebookName = notebook.getSummary();
+
+                sharedPref.edit().putString(Utils.SELECTED_NOTEBOOK_NAME,selectedNotebookName);
             }else if("TAG".equalsIgnoreCase(tag)){
                 notes = notetagRepository.getNotesWith(activeAccount.getAccount(), activeAccount.getRootFolder(), drawerItem.getName());
                 selectedNotebookName = null;
+                sharedPref.edit().remove(Utils.SELECTED_NOTEBOOK_NAME);
             }else if("ALL_NOTES".equalsIgnoreCase(tag)){
                 notes = notesRepository.getAll();
                 selectedNotebookName = null;
+                sharedPref.edit().remove(Utils.SELECTED_NOTEBOOK_NAME);
             }else{
                 notes = notesRepository.getAll(activeAccount.getAccount(),activeAccount.getRootFolder());
                 selectedNotebookName = null;
+                sharedPref.edit().remove(Utils.SELECTED_NOTEBOOK_NAME);
             }
 
             if(mAdapter != null) {
@@ -869,6 +885,9 @@ public class OverviewFragment extends Fragment implements NoteAdapter.NoteSelect
 
             String value = textField.getText().toString();
             selectedNotebookName = value;
+
+            SharedPreferences sharedPref = activity.getPreferences(Context.MODE_PRIVATE);
+            sharedPref.edit().putString(Utils.SELECTED_NOTEBOOK_NAME,selectedNotebookName);
 
             Notebook nb = new Notebook(ident,audit, Note.Classification.PUBLIC, value);
             nb.setDescription(value);

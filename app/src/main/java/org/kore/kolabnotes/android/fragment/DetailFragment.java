@@ -3,8 +3,10 @@ package org.kore.kolabnotes.android.fragment;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Fragment;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -561,8 +563,12 @@ public class DetailFragment extends Fragment {
             }
 
             Intent returnIntent = new Intent();
-            if (isNewNote || givenNotebook != null) {
-                returnIntent.putExtra("selectedNotebookName", notebookName);
+            if (isNewNote) {
+                SharedPreferences sharedPref = activity.getPreferences(Context.MODE_PRIVATE);
+                sharedPref.edit().putString(Utils.SELECTED_NOTEBOOK_NAME,notebookName);
+                if(givenNotebook !=null){
+                    returnIntent.putExtra("selectedNotebookName", notebookName);
+                }
             }
             Utils.updateWidgetsForChange(activity.getApplication());
 
