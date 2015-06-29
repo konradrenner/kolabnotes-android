@@ -417,11 +417,13 @@ public class OverviewFragment extends Fragment implements NoteAdapter.NoteSelect
         private final String rootFolder;
         private ActiveAccount activeAccount;
         private String notebookUID;
+        private boolean changeDrawerAccount;
 
         AccountChangeThread(String account, String rootFolder) {
             this.account = account;
             this.rootFolder = rootFolder;
             notebookUID = null;
+            changeDrawerAccount = true;
         }
 
         AccountChangeThread(ActiveAccount activeAccount) {
@@ -434,6 +436,10 @@ public class OverviewFragment extends Fragment implements NoteAdapter.NoteSelect
             this.notebookUID = notebookUID;
         }
 
+        public void disableProfileChangeing(){
+            changeDrawerAccount = false;
+        }
+
         @Override
         public void run() {
             if(activeAccount == null) {
@@ -443,7 +449,17 @@ public class OverviewFragment extends Fragment implements NoteAdapter.NoteSelect
             getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    toolbar.setTitle(Utils.getNameOfActiveAccount(activity, activeAccount.getAccount(), activeAccount.getRootFolder()));
+                    String name = Utils.getNameOfActiveAccount(activity, activeAccount.getAccount(), activeAccount.getRootFolder());
+                    if(changeDrawerAccount){
+                        final ArrayList<IProfile> profiles = mAccount.getProfiles();
+                        for(IProfile profile : profiles){
+                            if(name.equals(profile.getName())){
+                                mAccount.setActiveProfile(profile,false);
+                                break;
+                            }
+                        }
+                    }
+                    toolbar.setTitle(name);
                 }
             });
 
@@ -1023,7 +1039,9 @@ public class OverviewFragment extends Fragment implements NoteAdapter.NoteSelect
             }
 
             if(changed){
-                new AccountChangeThread(account,rootFolder).start();
+                AccountChangeThread thread = new AccountChangeThread(account,rootFolder);
+                thread.disableProfileChangeing();
+                thread.start();
             }
 
             mDrawer.closeDrawer();
