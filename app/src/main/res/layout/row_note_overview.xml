@@ -3,8 +3,11 @@
                                     xmlns:card_view="http://schemas.android.com/apk/res-auto"
                                     android:orientation="horizontal"
                                     android:layout_width="match_parent"
-                                    android:layout_margin="5dp"
+                                    android:paddingRight="4dp"
+                                    android:paddingLeft="4dp"
+                                    android:layout_marginBottom="8dp"
                                     android:clickable="true"
+                                    android:hapticFeedbackEnabled="true"
                                     android:layout_height="wrap_content"
                                     card_view:cardCornerRadius="10dp">
 

@@ -7,6 +7,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewParent;
 import android.widget.TextView;
 
 import org.kore.kolab.notes.Note;
@@ -25,7 +26,6 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.ViewHolder> {
     private Context context;
     private NoteSelectedListener listener;
     private DateFormat dateFormatter;
-    private Integer oldSelection;
 
     public NoteAdapter(List<Note> notes, int rowLayout, Context context, NoteSelectedListener listener) {
         this.notes = notes;
@@ -98,12 +98,15 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.ViewHolder> {
         @Override
         public void onClick(View v) {
             boolean same = false;
-            if(oldSelection != null){
-                same = oldSelection.intValue() == index;
+            ViewParent parent = v.getParent();
+            if(parent instanceof RecyclerView){
+                RecyclerView recyclerView = (RecyclerView)parent;
+                for(int i=0; i < recyclerView.getChildCount(); i++){
+                    recyclerView.getChildAt(i).setElevation(0);
+                }
             }
-            //v.setElevation(30);
+            v.setElevation(30);
             listener.onSelect(notes.get(index),same);
-            oldSelection = index;
         }
     }
 
@@ -129,7 +132,6 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.ViewHolder> {
             categories = (TextView) itemView.findViewById(R.id.categories);
             cardView = (CardView)itemView;
         }
-
     }
 
     public interface NoteSelectedListener{

@@ -184,7 +184,7 @@ public class OverviewFragment extends Fragment implements NoteAdapter.NoteSelect
         //mRecyclerView.setItemAnimator(new CustomItemAnimator());
         //mRecyclerView.setItemAnimator(new ReboundItemAnimator());
 
-        mAdapter = new NoteAdapter(new ArrayList<Note>(), R.layout.row_application, activity, this);
+        mAdapter = new NoteAdapter(new ArrayList<Note>(), R.layout.row_note_overview, activity, this);
         mRecyclerView.setAdapter(mAdapter);
 
         mSwipeRefreshLayout = (SwipeRefreshLayout) getActivity().findViewById(R.id.swipe_container);
@@ -716,7 +716,7 @@ public class OverviewFragment extends Fragment implements NoteAdapter.NoteSelect
         orderDrawerItems(mDrawer);
 
         if(mAdapter == null){
-            mAdapter = new NoteAdapter(new ArrayList<Note>(), R.layout.row_application, activity,this);
+            mAdapter = new NoteAdapter(new ArrayList<Note>(), R.layout.row_note_overview, activity,this);
         }
 
         mAdapter.clearNotes();
