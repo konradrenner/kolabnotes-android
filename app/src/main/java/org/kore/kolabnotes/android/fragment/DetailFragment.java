@@ -6,7 +6,6 @@ import android.app.Fragment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -560,17 +559,20 @@ public class DetailFragment extends Fragment {
                 for (String tag : selectedTags) {
                     noteTagRepository.insert(activeAccountRepository.getActiveAccount().getAccount(), activeAccountRepository.getActiveAccount().getRootFolder(), uuid, tag);
                 }
+
+                String selectedNotebookName = Utils.getSelectedNotebookName(activity);
+                if(selectedNotebookName != null && !selectedNotebookName.equals(book.getSummary())){
+                    Utils.setSelectedNotebookName(activity,book.getSummary());
+                }
             }
 
             Intent returnIntent = new Intent();
             if (isNewNote) {
-                SharedPreferences sharedPref = activity.getPreferences(Context.MODE_PRIVATE);
-                sharedPref.edit().putString(Utils.SELECTED_NOTEBOOK_NAME,notebookName);
-                if(givenNotebook !=null){
-                    returnIntent.putExtra("selectedNotebookName", notebookName);
+                if(Utils.getSelectedNotebookName(activity) != null){
+                    Utils.setSelectedNotebookName(activity,notebookName);
                 }
             }
-            Utils.updateWidgetsForChange(activity.getApplication());
+            Utils.updateWidgetsForChange(activity);
 
             ((OnFragmentFinished) activity).fragmentFinished(returnIntent, OnFragmentFinished.ResultCode.SAVED);
         }

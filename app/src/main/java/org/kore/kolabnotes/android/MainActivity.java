@@ -57,6 +57,16 @@ public class MainActivity extends AppCompatActivity implements SyncStatusObserve
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+
+        if(Utils.getReloadDataAfterDetail(this)){
+            Utils.setReloadDataAfterDetail(this,false);
+            overviewFragment.setFromDetail();
+        }
+    }
+
+    @Override
     public void fragmentFinished(Intent resultIntent, ResultCode code) {
         if(ResultCode.DELETED == code){
             Toast.makeText(this, R.string.note_deleted, Toast.LENGTH_LONG);

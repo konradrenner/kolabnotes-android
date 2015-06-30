@@ -2,6 +2,7 @@ package org.kore.kolabnotes.android.adapter;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.os.Build;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -14,6 +15,7 @@ import org.kore.kolab.notes.Note;
 import org.kore.kolab.notes.Tag;
 import org.kore.kolabnotes.android.MainActivity;
 import org.kore.kolabnotes.android.R;
+import org.kore.kolabnotes.android.Utils;
 
 import java.text.DateFormat;
 import java.util.Collections;
@@ -80,11 +82,21 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.ViewHolder> {
 
         if(note != null && note.getColor() != null){
             viewHolder.cardView.setCardBackgroundColor(Color.parseColor(note.getColor().getHexcode()));
+            viewHolder.name.setBackgroundColor(Color.parseColor(note.getColor().getHexcode()));
+            viewHolder.classification.setBackgroundColor(Color.parseColor(note.getColor().getHexcode()));
+            viewHolder.createdDate.setBackgroundColor(Color.parseColor(note.getColor().getHexcode()));
+            viewHolder.modificationDate.setBackgroundColor(Color.parseColor(note.getColor().getHexcode()));
+            viewHolder.categories.setBackgroundColor(Color.parseColor(note.getColor().getHexcode()));
+
         }else{
             viewHolder.cardView.setCardBackgroundColor(Color.WHITE);
+            viewHolder.name.setBackgroundColor(Color.WHITE);
+            viewHolder.classification.setBackgroundColor(Color.WHITE);
+            viewHolder.createdDate.setBackgroundColor(Color.WHITE);
+            viewHolder.modificationDate.setBackgroundColor(Color.WHITE);
+            viewHolder.categories.setBackgroundColor(Color.WHITE);
         }
-        viewHolder.cardView.setElevation(5);
-
+        Utils.setElevation(viewHolder.cardView,5);
 
         viewHolder.itemView.setOnClickListener(new ClickListener(i));
     }
@@ -103,11 +115,11 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.ViewHolder> {
             if(parent instanceof RecyclerView){
                 RecyclerView recyclerView = (RecyclerView)parent;
                 for(int i=0; i < recyclerView.getChildCount(); i++){
-                    recyclerView.getChildAt(i).setElevation(5);
+                    Utils.setElevation(recyclerView.getChildAt(i),5);
                 }
             }
-            v.setElevation(30);
-            listener.onSelect(notes.get(index),same);
+            Utils.setElevation(v,30);
+            listener.onSelect(notes.get(index), same);
         }
     }
 

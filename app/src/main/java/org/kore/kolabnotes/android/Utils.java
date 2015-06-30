@@ -3,11 +3,13 @@ package org.kore.kolabnotes.android;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.app.Application;
 import android.appwidget.AppWidgetManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Outline;
 import android.os.Build;
 import android.text.Html;
@@ -35,6 +37,8 @@ public class Utils {
     public static final String NOTE_UID = "note_uid";
     public static final String NOTEBOOK_UID = "notebook_uid";
     public static final String SELECTED_NOTEBOOK_NAME = "selectedNotebookName";
+    public static final String SELECTED_TAG_NAME = "selectedNotebookTag";
+    public static final String RELOAD_DATA_AFTER_DETAIL = "reloadDataAfterDetail";
     /*
     public static void configureWindowEnterExitTransition(Window w) {
         Explode ex = new Explode();
@@ -43,6 +47,49 @@ public class Utils {
         w.setEnterTransition(ex);
     }
     */
+
+    public static boolean getReloadDataAfterDetail(Context context){
+        SharedPreferences sharedPref = context.getSharedPreferences("org.kore.kolabnotes.android.pref",Context.MODE_PRIVATE);
+        return sharedPref.getBoolean(Utils.RELOAD_DATA_AFTER_DETAIL,false);
+    }
+
+    public static void setReloadDataAfterDetail(Context context, boolean value){
+        SharedPreferences sharedPref = context.getSharedPreferences("org.kore.kolabnotes.android.pref",Context.MODE_PRIVATE);
+        if(value){
+            sharedPref.edit().putBoolean(Utils.RELOAD_DATA_AFTER_DETAIL,value).commit();
+        }else{
+            sharedPref.edit().remove(Utils.RELOAD_DATA_AFTER_DETAIL).commit();
+        }
+    }
+
+
+    public static String getSelectedTagName(Context context){
+        SharedPreferences sharedPref = context.getSharedPreferences("org.kore.kolabnotes.android.pref",Context.MODE_PRIVATE);
+        return sharedPref.getString(Utils.SELECTED_TAG_NAME,null);
+    }
+
+    public static void setSelectedTagName(Context context, String name){
+        SharedPreferences sharedPref = context.getSharedPreferences("org.kore.kolabnotes.android.pref",Context.MODE_PRIVATE);
+        if(name == null){
+            sharedPref.edit().remove(Utils.SELECTED_TAG_NAME).commit();
+        }else{
+            sharedPref.edit().putString(Utils.SELECTED_TAG_NAME,name).commit();
+        }
+    }
+
+    public static String getSelectedNotebookName(Context context){
+        SharedPreferences sharedPref = context.getSharedPreferences("org.kore.kolabnotes.android.pref",Context.MODE_PRIVATE);
+        return sharedPref.getString(Utils.SELECTED_NOTEBOOK_NAME,null);
+    }
+
+    public static void setSelectedNotebookName(Context context, String name){
+        SharedPreferences sharedPref = context.getSharedPreferences("org.kore.kolabnotes.android.pref", Context.MODE_PRIVATE);
+        if(name == null){
+            sharedPref.edit().remove(Utils.SELECTED_NOTEBOOK_NAME).commit();
+        }else{
+            sharedPref.edit().putString(Utils.SELECTED_NOTEBOOK_NAME,name).commit();
+        }
+    }
 
     public static void configureFab(View fabButton) {
 
@@ -57,6 +104,12 @@ public class Utils {
             });
         } else {
             ((ImageButton) fabButton).setScaleType(ImageView.ScaleType.FIT_CENTER);
+        }
+    }
+
+    public static void setElevation(View view, float elevation){
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
+            view.setElevation(elevation);
         }
     }
     

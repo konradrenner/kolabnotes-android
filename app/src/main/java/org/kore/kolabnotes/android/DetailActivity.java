@@ -9,6 +9,8 @@ import org.kore.kolabnotes.android.fragment.OnFragmentFinished;
 
 public class DetailActivity extends AppCompatActivity implements OnFragmentFinished{
 
+    public static String FROM_DETAIL = "fromDetailTrue";
+
     private DetailFragment detailFragment;
 
     @Override
@@ -29,7 +31,8 @@ public class DetailActivity extends AppCompatActivity implements OnFragmentFinis
     @Override
     public void fragmentFinished(Intent resultIntent, ResultCode code) {
         if(ResultCode.OK == code || ResultCode.SAVED == code || ResultCode.DELETED == code){
-            setResult(RESULT_OK,resultIntent);
+            Utils.setReloadDataAfterDetail(this,true);
+            setResult(RESULT_OK, resultIntent);
         }else{
             setResult(RESULT_CANCELED,resultIntent);
         }
