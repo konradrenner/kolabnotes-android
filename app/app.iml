@@ -96,14 +96,8 @@
     <orderEntry type="library" exported="" name="kolabnotes-java-0.6.3" level="project" />
     <orderEntry type="library" exported="" name="recyclerview-v7-22.2.0" level="project" />
     <orderEntry type="library" exported="" name="richeditor-android-0.0.6" level="project" />
-<<<<<<< HEAD
-    <orderEntry type="library" exported="" name="cardview-v7-21.0.3" level="project" />
-    <orderEntry type="library" exported="" name="appcompat-v7-22.2.0" level="project" />
-    <orderEntry type="library" exported="" name="recyclerview-v7-21.0.3" level="project" />
-=======
     <orderEntry type="library" exported="" name="cardview-v7-22.2.0" level="project" />
     <orderEntry type="library" exported="" name="appcompat-v7-22.2.0" level="project" />
->>>>>>> fragments
     <orderEntry type="library" exported="" name="ambilwarna-2.0" level="project" />
   </component>
 </module>

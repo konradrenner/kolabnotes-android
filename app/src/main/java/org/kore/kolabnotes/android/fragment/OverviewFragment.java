@@ -113,17 +113,10 @@ public class OverviewFragment extends Fragment implements NoteAdapter.NoteSelect
 
 
     @Override
-<<<<<<< HEAD:app/src/main/java/org/kore/kolabnotes/android/MainPhoneActivity.java
-    protected void onCreate(Bundle savedInstanceState) {
-        //supportRequestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main_phone);
-=======
     public void onAttach(Activity activity) {
         super.onAttach(activity);
 
         this.activity = (MainActivity)activity;
->>>>>>> fragments:app/src/main/java/org/kore/kolabnotes/android/fragment/OverviewFragment.java
 
         dataCache = new DataCaches(activity);
         notesRepository = new NoteRepository(activity);
@@ -390,11 +383,7 @@ public class OverviewFragment extends Fragment implements NoteAdapter.NoteSelect
             return;
         }
 
-<<<<<<< HEAD:app/src/main/java/org/kore/kolabnotes/android/MainPhoneActivity.java
-        if(fromDetailActivity){
-=======
         if(fromDetailActivity || tabletMode){
->>>>>>> fragments:app/src/main/java/org/kore/kolabnotes/android/fragment/OverviewFragment.java
             if(selectedNotebookName != null) {
                 Notebook nb = notebookRepository.getBySummary(activeAccount.getAccount(), activeAccount.getRootFolder(), selectedNotebookName);
 
