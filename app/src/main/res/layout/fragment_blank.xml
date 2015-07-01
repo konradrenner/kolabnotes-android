@@ -1,0 +1,32 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="org.kore.kolabnotes.android.fragment.BlankFragment">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_above="@+id/textView"
+            android:id="@+id/imageView"
+            android:contentDescription="@string/select_or_create_hint"
+            android:src="@drawable/select_note" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingTop="15dp"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="@string/create_or_select_text"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:textColor="@color/abc_secondary_text_material_light"
+            android:id="@+id/textView" />
+
+    </RelativeLayout>
+
+</FrameLayout>

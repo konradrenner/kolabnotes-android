@@ -1,32 +1,38 @@
-package org.kore.kolabnotes.android;
+package org.kore.kolabnotes.android.fragment;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
+import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Fragment;
+import android.app.FragmentTransaction;
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SyncStatusObserver;
+import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.app.ActivityOptionsCompat;
-import android.support.v4.util.Pair;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ImageButton;
 
 import com.mikepenz.materialdrawer.Drawer;
+import com.mikepenz.materialdrawer.DrawerBuilder;
 import com.mikepenz.materialdrawer.accountswitcher.AccountHeader;
+import com.mikepenz.materialdrawer.accountswitcher.AccountHeaderBuilder;
 import com.mikepenz.materialdrawer.model.BaseDrawerItem;
 import com.mikepenz.materialdrawer.model.DividerDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
@@ -39,6 +45,10 @@ import org.kore.kolab.notes.AuditInformation;
 import org.kore.kolab.notes.Identification;
 import org.kore.kolab.notes.Note;
 import org.kore.kolab.notes.Notebook;
+import org.kore.kolabnotes.android.DetailActivity;
+import org.kore.kolabnotes.android.MainActivity;
+import org.kore.kolabnotes.android.R;
+import org.kore.kolabnotes.android.Utils;
 import org.kore.kolabnotes.android.adapter.NoteAdapter;
 import org.kore.kolabnotes.android.content.ActiveAccount;
 import org.kore.kolabnotes.android.content.ActiveAccountRepository;
@@ -58,11 +68,12 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
-public class MainPhoneActivity extends ActionBarActivity implements SyncStatusObserver{
+/**
+ * Fragment which displays the notes overview and implements the logic for the overview
+ */
+public class OverviewFragment extends Fragment implements NoteAdapter.NoteSelectedListener{
 
     public static final int DETAIL_ACTIVITY_RESULT_CODE = 1;
-
-    public static final String AUTHORITY = "kore.kolabnotes";
 
     private final DrawerItemClickedListener drawerItemClickedListener = new DrawerItemClickedListener();
 
@@ -71,40 +82,72 @@ public class MainPhoneActivity extends ActionBarActivity implements SyncStatusOb
     private ImageButton mFabButton;
     private RecyclerView mRecyclerView;
     private SwipeRefreshLayout mSwipeRefreshLayout;
-    private Drawer.Result mDrawer;
-    private AccountHeader.Result mAccount;
-    private AccountManager mAccountManager;
-    private String selectedNotebookName;
-    private boolean fromDetailActivity = false;
-    private DataCaches dataCache = new DataCaches(this);
 
-    private NoteRepository notesRepository = new NoteRepository(this);
-    private NotebookRepository notebookRepository = new NotebookRepository(this);
-    private TagRepository tagRepository = new TagRepository(this);
-    private NoteTagRepository notetagRepository = new NoteTagRepository(this);
-    private ActiveAccountRepository activeAccountRepository = new ActiveAccountRepository(this);
+    private AccountManager mAccountManager;
+    private boolean fromDetailActivity = false;
+    private DataCaches dataCache;
+
+    private NoteRepository notesRepository;
+    private NotebookRepository notebookRepository;
+    private TagRepository tagRepository;
+    private NoteTagRepository notetagRepository;
+    private ActiveAccountRepository activeAccountRepository;
     private Toolbar toolbar;
 
+    private Drawer mDrawer;
+    private AccountHeader mAccount;
+    private boolean tabletMode;
+
+    private boolean initPhase;
+
+    private MainActivity activity;
+
     @Override
+    public View onCreateView(LayoutInflater inflater,
+                             ViewGroup container,
+                             Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.fragment_overview,
+                container,
+                false);
+    }
+
+
+    @Override
+<<<<<<< HEAD:app/src/main/java/org/kore/kolabnotes/android/MainPhoneActivity.java
     protected void onCreate(Bundle savedInstanceState) {
         //supportRequestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_phone);
+=======
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
 
-        initCachesAsync(activeAccountRepository.getActiveAccount());
+        this.activity = (MainActivity)activity;
+>>>>>>> fragments:app/src/main/java/org/kore/kolabnotes/android/fragment/OverviewFragment.java
 
-        // Set explode animation when enter and exit the activity
-        //Utils.configureWindowEnterExitTransition(getWindow());
+        dataCache = new DataCaches(activity);
+        notesRepository = new NoteRepository(activity);
+        notebookRepository = new NotebookRepository(activity);
+        tagRepository = new TagRepository(activity);
+        notetagRepository = new NoteTagRepository(activity);
+        activeAccountRepository = new ActiveAccountRepository(activity);
+    }
 
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        initPhase = true;
         // Handle Toolbar
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
+        activity.setSupportActionBar(toolbar);
+        activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        ContentResolver.addStatusChangeListener(ContentResolver.SYNC_OBSERVER_TYPE_ACTIVE, this);
+        tabletMode = isTablet();
 
-        mAccountManager = AccountManager.get(this);
+        setHasOptionsMenu(true);
 
+        mAccountManager = AccountManager.get(activity);
         Account[] accounts = mAccountManager.getAccountsByType(AuthenticatorActivity.ARG_ACCOUNT_TYPE);
 
         ProfileDrawerItem[] profiles = new ProfileDrawerItem[accounts.length+1];
@@ -117,37 +160,43 @@ public class MainPhoneActivity extends ActionBarActivity implements SyncStatusOb
 
             profiles[i+1] = new ProfileDrawerItem().withName(name).withTag(rootFolder).withEmail(email);
         }
-        mAccount = new AccountHeader()
-                .withActivity(this)
+
+        mAccount = new AccountHeaderBuilder()
+                .withActivity(this.activity)
                 .withHeaderBackground(R.drawable.drawer_header_background)
                 .addProfiles(profiles)
                 .withOnAccountHeaderListener(new ProfileChanger())
                 .build();
-        mDrawer = new Drawer()
-                .withActivity(this)
+        mDrawer = new DrawerBuilder()
+                .withActivity(this.activity)
                 .withToolbar(toolbar)
                 .withAccountHeader(mAccount)
-                .withOnDrawerItemClickListener(drawerItemClickedListener)
+                .withOnDrawerItemClickListener(getDrawerItemClickedListener())
                 .build();
 
         addDrawerStandardItems(mDrawer);
 
         mDrawer.setSelection(1);
+
+        ContentResolver.addStatusChangeListener(ContentResolver.SYNC_OBSERVER_TYPE_ACTIVE, activity);
+
+        mAccountManager = AccountManager.get(activity);
+
         // Fab Button
-        mFabButton = (ImageButton) findViewById(R.id.fab_button);
+        mFabButton = (ImageButton) getActivity().findViewById(R.id.fab_button);
         //mFabButton.setImageDrawable(new IconicsDrawable(this, FontAwesome.Icon.faw_upload).color(Color.WHITE).actionBarSize());
         Utils.configureFab(mFabButton);
         mFabButton.setOnClickListener(new CreateButtonListener());
 
-        mRecyclerView = (RecyclerView) findViewById(R.id.list);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        mRecyclerView = (RecyclerView) activity.findViewById(R.id.list);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(activity));
         //mRecyclerView.setItemAnimator(new CustomItemAnimator());
         //mRecyclerView.setItemAnimator(new ReboundItemAnimator());
 
-        mAdapter = new NoteAdapter(new ArrayList<Note>(), R.layout.row_application, this);
+        mAdapter = new NoteAdapter(new ArrayList<Note>(), R.layout.row_note_overview, activity, this);
         mRecyclerView.setAdapter(mAdapter);
 
-        mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_container);
+        mSwipeRefreshLayout = (SwipeRefreshLayout) getActivity().findViewById(R.id.swipe_container);
         mSwipeRefreshLayout.setColorSchemeColors(getResources().getColor(R.color.theme_accent));
         mSwipeRefreshLayout.setRefreshing(true);
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -176,9 +225,9 @@ public class MainPhoneActivity extends ActionBarActivity implements SyncStatusOb
                     settingsBundle.putBoolean(
                             ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
 
-                    ContentResolver.requestSync(selectedAccount, AUTHORITY, settingsBundle);
+                    ContentResolver.requestSync(selectedAccount,MainActivity.AUTHORITY, settingsBundle);
                 }else{
-                    runOnUiThread(new Runnable() {
+                    getActivity().runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
                             reloadData();
@@ -200,67 +249,113 @@ public class MainPhoneActivity extends ActionBarActivity implements SyncStatusOb
         mRecyclerView.setVisibility(View.GONE);
     }
 
-    void initCachesAsync(final ActiveAccount account){
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                dataCache.reloadTags();
-            }
-        }).start();
-
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                dataCache.getNoteCache(account).reloadData();
-            }
-        }).start();
+    public void openDrawer(){
+        mDrawer.openDrawer();
     }
 
-    class ProfileChanger implements AccountHeader.OnAccountHeaderListener{
-        @Override
-        public boolean onProfileChanged(View view, IProfile profile, boolean current) {
-            final ActiveAccount activeAccount = activeAccountRepository.getActiveAccount();
-            String account;
-            String rootFolder;
-            boolean changed;
-            if(profile.getEmail() == null || profile.getEmail().trim().length() == 0){
-                changed = !activeAccount.getAccount().equalsIgnoreCase("local");
-                account = "local";
-                rootFolder = ((ProfileDrawerItem)profile).getTag().toString();
-            }else{
-                changed = !activeAccount.getAccount().equalsIgnoreCase(profile.getEmail());
-                account = profile.getEmail();
-                rootFolder = ((ProfileDrawerItem)profile).getTag().toString();
-            }
+    public void displayBlankFragment(){
+        Log.d("displayBlankFragment","tabletMode:"+tabletMode);
+        if(tabletMode){
+            BlankFragment blank = BlankFragment.newInstance();
+            FragmentTransaction ft = getFragmentManager(). beginTransaction();
+            ft.replace(R.id.details_fragment, blank);
+            ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+            ft.commit();
+        }
+    }
 
-            if(changed){
-                new AccountChangeThread(account,rootFolder).start();
-            }
+    public DrawerItemClickedListener getDrawerItemClickedListener(){
+        return drawerItemClickedListener;
+    }
 
-            mDrawer.closeDrawer();
-            return changed;
+    void setDetailFragment(Note note, boolean sameSelection){
+        DetailFragment detail = DetailFragment.newInstance(note.getIdentification().getUid(),null);
+        if (detail.getNote() == null || !sameSelection) {
+
+            String notebook = null;
+            String selectedNotebookName = Utils.getSelectedNotebookName(activity);
+            if (selectedNotebookName != null) {
+                ActiveAccount activeAccount = activeAccountRepository.getActiveAccount();
+                notebook = notebookRepository.getBySummary(activeAccount.getAccount(), activeAccount.getRootFolder(), selectedNotebookName).getIdentification().getUid();
+            }
+            detail.setStartNotebook(notebook);
+
+            FragmentTransaction ft = getFragmentManager(). beginTransaction();
+            ft.replace(R.id.details_fragment, detail);
+            ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+            ft.commit();
         }
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    public void onSelect(final Note note,final boolean sameSelection) {
+        if(tabletMode){
+            Fragment fragment = getFragmentManager().findFragmentById(R.id.details_fragment);
+            if(fragment instanceof  DetailFragment){
+                DetailFragment detail = (DetailFragment)fragment;
+                boolean changes = detail.checkDifferences();
 
-        if (requestCode == DETAIL_ACTIVITY_RESULT_CODE) {
-            if(resultCode == RESULT_OK || resultCode == RESULT_CANCELED){
-                String nbName = data.getStringExtra("selectedNotebookName");
-                selectedNotebookName = nbName;
-                fromDetailActivity = true;
+                if(changes) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+
+                    builder.setTitle(R.string.dialog_cancel_warning);
+                    builder.setMessage(R.string.dialog_question_cancel);
+                    builder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            setDetailFragment(note,sameSelection);
+                        }
+                    });
+                    builder.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            //nothing
+                        }
+                    });
+                    builder.show();
+                }else{
+                    setDetailFragment(note,sameSelection);
+                }
+            }else{
+                setDetailFragment(note,sameSelection);
             }
+        }else {
+            Intent i = new Intent(activity, DetailActivity.class);
+            i.putExtra(Utils.NOTE_UID, note.getIdentification().getUid());
+
+            String selectedNotebookName = Utils.getSelectedNotebookName(activity);
+            if (selectedNotebookName != null) {
+                ActiveAccount activeAccount = activeAccountRepository.getActiveAccount();
+                i.putExtra(Utils.NOTEBOOK_UID, notebookRepository.getBySummary(activeAccount.getAccount(), activeAccount.getRootFolder(), selectedNotebookName).getIdentification().getUid());
+            }
+
+            startActivityForResult(i, DETAIL_ACTIVITY_RESULT_CODE);
         }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == DETAIL_ACTIVITY_RESULT_CODE){
+            setFromDetail();
+        }
+    }
+
+    public void setFromDetail(){
+        fromDetailActivity = true;
     }
 
     @Override
     public void onResume(){
         super.onResume();
 
-        Intent startIntent = getIntent();
+        toolbar.setBackgroundColor(getResources().getColor(R.color.theme_default_primary));
+        //displayBlankFragment();
+
+        Intent startIntent = getActivity().getIntent();
         String email = startIntent.getStringExtra(Utils.INTENT_ACCOUNT_EMAIL);
         String rootFolder = startIntent.getStringExtra(Utils.INTENT_ACCOUNT_ROOT_FOLDER);
+        //if called from the widget
         String notebookUID = startIntent.getStringExtra(Utils.NOTEBOOK_UID);
 
         ActiveAccount activeAccount;
@@ -270,23 +365,36 @@ public class MainPhoneActivity extends ActionBarActivity implements SyncStatusOb
             activeAccount = activeAccountRepository.getActiveAccount();
         }
 
+        //if called from the widget
         if(notebookUID != null){
-            selectedNotebookName = notebookRepository.getByUID(activeAccount.getAccount(),activeAccount.getRootFolder(),notebookUID).getSummary();
+            Utils.setSelectedNotebookName(activity, notebookRepository.getByUID(activeAccount.getAccount(),activeAccount.getRootFolder(),notebookUID).getSummary());
         }
 
-        for(IProfile profile : mAccount.getProfiles()){
+        String selectedNotebookName = Utils.getSelectedNotebookName(activity);
+
+
+        AccountHeader accountHeader = mAccount;
+        for(IProfile profile : accountHeader.getProfiles()){
             if(profile instanceof ProfileDrawerItem){
                 ProfileDrawerItem item = (ProfileDrawerItem)profile;
 
                 if(activeAccount.getAccount().equals(item.getEmail()) && activeAccount.getRootFolder().equals(item.getTag().toString())){
-                    mAccount.setActiveProfile(profile);
+                    accountHeader.setActiveProfile(profile);
                     break;
                 }
             }
         }
 
+        if(initPhase){
+            initPhase = false;
+            return;
+        }
 
+<<<<<<< HEAD:app/src/main/java/org/kore/kolabnotes/android/MainPhoneActivity.java
         if(fromDetailActivity){
+=======
+        if(fromDetailActivity || tabletMode){
+>>>>>>> fragments:app/src/main/java/org/kore/kolabnotes/android/fragment/OverviewFragment.java
             if(selectedNotebookName != null) {
                 Notebook nb = notebookRepository.getBySummary(activeAccount.getAccount(), activeAccount.getRootFolder(), selectedNotebookName);
 
@@ -310,11 +418,15 @@ public class MainPhoneActivity extends ActionBarActivity implements SyncStatusOb
         private final String rootFolder;
         private ActiveAccount activeAccount;
         private String notebookUID;
+        private boolean changeDrawerAccount;
+        private boolean resetDrawerSelection;
 
         AccountChangeThread(String account, String rootFolder) {
             this.account = account;
             this.rootFolder = rootFolder;
             notebookUID = null;
+            changeDrawerAccount = true;
+            resetDrawerSelection = false;
         }
 
         AccountChangeThread(ActiveAccount activeAccount) {
@@ -327,24 +439,49 @@ public class MainPhoneActivity extends ActionBarActivity implements SyncStatusOb
             this.notebookUID = notebookUID;
         }
 
+        public void disableProfileChangeing(){
+            changeDrawerAccount = false;
+        }
+
+        public void resetDrawerSelection(){
+            this.resetDrawerSelection = true;
+        }
+
+
         @Override
         public void run() {
-            long ts = System.currentTimeMillis();
             if(activeAccount == null) {
                 activeAccount = activeAccountRepository.switchAccount(account, rootFolder);
             }
 
-            runOnUiThread(new Runnable() {
+            getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    toolbar.setTitle(Utils.getNameOfActiveAccount(MainPhoneActivity.this,activeAccount.getAccount(),activeAccount.getRootFolder()));
+                    String name = Utils.getNameOfActiveAccount(activity, activeAccount.getAccount(), activeAccount.getRootFolder());
+                    if(changeDrawerAccount){
+                        final ArrayList<IProfile> profiles = mAccount.getProfiles();
+                        for(IProfile profile : profiles){
+                            if(name.equals(profile.getName())){
+                                mAccount.setActiveProfile(profile,false);
+                                break;
+                            }
+                        }
+                    }
+                    toolbar.setTitle(name);
                 }
             });
 
             List<Note> notes;
             DataCache noteCache = dataCache.getNoteCache(activeAccount);
-            if(notebookUID == null){
+            String selectedTagName = Utils.getSelectedTagName(activity);
+            if(resetDrawerSelection || (notebookUID == null && selectedTagName == null)){
+                if(resetDrawerSelection){
+                    Utils.setSelectedNotebookName(activity, null);
+                    Utils.setSelectedTagName(activity, null);
+                }
                 notes = noteCache.getNotes();
+            }else if(selectedTagName != null){
+                notes = notetagRepository.getNotesWith(activeAccount.getAccount(), activeAccount.getRootFolder(), selectedTagName);
             }else{
                 notes = noteCache.getNotesFromNotebook(notebookUID);
             }
@@ -352,13 +489,15 @@ public class MainPhoneActivity extends ActionBarActivity implements SyncStatusOb
             List<String> tags = dataCache.getTags();
             List<Notebook> notebooks = noteCache.getNotebooks();
 
-            runOnUiThread(new ReloadDataThread(notebooks,notes,tags));
+            displayBlankFragment();
+
+            getActivity().runOnUiThread(new ReloadDataThread(notebooks, notes, tags));
         }
     }
 
 
 
-    class ReloadDataThread extends Thread{
+    public class ReloadDataThread extends Thread{
         private final List<Notebook> notebooks;
         private final List<Note> notes;
         private final List<String> tags;
@@ -375,30 +514,9 @@ public class MainPhoneActivity extends ActionBarActivity implements SyncStatusOb
         }
     }
 
-
-    @Override
-    public void onStatusChanged(int which) {
-        AccountManager accountManager = AccountManager.get(this);
-        Account[] accounts = accountManager.getAccountsByType(AuthenticatorActivity.ARG_ACCOUNT_TYPE);
-
-        if (accounts.length <= 0) {
-            return;
-        }
-
-        Account selectedAccount = null;
-
-        ActiveAccount activeAccount = activeAccountRepository.getActiveAccount();
-
-        for (Account acc : accounts) {
-            String email = mAccountManager.getUserData(acc, AuthenticatorActivity.KEY_EMAIL);
-            if (activeAccount.getAccount().equalsIgnoreCase(email)) {
-                selectedAccount = acc;
-                break;
-            }
-        }
-
-        if(selectedAccount == null || !ContentResolver.isSyncActive(selectedAccount,AUTHORITY)){
-            runOnUiThread(new Runnable() {
+    public void refreshFinished(Account selectedAccount){
+        if(selectedAccount == null || !ContentResolver.isSyncActive(selectedAccount,MainActivity.AUTHORITY)){
+            getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
                     reloadData();
@@ -410,10 +528,9 @@ public class MainPhoneActivity extends ActionBarActivity implements SyncStatusOb
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        super.onCreateOptionsMenu(menu);
-        getMenuInflater().inflate(R.menu.main_toolbar, menu);
-        return true;
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu,inflater);
+        inflater.inflate(R.menu.main_toolbar, menu);
     }
 
     @Override
@@ -432,25 +549,28 @@ public class MainPhoneActivity extends ActionBarActivity implements SyncStatusOb
                 newSearchDialog.show();
                 break;
             case R.id.create_account_menu:
-                Intent intent = new Intent(this,AuthenticatorActivity.class);
+                Intent intent = new Intent(activity,AuthenticatorActivity.class);
 
                 startActivity(intent);
+                break;
+            default:
+                activity.dispatchMenuEvent(item);
                 break;
         }
         return true;
     }
 
     private AlertDialog createSearchDialog(){
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
 
         builder.setTitle(R.string.dialog_input_text_search);
 
-        LayoutInflater inflater = getLayoutInflater();
+        LayoutInflater inflater = activity.getLayoutInflater();
         View view = inflater.inflate(R.layout.dialog_search_note, null);
 
         builder.setView(view);
 
-        builder.setPositiveButton(R.string.ok,new SearchNoteButtonListener((EditText)view.findViewById(R.id.dialog_search_input_field)));
+        builder.setPositiveButton(R.string.ok, new SearchNoteButtonListener((EditText) view.findViewById(R.id.dialog_search_input_field)));
         builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -461,11 +581,11 @@ public class MainPhoneActivity extends ActionBarActivity implements SyncStatusOb
     }
 
     private AlertDialog createNotebookDialog(Intent startActivity){
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
 
         builder.setTitle(R.string.dialog_input_text_notebook);
 
-        LayoutInflater inflater = getLayoutInflater();
+        LayoutInflater inflater = activity.getLayoutInflater();
         View view = inflater.inflate(R.layout.dialog_text_input, null);
 
         builder.setView(view);
@@ -485,11 +605,11 @@ public class MainPhoneActivity extends ActionBarActivity implements SyncStatusOb
     }
 
     private AlertDialog createTagDialog(){
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
 
         builder.setTitle(R.string.dialog_input_text_tag);
 
-        LayoutInflater inflater = getLayoutInflater();
+        LayoutInflater inflater = activity.getLayoutInflater();
         View view = inflater.inflate(R.layout.dialog_text_input, null);
 
         builder.setView(view);
@@ -505,30 +625,20 @@ public class MainPhoneActivity extends ActionBarActivity implements SyncStatusOb
     }
 
     @Override
-    protected void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-    }
-
-
-    public void animateActivity(Note note) {
-        Intent i = new Intent(this, DetailActivity.class);
-        i.putExtra(Utils.NOTE_UID, note.getIdentification().getUid());
-        ActiveAccount activeAccount = activeAccountRepository.getActiveAccount();
-        if(selectedNotebookName != null) {
-            i.putExtra(Utils.NOTEBOOK_UID, notebookRepository.getBySummary(activeAccount.getAccount(), activeAccount.getRootFolder(), selectedNotebookName).getIdentification().getUid());
-        }
-
-        ActivityOptionsCompat transitionActivityOptions = ActivityOptionsCompat.makeSceneTransitionAnimation(this, Pair.create((View) mFabButton, "fab"));
-        startActivityForResult(i,DETAIL_ACTIVITY_RESULT_CODE,transitionActivityOptions.toBundle());
     }
 
 
     private class DrawerItemClickedListener implements Drawer.OnDrawerItemClickListener{
         @Override
-        public void onItemClick(AdapterView<?> adapterView, View view, int i, long l, IDrawerItem iDrawerItem) {
-            if(iDrawerItem instanceof  BaseDrawerItem) {
+        public boolean onItemClick(AdapterView<?> adapterView, View view, int i, long l, IDrawerItem iDrawerItem) {
+            if(iDrawerItem instanceof BaseDrawerItem) {
                 changeNoteSelection((BaseDrawerItem) iDrawerItem);
             }
+
+            //because after a selection the drawer should close
+            return false;
         }
 
         public void changeNoteSelection(BaseDrawerItem drawerItem){
@@ -545,16 +655,21 @@ public class MainPhoneActivity extends ActionBarActivity implements SyncStatusOb
             if("NOTEBOOK".equalsIgnoreCase(tag)){
                 Notebook notebook = notebookRepository.getBySummary(activeAccount.getAccount(), activeAccount.getRootFolder(), drawerItem.getName());
                 notes = notesRepository.getFromNotebook(activeAccount.getAccount(),activeAccount.getRootFolder(),notebook.getIdentification().getUid());
-                selectedNotebookName = notebook.getSummary();
+
+                Utils.setSelectedNotebookName(activity, notebook.getSummary());
+                Utils.setSelectedTagName(activity,null);
             }else if("TAG".equalsIgnoreCase(tag)){
                 notes = notetagRepository.getNotesWith(activeAccount.getAccount(), activeAccount.getRootFolder(), drawerItem.getName());
-                selectedNotebookName = null;
+                Utils.setSelectedNotebookName(activity, null);
+                Utils.setSelectedTagName(activity,drawerItem.getName());
             }else if("ALL_NOTES".equalsIgnoreCase(tag)){
                 notes = notesRepository.getAll();
-                selectedNotebookName = null;
+                Utils.setSelectedNotebookName(activity, null);
+                Utils.setSelectedTagName(activity,null);
             }else{
                 notes = notesRepository.getAll(activeAccount.getAccount(),activeAccount.getRootFolder());
-                selectedNotebookName = null;
+                Utils.setSelectedNotebookName(activity, null);
+                Utils.setSelectedTagName(activity,null);
             }
 
             if(mAdapter != null) {
@@ -621,7 +736,7 @@ public class MainPhoneActivity extends ActionBarActivity implements SyncStatusOb
         orderDrawerItems(mDrawer);
 
         if(mAdapter == null){
-            mAdapter = new NoteAdapter(new ArrayList<Note>(), R.layout.row_application, this);
+            mAdapter = new NoteAdapter(new ArrayList<Note>(), R.layout.row_note_overview, activity,this);
         }
 
         mAdapter.clearNotes();
@@ -644,18 +759,33 @@ public class MainPhoneActivity extends ActionBarActivity implements SyncStatusOb
         @Override
         public void onClick(View v) {
             ActiveAccount activeAccount = activeAccountRepository.getActiveAccount();
-            Intent intent = new Intent(MainPhoneActivity.this,DetailActivity.class);
+            Intent intent = new Intent(activity,DetailActivity.class);
 
+            String selectedNotebookName = Utils.getSelectedNotebookName(activity);
             Notebook notebook = selectedNotebookName == null ? null : notebookRepository.getBySummary(activeAccount.getAccount(), activeAccount.getRootFolder(), selectedNotebookName);
 
             if(notebookRepository.getAll(activeAccount.getAccount(),activeAccount.getRootFolder()).isEmpty()){
                 //Create first a notebook, so that note creation is possible
                 createNotebookDialog(intent).show();
             }else{
-                if(notebook != null) {
-                    intent.putExtra(Utils.NOTEBOOK_UID, notebook.getIdentification().getUid());
+
+                if(tabletMode){
+                    String notebookUID = null;
+                    if (notebook != null) {
+                        notebookUID = notebook.getIdentification().getUid();
+                    }
+
+                    DetailFragment detail = DetailFragment.newInstance(null,notebookUID);
+                    FragmentTransaction ft = getFragmentManager(). beginTransaction();
+                    ft.replace(R.id.details_fragment, detail);
+                    ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+                    ft.commit();
+                }else {
+                    if (notebook != null) {
+                        intent.putExtra(Utils.NOTEBOOK_UID, notebook.getIdentification().getUid());
+                    }
+                    startActivityForResult(intent, DETAIL_ACTIVITY_RESULT_CODE);
                 }
-                startActivityForResult(intent,DETAIL_ACTIVITY_RESULT_CODE);
             }
         }
     }
@@ -680,6 +810,8 @@ public class MainPhoneActivity extends ActionBarActivity implements SyncStatusOb
                 mDrawer.addItem(new SecondaryDrawerItem().withName(value).withTag("TAG"));
 
                 orderDrawerItems(mDrawer);
+
+                displayBlankFragment();
             }
         }
     }
@@ -727,7 +859,9 @@ public class MainPhoneActivity extends ActionBarActivity implements SyncStatusOb
                 List<Notebook> notebooks = notebookRepository.getAll(activeAccount.getAccount(), activeAccount.getRootFolder());
                 List<String> tags = tagRepository.getAll();
 
-                runOnUiThread(new ReloadDataThread(notebooks,notes,tags));
+                displayBlankFragment();
+
+                getActivity().runOnUiThread(new ReloadDataThread(notebooks, notes, tags));
             }
         }
     }
@@ -755,38 +889,49 @@ public class MainPhoneActivity extends ActionBarActivity implements SyncStatusOb
             AuditInformation audit = new AuditInformation(now,now);
 
             String value = textField.getText().toString();
-            selectedNotebookName = value;
+
+            Utils.setSelectedNotebookName(activity,value);
 
             Notebook nb = new Notebook(ident,audit, Note.Classification.PUBLIC, value);
             nb.setDescription(value);
             if(notebookRepository.insert(activeAccount.getAccount(), activeAccount.getRootFolder(), nb)) {
-
                 mDrawer.addItem(new SecondaryDrawerItem().withName(value).withTag("NOTEBOOK"));
 
                 orderDrawerItems(mDrawer, value);
             }
 
             if(intent != null){
-                intent.putExtra(Utils.NOTEBOOK_UID,nb.getIdentification().getUid());
-                startActivityForResult(intent,DETAIL_ACTIVITY_RESULT_CODE);
+                if(tabletMode){
+                    DetailFragment detail = DetailFragment.newInstance(null,nb.getIdentification().getUid());
+                    FragmentTransaction ft = getFragmentManager(). beginTransaction();
+                    ft.replace(R.id.details_fragment, detail);
+                    ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+                    ft.commit();
+                }else {
+
+                    intent.putExtra(Utils.NOTEBOOK_UID, nb.getIdentification().getUid());
+                    startActivityForResult(intent, DETAIL_ACTIVITY_RESULT_CODE);
+                }
+            }else{
+                displayBlankFragment();
             }
         }
     }
 
-    void orderDrawerItems(Drawer.Result drawer){
+    void orderDrawerItems(Drawer drawer){
         orderDrawerItems(drawer,null);
     }
 
     class Orderer implements Runnable{
-        private final Drawer.Result drawer;
+        private final Drawer drawer;
         private final String selectionName;
 
-        Orderer(Drawer.Result drawer, String selectionName) {
+        Orderer(Drawer drawer, String selectionName) {
             this.drawer = drawer;
             this.selectionName = selectionName;
         }
 
-        private Orderer(Drawer.Result drawer) {
+        private Orderer(Drawer drawer) {
             this.drawer = drawer;
             this.selectionName = null;
         }
@@ -830,12 +975,17 @@ public class MainPhoneActivity extends ActionBarActivity implements SyncStatusOb
                 selection--;
             }
 
+            String selectedNotebookName = Utils.getSelectedNotebookName(activity);
+            String selectedTagName = Utils.getSelectedTagName(activity);
             if(selectedNotebookName != null){
                 selected = selectedNotebookName;
                 notebookSelected = true;
             }else if(selectionName != null){
                 selected = selectionName;
                 notebookSelected = true;
+            }else if(selectedTagName != null){
+                selected = selectedTagName;
+                notebookSelected = false;
             }
 
             Collections.sort(tags);
@@ -852,7 +1002,10 @@ public class MainPhoneActivity extends ActionBarActivity implements SyncStatusOb
                     continue;
                 }
                 displayedTags.add(tag);
-                drawer.getDrawerItems().add(new SecondaryDrawerItem().withName(tag).withTag("TAG"));
+
+                SecondaryDrawerItem item = new SecondaryDrawerItem().withName(tag).withTag("TAG");
+                item.setTextColorRes(R.color.abc_primary_text_material_light);
+                drawer.getDrawerItems().add(item);
 
                 idx++;
                 if(!notebookSelected && !allnotesSelected && tag.equals(selected)){
@@ -871,6 +1024,7 @@ public class MainPhoneActivity extends ActionBarActivity implements SyncStatusOb
             BaseDrawerItem selectedItem = null;
             for(String notebook : notebooks){
                 BaseDrawerItem item = new SecondaryDrawerItem().withName(notebook).withTag("NOTEBOOK");
+                item.setTextColorRes(R.color.abc_primary_text_material_light);
                 drawer.getDrawerItems().add(item);
 
                 idx++;
@@ -890,15 +1044,51 @@ public class MainPhoneActivity extends ActionBarActivity implements SyncStatusOb
         }
     }
 
-    private final void addDrawerStandardItems(Drawer.Result drawer){
+    void orderDrawerItems(Drawer drawer, String selectionName){
+        getActivity().runOnUiThread(new Orderer(drawer, selectionName));
+    }
+
+    class ProfileChanger implements AccountHeader.OnAccountHeaderListener{
+        @Override
+        public boolean onProfileChanged(View view, IProfile profile, boolean current) {
+            final ActiveAccount activeAccount = activeAccountRepository.getActiveAccount();
+            String account;
+            String rootFolder;
+            boolean changed;
+            if(profile.getEmail() == null || profile.getEmail().trim().length() == 0){
+                changed = !activeAccount.getAccount().equalsIgnoreCase("local");
+                account = "local";
+                rootFolder = ((ProfileDrawerItem)profile).getTag().toString();
+            }else{
+                changed = !activeAccount.getAccount().equalsIgnoreCase(profile.getEmail());
+                account = profile.getEmail();
+                rootFolder = ((ProfileDrawerItem)profile).getTag().toString();
+            }
+
+            if(changed){
+                AccountChangeThread thread = new AccountChangeThread(account,rootFolder);
+                thread.disableProfileChangeing();
+                thread.resetDrawerSelection();
+                thread.start();
+                mDrawer.setSelection(1);
+            }
+
+            mDrawer.closeDrawer();
+            return changed;
+        }
+    }
+
+    public final void addDrawerStandardItems(Drawer drawer){
         drawer.getDrawerItems().add(new PrimaryDrawerItem().withName(getResources().getString(R.string.drawer_item_allaccount_notes)).withTag("ALL_NOTES").withIcon(R.drawable.ic_action_group));
-        drawer.getDrawerItems().add(new SecondaryDrawerItem().withName(getResources().getString(R.string.drawer_item_allnotes)).withTag("ALL_NOTEBOOK").withIcon(R.drawable.ic_action_person));
+        drawer.getDrawerItems().add(new PrimaryDrawerItem().withName(getResources().getString(R.string.drawer_item_allnotes)).withTag("ALL_NOTEBOOK").withIcon(R.drawable.ic_action_person));
         drawer.getDrawerItems().add(new DividerDrawerItem());
         drawer.getDrawerItems().add(new PrimaryDrawerItem().withName(getResources().getString(R.string.drawer_item_tags)).withTag("HEADING_TAG").setEnabled(false).withDisabledTextColor(R.color.material_drawer_dark_header_selection_text).withIcon(R.drawable.ic_action_labels));
 
     }
 
-    void orderDrawerItems(Drawer.Result drawer, String selectionName){
-        runOnUiThread(new Orderer(drawer,selectionName));
+    public boolean isTablet() {
+        return (getResources().getConfiguration().screenLayout
+                & Configuration.SCREENLAYOUT_SIZE_MASK)
+                >= Configuration.SCREENLAYOUT_SIZE_LARGE;
     }
 }

@@ -84,4 +84,8 @@
     <string name="kolab_enabled">Kolab extensions</string>
     <string name="sync_intervall">Sync intervall in hours (default 24)</string>
     <string name="note_not_found">Note not found!</string>
+    <string name="create_or_select_text">Select or create a note</string>
+    <string name="select_or_create_hint">select or create note icon</string>
+    <string name="note_deleted">Note deleted</string>
+    <string name="note_saved">Note saved</string>
 </resources>

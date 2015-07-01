@@ -1,18 +1,23 @@
 package org.kore.kolabnotes.android.adapter;
 
+import android.content.Context;
 import android.graphics.Color;
+import android.os.Build;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewParent;
 import android.widget.TextView;
 
 import org.kore.kolab.notes.Note;
 import org.kore.kolab.notes.Tag;
-import org.kore.kolabnotes.android.MainPhoneActivity;
+import org.kore.kolabnotes.android.MainActivity;
 import org.kore.kolabnotes.android.R;
+import org.kore.kolabnotes.android.Utils;
 
+import java.text.DateFormat;
 import java.util.Collections;
 import java.util.List;
 
@@ -20,12 +25,16 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.ViewHolder> {
 
     private List<Note> notes;
     private int rowLayout;
-    private MainPhoneActivity mAct;
+    private Context context;
+    private NoteSelectedListener listener;
+    private DateFormat dateFormatter;
 
-    public NoteAdapter(List<Note> notes, int rowLayout, MainPhoneActivity act) {
+    public NoteAdapter(List<Note> notes, int rowLayout, Context context, NoteSelectedListener listener) {
         this.notes = notes;
         this.rowLayout = rowLayout;
-        this.mAct = act;
+        this.context = context;
+        this.listener = listener;
+        this.dateFormatter = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
     }
 
 
@@ -49,7 +58,6 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.ViewHolder> {
     @Override
     public ViewHolder onCreateViewHolder(final ViewGroup viewGroup, int i) {
         View v = LayoutInflater.from(viewGroup.getContext()).inflate(rowLayout, viewGroup, false);
-        final Note note = notes.get(i);
 
         return new ViewHolder(v);
     }
@@ -58,33 +66,61 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.ViewHolder> {
     public void onBindViewHolder(final ViewHolder viewHolder, int i) {
         final Note note = notes.get(i);
         viewHolder.name.setText(note.getSummary());
-        viewHolder.classification.setText(mAct.getResources().getString(R.string.classification)+": "+note.getClassification());
-        viewHolder.createdDate.setText(mAct.getResources().getString(R.string.creationDate)+": "+note.getAuditInformation().getCreationDate());
-        viewHolder.modificationDate.setText(mAct.getResources().getString(R.string.modificationDate)+": "+note.getAuditInformation().getLastModificationDate());
+        viewHolder.classification.setText(context.getResources().getString(R.string.classification)+": "+note.getClassification());
+        viewHolder.createdDate.setText(context.getResources().getString(R.string.creationDate)+": "+ dateFormatter.format(note.getAuditInformation().getCreationDate()));
+        viewHolder.modificationDate.setText(context.getResources().getString(R.string.modificationDate)+": "+dateFormatter.format(note.getAuditInformation().getLastModificationDate()));
         StringBuilder tags = new StringBuilder();
         for(Tag tag : note.getCategories()){
             tags.append(tag.getName());
             tags.append(", ");
         }
         if(tags.length() > 0) {
-            viewHolder.categories.setText(mAct.getResources().getString(R.string.tags)+": "+tags.substring(0, tags.length() - 2));
+            viewHolder.categories.setText(context.getResources().getString(R.string.tags)+": "+tags.substring(0, tags.length() - 2));
         }else{
-            viewHolder.categories.setText(mAct.getResources().getString(R.string.notags));
+            viewHolder.categories.setText(context.getResources().getString(R.string.notags));
         }
 
         if(note != null && note.getColor() != null){
             viewHolder.cardView.setCardBackgroundColor(Color.parseColor(note.getColor().getHexcode()));
+            viewHolder.name.setBackgroundColor(Color.parseColor(note.getColor().getHexcode()));
+            viewHolder.classification.setBackgroundColor(Color.parseColor(note.getColor().getHexcode()));
+            viewHolder.createdDate.setBackgroundColor(Color.parseColor(note.getColor().getHexcode()));
+            viewHolder.modificationDate.setBackgroundColor(Color.parseColor(note.getColor().getHexcode()));
+            viewHolder.categories.setBackgroundColor(Color.parseColor(note.getColor().getHexcode()));
+
         }else{
             viewHolder.cardView.setCardBackgroundColor(Color.WHITE);
+            viewHolder.name.setBackgroundColor(Color.WHITE);
+            viewHolder.classification.setBackgroundColor(Color.WHITE);
+            viewHolder.createdDate.setBackgroundColor(Color.WHITE);
+            viewHolder.modificationDate.setBackgroundColor(Color.WHITE);
+            viewHolder.categories.setBackgroundColor(Color.WHITE);
+        }
+        Utils.setElevation(viewHolder.cardView,5);
+
+        viewHolder.itemView.setOnClickListener(new ClickListener(i));
+    }
+
+    class ClickListener implements View.OnClickListener{
+        public int index;
+
+        public ClickListener(int index) {
+            this.index = index;
         }
 
-
-        viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mAct.animateActivity(note);
+        @Override
+        public void onClick(View v) {
+            boolean same = false;
+            ViewParent parent = v.getParent();
+            if(parent instanceof RecyclerView){
+                RecyclerView recyclerView = (RecyclerView)parent;
+                for(int i=0; i < recyclerView.getChildCount(); i++){
+                    Utils.setElevation(recyclerView.getChildAt(i),5);
+                }
             }
-        });
+            Utils.setElevation(v,30);
+            listener.onSelect(notes.get(index), same);
+        }
     }
 
     @Override
@@ -109,6 +145,9 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.ViewHolder> {
             categories = (TextView) itemView.findViewById(R.id.categories);
             cardView = (CardView)itemView;
         }
+    }
 
+    public interface NoteSelectedListener{
+        void onSelect(Note note, boolean sameSelection);
     }
 }

@@ -1,6 +1,6 @@
 <FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/activity_detail"
+    android:id="@+id/activity_main"
     android:layout_height="match_parent"
     android:layout_width="match_parent">
 
@@ -16,7 +16,6 @@
             android:minHeight="?attr/actionBarSize"
             android:background="?attr/colorPrimary"
             android:elevation="4dp"
-            android:paddingTop="@dimen/tool_bar_top_padding"
             android:transitionName="actionBar"/>
 
         <LinearLayout
@@ -26,13 +25,12 @@
             android:orientation="horizontal">
 
             <fragment
-                class="org.kore.kolabnotes.android.fragment.DetailFragment"
-                android:id="@+id/detail_fragment"
+                class="org.kore.kolabnotes.android.fragment.OverviewFragment"
+                android:id="@+id/overview_fragment"
                 android:layout_weight="1"
                 android:layout_width="0px"
                 android:layout_height="match_parent"
                 />
-
-        </LinearLayout>
+    </LinearLayout>
     </RelativeLayout>
 </FrameLayout>
