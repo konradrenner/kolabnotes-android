@@ -117,4 +117,5 @@
     <string name="select_or_create_hint">select or create note icon</string>
     <string name="note_deleted">Notiz gelöscht</string>
     <string name="note_saved">Notiz gespeichert</string>
+    <string name="sync_failed">Synchronisation fehlgeschlagen</string>
 </resources>

@@ -88,4 +88,5 @@
     <string name="select_or_create_hint">select or create note icon</string>
     <string name="note_deleted">Note deleted</string>
     <string name="note_saved">Note saved</string>
+    <string name="sync_failed">Synchronisation failed</string>
 </resources>

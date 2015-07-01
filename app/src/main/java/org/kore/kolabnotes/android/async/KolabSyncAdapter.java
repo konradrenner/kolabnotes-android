@@ -2,12 +2,15 @@ package org.kore.kolabnotes.android.async;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
+import android.app.Notification;
+import android.app.NotificationManager;
 import android.content.AbstractThreadedSyncAdapter;
 import android.content.ContentProviderClient;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.SyncResult;
 import android.os.Bundle;
+import android.support.v7.app.NotificationCompat;
 import android.util.Log;
 
 import org.kore.kolab.notes.AccountInformation;
@@ -15,6 +18,7 @@ import org.kore.kolab.notes.RemoteNotesRepository;
 import org.kore.kolab.notes.imap.ImapNotesRepository;
 import org.kore.kolab.notes.v3.KolabConfigurationParserV3;
 import org.kore.kolab.notes.v3.KolabNotesParserV3;
+import org.kore.kolabnotes.android.R;
 import org.kore.kolabnotes.android.Utils;
 import org.kore.kolabnotes.android.content.RepositoryManager;
 import org.kore.kolabnotes.android.security.AuthenticatorActivity;
@@ -64,8 +68,9 @@ public class KolabSyncAdapter extends AbstractThreadedSyncAdapter {
     }
 
     public void syncNow(Account account, Bundle extras, String authority, ContentProviderClient provider, SyncResult syncResult){
+        Context context = getContext();
 
-        AccountManager accountManager = AccountManager.get(getContext());
+        AccountManager accountManager = AccountManager.get(context);
 
         String email = accountManager.getUserData(account, AuthenticatorActivity.KEY_EMAIL);
         String rootFolder = accountManager.getUserData(account,AuthenticatorActivity.KEY_ROOT_FOLDER);
@@ -90,14 +95,35 @@ public class KolabSyncAdapter extends AbstractThreadedSyncAdapter {
 
         AccountInformation info = builder.build();
         ImapNotesRepository imapRepository = new ImapNotesRepository(new KolabNotesParserV3(), info, rootFolder, new KolabConfigurationParserV3());
-        imapRepository.refresh(new RefreshListener());
+        try {
+            imapRepository.refresh(new RefreshListener());
+        }catch(Exception e){
+            final Notification notification = new NotificationCompat.Builder(context).setSmallIcon(R.drawable.ic_kjots).setContentTitle(context.getResources().getString(R.string.sync_failed)).setContentText("Refresh failed:" + e).build();
+
+            NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+            notificationManager.notify(1,notification);
+        }
 
         RepositoryManager manager = new RepositoryManager(getContext(),imapRepository);
-        manager.sync(email, rootFolder);
+        try{
+            manager.sync(email, rootFolder);
+        }catch(Exception e){
+            final Notification notification =  new NotificationCompat.Builder(context).setSmallIcon(R.drawable.ic_kjots).setContentTitle(context.getResources().getString(R.string.sync_failed)).setContentText("Sync failed:"+e).build();
+
+            NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+            notificationManager.notify(2,notification);
+        }
 
         Utils.updateWidgetsForChange(getContext());
 
-        imapRepository.merge();
+        try{
+            imapRepository.merge();
+        }catch(Exception e){
+            final Notification notification =  new NotificationCompat.Builder(context).setSmallIcon(R.drawable.ic_kjots).setContentTitle(context.getResources().getString(R.string.sync_failed)).setContentText("Merge failed:"+e).build();
+
+            NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+            notificationManager.notify(3,notification);
+        }
     }
 
     static class RefreshListener implements RemoteNotesRepository.Listener{
