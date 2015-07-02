@@ -98,7 +98,12 @@ public class KolabSyncAdapter extends AbstractThreadedSyncAdapter {
         try {
             imapRepository.refresh(new RefreshListener());
         }catch(Exception e){
-            final Notification notification = new NotificationCompat.Builder(context).setSmallIcon(R.drawable.ic_kjots).setContentTitle(context.getResources().getString(R.string.sync_failed)).setContentText("Refresh failed:" + e).build();
+            final Notification notification = new NotificationCompat.Builder(context)
+                    .setSmallIcon(R.drawable.ic_kjots)
+                    .setContentTitle(context.getResources().getString(R.string.sync_failed))
+                    .setContentText("Refresh failed")
+                    .setStyle(new NotificationCompat.BigTextStyle().bigText(e.toString()))
+                    .build();
 
             NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
             notificationManager.notify(1,notification);
@@ -108,7 +113,12 @@ public class KolabSyncAdapter extends AbstractThreadedSyncAdapter {
         try{
             manager.sync(email, rootFolder);
         }catch(Exception e){
-            final Notification notification =  new NotificationCompat.Builder(context).setSmallIcon(R.drawable.ic_kjots).setContentTitle(context.getResources().getString(R.string.sync_failed)).setContentText("Sync failed:"+e).build();
+            final Notification notification =  new NotificationCompat.Builder(context)
+                    .setSmallIcon(R.drawable.ic_kjots)
+                    .setContentTitle(context.getResources().getString(R.string.sync_failed))
+                    .setContentText("Sync failed")
+                    .setStyle(new NotificationCompat.BigTextStyle().bigText(e.toString()))
+                    .build();
 
             NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
             notificationManager.notify(2,notification);
@@ -119,7 +129,12 @@ public class KolabSyncAdapter extends AbstractThreadedSyncAdapter {
         try{
             imapRepository.merge();
         }catch(Exception e){
-            final Notification notification =  new NotificationCompat.Builder(context).setSmallIcon(R.drawable.ic_kjots).setContentTitle(context.getResources().getString(R.string.sync_failed)).setContentText("Merge failed:"+e).build();
+            final Notification notification =  new NotificationCompat.Builder(context)
+                    .setSmallIcon(R.drawable.ic_kjots)
+                    .setContentTitle(context.getResources().getString(R.string.sync_failed))
+                    .setContentText("Merge failed")
+                    .setStyle(new NotificationCompat.BigTextStyle().bigText(e.toString()))
+                    .build();
 
             NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
             notificationManager.notify(3,notification);
