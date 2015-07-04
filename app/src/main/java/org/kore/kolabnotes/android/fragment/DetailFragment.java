@@ -3,17 +3,19 @@ package org.kore.kolabnotes.android.fragment;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Fragment;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.ShareActionProvider;
 import android.support.v7.widget.Toolbar;
-import android.text.Html;
-import android.text.Spanned;
 import android.text.TextUtils;
+import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -27,7 +29,6 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import org.kore.kolab.notes.AuditInformation;
@@ -45,6 +46,9 @@ import org.kore.kolabnotes.android.content.NoteTagRepository;
 import org.kore.kolabnotes.android.content.NotebookRepository;
 import org.kore.kolabnotes.android.content.TagRepository;
 
+import java.io.ByteArrayOutputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -53,18 +57,15 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
+import java.util.regex.Pattern;
 
+import jp.wasabeef.richeditor.RichEditor;
 import yuku.ambilwarna.AmbilWarnaDialog;
 
 /**
  * Fragment for displaying and editing the details of a note
  */
-public class DetailFragment extends Fragment {
-
-    private final static String HTMLSTART = "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">" +
-            "<html><head><meta name=\"kolabnotes-richtext\" content=\"1\" /><meta http-equiv=\"Content-Type\" /></head><body>";
-
-    private final static String HTMLEND = "</body></html>";
+public class DetailFragment extends Fragment{
 
     private NotebookRepository notebookRepository;
     private NoteRepository noteRepository;
@@ -75,10 +76,6 @@ public class DetailFragment extends Fragment {
     private Toolbar toolbar;
 
     private Note note = null;
-
-    private ShareActionProvider shareActionProvider;
-
-    private Intent shareIntent;
 
     private Note.Classification selectedClassification;
 
@@ -97,6 +94,8 @@ public class DetailFragment extends Fragment {
     //These two elements will be set by the activity or factory method when fragment is created
     private String startUid;
     private String startNotebook;
+
+    private RichEditor editor;
     
     private AppCompatActivity activity;
 
@@ -141,6 +140,22 @@ public class DetailFragment extends Fragment {
 
         setHasOptionsMenu(true);
 
+        editor = (RichEditor)activity.findViewById(R.id.detail_description);
+        editor.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean b) {
+                final View bar = activity.findViewById(R.id.editor_bar);
+                final int visibility = bar.getVisibility();
+                if(visibility == View.GONE){
+                    bar.setVisibility(View.VISIBLE);
+                }else{
+                    bar.setVisibility(View.GONE
+                    );
+                }
+            }
+        });
+        initEditorBar();
+
         //shareIntent = new Intent();
         //shareIntent.setAction(Intent.ACTION_SEND);
         //shareIntent.setType("text/plain");
@@ -184,12 +199,11 @@ public class DetailFragment extends Fragment {
                 Toast.makeText(activity, R.string.note_not_found, Toast.LENGTH_LONG);
             } else {
                 EditText summary = (EditText) activity.findViewById(R.id.detail_summary);
-                EditText description = (EditText) activity.findViewById(R.id.detail_description);
                 summary.setText(note.getSummary());
 
-                Spanned fromHtml = Html.fromHtml(note.getDescription());
-
-                description.setText(fromHtml, TextView.BufferType.SPANNABLE);
+                if(!TextUtils.isEmpty(note.getDescription())) {
+                    editor.setHtml(note.getDescription());
+                }
 
                 selectedClassification = note.getClassification();
                 for (Tag tag : note.getCategories()) {
@@ -240,6 +254,247 @@ public class DetailFragment extends Fragment {
             }else{
                 Spinner spinner = (Spinner) activity.findViewById(R.id.spinner_notebook);
                 spinner.setSelection(0);
+            }
+        }
+    }
+    
+    void initEditorBar(){
+        activity.findViewById(R.id.action_undo).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                editor.undo();
+            }
+        });
+
+        activity.findViewById(R.id.action_redo).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                editor.redo();
+            }
+        });
+
+        activity.findViewById(R.id.action_bold).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                editor.setBold();
+            }
+        });
+
+        activity.findViewById(R.id.action_italic).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                editor.setItalic();
+            }
+        });
+
+
+        activity.findViewById(R.id.action_subscript).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                editor.setSubscript();
+            }
+        });
+
+        activity.findViewById(R.id.action_superscript).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                editor.setSuperscript();
+            }
+        });
+
+        activity.findViewById(R.id.action_strikethrough).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                editor.setStrikeThrough();
+            }
+        });
+
+        activity.findViewById(R.id.action_underline).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                editor.setUnderline();
+            }
+        });
+
+        activity.findViewById(R.id.action_heading1).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                editor.setHeading(1);
+            }
+        });
+
+        activity.findViewById(R.id.action_heading2).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                editor.setHeading(2);
+            }
+        });
+
+        activity.findViewById(R.id.action_heading3).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                editor.setHeading(3);
+            }
+        });
+
+        activity.findViewById(R.id.action_heading4).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                editor.setHeading(4);
+            }
+        });
+
+        activity.findViewById(R.id.action_heading5).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                editor.setHeading(5);
+            }
+        });
+
+        activity.findViewById(R.id.action_heading6).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                editor.setHeading(6);
+            }
+        });
+
+        activity.findViewById(R.id.action_txt_color).setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                AmbilWarnaDialog dialog = new AmbilWarnaDialog(activity, Color.BLACK, new AmbilWarnaDialog.OnAmbilWarnaListener() {
+                    @Override
+                    public void onOk(AmbilWarnaDialog dialog, int color) {
+                        editor.setTextColor(color);
+                    }
+
+                    @Override
+                    public void onCancel(AmbilWarnaDialog dialog) {
+                        // do nothing
+                    }
+                });
+                dialog.show();
+            }
+        });
+
+        activity.findViewById(R.id.action_bg_color).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AmbilWarnaDialog dialog = new AmbilWarnaDialog(activity, Color.WHITE, new AmbilWarnaDialog.OnAmbilWarnaListener() {
+                    @Override
+                    public void onOk(AmbilWarnaDialog dialog, int color) {
+                        editor.setTextBackgroundColor(color == Color.WHITE ? Color.TRANSPARENT : color);
+                    }
+
+                    @Override
+                    public void onCancel(AmbilWarnaDialog dialog) {
+                        // do nothing
+                    }
+                });
+                dialog.show();
+            }
+        });
+
+        activity.findViewById(R.id.action_indent).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                editor.setIndent();
+            }
+        });
+
+        activity.findViewById(R.id.action_outdent).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                editor.setOutdent();
+            }
+        });
+
+        activity.findViewById(R.id.action_align_left).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                editor.setAlignLeft();
+            }
+        });
+
+        activity.findViewById(R.id.action_align_center).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                editor.setAlignCenter();
+            }
+        });
+
+        activity.findViewById(R.id.action_align_right).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                editor.setAlignRight();
+            }
+        });
+
+        activity.findViewById(R.id.action_blockquote).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                editor.setBlockquote();
+            }
+        });
+
+        activity.findViewById(R.id.action_insert_image).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+
+                intent.addCategory(Intent.CATEGORY_OPENABLE);
+
+                intent.setType("image/*");
+
+                startActivityForResult(intent, Utils.READ_REQUEST_CODE);
+            }
+        });
+
+        /*activity.findViewById(R.id.action_insert_link).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                editor.insertLink("https://github.com/wasabeef", "wasabeef");
+            }
+        });*/
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode,
+                                 Intent resultData) {
+
+        if (requestCode == Utils.READ_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+            if (resultData != null) {
+                Uri uri = resultData.getData();
+                String path = uri.getPath();
+
+                try {
+                    Bitmap immagex = BitmapFactory.decodeStream(activity.getContentResolver().openInputStream(uri));
+                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                    String lowerPath = path.toLowerCase();
+                    String prefix;
+                    if (lowerPath.endsWith("png")) {
+                        immagex.compress(Bitmap.CompressFormat.PNG, 100, baos);
+                        prefix = "data:image/png;base64,";
+                    } else if (lowerPath.endsWith("webp")) {
+                        immagex.compress(Bitmap.CompressFormat.WEBP, 100, baos);
+                        prefix = "data:image/webp;base64,";
+                    } else {
+                        immagex.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+                        prefix = "data:image/jpeg;base64,";
+                    }
+
+                    byte[] b = baos.toByteArray();
+                    String imageEncoded = prefix + Base64.encodeToString(b, Base64.NO_WRAP);
+
+                    String alt = path.substring(path.lastIndexOf('/')+1);
+                    editor.insertImage(imageEncoded, alt);
+
+                    if (activity instanceof OnFragmentCallback) {
+                        ((OnFragmentCallback) activity).fileSelected();
+                    }
+                }catch(IOException e){
+                    Log.e("onActivityResult",e.toString());
+                }
             }
         }
     }
@@ -439,15 +694,11 @@ public class DetailFragment extends Fragment {
     }
 
     String getDescriptionFromView(){
-        EditText description =(EditText) activity.findViewById(R.id.detail_description);
-
-        if(description.getText() != null){
-            StringBuilder sb = new StringBuilder(HTMLSTART);
-            sb.append(Html.toHtml(description.getText()));
-            sb.append(HTMLEND);
-            return sb.toString();
+        final String html = editor.getHtml();
+        if(TextUtils.isEmpty(html)){
+            return null;
         }
-        return null;
+        return html;
     }
 
     private AlertDialog createNotebookDialog(){
@@ -523,7 +774,7 @@ public class DetailFragment extends Fragment {
 
             String notebookName = getNotebookSpinnerSelectionName();
 
-            String descriptionValue = getDescriptionFromView();
+            String descriptionValue = repairImages(getDescriptionFromView());
 
 
             if (note == null) {
@@ -574,8 +825,38 @@ public class DetailFragment extends Fragment {
             }
             Utils.updateWidgetsForChange(activity);
 
-            ((OnFragmentFinished) activity).fragmentFinished(returnIntent, OnFragmentFinished.ResultCode.SAVED);
+            ((OnFragmentCallback) activity).fragmentFinished(returnIntent, OnFragmentCallback.ResultCode.SAVED);
         }
+    }
+
+    /**
+     * Android WebView adds line terminators to inline images, these must be deleted
+     * @param html
+     */
+    String repairImages(String html){
+        if(html == null || html.trim().length() == 0){
+            return null;
+        }
+
+        final StringBuilder repaired = new StringBuilder(html);
+
+        int start = 0;
+        while((start = html.indexOf("<img src",start)) != -1){
+            int withoutTag = start+10;
+            int end = html.indexOf("\"",withoutTag);
+            String prefix = html.substring(withoutTag,html.indexOf(",",withoutTag)+1);
+
+            String toRepair = html.substring(withoutTag,end);
+            byte[] decoded = Base64.decode(toRepair,Base64.DEFAULT);
+
+            String correct = Base64.encodeToString(decoded,Base64.DEFAULT);
+            int withoutPrefix = correct.indexOf("base64")+6;
+            correct = correct.substring(withoutPrefix);
+            repaired.replace(withoutTag,end,prefix + correct);
+
+            start = end;
+        }
+        return repaired.toString();
     }
 
     void deleteNote(){
@@ -594,7 +875,7 @@ public class DetailFragment extends Fragment {
                     Intent returnIntent = new Intent();
                     returnIntent.putExtra("selectedNotebookName",givenNotebook);
 
-                    ((OnFragmentFinished)activity).fragmentFinished(returnIntent, OnFragmentFinished.ResultCode.DELETED);
+                    ((OnFragmentCallback)activity).fragmentFinished(returnIntent, OnFragmentCallback.ResultCode.DELETED);
                 }
             });
             builder.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
@@ -693,7 +974,7 @@ public class DetailFragment extends Fragment {
         Intent returnIntent = new Intent();
         returnIntent.putExtra("selectedNotebookName",givenNotebook);
 
-        ((OnFragmentFinished)activity).fragmentFinished(returnIntent, OnFragmentFinished.ResultCode.BACK);
+        ((OnFragmentCallback)activity).fragmentFinished(returnIntent, OnFragmentCallback.ResultCode.BACK);
     }
 
 

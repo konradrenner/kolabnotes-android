@@ -39,6 +39,7 @@ public class Utils {
     public static final String SELECTED_NOTEBOOK_NAME = "selectedNotebookName";
     public static final String SELECTED_TAG_NAME = "selectedNotebookTag";
     public static final String RELOAD_DATA_AFTER_DETAIL = "reloadDataAfterDetail";
+    public static final int READ_REQUEST_CODE = 42;
     /*
     public static void configureWindowEnterExitTransition(Window w) {
         Explode ex = new Explode();

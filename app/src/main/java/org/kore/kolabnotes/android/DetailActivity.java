@@ -5,9 +5,9 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
 import org.kore.kolabnotes.android.fragment.DetailFragment;
-import org.kore.kolabnotes.android.fragment.OnFragmentFinished;
+import org.kore.kolabnotes.android.fragment.OnFragmentCallback;
 
-public class DetailActivity extends AppCompatActivity implements OnFragmentFinished{
+public class DetailActivity extends AppCompatActivity implements OnFragmentCallback {
 
     public static String FROM_DETAIL = "fromDetailTrue";
 
@@ -37,6 +37,11 @@ public class DetailActivity extends AppCompatActivity implements OnFragmentFinis
             setResult(RESULT_CANCELED,resultIntent);
         }
         finish();
+    }
+
+    @Override
+    public void fileSelected() {
+        //nothing here
     }
 
     @Override

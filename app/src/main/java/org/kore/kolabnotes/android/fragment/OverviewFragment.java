@@ -100,6 +100,8 @@ public class OverviewFragment extends Fragment implements NoteAdapter.NoteSelect
 
     private boolean initPhase;
 
+    private boolean preventBlankDisplaying;
+
     private MainActivity activity;
 
     @Override
@@ -326,6 +328,10 @@ public class OverviewFragment extends Fragment implements NoteAdapter.NoteSelect
         }
     }
 
+    public void preventBlankDisplaying(){
+        this.preventBlankDisplaying = true;
+    }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -478,7 +484,11 @@ public class OverviewFragment extends Fragment implements NoteAdapter.NoteSelect
             List<String> tags = dataCache.getTags();
             List<Notebook> notebooks = noteCache.getNotebooks();
 
-            displayBlankFragment();
+            if(preventBlankDisplaying){
+                preventBlankDisplaying = false;
+            }else {
+                displayBlankFragment();
+            }
 
             getActivity().runOnUiThread(new ReloadDataThread(notebooks, notes, tags));
         }
