@@ -65,6 +65,11 @@ import yuku.ambilwarna.AmbilWarnaDialog;
  */
 public class DetailFragment extends Fragment{
 
+    private final static String HTMLSTART = "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">" +
+            "<html><head><meta name=\"kolabnotes-richtext\" content=\"1\" /><meta http-equiv=\"Content-Type\" /></head><body>";
+
+    private final static String HTMLEND = "</body></html>";
+
     private NotebookRepository notebookRepository;
     private NoteRepository noteRepository;
     private NoteTagRepository noteTagRepository;
@@ -790,7 +795,7 @@ public class DetailFragment extends Fragment{
 
             String notebookName = getNotebookSpinnerSelectionName();
 
-            String descriptionValue = repairImages(getDescriptionFromView());
+            String descriptionValue = HTMLSTART + repairImages(getDescriptionFromView()) + HTMLEND;
 
 
             if (note == null) {
