@@ -795,7 +795,10 @@ public class DetailFragment extends Fragment{
 
             String notebookName = getNotebookSpinnerSelectionName();
 
-            String descriptionValue = HTMLSTART + repairImages(getDescriptionFromView()) + HTMLEND;
+            String descriptionValue = repairImages(getDescriptionFromView());
+            if(!descriptionValue.startsWith("<!DOCTYPE HTML")){
+                descriptionValue = HTMLSTART + repairImages(getDescriptionFromView()) + HTMLEND;
+            }
 
 
             if (note == null) {
