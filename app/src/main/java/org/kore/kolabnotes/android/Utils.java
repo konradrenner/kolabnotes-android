@@ -191,20 +191,6 @@ public class Utils {
         if(!Objects.equals(one.getColor(),two.getColor())){
             return true;
         }
-        if(one.getDescription() != null){
-            if(two.getDescription() == null){
-                return true;
-            }
-
-            String spannedOne = Html.fromHtml(one.getDescription()).toString();
-            String spannedTwo = Html.fromHtml(two.getDescription()).toString();
-            boolean equal = spannedOne.equals(spannedTwo);
-            if(!equal){
-                return true;
-            }
-        }else if(two.getDescription() != null){
-            return true;
-        }
         if(!Objects.equals(one.getAttachment(),two.getAttachment())){
             return true;
         }

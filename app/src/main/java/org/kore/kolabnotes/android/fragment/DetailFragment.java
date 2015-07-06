@@ -10,9 +10,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.ShareActionProvider;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Base64;
@@ -47,17 +45,17 @@ import org.kore.kolabnotes.android.content.NotebookRepository;
 import org.kore.kolabnotes.android.content.TagRepository;
 
 import java.io.ByteArrayOutputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
-import java.util.regex.Pattern;
 
 import jp.wasabeef.richeditor.RichEditor;
 import yuku.ambilwarna.AmbilWarnaDialog;
@@ -99,6 +97,11 @@ public class DetailFragment extends Fragment{
     
     private AppCompatActivity activity;
 
+    private boolean isDescriptionDirty = false;
+
+    //This map contains inline images in its base form, sadly the android webview destroys the correct form
+    private Map<String,String> base64Images = new HashMap<>();
+
     public static DetailFragment newInstance(String noteUid, String notebook){
         DetailFragment f = new DetailFragment();
         f.setStartUid(noteUid);
@@ -136,7 +139,9 @@ public class DetailFragment extends Fragment{
 
         toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
         activity.setSupportActionBar(toolbar);
-        activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        if(activity.getSupportActionBar() != null){
+            activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
 
         setHasOptionsMenu(true);
 
@@ -154,7 +159,7 @@ public class DetailFragment extends Fragment{
                 }
             }
         });
-        initEditorBar();
+        initEditor();
 
         //shareIntent = new Intent();
         //shareIntent.setAction(Intent.ACTION_SEND);
@@ -201,8 +206,11 @@ public class DetailFragment extends Fragment{
                 EditText summary = (EditText) activity.findViewById(R.id.detail_summary);
                 summary.setText(note.getSummary());
 
-                if(!TextUtils.isEmpty(note.getDescription())) {
-                    editor.setHtml(note.getDescription());
+                String desc = note.getDescription();
+                if(!TextUtils.isEmpty(desc)) {
+                    String updatedDesc = initImageMap(note.getDescription());
+                    editor.setHtml(updatedDesc);
+                    note.setDescription(updatedDesc);
                 }
 
                 selectedClassification = note.getClassification();
@@ -258,7 +266,14 @@ public class DetailFragment extends Fragment{
         }
     }
     
-    void initEditorBar(){
+    void initEditor(){
+        editor.setOnTextChangeListener(new RichEditor.OnTextChangeListener() {
+            @Override
+            public void onTextChange(String s) {
+                DetailFragment.this.isDescriptionDirty = true;
+            }
+        });
+
         activity.findViewById(R.id.action_undo).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -486,8 +501,9 @@ public class DetailFragment extends Fragment{
                     byte[] b = baos.toByteArray();
                     String imageEncoded = prefix + Base64.encodeToString(b, Base64.NO_WRAP);
 
-                    String alt = path.substring(path.lastIndexOf('/')+1);
+                    String alt = path;
                     editor.insertImage(imageEncoded, alt);
+                    putImage(alt,imageEncoded);
 
                     if (activity instanceof OnFragmentCallback) {
                         ((OnFragmentCallback) activity).fileSelected();
@@ -843,20 +859,48 @@ public class DetailFragment extends Fragment{
         int start = 0;
         while((start = html.indexOf("<img src",start)) != -1){
             int withoutTag = start+10;
-            int end = html.indexOf("\"",withoutTag);
-            String prefix = html.substring(withoutTag,html.indexOf(",",withoutTag)+1);
+            int endOfImage = html.indexOf("\"",withoutTag);
 
-            String toRepair = html.substring(withoutTag,end);
-            byte[] decoded = Base64.decode(toRepair,Base64.DEFAULT);
+            int startOfAltContent = endOfImage+7;
+            int endOfAlt = html.indexOf("\"",startOfAltContent);
 
-            String correct = Base64.encodeToString(decoded,Base64.DEFAULT);
-            int withoutPrefix = correct.indexOf("base64")+6;
-            correct = correct.substring(withoutPrefix);
-            repaired.replace(withoutTag,end,prefix + correct);
+            String altContent = html.substring(startOfAltContent,endOfAlt);
 
-            start = end;
+            repaired.replace(withoutTag,endOfImage,base64Images.get(altContent));
+
+            start = endOfAlt;
         }
         return repaired.toString();
+    }
+
+    String initImageMap(String description){
+        int start = 0;
+        StringBuilder withAlts = new StringBuilder(description);
+        while((start = description.indexOf("<img src",start)) != -1){
+            int withoutTag = start+10;
+            int end = description.indexOf("\"",withoutTag);
+
+            String image = description.substring(start,end);
+
+            //check if the alt tag is present (will be used to identify an image)
+            String possibleAlt = description.substring(end+2,end+5);
+            if(possibleAlt.equals("alt")){
+                int startAltContent = end+7;
+                String altContent = description.substring(startAltContent,description.indexOf("\"",startAltContent));
+                base64Images.put(altContent,image);
+            }else{
+                String uid = UUID.randomUUID().toString();
+                base64Images.put(UUID.randomUUID().toString(),image);
+                withAlts.insert(end+2,"alt=\""+uid+"\"");
+            }
+            start = end;
+        }
+
+        return withAlts.toString();
+    }
+
+    void putImage(String alt, String image){
+        this.base64Images.put(alt,image);
     }
 
     void deleteNote(){
@@ -951,7 +995,7 @@ public class DetailFragment extends Fragment{
         if(summary != null && spinner != null){
 
             Note newNote = new Note(note.getIdentification(), note.getAuditInformation(), selectedClassification == null ? Note.Classification.PUBLIC : selectedClassification, summary.getText().toString());
-            newNote.setDescription(getDescriptionFromView());
+            newNote.setDescription(repairImages(getDescriptionFromView()));
             newNote.setColor(selectedColor);
 
             Tag[] tags = new Tag[selectedTags.size()];
@@ -965,7 +1009,7 @@ public class DetailFragment extends Fragment{
             String nb = spinner.getSelectedItem().toString();
 
             boolean nbSameNames = Objects.equals(intialNotebookName, nb);
-            differences = Utils.differentMutableData(note, newNote) || !nbSameNames;
+            differences = Utils.differentMutableData(note, newNote) || !nbSameNames || isDescriptionDirty;
         }
         return  differences;
     }
