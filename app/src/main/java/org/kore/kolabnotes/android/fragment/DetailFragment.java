@@ -888,7 +888,7 @@ public class DetailFragment extends Fragment{
             int withoutTag = start+10;
             int end = description.indexOf("\"",withoutTag);
 
-            String image = description.substring(start,end);
+            String image = description.substring(withoutTag,end);
 
             //check if the alt tag is present (will be used to identify an image)
             String possibleAlt = description.substring(end+2,end+5);
