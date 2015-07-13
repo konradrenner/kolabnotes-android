@@ -30,6 +30,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
@@ -552,6 +553,19 @@ public class OverviewFragment extends Fragment implements NoteAdapter.NoteSelect
                 AlertDialog newNBDialog = createNotebookDialog();
                 newNBDialog.show();
                 break;
+            case R.id.delete_notebook_menu:
+                AlertDialog deleteNBDialog = deleteNotebookDialog();
+
+                int selection = mDrawer.getCurrentSelection();
+                final IDrawerItem drawerItem = mDrawer.getDrawerItems().get(selection);
+                String tag = drawerItem.getTag() == null || drawerItem.getTag().toString().trim().length() == 0 ? null : drawerItem.getTag().toString();
+
+                if(tag == null || !tag.equals("NOTEBOOK")){
+                    Toast.makeText(activity,R.string.no_nb_selected,Toast.LENGTH_LONG).show();
+                }else {
+                    deleteNBDialog.show();
+                }
+                break;
             case R.id.create_tag_menu:
                 AlertDialog newTagDialog = createTagDialog();
                 newTagDialog.show();
@@ -570,6 +584,39 @@ public class OverviewFragment extends Fragment implements NoteAdapter.NoteSelect
                 break;
         }
         return true;
+    }
+
+    private AlertDialog deleteNotebookDialog(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+
+        builder.setTitle(R.string.dialog_delete_nb_warning);
+        builder.setMessage(R.string.dialog_question_delete_nb);
+        builder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                int selection = mDrawer.getCurrentSelection();
+                final IDrawerItem drawerItem = mDrawer.getDrawerItems().get(selection);
+                ActiveAccount activeAccount = activeAccountRepository.getActiveAccount();
+
+                BaseDrawerItem base = (BaseDrawerItem)drawerItem;
+                notebookRepository.delete(activeAccount.getAccount(), activeAccount.getRootFolder(), notebookRepository.getBySummary(activeAccount.getAccount(), activeAccount.getRootFolder(),base.getName()));
+                mDrawer.removeItem(selection);
+
+                Utils.setSelectedNotebookName(activity, null);
+                Utils.setSelectedTagName(activity,null);
+
+                mDrawer.setSelection(1);
+
+                orderDrawerItems(mDrawer, null);
+            }
+        });
+        builder.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                //nothing
+            }
+        });
+        return builder.create();
     }
 
     private AlertDialog createSearchDialog(){

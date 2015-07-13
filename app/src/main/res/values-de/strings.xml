@@ -118,4 +118,8 @@
     <string name="note_deleted">Notiz gelöscht</string>
     <string name="note_saved">Notiz gespeichert</string>
     <string name="sync_failed">Synchronisation fehlgeschlagen</string>
+    <string name="title_delete_notebook">Notizbuch löschen</string>
+    <string name="dialog_delete_nb_warning">Notizbuch löschen</string>
+    <string name="no_nb_selected">Kein Notizbuch ausgewählt</string>
+    <string name="dialog_question_delete_nb">Das Notizbuch und alle sein Notizen werden gelöscht, sind Sie sicher?</string>
 </resources>

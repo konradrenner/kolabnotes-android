@@ -60,9 +60,12 @@
     <string name="dialog_input_text_search">Search Note</string>
     <string name="dialog_delete_note">Delete Note</string>
     <string name="dialog_cancel_warning">Cancel Warning</string>
+    <string name="dialog_delete_nb_warning">Delete notebook</string>
+    <string name="dialog_question_delete_nb">The notebook and all its notes will be deleted, are you sure?</string>
     <string name="dialog_input_text_tag">New Tag</string>
     <string name="dialog_change_classification">Edit Classification</string>
     <string name="dialog_change_tags">Edit Tags</string>
+    <string name="no_nb_selected">No notebook selected</string>
     <string name="add">add</string>
     <string name="title_edit_tag">Edit Tags</string>
     <string name="dialog_question_delete">Do you really want to delete this note?</string>
@@ -89,4 +92,5 @@
     <string name="note_deleted">Note deleted</string>
     <string name="note_saved">Note saved</string>
     <string name="sync_failed">Synchronisation failed</string>
+    <string name="title_delete_notebook">Delete notebook</string>
 </resources>

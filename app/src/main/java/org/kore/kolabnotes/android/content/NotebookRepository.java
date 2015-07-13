@@ -114,6 +114,13 @@ public class NotebookRepository {
 
     public void delete(String account, String rootFolder,Notebook note) {
         open();
+
+        database.delete(DatabaseHelper.TABLE_NOTES,
+                DatabaseHelper.COLUMN_ACCOUNT + " = '" + account+"' AND "+
+                        DatabaseHelper.COLUMN_ROOT_FOLDER + " = '" + rootFolder+"' AND "+
+                        DatabaseHelper.COLUMN_UID_NOTEBOOK + " = '" + note.getIdentification().getUid()+"' ",
+                null);
+
         database.delete(DatabaseHelper.TABLE_NOTES,
                 DatabaseHelper.COLUMN_ACCOUNT + " = '" + account+"' AND "+
                 DatabaseHelper.COLUMN_ROOT_FOLDER + " = '" + rootFolder+"' AND "+

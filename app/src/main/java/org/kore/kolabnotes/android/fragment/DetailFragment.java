@@ -207,7 +207,7 @@ public class DetailFragment extends Fragment{
 
             //Maybe the note got deleted (sync happend after a click on a note was done) => Issues 34 on GitHub
             if (note == null) {
-                Toast.makeText(activity, R.string.note_not_found, Toast.LENGTH_LONG);
+                Toast.makeText(activity, R.string.note_not_found, Toast.LENGTH_LONG).show();
             } else {
                 EditText summary = (EditText) activity.findViewById(R.id.detail_summary);
                 summary.setText(note.getSummary());
@@ -797,7 +797,7 @@ public class DetailFragment extends Fragment{
             String notebookName = getNotebookSpinnerSelectionName();
 
             String descriptionValue = repairImages(getDescriptionFromView());
-            if(!descriptionValue.startsWith("<!DOCTYPE HTML")){
+            if(descriptionValue != null && !descriptionValue.startsWith("<!DOCTYPE HTML")){
                 descriptionValue = HTMLSTART + repairImages(getDescriptionFromView()) + HTMLEND;
             }
 

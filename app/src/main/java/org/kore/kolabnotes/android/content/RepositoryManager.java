@@ -122,5 +122,15 @@ public class RepositoryManager {
                 repo.getNotebookBySummary(localNotebook.getSummary()).deleteNote(deletion.getUid());
             }
         }
+
+        deletions = modificationRepository.getDeletions(email, rootFolder, Modification.Descriminator.NOTEBOOK);
+
+        for(Modification deletion : deletions){
+            Notebook toDelete = repo.getNotebook(deletion.getUid());
+
+            if(toDelete != null && deletion.getModificationDate().after(toDelete.getAuditInformation().getLastModificationDate())){
+                repo.deleteNotebook(deletion.getUid());
+            }
+        }
     }
 }
