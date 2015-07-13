@@ -30,6 +30,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:id="@+id/accountName"
+                    android:textColor="@android:color/black"
+                    android:textColorHint="@android:color/darker_gray"
                     android:inputType="text"
                     android:enabled="true"
                     android:editable="true"
@@ -38,6 +40,8 @@
                 <EditText
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:textColor="@android:color/black"
+                    android:textColorHint="@android:color/darker_gray"
                     android:id="@+id/imap_server_url"
                     android:inputType="textUri"
                     android:hint="@string/imap_server_url" />
@@ -46,6 +50,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="number"
+                    android:textColor="@android:color/black"
+                    android:textColorHint="@android:color/darker_gray"
                     android:ems="10"
                     android:id="@+id/port_number"
                     android:layout_gravity="center_horizontal"
@@ -56,6 +62,8 @@
                 <EditText
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:textColor="@android:color/black"
+                    android:textColorHint="@android:color/darker_gray"
                     android:id="@+id/imap_root_folder"
                     android:inputType="text"
                     android:hint="@string/imap_root_folder" />
@@ -65,6 +73,8 @@
                     android:layout_height="wrap_content"
                     android:inputType="number"
                     android:numeric="integer"
+                    android:textColor="@android:color/black"
+                    android:textColorHint="@android:color/darker_gray"
                     android:ems="10"
                     android:id="@+id/sync_intervall"
                     android:layout_gravity="center_horizontal"
@@ -75,12 +85,16 @@
                 <AutoCompleteTextView android:id="@+id/email" android:layout_width="match_parent"
                     android:layout_height="wrap_content" android:hint="@string/prompt_email"
                     android:inputType="textEmailAddress" android:maxLines="1"
+                    android:textColor="@android:color/black"
+                    android:textColorHint="@android:color/darker_gray"
                     android:singleLine="true" />
 
                 <EditText android:id="@+id/accountPassword" android:layout_width="match_parent"
                     android:layout_height="wrap_content" android:hint="@string/prompt_password"
                     android:imeActionId="@+id/login"
                     android:imeActionLabel="@string/action_sign_in"
+                    android:textColor="@android:color/black"
+                    android:textColorHint="@android:color/darker_gray"
                     android:imeOptions="actionUnspecified" android:inputType="textPassword"
                     android:maxLines="1" android:singleLine="true" />
 
@@ -91,6 +105,7 @@
                     android:id="@+id/enable_ssl"
                     android:paddingTop="5dp"
                     android:paddingBottom="5dp"
+                    android:textColor="@android:color/black"
                     android:checked="true"
                     android:clickable="true" />
 
@@ -99,12 +114,13 @@
                     android:layout_height="wrap_content"
                     android:text="@string/kolab_enabled"
                     android:id="@+id/enable_kolab"
+                    android:textColor="@android:color/black"
                     android:checked="true"
                     android:paddingTop="5dp"
                     android:paddingBottom="5dp"
                     android:clickable="true" />
 
-                <Button android:id="@+id/submit" style="@android:style/TextAppearance.Material.Widget.Button"
+                <Button android:id="@+id/submit"
                     android:layout_width="match_parent" android:layout_height="wrap_content"
                     android:layout_marginTop="16dp" android:text="@string/action_sign_in"
                     android:textStyle="bold" />
