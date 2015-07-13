@@ -151,6 +151,7 @@ public class DetailFragment extends Fragment{
         setHasOptionsMenu(true);
 
         editor = (RichEditor)activity.findViewById(R.id.detail_description);
+        editor.setBackgroundColor(getResources().getColor(R.color.background_material_light));
         editor.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View view, boolean b) {

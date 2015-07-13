@@ -12,6 +12,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -153,13 +155,23 @@ public class OverviewFragment extends Fragment implements NoteAdapter.NoteSelect
             String name = mAccountManager.getUserData(accounts[i],AuthenticatorActivity.KEY_ACCOUNT_NAME);
             String rootFolder = mAccountManager.getUserData(accounts[i],AuthenticatorActivity.KEY_ROOT_FOLDER);
 
-            profiles[i+1] = new ProfileDrawerItem().withName(name).withTag(rootFolder).withEmail(email);
+            ProfileDrawerItem item = new ProfileDrawerItem().withName(name).withTag(rootFolder).withEmail(email);
+
+            //GitHub issue 47
+            item.setNameShown(true);
+            if(name != null && name.equals(email)){
+                item.setNameShown(false);
+                item.withName(null);
+            }
+
+            profiles[i+1] = item;
         }
 
         mAccount = new AccountHeaderBuilder()
                 .withActivity(this.activity)
                 .withHeaderBackground(R.drawable.drawer_header_background)
                 .addProfiles(profiles)
+                .withCompactStyle(true)
                 .withOnAccountHeaderListener(new ProfileChanger())
                 .build();
         mDrawer = new DrawerBuilder()
@@ -456,7 +468,8 @@ public class OverviewFragment extends Fragment implements NoteAdapter.NoteSelect
                     if(changeDrawerAccount){
                         final ArrayList<IProfile> profiles = mAccount.getProfiles();
                         for(IProfile profile : profiles){
-                            if(name.equals(profile.getName())){
+                            String profileName = profile.getName() == null ? profile.getEmail() : profile.getName();
+                            if(name.equals(profileName)){
                                 mAccount.setActiveProfile(profile,false);
                                 break;
                             }
