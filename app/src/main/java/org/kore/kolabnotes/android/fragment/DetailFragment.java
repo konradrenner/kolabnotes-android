@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.Html;
 import android.text.TextUtils;
 import android.util.Base64;
 import android.util.Log;
@@ -22,6 +23,9 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.JavascriptInterface;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.RadioButton;
@@ -48,6 +52,7 @@ import org.kore.kolabnotes.android.content.TagRepository;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -188,11 +193,16 @@ public class DetailFragment extends Fragment{
         String action = startIntent.getAction();
 
         if (Intent.ACTION_SEND.equals(action)) {
-            String description = startIntent.getStringExtra(Intent.EXTRA_TEXT);
+            CharSequence description = startIntent.getCharSequenceExtra(Intent.EXTRA_TEXT);
+            CharSequence hdescription = startIntent.getCharSequenceExtra(Intent.EXTRA_HTML_TEXT);
             String summary = startIntent.getStringExtra(Intent.EXTRA_SUBJECT);
 
-            if(!TextUtils.isEmpty(description)) {
-                String updatedDesc = initImageMap(description);
+            if(!TextUtils.isEmpty(hdescription)) {
+                String updatedDesc = initImageMap(hdescription.toString());
+                editor.setHtml(updatedDesc);
+            }else if(!TextUtils.isEmpty(description)) {
+
+                String updatedDesc = initImageMap(description.toString());
                 editor.setHtml(updatedDesc);
             }
 
@@ -583,7 +593,8 @@ public class DetailFragment extends Fragment{
                 descriptionValue = HTMLSTART + repairImages(getDescriptionFromView()) + HTMLEND;
             }
 
-            shareIntent.putExtra(Intent.EXTRA_TEXT, descriptionValue);
+            shareIntent.putExtra(Intent.EXTRA_TEXT, Html.fromHtml(descriptionValue));
+            shareIntent.putExtra(Intent.EXTRA_HTML_TEXT, descriptionValue);
             return descriptionValue;
         }
         return null;
