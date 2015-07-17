@@ -93,4 +93,6 @@
     <string name="note_saved">Note saved</string>
     <string name="sync_failed">Synchronisation failed</string>
     <string name="title_delete_notebook">Delete notebook</string>
+    <string name="send_to">Share note with...</string>
+    <string name="empty_note">Note is empty</string>
 </resources>

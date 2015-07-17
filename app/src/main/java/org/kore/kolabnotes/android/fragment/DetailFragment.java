@@ -10,6 +10,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
@@ -25,6 +26,7 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.support.v7.widget.ShareActionProvider;
 import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
 import android.widget.Toast;
@@ -167,10 +169,6 @@ public class DetailFragment extends Fragment{
         });
         initEditor();
 
-        //shareIntent = new Intent();
-        //shareIntent.setAction(Intent.ACTION_SEND);
-        //shareIntent.setType("text/plain");
-
         // Handle Back Navigation :D
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
@@ -186,6 +184,24 @@ public class DetailFragment extends Fragment{
         String notebook = startNotebook;
         String accountEmail = startIntent.getStringExtra(Utils.INTENT_ACCOUNT_EMAIL);
         String rootFolder = startIntent.getStringExtra(Utils.INTENT_ACCOUNT_ROOT_FOLDER);
+
+        String action = startIntent.getAction();
+
+        if (Intent.ACTION_SEND.equals(action)) {
+            String description = startIntent.getStringExtra(Intent.EXTRA_TEXT);
+            String summary = startIntent.getStringExtra(Intent.EXTRA_SUBJECT);
+
+            if(!TextUtils.isEmpty(description)) {
+                String updatedDesc = initImageMap(description);
+                editor.setHtml(updatedDesc);
+            }
+
+            if(!TextUtils.isEmpty(summary)) {
+                EditText esummary = (EditText) activity.findViewById(R.id.detail_summary);
+                esummary.setText(summary);
+
+            }
+        }
 
         Log.d("onCreate", "accountEmail:" + accountEmail);
         Log.d("onCreate","rootFolder:"+rootFolder);
@@ -548,13 +564,41 @@ public class DetailFragment extends Fragment{
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.detail_toolbar, menu);
+    }
 
-        //MenuItem item = menu.findItem(R.id.share);
+    String setShareIntentSubject(Intent shareIntent){
+        EditText summary = (EditText) activity.findViewById(R.id.detail_summary);
+        String ssummary = summary.getText().toString();
+        if(!TextUtils.isEmpty(ssummary)) {
+            shareIntent.putExtra(Intent.EXTRA_SUBJECT, ssummary);
+            return ssummary;
+        }
+        return null;
+    }
 
-        //shareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(item);
+    String setShareIntentDescription(Intent shareIntent){
+        String descriptionValue = repairImages(getDescriptionFromView());
+        if(descriptionValue != null) {
+            if(!descriptionValue.startsWith("<!DOCTYPE HTML")) {
+                descriptionValue = HTMLSTART + repairImages(getDescriptionFromView()) + HTMLEND;
+            }
 
-        //shareActionProvider.setShareIntent(shareIntent);
-        //shareActionProvider.setOnShareTargetSelectedListener(this);
+            shareIntent.putExtra(Intent.EXTRA_TEXT, descriptionValue);
+            return descriptionValue;
+        }
+        return null;
+    }
+
+    public boolean shareNote(Intent shareIntent) {
+        setShareIntentSubject(shareIntent);
+        String descriptionValue = setShareIntentDescription(shareIntent);
+
+        if(!TextUtils.isEmpty(descriptionValue)) {
+            startActivity(Intent.createChooser(shareIntent, getResources().getText(R.string.send_to)));
+        }else{
+            Toast.makeText(activity,R.string.empty_note,Toast.LENGTH_LONG).show();
+        }
+        return false;
     }
 
     @Override
@@ -574,6 +618,12 @@ public class DetailFragment extends Fragment{
                 break;
             case R.id.colorpicker:
                 chooseColor();
+                break;
+            case R.id.share:
+                Intent shareIntent = new Intent();
+                shareIntent.setAction(Intent.ACTION_SEND);
+                shareIntent.setType("text/html");
+                shareNote(shareIntent);
                 break;
         }
         return true;

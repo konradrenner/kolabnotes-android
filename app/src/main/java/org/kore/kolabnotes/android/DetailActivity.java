@@ -3,13 +3,12 @@ package org.kore.kolabnotes.android;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 
 import org.kore.kolabnotes.android.fragment.DetailFragment;
 import org.kore.kolabnotes.android.fragment.OnFragmentCallback;
 
 public class DetailActivity extends AppCompatActivity implements OnFragmentCallback {
-
-    public static String FROM_DETAIL = "fromDetailTrue";
 
     private DetailFragment detailFragment;
 
@@ -17,6 +16,11 @@ public class DetailActivity extends AppCompatActivity implements OnFragmentCallb
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        if(toolbar != null){
+            toolbar.setTitle("");
+        }
 
         detailFragment = (DetailFragment)getFragmentManager().findFragmentById(R.id.detail_fragment);
 
