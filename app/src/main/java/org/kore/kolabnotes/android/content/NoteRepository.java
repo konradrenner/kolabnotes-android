@@ -144,7 +144,7 @@ public class NoteRepository {
     }
 
 
-    public List<Note> getFromNotebookWithSummary(String account, String rootFolder,String uidNotebook,String summary) {
+    public List<Note> getFromNotebookWithSummary(String account, String rootFolder,String uidNotebook,String summary,Ordering ordering) {
         openReadonly();
         List<Note> notes = new ArrayList<Note>();
 
@@ -162,10 +162,10 @@ public class NoteRepository {
                 null,
                 null,
                 null,
-                DatabaseHelper.COLUMN_MODIFICATIONDATE+" DESC");
+                ordering.getColumnName()+" "+ordering.getDirection());
 
         while (cursor.moveToNext()) {
-            Note note = cursorToNote(account,rootFolder,cursor);
+            Note note = cursorToNoteWithoutDescription(account,rootFolder,cursor);
             notes.add(note);
         }
         cursor.close();
@@ -173,7 +173,7 @@ public class NoteRepository {
         return notes;
     }
 
-    public List<Note> getFromNotebook(String account, String rootFolder,String uidNotebook) {
+    public List<Note> getFromNotebook(String account, String rootFolder,String uidNotebook, Ordering ordering) {
         openReadonly();
         List<Note> notes = new ArrayList<Note>();
 
@@ -186,10 +186,10 @@ public class NoteRepository {
                 null,
                 null,
                 null,
-                DatabaseHelper.COLUMN_MODIFICATIONDATE+" DESC");
+                ordering.getColumnName()+" "+ordering.getDirection());
 
         while (cursor.moveToNext()) {
-            Note note = cursorToNote(account,rootFolder,cursor);
+            Note note = cursorToNoteWithoutDescription(account,rootFolder,cursor);
             notes.add(note);
         }
         cursor.close();
@@ -197,7 +197,7 @@ public class NoteRepository {
         return notes;
     }
 
-    public List<Note> getAll(String account, String rootFolder) {
+    public List<Note> getAllForSync(String account, String rootFolder) {
         openReadonly();
         List<Note> notes = new ArrayList<Note>();
 
@@ -220,7 +220,30 @@ public class NoteRepository {
         return notes;
     }
 
-    public List<Note> getAll() {
+    public List<Note> getAll(String account, String rootFolder, Ordering ordering) {
+        openReadonly();
+        List<Note> notes = new ArrayList<Note>();
+
+        Cursor cursor = database.query(DatabaseHelper.TABLE_NOTES,
+                allColumns,
+                DatabaseHelper.COLUMN_ACCOUNT + " = '" + account+"' AND "+
+                        DatabaseHelper.COLUMN_ROOT_FOLDER + " = '" + rootFolder+"' AND "+
+                        DatabaseHelper.COLUMN_DISCRIMINATOR+" = '"+DatabaseHelper.DESCRIMINATOR_NOTE+"' ",
+                null,
+                null,
+                null,
+                ordering.getColumnName()+" "+ordering.getDirection());
+
+        while (cursor.moveToNext()) {
+            Note note = cursorToNoteWithoutDescription(account, rootFolder, cursor);
+            notes.add(note);
+        }
+        cursor.close();
+        close();
+        return notes;
+    }
+
+    public List<Note> getAll(Ordering ordering) {
         openReadonly();
         List<Note> notes = new ArrayList<Note>();
 
@@ -230,10 +253,10 @@ public class NoteRepository {
                 null,
                 null,
                 null,
-                DatabaseHelper.COLUMN_MODIFICATIONDATE+" DESC");
+                ordering.getColumnName()+" "+ordering.getDirection());
 
         while (cursor.moveToNext()) {
-            Note note = cursorToNote(null,null,cursor);
+            Note note = cursorToNoteWithoutDescription(null, null, cursor);
             notes.add(note);
         }
         cursor.close();
@@ -300,6 +323,33 @@ public class NoteRepository {
 
         Note note = new Note(ident,audit, Note.Classification.valueOf(classification),summary);
         note.setDescription(description);
+        note.setColor(Colors.getColor(color));
+
+        if(account != null && rootFolder != null) {
+            List<String> tags = new NoteTagRepository(context).getTagsFor(account, rootFolder, uid);
+
+            if (tags != null && tags.size() > 0) {
+                for(String tag : tags){
+                    note.addCategories(new Tag(tag));
+                }
+            }
+        }
+        return note;
+    }
+
+    private Note cursorToNoteWithoutDescription(String account, String rootFolder,Cursor cursor) {
+        String uid = cursor.getString(3);
+        String productId = cursor.getString(4);
+        Long creationDate = cursor.getLong(5);
+        Long modificationDate = cursor.getLong(6);
+        String summary = cursor.getString(7);
+        String classification = cursor.getString(9);
+        String color = cursor.getString(12);
+
+        AuditInformation audit = new AuditInformation(new Timestamp(creationDate),new Timestamp(modificationDate));
+        Identification ident = new Identification(uid,productId);
+
+        Note note = new Note(ident,audit, Note.Classification.valueOf(classification),summary);
         note.setColor(Colors.getColor(color));
 
         if(account != null && rootFolder != null) {

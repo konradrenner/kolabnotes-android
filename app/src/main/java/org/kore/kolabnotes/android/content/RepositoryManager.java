@@ -76,7 +76,7 @@ public class RepositoryManager {
     }
 
     void putLocalDataIntoRepository(String email, String rootFolder){
-        List<Note> localNotes = noteRepository.getAll(email, rootFolder);
+        List<Note> localNotes = noteRepository.getAllForSync(email, rootFolder);
 
         for(Note note : localNotes){
             Modification modification = modificationRepository.getUnique(email, rootFolder, note.getIdentification().getUid());

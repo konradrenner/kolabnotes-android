@@ -14,6 +14,8 @@ import android.graphics.Outline;
 import android.os.Build;
 import android.text.Html;
 import android.text.Spanned;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewOutlineProvider;
 import android.widget.ImageButton;
@@ -24,6 +26,7 @@ import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
 import org.kore.kolab.notes.Note;
 import org.kore.kolab.notes.Tag;
 import org.kore.kolabnotes.android.content.AccountIdentifier;
+import org.kore.kolabnotes.android.content.Ordering;
 import org.kore.kolabnotes.android.security.AuthenticatorActivity;
 import org.kore.kolabnotes.android.widget.ListWidget;
 import org.kore.kolabnotes.android.widget.StickyNoteWidget;
@@ -48,6 +51,30 @@ public class Utils {
         w.setEnterTransition(ex);
     }
     */
+
+    public static void saveOrdering(Context context, Ordering ordering) {
+        SharedPreferences.Editor prefs = context.getSharedPreferences("org.kore.kolabnotes.android.widget.MainActivity", 0).edit();
+        prefs.putString("direction", ordering.getDirection().toString());
+        prefs.putString("column", ordering.getColumnName());
+        prefs.commit();
+    }
+
+    public static Ordering getOrdering(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences("org.kore.kolabnotes.android.widget.MainActivity", 0);
+        if(prefs == null){
+            Log.d("getOrdering","MainActivity prefs are null");
+            return new Ordering();
+        }
+        String direction = prefs.getString("direction", null);
+        String column = prefs.getString("column", null);
+
+        if(TextUtils.isEmpty(direction) || TextUtils.isEmpty(column)){
+            Log.d("getOrdering","column:"+column+"; or direction:"+direction+"; is empty, so default ordering will be returned");
+            return new Ordering();
+        }
+
+        return new Ordering(column,Ordering.Direction.valueOf(direction));
+    }
 
     public static boolean getReloadDataAfterDetail(Context context){
         SharedPreferences sharedPref = context.getSharedPreferences("org.kore.kolabnotes.android.pref",Context.MODE_PRIVATE);

@@ -34,8 +34,7 @@ public class NoteTagRepository {
             " and notetags."+DatabaseHelper.COLUMN_IDTAG+" = ? " +
             " and notetags."+DatabaseHelper.COLUMN_IDNOTE+" = note."+ DatabaseHelper.COLUMN_UID+" " +
             " and notetags."+DatabaseHelper.COLUMN_ACCOUNT+" = note."+ DatabaseHelper.COLUMN_ACCOUNT+" "+
-            " and notetags."+DatabaseHelper.COLUMN_ROOT_FOLDER+" = note."+ DatabaseHelper.COLUMN_ROOT_FOLDER+" "+
-            " order by "+DatabaseHelper.COLUMN_MODIFICATIONDATE+" desc ";
+            " and notetags."+DatabaseHelper.COLUMN_ROOT_FOLDER+" = note."+ DatabaseHelper.COLUMN_ROOT_FOLDER+" ";
 
 
     // Database fields
@@ -130,11 +129,11 @@ public class NoteTagRepository {
         close();
     }
 
-    public List<Note> getNotesWith(String account,String rootFolder,String tagname) {
+    public List<Note> getNotesWith(String account,String rootFolder,String tagname, Ordering ordering) {
         openReadonly();
         List<Note> notes = new ArrayList<Note>();
 
-        Cursor cursor = database.rawQuery(QUERY_NOTES,new String[]{account,rootFolder,tagname});
+        Cursor cursor = database.rawQuery(QUERY_NOTES+" order by "+ordering.getColumnName()+" "+ordering.getDirection(),new String[]{account,rootFolder,tagname});
 
 
         while (cursor.moveToNext()) {
@@ -167,15 +166,13 @@ public class NoteTagRepository {
         Long creationDate = cursor.getLong(2);
         Long modificationDate = cursor.getLong(3);
         String summary = cursor.getString(4);
-        String description = cursor.getString(5);
         String classification = cursor.getString(6);
         String color = cursor.getString(7);
 
         AuditInformation audit = new AuditInformation(new Timestamp(creationDate),new Timestamp(modificationDate));
         Identification ident = new Identification(uid,productId);
 
-        Note note = new Note(ident,audit, Note.Classification.valueOf(classification),description);
-        note.setSummary(summary);
+        Note note = new Note(ident,audit, Note.Classification.valueOf(classification),summary);
         note.setColor(Colors.getColor(color));
 
         return note;
