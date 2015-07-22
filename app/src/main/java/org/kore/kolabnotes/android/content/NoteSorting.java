@@ -3,7 +3,7 @@ package org.kore.kolabnotes.android.content;
 /**
  * Created by koni on 20.07.15.
  */
-public final class Ordering {
+public final class NoteSorting {
     public enum Direction{
         ASC,DESC;
     }
@@ -11,12 +11,12 @@ public final class Ordering {
     private final Direction direction;
     private final String columnName;
 
-    public Ordering(String columnName,Direction direction) {
+    public NoteSorting(String columnName, Direction direction) {
         this.direction = direction;
         this.columnName = columnName;
     }
 
-    public Ordering(){
+    public NoteSorting(){
         this(DatabaseHelper.COLUMN_MODIFICATIONDATE,Direction.DESC);
     }
 

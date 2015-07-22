@@ -20,7 +20,7 @@ import org.kore.kolabnotes.android.R;
 import org.kore.kolabnotes.android.Utils;
 import org.kore.kolabnotes.android.content.DatabaseHelper;
 import org.kore.kolabnotes.android.content.NotebookRepository;
-import org.kore.kolabnotes.android.content.Ordering;
+import org.kore.kolabnotes.android.content.NoteSorting;
 import org.kore.kolabnotes.android.content.TagRepository;
 import org.kore.kolabnotes.android.security.AuthenticatorActivity;
 
@@ -56,7 +56,7 @@ public class ListWidgetConfigureActivity extends Activity {
     private Account selectedAccount;
     private String selectedNotebook;
     private String selectedTag;
-    private Ordering.Direction selectedDirection;
+    private NoteSorting.Direction selectedDirection;
     private String selectedColumn;
 
     private String localAccountName;
@@ -103,19 +103,19 @@ public class ListWidgetConfigureActivity extends Activity {
         initSpinners();
         descButton.toggle();
         selectedColumn = DatabaseHelper.COLUMN_MODIFICATIONDATE;
-        selectedDirection = Ordering.Direction.DESC;
+        selectedDirection = NoteSorting.Direction.DESC;
 
         descButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                selectedDirection = Ordering.Direction.DESC;
+                selectedDirection = NoteSorting.Direction.DESC;
             }
         });
 
         ascButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                selectedDirection = Ordering.Direction.ASC;
+                selectedDirection = NoteSorting.Direction.ASC;
             }
         });
     }
@@ -126,9 +126,9 @@ public class ListWidgetConfigureActivity extends Activity {
 
             // When the button is clicked, store the string locally
             if(selectedAccount == null){
-                saveListWidgetPref(context, mAppWidgetId, "local", selectedNotebook, selectedTag, new Ordering(selectedColumn,selectedDirection));
+                saveListWidgetPref(context, mAppWidgetId, "local", selectedNotebook, selectedTag, new NoteSorting(selectedColumn,selectedDirection));
             }else{
-                saveListWidgetPref(context, mAppWidgetId, mAccountManager.getUserData(selectedAccount, AuthenticatorActivity.KEY_ACCOUNT_NAME), selectedNotebook, selectedTag, new Ordering(selectedColumn,selectedDirection));
+                saveListWidgetPref(context, mAppWidgetId, mAccountManager.getUserData(selectedAccount, AuthenticatorActivity.KEY_ACCOUNT_NAME), selectedNotebook, selectedTag, new NoteSorting(selectedColumn,selectedDirection));
             }
 
             // It is the responsibility of the configuration activity to update the app widget
@@ -143,13 +143,13 @@ public class ListWidgetConfigureActivity extends Activity {
         }
     };
 
-    static void saveListWidgetPref(Context context, int appWidgetId,String accountName, String notebook,String tag, Ordering ordering) {
+    static void saveListWidgetPref(Context context, int appWidgetId,String accountName, String notebook,String tag, NoteSorting noteSorting) {
         SharedPreferences.Editor prefs = context.getSharedPreferences(PREFS_NAME, 0).edit();
         prefs.putString(PREF_PREFIX_KEY_ACCOUNT + appWidgetId, accountName);
         prefs.putString(PREF_PREFIX_KEY_NOTEBOOK + appWidgetId, notebook);
         prefs.putString(PREF_PREFIX_KEY_TAG + appWidgetId, tag);
-        prefs.putString(PREF_PREFIX_KEY_DIRECTION + appWidgetId, ordering.getDirection().toString());
-        prefs.putString(PREF_PREFIX_KEY_COLUMN + appWidgetId, ordering.getColumnName());
+        prefs.putString(PREF_PREFIX_KEY_DIRECTION + appWidgetId, noteSorting.getDirection().toString());
+        prefs.putString(PREF_PREFIX_KEY_COLUMN + appWidgetId, noteSorting.getColumnName());
         prefs.commit();
     }
 
@@ -168,15 +168,15 @@ public class ListWidgetConfigureActivity extends Activity {
         return prefs.getString(PREF_PREFIX_KEY_TAG + appWidgetId, null);
     }
 
-    static Ordering loadListWidgetOrderingPref(Context context, int appWidgetId) {
+    static NoteSorting loadListWidgetOrderingPref(Context context, int appWidgetId) {
         SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, 0);
         String direction = prefs.getString(PREF_PREFIX_KEY_DIRECTION + appWidgetId, null);
-        String column = prefs.getString(PREF_PREFIX_KEY_DIRECTION + appWidgetId, null);
+        String column = prefs.getString(PREF_PREFIX_KEY_COLUMN + appWidgetId, null);
 
         if(TextUtils.isEmpty(direction) || TextUtils.isEmpty(column)){
-            return new Ordering();
+            return new NoteSorting();
         }
-        return new Ordering(column,Ordering.Direction.valueOf(direction));
+        return new NoteSorting(column, NoteSorting.Direction.valueOf(direction));
     }
 
     static void deleteListWidgetPref(Context context, int appWidgetId) {
@@ -196,7 +196,7 @@ public class ListWidgetConfigureActivity extends Activity {
         Utils.initColumnSpinner(this, columnSpinner, new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                selectedColumn = adapterView.getSelectedItem().toString();
+                selectedColumn = Utils.getColumnNameOfSelection(adapterView.getSelectedItemPosition());
             }
 
             @Override

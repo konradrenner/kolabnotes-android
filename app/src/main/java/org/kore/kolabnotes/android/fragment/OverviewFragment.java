@@ -7,13 +7,9 @@ import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.content.ContentResolver;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.res.Configuration;
-import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -63,7 +59,7 @@ import org.kore.kolabnotes.android.content.DataCaches;
 import org.kore.kolabnotes.android.content.NoteRepository;
 import org.kore.kolabnotes.android.content.NoteTagRepository;
 import org.kore.kolabnotes.android.content.NotebookRepository;
-import org.kore.kolabnotes.android.content.Ordering;
+import org.kore.kolabnotes.android.content.NoteSorting;
 import org.kore.kolabnotes.android.content.TagRepository;
 import org.kore.kolabnotes.android.security.AuthenticatorActivity;
 
@@ -638,11 +634,11 @@ public class OverviewFragment extends Fragment implements NoteAdapter.NoteSelect
         RadioGroup radioGroup = (RadioGroup) view.findViewById(R.id.radio_group_sort_direction);
         Spinner columns = (Spinner) view.findViewById(R.id.spinner_sort_column);
 
-        Ordering ordering = Utils.getOrdering(activity);
+        NoteSorting noteSorting = Utils.getOrdering(activity);
 
-        Utils.initColumnSpinner(activity,columns,null,ordering.getColumnName());
+        Utils.initColumnSpinner(activity,columns,null, noteSorting.getColumnName());
 
-        if(Ordering.Direction.DESC == ordering.getDirection()){
+        if(NoteSorting.Direction.DESC == noteSorting.getDirection()){
             ((RadioButton) view.findViewById(R.id.radio_desc)).toggle();
         }else{
             ((RadioButton) view.findViewById(R.id.radio_asc)).toggle();
@@ -928,21 +924,21 @@ public class OverviewFragment extends Fragment implements NoteAdapter.NoteSelect
 
         @Override
         public void onClick(DialogInterface dialogInterface, int i) {
-            String column = columns.getSelectedItem().toString();
+            String column = Utils.getColumnNameOfSelection(columns.getSelectedItemPosition());
 
-            Ordering.Direction dir;
+            NoteSorting.Direction dir;
 
             if(direction.getCheckedRadioButtonId() == R.id.radio_asc){
-                dir = Ordering.Direction.ASC;
+                dir = NoteSorting.Direction.ASC;
             }else{
-                dir = Ordering.Direction.DESC;
+                dir = NoteSorting.Direction.DESC;
             }
 
-            Ordering ordering = new Ordering(column,dir);
+            NoteSorting noteSorting = new NoteSorting(column,dir);
 
-            Log.d("onClick","Changing sorting:"+ordering);
+            Log.d("onClick","Changing sorting:"+ noteSorting);
 
-            Utils.saveOrdering(activity, ordering);
+            Utils.saveOrdering(activity, noteSorting);
 
             ActiveAccount activeAccount = activeAccountRepository.getActiveAccount();
 
@@ -956,13 +952,13 @@ public class OverviewFragment extends Fragment implements NoteAdapter.NoteSelect
                     notes = notesRepository.getFromNotebook(activeAccount.getAccount(),
                             activeAccount.getRootFolder(),
                             notebookRepository.getBySummary(activeAccount.getAccount(),activeAccount.getRootFolder(),item.getName()).getIdentification().getUid(),
-                            ordering);
+                            noteSorting);
                 }else if("TAG".equalsIgnoreCase(tag)){
-                    notes = notetagRepository.getNotesWith(activeAccount.getAccount(), activeAccount.getRootFolder(), item.getName(),ordering);
+                    notes = notetagRepository.getNotesWith(activeAccount.getAccount(), activeAccount.getRootFolder(), item.getName(), noteSorting);
                 }else if("ALL_NOTES".equalsIgnoreCase(tag)){
-                    notes = notesRepository.getAll(ordering);
+                    notes = notesRepository.getAll(noteSorting);
                 }else{
-                    notes = notesRepository.getAll(activeAccount.getAccount(),activeAccount.getRootFolder(),ordering);
+                    notes = notesRepository.getAll(activeAccount.getAccount(),activeAccount.getRootFolder(), noteSorting);
                 }
 
                 List<Notebook> notebooks = notebookRepository.getAll(activeAccount.getAccount(), activeAccount.getRootFolder());

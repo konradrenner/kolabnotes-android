@@ -129,11 +129,11 @@ public class NoteTagRepository {
         close();
     }
 
-    public List<Note> getNotesWith(String account,String rootFolder,String tagname, Ordering ordering) {
+    public List<Note> getNotesWith(String account,String rootFolder,String tagname, NoteSorting noteSorting) {
         openReadonly();
         List<Note> notes = new ArrayList<Note>();
 
-        Cursor cursor = database.rawQuery(QUERY_NOTES+" order by "+ordering.getColumnName()+" "+ordering.getDirection(),new String[]{account,rootFolder,tagname});
+        Cursor cursor = database.rawQuery(QUERY_NOTES+" order by "+ noteSorting.getColumnName()+" "+ noteSorting.getDirection(),new String[]{account,rootFolder,tagname});
 
 
         while (cursor.moveToNext()) {

@@ -144,7 +144,7 @@ public class NoteRepository {
     }
 
 
-    public List<Note> getFromNotebookWithSummary(String account, String rootFolder,String uidNotebook,String summary,Ordering ordering) {
+    public List<Note> getFromNotebookWithSummary(String account, String rootFolder,String uidNotebook,String summary,NoteSorting noteSorting) {
         openReadonly();
         List<Note> notes = new ArrayList<Note>();
 
@@ -162,7 +162,7 @@ public class NoteRepository {
                 null,
                 null,
                 null,
-                ordering.getColumnName()+" "+ordering.getDirection());
+                noteSorting.getColumnName()+" "+ noteSorting.getDirection());
 
         while (cursor.moveToNext()) {
             Note note = cursorToNoteWithoutDescription(account,rootFolder,cursor);
@@ -173,7 +173,7 @@ public class NoteRepository {
         return notes;
     }
 
-    public List<Note> getFromNotebook(String account, String rootFolder,String uidNotebook, Ordering ordering) {
+    public List<Note> getFromNotebook(String account, String rootFolder,String uidNotebook, NoteSorting noteSorting) {
         openReadonly();
         List<Note> notes = new ArrayList<Note>();
 
@@ -186,7 +186,7 @@ public class NoteRepository {
                 null,
                 null,
                 null,
-                ordering.getColumnName()+" "+ordering.getDirection());
+                noteSorting.getColumnName()+" "+ noteSorting.getDirection());
 
         while (cursor.moveToNext()) {
             Note note = cursorToNoteWithoutDescription(account,rootFolder,cursor);
@@ -220,7 +220,7 @@ public class NoteRepository {
         return notes;
     }
 
-    public List<Note> getAll(String account, String rootFolder, Ordering ordering) {
+    public List<Note> getAll(String account, String rootFolder, NoteSorting noteSorting) {
         openReadonly();
         List<Note> notes = new ArrayList<Note>();
 
@@ -232,7 +232,7 @@ public class NoteRepository {
                 null,
                 null,
                 null,
-                ordering.getColumnName()+" "+ordering.getDirection());
+                noteSorting.getColumnName()+" "+ noteSorting.getDirection());
 
         while (cursor.moveToNext()) {
             Note note = cursorToNoteWithoutDescription(account, rootFolder, cursor);
@@ -243,7 +243,7 @@ public class NoteRepository {
         return notes;
     }
 
-    public List<Note> getAll(Ordering ordering) {
+    public List<Note> getAll(NoteSorting noteSorting) {
         openReadonly();
         List<Note> notes = new ArrayList<Note>();
 
@@ -253,7 +253,7 @@ public class NoteRepository {
                 null,
                 null,
                 null,
-                ordering.getColumnName()+" "+ordering.getDirection());
+                noteSorting.getColumnName()+" "+ noteSorting.getDirection());
 
         while (cursor.moveToNext()) {
             Note note = cursorToNoteWithoutDescription(null, null, cursor);

@@ -12,11 +12,12 @@ import android.widget.RemoteViewsService;
 import org.kore.kolab.notes.Color;
 import org.kore.kolab.notes.Note;
 import org.kore.kolab.notes.Tag;
+import org.kore.kolabnotes.android.NoteSortingComparator;
 import org.kore.kolabnotes.android.R;
 import org.kore.kolabnotes.android.Utils;
 import org.kore.kolabnotes.android.content.NoteRepository;
 import org.kore.kolabnotes.android.content.NotebookRepository;
-import org.kore.kolabnotes.android.content.Ordering;
+import org.kore.kolabnotes.android.content.NoteSorting;
 import org.kore.kolabnotes.android.security.AuthenticatorActivity;
 
 import java.util.ArrayList;
@@ -60,7 +61,7 @@ public class ListWidgetRemoteViewsFactory implements RemoteViewsService.RemoteVi
         String account = ListWidgetConfigureActivity.loadListWidgetAccountPref(context, appWidgetId);
         String notebook = ListWidgetConfigureActivity.loadListWidgetNotebookPref(context, appWidgetId);
         String tag = ListWidgetConfigureActivity.loadListWidgetTagPref(context, appWidgetId);
-        Ordering ordering = ListWidgetConfigureActivity.loadListWidgetOrderingPref(context,appWidgetId);
+        NoteSorting noteSorting = ListWidgetConfigureActivity.loadListWidgetOrderingPref(context,appWidgetId);
 
         rootFolder = "Notes";
         accountEmail = "local";
@@ -78,10 +79,10 @@ public class ListWidgetRemoteViewsFactory implements RemoteViewsService.RemoteVi
 
         List<Note> notes;
         if(notebook == null){
-            notes = notesRepository.getAll(accountEmail,rootFolder, ordering);
+            notes = notesRepository.getAll(accountEmail,rootFolder, noteSorting);
         }else{
             String notebookUID = notebookRepository.getBySummary(accountEmail,rootFolder,notebook).getIdentification().getUid();
-            notes = notesRepository.getFromNotebook(accountEmail,rootFolder, notebookUID, ordering);
+            notes = notesRepository.getFromNotebook(accountEmail,rootFolder, notebookUID, noteSorting);
         }
 
         ArrayList<Note> filtered = new ArrayList<>();
@@ -96,7 +97,7 @@ public class ListWidgetRemoteViewsFactory implements RemoteViewsService.RemoteVi
             filtered.addAll(notes);
         }
 
-        Collections.sort(filtered);
+        Collections.sort(filtered, new NoteSortingComparator(noteSorting));
 
         this.notes.addAll(filtered);
     }

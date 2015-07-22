@@ -45,9 +45,9 @@ public class DataCache  implements Serializable{
         this.notesPerNotebook.clear();
         this.notebooks.clear();
 
-        final Ordering ordering = Utils.getOrdering(context);
+        final NoteSorting noteSorting = Utils.getOrdering(context);
 
-        this.notes.addAll(notesRepository.getAll(account.getAccount(),account.getRootFolder(),ordering));
+        this.notes.addAll(notesRepository.getAll(account.getAccount(),account.getRootFolder(), noteSorting));
         this.notebooks.addAll(notebookRepository.getAll(account.getAccount(),account.getRootFolder()));
         Log.d("DataCache - reloadData","Reloading finished in "+(System.currentTimeMillis()-ts)+"ms");
     }
@@ -69,8 +69,8 @@ public class DataCache  implements Serializable{
         initData();
         List<Note> perNotebook = notesPerNotebook.get(uid);
         if(perNotebook == null){
-            final Ordering ordering = Utils.getOrdering(context);
-            List<Note> fromNotebook = notesRepository.getFromNotebook(account.getAccount(), account.getRootFolder(), uid, ordering);
+            final NoteSorting noteSorting = Utils.getOrdering(context);
+            List<Note> fromNotebook = notesRepository.getFromNotebook(account.getAccount(), account.getRootFolder(), uid, noteSorting);
             perNotebook = new ArrayList<>(fromNotebook);
             notesPerNotebook.put(uid,perNotebook);
         }

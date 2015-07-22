@@ -3,8 +3,6 @@ package org.kore.kolabnotes.android;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.annotation.TargetApi;
-import android.app.Activity;
-import android.app.Application;
 import android.appwidget.AppWidgetManager;
 import android.content.ComponentName;
 import android.content.Context;
@@ -12,8 +10,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Outline;
 import android.os.Build;
-import android.text.Html;
-import android.text.Spanned;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -24,33 +20,132 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Spinner;
 
-import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
-
 import org.kore.kolab.notes.Note;
+import org.kore.kolab.notes.NotesRepository;
 import org.kore.kolab.notes.Tag;
 import org.kore.kolabnotes.android.content.AccountIdentifier;
 import org.kore.kolabnotes.android.content.DatabaseHelper;
-import org.kore.kolabnotes.android.content.Ordering;
+import org.kore.kolabnotes.android.content.NoteSorting;
 import org.kore.kolabnotes.android.security.AuthenticatorActivity;
 import org.kore.kolabnotes.android.widget.ListWidget;
 import org.kore.kolabnotes.android.widget.StickyNoteWidget;
 
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Objects;
 
 public class Utils {
 
-    private final static String[] SORTING_COLUMNS = {DatabaseHelper.COLUMN_SUMMARY,
-            DatabaseHelper.COLUMN_MODIFICATIONDATE,
-            DatabaseHelper.COLUMN_CREATIONDATE,
-            DatabaseHelper.COLUMN_CLASSIFICATION,
-            DatabaseHelper.COLUMN_COLOR};
+    public enum SortingColumns{
+        summary {
+            @Override
+            public int compare(Note note1, Note note2, NoteSorting.Direction direction) {
+                int sorting = 0;
+                if(direction == NoteSorting.Direction.ASC){
+                    sorting = note1.getSummary().compareTo(note2.getSummary());
 
-    private final static String[] SORTING_COLUMNS_NAMES = {DatabaseHelper.COLUMN_SUMMARY,
-            DatabaseHelper.COLUMN_MODIFICATIONDATE,
-            DatabaseHelper.COLUMN_CREATIONDATE,
-            DatabaseHelper.COLUMN_CLASSIFICATION,
-            DatabaseHelper.COLUMN_COLOR};
+                    if(sorting == 0){
+                        sorting = note1.getAuditInformation().compareTo(note2.getAuditInformation());
+                    }
+                }else{
+                    sorting = note2.getSummary().compareTo(note1.getSummary());
+
+                    if(sorting == 0){
+                        sorting = note2.getAuditInformation().compareTo(note1.getAuditInformation());
+                    }
+                }
+                return sorting;
+            }
+        },lastModificationDate {
+            @Override
+            public int compare(Note note1, Note note2, NoteSorting.Direction direction) {
+                int sorting = 0;
+                if(direction == NoteSorting.Direction.ASC){
+                    sorting = note1.getAuditInformation().getLastModificationDate().compareTo(note2.getAuditInformation().getLastModificationDate());
+
+                    if(sorting == 0){
+                        sorting = note1.getAuditInformation().compareTo(note2.getAuditInformation());
+                    }
+                }else{
+                    sorting = note2.getAuditInformation().getLastModificationDate().compareTo(note1.getAuditInformation().getLastModificationDate());
+
+                    if(sorting == 0){
+                        sorting = note2.getAuditInformation().compareTo(note1.getAuditInformation());
+                    }
+                }
+                return sorting;
+            }
+        },creationDate {
+            @Override
+            public int compare(Note note1, Note note2, NoteSorting.Direction direction) {
+                int sorting = 0;
+                if(direction == NoteSorting.Direction.ASC){
+                    sorting = note1.getAuditInformation().getCreationDate().compareTo(note2.getAuditInformation().getCreationDate());
+
+                    if(sorting == 0){
+                        sorting = note1.getAuditInformation().compareTo(note2.getAuditInformation());
+                    }
+                }else{
+                    sorting = note2.getAuditInformation().getCreationDate().compareTo(note1.getAuditInformation().getCreationDate());
+
+                    if(sorting == 0){
+                        sorting = note2.getAuditInformation().compareTo(note1.getAuditInformation());
+                    }
+                }
+                return sorting;
+            }
+        },classification {
+            @Override
+            public int compare(Note note1, Note note2, NoteSorting.Direction direction) {
+                int sorting = 0;
+                if(direction == NoteSorting.Direction.ASC){
+                    sorting = note1.getClassification().compareTo(note2.getClassification());
+
+                    if(sorting == 0){
+                        sorting = note1.getAuditInformation().compareTo(note2.getAuditInformation());
+                    }
+                }else{
+                    sorting = note2.getClassification().compareTo(note1.getClassification());
+
+                    if(sorting == 0){
+                        sorting = note2.getAuditInformation().compareTo(note1.getAuditInformation());
+                    }
+                }
+                return sorting;
+            }
+        },color {
+            @Override
+            public int compare(Note note1, Note note2, NoteSorting.Direction direction) {
+                int sorting = 0;
+                if(direction == NoteSorting.Direction.ASC){
+                    sorting = note1.getColor().getHexcode().compareTo(note2.getColor().getHexcode());
+
+                    if(sorting == 0){
+                        sorting = note1.getAuditInformation().compareTo(note2.getAuditInformation());
+                    }
+                }else{
+                    sorting = note2.getColor().getHexcode().compareTo(note1.getColor().getHexcode());
+
+                    if(sorting == 0){
+                        sorting = note2.getAuditInformation().compareTo(note1.getAuditInformation());
+                    }
+                }
+                return sorting;
+            }
+        };
+
+        public abstract int compare(Note note1, Note note2, NoteSorting.Direction direction);
+
+        public static String[] valuesToStringArray(){
+            final SortingColumns[] values = values();
+            String[] arr = new String[values.length];
+
+            for(int i=0;i<values.length;i++){
+                arr[i] = values[i].toString();
+            }
+            return arr;
+        }
+    }
 
     public static final String INTENT_ACCOUNT_EMAIL = "intent_account_email";
     public static final String INTENT_ACCOUNT_ROOT_FOLDER = "intent_account_rootfolder";
@@ -69,28 +164,28 @@ public class Utils {
     }
     */
 
-    public static void saveOrdering(Context context, Ordering ordering) {
+    public static void saveOrdering(Context context, NoteSorting noteSorting) {
         SharedPreferences.Editor prefs = context.getSharedPreferences("org.kore.kolabnotes.android.widget.MainActivity", 0).edit();
-        prefs.putString("direction", ordering.getDirection().toString());
-        prefs.putString("column", ordering.getColumnName());
+        prefs.putString("direction", noteSorting.getDirection().toString());
+        prefs.putString("column", noteSorting.getColumnName());
         prefs.commit();
     }
 
-    public static Ordering getOrdering(Context context) {
+    public static NoteSorting getOrdering(Context context) {
         SharedPreferences prefs = context.getSharedPreferences("org.kore.kolabnotes.android.widget.MainActivity", 0);
         if(prefs == null){
             Log.d("getOrdering","MainActivity prefs are null");
-            return new Ordering();
+            return new NoteSorting();
         }
         String direction = prefs.getString("direction", null);
         String column = prefs.getString("column", null);
 
         if(TextUtils.isEmpty(direction) || TextUtils.isEmpty(column)){
             Log.d("getOrdering","column:"+column+"; or direction:"+direction+"; is empty, so default ordering will be returned");
-            return new Ordering();
+            return new NoteSorting();
         }
 
-        return new Ordering(column,Ordering.Direction.valueOf(direction));
+        return new NoteSorting(column, NoteSorting.Direction.valueOf(direction));
     }
 
     public static boolean getReloadDataAfterDetail(Context context){
@@ -255,7 +350,7 @@ public class Utils {
     public static void initColumnSpinner(Context context, Spinner spinner, AdapterView.OnItemSelectedListener listener, String selection){
         int select = 1;
         if(selection != null){
-            select = Arrays.binarySearch(SORTING_COLUMNS,selection);
+            select = Arrays.binarySearch(SortingColumns.valuesToStringArray(),selection);
         }
 
         final String[] columnNames = context.getResources().getStringArray(R.array.sorting_columns);
@@ -267,7 +362,7 @@ public class Utils {
     }
 
     public static String getColumnNameOfSelection(int selection){
-
-        return SORTING_COLUMNS[selection];
+        final SortingColumns[] values = SortingColumns.values();
+        return values[selection].toString();
     }
 }
