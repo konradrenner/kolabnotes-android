@@ -40,6 +40,18 @@ import java.util.Objects;
 
 public class Utils {
 
+    private final static String[] SORTING_COLUMNS = {DatabaseHelper.COLUMN_SUMMARY,
+            DatabaseHelper.COLUMN_MODIFICATIONDATE,
+            DatabaseHelper.COLUMN_CREATIONDATE,
+            DatabaseHelper.COLUMN_CLASSIFICATION,
+            DatabaseHelper.COLUMN_COLOR};
+
+    private final static String[] SORTING_COLUMNS_NAMES = {DatabaseHelper.COLUMN_SUMMARY,
+            DatabaseHelper.COLUMN_MODIFICATIONDATE,
+            DatabaseHelper.COLUMN_CREATIONDATE,
+            DatabaseHelper.COLUMN_CLASSIFICATION,
+            DatabaseHelper.COLUMN_COLOR};
+
     public static final String INTENT_ACCOUNT_EMAIL = "intent_account_email";
     public static final String INTENT_ACCOUNT_ROOT_FOLDER = "intent_account_rootfolder";
     public static final String NOTE_UID = "note_uid";
@@ -241,20 +253,21 @@ public class Utils {
     }
 
     public static void initColumnSpinner(Context context, Spinner spinner, AdapterView.OnItemSelectedListener listener, String selection){
-        String[] columns = {DatabaseHelper.COLUMN_SUMMARY,
-                DatabaseHelper.COLUMN_MODIFICATIONDATE,
-                DatabaseHelper.COLUMN_CREATIONDATE,
-                DatabaseHelper.COLUMN_CLASSIFICATION,
-                DatabaseHelper.COLUMN_COLOR};
+        int select = 1;
+        if(selection != null){
+            select = Arrays.binarySearch(SORTING_COLUMNS,selection);
+        }
 
-        ArrayAdapter<CharSequence> adapter = new ArrayAdapter<CharSequence>(context,R.layout.widget_config_spinner_item,columns);
+        final String[] columnNames = context.getResources().getStringArray(R.array.sorting_columns);
+        ArrayAdapter<CharSequence> adapter = new ArrayAdapter<CharSequence>(context,R.layout.widget_config_spinner_item,columnNames);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
         spinner.setOnItemSelectedListener(listener);
-        if(selection == null){
-            spinner.setSelection(1);
-        }else {
-            spinner.setSelection(Arrays.binarySearch(columns,selection));
-        }
+        spinner.setSelection(select);
+    }
+
+    public static String getColumnNameOfSelection(int selection){
+
+        return SORTING_COLUMNS[selection];
     }
 }
