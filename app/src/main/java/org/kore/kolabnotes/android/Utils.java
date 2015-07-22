@@ -18,19 +18,24 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewOutlineProvider;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.Spinner;
 
 import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
 
 import org.kore.kolab.notes.Note;
 import org.kore.kolab.notes.Tag;
 import org.kore.kolabnotes.android.content.AccountIdentifier;
+import org.kore.kolabnotes.android.content.DatabaseHelper;
 import org.kore.kolabnotes.android.content.Ordering;
 import org.kore.kolabnotes.android.security.AuthenticatorActivity;
 import org.kore.kolabnotes.android.widget.ListWidget;
 import org.kore.kolabnotes.android.widget.StickyNoteWidget;
 
+import java.util.Arrays;
 import java.util.Objects;
 
 public class Utils {
@@ -229,5 +234,27 @@ public class Utils {
         }
 
         return false;
+    }
+
+    public static void initColumnSpinner(Context context, Spinner spinner, AdapterView.OnItemSelectedListener listener){
+        initColumnSpinner(context,spinner,listener,null);
+    }
+
+    public static void initColumnSpinner(Context context, Spinner spinner, AdapterView.OnItemSelectedListener listener, String selection){
+        String[] columns = {DatabaseHelper.COLUMN_SUMMARY,
+                DatabaseHelper.COLUMN_MODIFICATIONDATE,
+                DatabaseHelper.COLUMN_CREATIONDATE,
+                DatabaseHelper.COLUMN_CLASSIFICATION,
+                DatabaseHelper.COLUMN_COLOR};
+
+        ArrayAdapter<CharSequence> adapter = new ArrayAdapter<CharSequence>(context,R.layout.widget_config_spinner_item,columns);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(adapter);
+        spinner.setOnItemSelectedListener(listener);
+        if(selection == null){
+            spinner.setSelection(1);
+        }else {
+            spinner.setSelection(Arrays.binarySearch(columns,selection));
+        }
     }
 }

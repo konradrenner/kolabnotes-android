@@ -8,15 +8,19 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.RadioButton;
 import android.widget.Spinner;
 
 import org.kore.kolab.notes.Notebook;
 import org.kore.kolabnotes.android.R;
-import org.kore.kolabnotes.android.content.NoteRepository;
+import org.kore.kolabnotes.android.Utils;
+import org.kore.kolabnotes.android.content.DatabaseHelper;
 import org.kore.kolabnotes.android.content.NotebookRepository;
+import org.kore.kolabnotes.android.content.Ordering;
 import org.kore.kolabnotes.android.content.TagRepository;
 import org.kore.kolabnotes.android.security.AuthenticatorActivity;
 
@@ -35,6 +39,8 @@ public class ListWidgetConfigureActivity extends Activity {
     public static final String PREFS_NAME = "org.kore.kolabnotes.android.widget.ListWidget";
     public static final String PREF_PREFIX_KEY_NOTEBOOK = "appwidget_notebook_";
     public static final String PREF_PREFIX_KEY_TAG = "appwidget_tag_";
+    public static final String PREF_PREFIX_KEY_DIRECTION = "appwidget_direction_";
+    public static final String PREF_PREFIX_KEY_COLUMN = "appwidget_column_";
     public static final String PREF_PREFIX_KEY_ACCOUNT = "appwidget_account_";
 
     private TagRepository tagRepository = new TagRepository(this);
@@ -43,10 +49,15 @@ public class ListWidgetConfigureActivity extends Activity {
     private Spinner accountSpinner;
     private Spinner notebookSpinner;
     private Spinner tagSpinner;
+    private Spinner columnSpinner;
+    private RadioButton ascButton;
+    private RadioButton descButton;
 
     private Account selectedAccount;
     private String selectedNotebook;
     private String selectedTag;
+    private Ordering.Direction selectedDirection;
+    private String selectedColumn;
 
     private String localAccountName;
 
@@ -68,6 +79,9 @@ public class ListWidgetConfigureActivity extends Activity {
         accountSpinner = (Spinner) findViewById(R.id.spinner_account);
         notebookSpinner = (Spinner) findViewById(R.id.spinner_notebook);
         tagSpinner = (Spinner) findViewById(R.id.spinner_tag);
+        columnSpinner = (Spinner) findViewById(R.id.spinner_sort_column);
+        ascButton = (RadioButton) findViewById(R.id.radio_asc);
+        descButton = (RadioButton) findViewById(R.id.radio_desc);
 
         localAccountName = getResources().getString(R.string.drawer_account_local);
 
@@ -87,6 +101,23 @@ public class ListWidgetConfigureActivity extends Activity {
 
         mAccountManager = AccountManager.get(this);
         initSpinners();
+        descButton.toggle();
+        selectedColumn = DatabaseHelper.COLUMN_MODIFICATIONDATE;
+        selectedDirection = Ordering.Direction.DESC;
+
+        descButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                selectedDirection = Ordering.Direction.DESC;
+            }
+        });
+
+        ascButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                selectedDirection = Ordering.Direction.ASC;
+            }
+        });
     }
 
     View.OnClickListener mOnClickListener = new View.OnClickListener() {
@@ -95,9 +126,9 @@ public class ListWidgetConfigureActivity extends Activity {
 
             // When the button is clicked, store the string locally
             if(selectedAccount == null){
-                saveListWidgetPref(context, mAppWidgetId, "local", selectedNotebook, selectedTag);
+                saveListWidgetPref(context, mAppWidgetId, "local", selectedNotebook, selectedTag, new Ordering(selectedColumn,selectedDirection));
             }else{
-                saveListWidgetPref(context, mAppWidgetId, mAccountManager.getUserData(selectedAccount, AuthenticatorActivity.KEY_ACCOUNT_NAME), selectedNotebook, selectedTag);
+                saveListWidgetPref(context, mAppWidgetId, mAccountManager.getUserData(selectedAccount, AuthenticatorActivity.KEY_ACCOUNT_NAME), selectedNotebook, selectedTag, new Ordering(selectedColumn,selectedDirection));
             }
 
             // It is the responsibility of the configuration activity to update the app widget
@@ -112,11 +143,13 @@ public class ListWidgetConfigureActivity extends Activity {
         }
     };
 
-    static void saveListWidgetPref(Context context, int appWidgetId,String accountName, String notebook,String tag) {
+    static void saveListWidgetPref(Context context, int appWidgetId,String accountName, String notebook,String tag, Ordering ordering) {
         SharedPreferences.Editor prefs = context.getSharedPreferences(PREFS_NAME, 0).edit();
         prefs.putString(PREF_PREFIX_KEY_ACCOUNT + appWidgetId, accountName);
         prefs.putString(PREF_PREFIX_KEY_NOTEBOOK + appWidgetId, notebook);
         prefs.putString(PREF_PREFIX_KEY_TAG + appWidgetId, tag);
+        prefs.putString(PREF_PREFIX_KEY_DIRECTION + appWidgetId, ordering.getDirection().toString());
+        prefs.putString(PREF_PREFIX_KEY_COLUMN + appWidgetId, ordering.getColumnName());
         prefs.commit();
     }
 
@@ -135,11 +168,24 @@ public class ListWidgetConfigureActivity extends Activity {
         return prefs.getString(PREF_PREFIX_KEY_TAG + appWidgetId, null);
     }
 
+    static Ordering loadListWidgetOrderingPref(Context context, int appWidgetId) {
+        SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, 0);
+        String direction = prefs.getString(PREF_PREFIX_KEY_DIRECTION + appWidgetId, null);
+        String column = prefs.getString(PREF_PREFIX_KEY_DIRECTION + appWidgetId, null);
+
+        if(TextUtils.isEmpty(direction) || TextUtils.isEmpty(column)){
+            return new Ordering();
+        }
+        return new Ordering(column,Ordering.Direction.valueOf(direction));
+    }
+
     static void deleteListWidgetPref(Context context, int appWidgetId) {
         SharedPreferences.Editor prefs = context.getSharedPreferences(PREFS_NAME, 0).edit();
         prefs.remove(PREF_PREFIX_KEY_ACCOUNT + appWidgetId);
         prefs.remove(PREF_PREFIX_KEY_NOTEBOOK + appWidgetId);
         prefs.remove(PREF_PREFIX_KEY_TAG + appWidgetId);
+        prefs.remove(PREF_PREFIX_KEY_DIRECTION + appWidgetId);
+        prefs.remove(PREF_PREFIX_KEY_COLUMN + appWidgetId);
         prefs.commit();
     }
 
@@ -147,6 +193,17 @@ public class ListWidgetConfigureActivity extends Activity {
         initAccountSpinner();
         updateNotebookSpinner();
         updateTagSpinner();
+        Utils.initColumnSpinner(this, columnSpinner, new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                selectedColumn = adapterView.getSelectedItem().toString();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+                //nothing
+            }
+        });
     }
 
     void initAccountSpinner(){

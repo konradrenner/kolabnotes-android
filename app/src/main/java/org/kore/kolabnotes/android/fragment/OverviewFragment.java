@@ -30,6 +30,9 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.mikepenz.materialdrawer.Drawer;
@@ -60,6 +63,7 @@ import org.kore.kolabnotes.android.content.DataCaches;
 import org.kore.kolabnotes.android.content.NoteRepository;
 import org.kore.kolabnotes.android.content.NoteTagRepository;
 import org.kore.kolabnotes.android.content.NotebookRepository;
+import org.kore.kolabnotes.android.content.Ordering;
 import org.kore.kolabnotes.android.content.TagRepository;
 import org.kore.kolabnotes.android.security.AuthenticatorActivity;
 
@@ -490,7 +494,7 @@ public class OverviewFragment extends Fragment implements NoteAdapter.NoteSelect
                 }
                 notes = noteCache.getNotes();
             }else if(selectedTagName != null){
-                notes = notetagRepository.getNotesWith(activeAccount.getAccount(), activeAccount.getRootFolder(), selectedTagName);
+                notes = notetagRepository.getNotesWith(activeAccount.getAccount(), activeAccount.getRootFolder(), selectedTagName, Utils.getOrdering(activity));
             }else{
                 notes = noteCache.getNotesFromNotebook(notebookUID);
             }
@@ -579,6 +583,10 @@ public class OverviewFragment extends Fragment implements NoteAdapter.NoteSelect
 
                 startActivity(intent);
                 break;
+            case R.id.create_sort_menu:
+                AlertDialog newSortingDialog = createSortingDialog();
+                newSortingDialog.show();
+                break;
             default:
                 activity.dispatchMenuEvent(item);
                 break;
@@ -611,6 +619,39 @@ public class OverviewFragment extends Fragment implements NoteAdapter.NoteSelect
             }
         });
         builder.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                //nothing
+            }
+        });
+        return builder.create();
+    }
+
+    private AlertDialog createSortingDialog(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+
+        builder.setTitle(R.string.title_dialog_sorting);
+
+        LayoutInflater inflater = activity.getLayoutInflater();
+        View view = inflater.inflate(R.layout.dialog_change_sorting, null);
+
+        RadioGroup radioGroup = (RadioGroup) view.findViewById(R.id.radio_group_sort_direction);
+        Spinner columns = (Spinner) view.findViewById(R.id.spinner_sort_column);
+
+        Ordering ordering = Utils.getOrdering(activity);
+
+        Utils.initColumnSpinner(activity,columns,null,ordering.getColumnName());
+
+        if(Ordering.Direction.DESC == ordering.getDirection()){
+            ((RadioButton) view.findViewById(R.id.radio_desc)).toggle();
+        }else{
+            ((RadioButton) view.findViewById(R.id.radio_asc)).toggle();
+        }
+
+        builder.setView(view);
+
+        builder.setPositiveButton(R.string.ok, new SortingButtonListener(columns,radioGroup));
+        builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 //nothing
@@ -713,20 +754,20 @@ public class OverviewFragment extends Fragment implements NoteAdapter.NoteSelect
             ActiveAccount activeAccount = activeAccountRepository.getActiveAccount();
             if("NOTEBOOK".equalsIgnoreCase(tag)){
                 Notebook notebook = notebookRepository.getBySummary(activeAccount.getAccount(), activeAccount.getRootFolder(), drawerItem.getName());
-                notes = notesRepository.getFromNotebook(activeAccount.getAccount(),activeAccount.getRootFolder(),notebook.getIdentification().getUid());
+                notes = notesRepository.getFromNotebook(activeAccount.getAccount(),activeAccount.getRootFolder(),notebook.getIdentification().getUid(),Utils.getOrdering(activity));
 
                 Utils.setSelectedNotebookName(activity, notebook.getSummary());
                 Utils.setSelectedTagName(activity,null);
             }else if("TAG".equalsIgnoreCase(tag)){
-                notes = notetagRepository.getNotesWith(activeAccount.getAccount(), activeAccount.getRootFolder(), drawerItem.getName());
+                notes = notetagRepository.getNotesWith(activeAccount.getAccount(), activeAccount.getRootFolder(), drawerItem.getName(),Utils.getOrdering(activity));
                 Utils.setSelectedNotebookName(activity, null);
                 Utils.setSelectedTagName(activity,drawerItem.getName());
             }else if("ALL_NOTES".equalsIgnoreCase(tag)){
-                notes = notesRepository.getAll();
+                notes = notesRepository.getAll(Utils.getOrdering(activity));
                 Utils.setSelectedNotebookName(activity, null);
                 Utils.setSelectedTagName(activity,null);
             }else{
-                notes = notesRepository.getAll(activeAccount.getAccount(),activeAccount.getRootFolder());
+                notes = notesRepository.getAll(activeAccount.getAccount(),activeAccount.getRootFolder(),Utils.getOrdering(activity));
                 Utils.setSelectedNotebookName(activity, null);
                 Utils.setSelectedTagName(activity,null);
             }
@@ -875,6 +916,65 @@ public class OverviewFragment extends Fragment implements NoteAdapter.NoteSelect
         }
     }
 
+    public class SortingButtonListener implements DialogInterface.OnClickListener {
+
+        private final Spinner columns;
+        private final RadioGroup direction;
+
+        public SortingButtonListener(Spinner columnSpinner, RadioGroup direction) {
+            this.columns = columnSpinner;
+            this.direction = direction;
+        }
+
+        @Override
+        public void onClick(DialogInterface dialogInterface, int i) {
+            String column = columns.getSelectedItem().toString();
+
+            Ordering.Direction dir;
+
+            if(direction.getCheckedRadioButtonId() == R.id.radio_asc){
+                dir = Ordering.Direction.ASC;
+            }else{
+                dir = Ordering.Direction.DESC;
+            }
+
+            Ordering ordering = new Ordering(column,dir);
+
+            Log.d("onClick","Changing sorting:"+ordering);
+
+            Utils.saveOrdering(activity, ordering);
+
+            ActiveAccount activeAccount = activeAccountRepository.getActiveAccount();
+
+            IDrawerItem drawerItem = mDrawer.getDrawerItems().get(mDrawer.getCurrentSelection());
+            if(drawerItem instanceof BaseDrawerItem){
+                BaseDrawerItem item = (BaseDrawerItem)drawerItem;
+                String tag = item.getTag() == null || item.getTag().toString().trim().length() == 0 ? null : item.getTag().toString();
+
+                List<Note> notes;
+                if("NOTEBOOK".equalsIgnoreCase(tag)){
+                    notes = notesRepository.getFromNotebook(activeAccount.getAccount(),
+                            activeAccount.getRootFolder(),
+                            notebookRepository.getBySummary(activeAccount.getAccount(),activeAccount.getRootFolder(),item.getName()).getIdentification().getUid(),
+                            ordering);
+                }else if("TAG".equalsIgnoreCase(tag)){
+                    notes = notetagRepository.getNotesWith(activeAccount.getAccount(), activeAccount.getRootFolder(), item.getName(),ordering);
+                }else if("ALL_NOTES".equalsIgnoreCase(tag)){
+                    notes = notesRepository.getAll(ordering);
+                }else{
+                    notes = notesRepository.getAll(activeAccount.getAccount(),activeAccount.getRootFolder(),ordering);
+                }
+
+                List<Notebook> notebooks = notebookRepository.getAll(activeAccount.getAccount(), activeAccount.getRootFolder());
+                List<String> tags = tagRepository.getAll();
+
+                displayBlankFragment();
+
+                getActivity().runOnUiThread(new ReloadDataThread(notebooks, notes, tags));
+            }
+        }
+    }
+
     public class SearchNoteButtonListener implements DialogInterface.OnClickListener{
 
         private final EditText textField;
@@ -901,9 +1001,10 @@ public class OverviewFragment extends Fragment implements NoteAdapter.NoteSelect
                     notes = notesRepository.getFromNotebookWithSummary(activeAccount.getAccount(),
                             activeAccount.getRootFolder(),
                             notebookRepository.getBySummary(activeAccount.getAccount(),activeAccount.getRootFolder(),item.getName()).getIdentification().getUid(),
-                            textField.getText().toString());
+                            textField.getText().toString(),
+                            Utils.getOrdering(activity));
                 }else if("TAG".equalsIgnoreCase(tag)){
-                    List<Note> unfiltered = notetagRepository.getNotesWith(activeAccount.getAccount(), activeAccount.getRootFolder(), item.getName());
+                    List<Note> unfiltered = notetagRepository.getNotesWith(activeAccount.getAccount(), activeAccount.getRootFolder(), item.getName(),Utils.getOrdering(activity));
                     notes = new ArrayList<Note>();
                     for(Note note : unfiltered){
                         String summary = note.getSummary().toLowerCase();
@@ -912,7 +1013,7 @@ public class OverviewFragment extends Fragment implements NoteAdapter.NoteSelect
                         }
                     }
                 }else{
-                    notes = notesRepository.getFromNotebookWithSummary(activeAccount.getAccount(),activeAccount.getRootFolder(),null,textField.getText().toString());
+                    notes = notesRepository.getFromNotebookWithSummary(activeAccount.getAccount(),activeAccount.getRootFolder(),null,textField.getText().toString(),Utils.getOrdering(activity));
                 }
 
                 List<Notebook> notebooks = notebookRepository.getAll(activeAccount.getAccount(), activeAccount.getRootFolder());

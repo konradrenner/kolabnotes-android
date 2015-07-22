@@ -22,6 +22,11 @@
         android:icon="@drawable/ic_action_search"
         android:title="@string/title_dialog_search" />
 
+    <item android:id="@id/create_sort_menu"
+        app:showAsAction="ifRoom"
+        android:icon="@drawable/ic_action_sort_by_size"
+        android:title="@string/title_dialog_sorting" />
+
     <item android:id="@id/create_account_menu"
         app:showAsAction="ifRoom"
         android:icon="@drawable/ic_action_add_person"

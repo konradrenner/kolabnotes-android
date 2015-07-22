@@ -1,28 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent" android:layout_height="match_parent"
-    android:orientation="vertical" android:padding="16dp"
-    android:paddingTop="@dimen/tool_bar_top_padding"
-    android:gravity="center"
-    android:background="@color/background_material_dark">
-
-    <Spinner
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/spinner_account"
-        android:spinnerMode="dropdown" />
-
-    <Spinner
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/spinner_notebook"
-        android:spinnerMode="dropdown" />
-
-    <Spinner
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/spinner_tag"
-        android:spinnerMode="dropdown" />
+    android:layout_width="wrap_content" android:layout_height="wrap_content"
+    android:orientation="vertical">
 
     <TextView
         android:layout_width="match_parent"
@@ -51,9 +30,4 @@
             android:layout_height="wrap_content"
             android:text="@string/radio_desc"/>
     </RadioGroup>
-
-    <Button android:id="@+id/add_button" android:layout_width="wrap_content"
-        android:layout_height="wrap_content" android:text="@string/add_widget"
-        android:layout_marginTop="8dp" />
-
 </LinearLayout>

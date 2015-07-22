@@ -9,6 +9,7 @@
     <item name="change_classification" type="id">change_classification</item>
     <item name="create_tag_menu" type="id">create_tag_menu</item>
     <item name="create_search_menu" type="id">create_search_menu</item>
+    <item name="create_sort_menu" type="id">create_sort_menu</item>
     <item name="dialog_text_input_field" type="id">dialog_text_input_field</item>
     <item name="dialog_classification" type="id">dialog_classification</item>
     <item name="dialog_search_input_field" type="id">dialog_search_input_field</item>
