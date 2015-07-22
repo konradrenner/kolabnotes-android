@@ -128,4 +128,5 @@
     <string name="radio_desc">Aufsteigend</string>
     <string name="radio_asc">Absteigend</string>
     <string name="title_dialog_sorting">Sortierung ändern</string>
+    <string name="color">Farbe</string>
 </resources>

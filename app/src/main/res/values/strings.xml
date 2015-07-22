@@ -99,4 +99,5 @@
     <string name="radio_desc">Descending</string>
     <string name="radio_asc">Ascending</string>
     <string name="title_dialog_sorting">Edit sorting</string>
+    <string name="color">Color</string>
 </resources>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="sorting_columns">
+        <item>@string/text_summary</item>
+        <item>@string/modificationDate</item>
+        <item>@string/creationDate</item>
+        <item>@string/classification</item>
+        <item>@string/color</item>
+    </string-array>
+</resources>

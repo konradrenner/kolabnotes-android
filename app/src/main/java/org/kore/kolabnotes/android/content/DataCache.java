@@ -5,6 +5,7 @@ import android.util.Log;
 
 import org.kore.kolab.notes.Note;
 import org.kore.kolab.notes.Notebook;
+import org.kore.kolabnotes.android.Utils;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -24,6 +25,7 @@ public class DataCache  implements Serializable{
     private final NoteRepository notesRepository;
     private final NotebookRepository notebookRepository;
     private final AccountIdentifier account;
+    private final Context context;
     private boolean initDone;
 
     public DataCache(Context context, AccountIdentifier account) {
@@ -33,6 +35,7 @@ public class DataCache  implements Serializable{
         this.notesRepository = new NoteRepository(context);
         this.notebookRepository = new NotebookRepository(context);
         this.account = account;
+        this.context = context;
     }
 
     public void reloadData(){
@@ -42,7 +45,9 @@ public class DataCache  implements Serializable{
         this.notesPerNotebook.clear();
         this.notebooks.clear();
 
-        this.notes.addAll(notesRepository.getAll(account.getAccount(),account.getRootFolder()));
+        final Ordering ordering = Utils.getOrdering(context);
+
+        this.notes.addAll(notesRepository.getAll(account.getAccount(),account.getRootFolder(),ordering));
         this.notebooks.addAll(notebookRepository.getAll(account.getAccount(),account.getRootFolder()));
         Log.d("DataCache - reloadData","Reloading finished in "+(System.currentTimeMillis()-ts)+"ms");
     }
@@ -64,7 +69,8 @@ public class DataCache  implements Serializable{
         initData();
         List<Note> perNotebook = notesPerNotebook.get(uid);
         if(perNotebook == null){
-            List<Note> fromNotebook = notesRepository.getFromNotebook(account.getAccount(), account.getRootFolder(), uid);
+            final Ordering ordering = Utils.getOrdering(context);
+            List<Note> fromNotebook = notesRepository.getFromNotebook(account.getAccount(), account.getRootFolder(), uid, ordering);
             perNotebook = new ArrayList<>(fromNotebook);
             notesPerNotebook.put(uid,perNotebook);
         }
