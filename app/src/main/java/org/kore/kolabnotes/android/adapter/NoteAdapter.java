@@ -2,7 +2,6 @@ package org.kore.kolabnotes.android.adapter;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.os.Build;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -13,7 +12,7 @@ import android.widget.TextView;
 
 import org.kore.kolab.notes.Note;
 import org.kore.kolab.notes.Tag;
-import org.kore.kolabnotes.android.MainActivity;
+import org.kore.kolabnotes.android.NoteSortingComparator;
 import org.kore.kolabnotes.android.R;
 import org.kore.kolabnotes.android.Utils;
 
@@ -51,7 +50,7 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.ViewHolder> {
 
     public void addNotes(List<Note> notes) {
         this.notes.addAll(notes);
-        Collections.sort(this.notes);
+        Collections.sort(this.notes, new NoteSortingComparator(Utils.getNoteSorting(context)));
         this.notifyItemRangeInserted(0, notes.size() - 1);
     }
 

@@ -42,13 +42,13 @@ public class Utils {
             public int compare(Note note1, Note note2, NoteSorting.Direction direction) {
                 int sorting = 0;
                 if(direction == NoteSorting.Direction.ASC){
-                    sorting = note1.getSummary().compareTo(note2.getSummary());
+                    sorting = note1.getSummary().toLowerCase().compareTo(note2.getSummary().toLowerCase());
 
                     if(sorting == 0){
                         sorting = note1.getAuditInformation().compareTo(note2.getAuditInformation());
                     }
                 }else{
-                    sorting = note2.getSummary().compareTo(note1.getSummary());
+                    sorting = note2.getSummary().toLowerCase().compareTo(note1.getSummary().toLowerCase());
 
                     if(sorting == 0){
                         sorting = note2.getAuditInformation().compareTo(note1.getAuditInformation());
@@ -164,24 +164,24 @@ public class Utils {
     }
     */
 
-    public static void saveOrdering(Context context, NoteSorting noteSorting) {
+    public static void saveNoteSorting(Context context, NoteSorting noteSorting) {
         SharedPreferences.Editor prefs = context.getSharedPreferences("org.kore.kolabnotes.android.widget.MainActivity", 0).edit();
         prefs.putString("direction", noteSorting.getDirection().toString());
         prefs.putString("column", noteSorting.getColumnName());
         prefs.commit();
     }
 
-    public static NoteSorting getOrdering(Context context) {
+    public static NoteSorting getNoteSorting(Context context) {
         SharedPreferences prefs = context.getSharedPreferences("org.kore.kolabnotes.android.widget.MainActivity", 0);
         if(prefs == null){
-            Log.d("getOrdering","MainActivity prefs are null");
+            Log.d("getNoteSorting","MainActivity prefs are null");
             return new NoteSorting();
         }
         String direction = prefs.getString("direction", null);
         String column = prefs.getString("column", null);
 
         if(TextUtils.isEmpty(direction) || TextUtils.isEmpty(column)){
-            Log.d("getOrdering","column:"+column+"; or direction:"+direction+"; is empty, so default ordering will be returned");
+            Log.d("getNoteSorting","column:"+column+"; or direction:"+direction+"; is empty, so default ordering will be returned");
             return new NoteSorting();
         }
 

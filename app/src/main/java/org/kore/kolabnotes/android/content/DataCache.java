@@ -45,7 +45,7 @@ public class DataCache  implements Serializable{
         this.notesPerNotebook.clear();
         this.notebooks.clear();
 
-        final NoteSorting noteSorting = Utils.getOrdering(context);
+        final NoteSorting noteSorting = Utils.getNoteSorting(context);
 
         this.notes.addAll(notesRepository.getAll(account.getAccount(),account.getRootFolder(), noteSorting));
         this.notebooks.addAll(notebookRepository.getAll(account.getAccount(),account.getRootFolder()));
@@ -69,7 +69,7 @@ public class DataCache  implements Serializable{
         initData();
         List<Note> perNotebook = notesPerNotebook.get(uid);
         if(perNotebook == null){
-            final NoteSorting noteSorting = Utils.getOrdering(context);
+            final NoteSorting noteSorting = Utils.getNoteSorting(context);
             List<Note> fromNotebook = notesRepository.getFromNotebook(account.getAccount(), account.getRootFolder(), uid, noteSorting);
             perNotebook = new ArrayList<>(fromNotebook);
             notesPerNotebook.put(uid,perNotebook);

@@ -490,7 +490,7 @@ public class OverviewFragment extends Fragment implements NoteAdapter.NoteSelect
                 }
                 notes = noteCache.getNotes();
             }else if(selectedTagName != null){
-                notes = notetagRepository.getNotesWith(activeAccount.getAccount(), activeAccount.getRootFolder(), selectedTagName, Utils.getOrdering(activity));
+                notes = notetagRepository.getNotesWith(activeAccount.getAccount(), activeAccount.getRootFolder(), selectedTagName, Utils.getNoteSorting(activity));
             }else{
                 notes = noteCache.getNotesFromNotebook(notebookUID);
             }
@@ -634,7 +634,7 @@ public class OverviewFragment extends Fragment implements NoteAdapter.NoteSelect
         RadioGroup radioGroup = (RadioGroup) view.findViewById(R.id.radio_group_sort_direction);
         Spinner columns = (Spinner) view.findViewById(R.id.spinner_sort_column);
 
-        NoteSorting noteSorting = Utils.getOrdering(activity);
+        NoteSorting noteSorting = Utils.getNoteSorting(activity);
 
         Utils.initColumnSpinner(activity,columns,null, noteSorting.getColumnName());
 
@@ -750,20 +750,20 @@ public class OverviewFragment extends Fragment implements NoteAdapter.NoteSelect
             ActiveAccount activeAccount = activeAccountRepository.getActiveAccount();
             if("NOTEBOOK".equalsIgnoreCase(tag)){
                 Notebook notebook = notebookRepository.getBySummary(activeAccount.getAccount(), activeAccount.getRootFolder(), drawerItem.getName());
-                notes = notesRepository.getFromNotebook(activeAccount.getAccount(),activeAccount.getRootFolder(),notebook.getIdentification().getUid(),Utils.getOrdering(activity));
+                notes = notesRepository.getFromNotebook(activeAccount.getAccount(),activeAccount.getRootFolder(),notebook.getIdentification().getUid(),Utils.getNoteSorting(activity));
 
                 Utils.setSelectedNotebookName(activity, notebook.getSummary());
                 Utils.setSelectedTagName(activity,null);
             }else if("TAG".equalsIgnoreCase(tag)){
-                notes = notetagRepository.getNotesWith(activeAccount.getAccount(), activeAccount.getRootFolder(), drawerItem.getName(),Utils.getOrdering(activity));
+                notes = notetagRepository.getNotesWith(activeAccount.getAccount(), activeAccount.getRootFolder(), drawerItem.getName(),Utils.getNoteSorting(activity));
                 Utils.setSelectedNotebookName(activity, null);
                 Utils.setSelectedTagName(activity,drawerItem.getName());
             }else if("ALL_NOTES".equalsIgnoreCase(tag)){
-                notes = notesRepository.getAll(Utils.getOrdering(activity));
+                notes = notesRepository.getAll(Utils.getNoteSorting(activity));
                 Utils.setSelectedNotebookName(activity, null);
                 Utils.setSelectedTagName(activity,null);
             }else{
-                notes = notesRepository.getAll(activeAccount.getAccount(),activeAccount.getRootFolder(),Utils.getOrdering(activity));
+                notes = notesRepository.getAll(activeAccount.getAccount(),activeAccount.getRootFolder(),Utils.getNoteSorting(activity));
                 Utils.setSelectedNotebookName(activity, null);
                 Utils.setSelectedTagName(activity,null);
             }
@@ -938,7 +938,7 @@ public class OverviewFragment extends Fragment implements NoteAdapter.NoteSelect
 
             Log.d("onClick","Changing sorting:"+ noteSorting);
 
-            Utils.saveOrdering(activity, noteSorting);
+            Utils.saveNoteSorting(activity, noteSorting);
 
             ActiveAccount activeAccount = activeAccountRepository.getActiveAccount();
 
@@ -998,9 +998,9 @@ public class OverviewFragment extends Fragment implements NoteAdapter.NoteSelect
                             activeAccount.getRootFolder(),
                             notebookRepository.getBySummary(activeAccount.getAccount(),activeAccount.getRootFolder(),item.getName()).getIdentification().getUid(),
                             textField.getText().toString(),
-                            Utils.getOrdering(activity));
+                            Utils.getNoteSorting(activity));
                 }else if("TAG".equalsIgnoreCase(tag)){
-                    List<Note> unfiltered = notetagRepository.getNotesWith(activeAccount.getAccount(), activeAccount.getRootFolder(), item.getName(),Utils.getOrdering(activity));
+                    List<Note> unfiltered = notetagRepository.getNotesWith(activeAccount.getAccount(), activeAccount.getRootFolder(), item.getName(),Utils.getNoteSorting(activity));
                     notes = new ArrayList<Note>();
                     for(Note note : unfiltered){
                         String summary = note.getSummary().toLowerCase();
@@ -1009,7 +1009,7 @@ public class OverviewFragment extends Fragment implements NoteAdapter.NoteSelect
                         }
                     }
                 }else{
-                    notes = notesRepository.getFromNotebookWithSummary(activeAccount.getAccount(),activeAccount.getRootFolder(),null,textField.getText().toString(),Utils.getOrdering(activity));
+                    notes = notesRepository.getFromNotebookWithSummary(activeAccount.getAccount(),activeAccount.getRootFolder(),null,textField.getText().toString(),Utils.getNoteSorting(activity));
                 }
 
                 List<Notebook> notebooks = notebookRepository.getAll(activeAccount.getAccount(), activeAccount.getRootFolder());
