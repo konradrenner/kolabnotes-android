@@ -343,18 +343,19 @@ public class Utils {
         return false;
     }
 
-    public static void initColumnSpinner(Context context, Spinner spinner, AdapterView.OnItemSelectedListener listener){
-        initColumnSpinner(context,spinner,listener,null);
+    public static void initColumnSpinner(Context context, Spinner spinner, int spinnerLayout, AdapterView.OnItemSelectedListener listener){
+        initColumnSpinner(context,spinner, spinnerLayout,listener,null);
     }
 
-    public static void initColumnSpinner(Context context, Spinner spinner, AdapterView.OnItemSelectedListener listener, String selection){
+
+    public static void initColumnSpinner(Context context, Spinner spinner, int spinnerLayout, AdapterView.OnItemSelectedListener listener, String selection){
         int select = 1;
         if(selection != null){
             select = Arrays.binarySearch(SortingColumns.valuesToStringArray(),selection);
         }
 
         final String[] columnNames = context.getResources().getStringArray(R.array.sorting_columns);
-        ArrayAdapter<CharSequence> adapter = new ArrayAdapter<CharSequence>(context,R.layout.widget_config_spinner_item,columnNames);
+        ArrayAdapter<CharSequence> adapter = new ArrayAdapter<CharSequence>(context,spinnerLayout,columnNames);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
         spinner.setOnItemSelectedListener(listener);

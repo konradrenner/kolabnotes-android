@@ -127,6 +127,6 @@
     <string name="sort_with_heading">Sortierung nach:</string>
     <string name="radio_desc">Aufsteigend</string>
     <string name="radio_asc">Absteigend</string>
-    <string name="title_dialog_sorting">Sortierung ändern</string>
+    <string name="title_dialog_sorting">Ändere Sortierung</string>
     <string name="color">Farbe</string>
 </resources>

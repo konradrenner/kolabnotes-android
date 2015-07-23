@@ -636,7 +636,7 @@ public class OverviewFragment extends Fragment implements NoteAdapter.NoteSelect
 
         NoteSorting noteSorting = Utils.getNoteSorting(activity);
 
-        Utils.initColumnSpinner(activity,columns,null, noteSorting.getColumnName());
+        Utils.initColumnSpinner(activity,columns,R.layout.sorting_spinner_item , null, noteSorting.getColumnName());
 
         if(NoteSorting.Direction.DESC == noteSorting.getDirection()){
             ((RadioButton) view.findViewById(R.id.radio_desc)).toggle();

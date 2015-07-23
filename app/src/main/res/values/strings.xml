@@ -98,6 +98,6 @@
     <string name="sort_with_heading">Sort with:</string>
     <string name="radio_desc">Descending</string>
     <string name="radio_asc">Ascending</string>
-    <string name="title_dialog_sorting">Edit sorting</string>
+    <string name="title_dialog_sorting">Change sorting</string>
     <string name="color">Color</string>
 </resources>

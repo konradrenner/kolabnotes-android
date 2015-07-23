@@ -193,7 +193,7 @@ public class ListWidgetConfigureActivity extends Activity {
         initAccountSpinner();
         updateNotebookSpinner();
         updateTagSpinner();
-        Utils.initColumnSpinner(this, columnSpinner, new AdapterView.OnItemSelectedListener() {
+        Utils.initColumnSpinner(this, columnSpinner,R.layout.widget_config_spinner_item, new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 selectedColumn = Utils.getColumnNameOfSelection(adapterView.getSelectedItemPosition());
