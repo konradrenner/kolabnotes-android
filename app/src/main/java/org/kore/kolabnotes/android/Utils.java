@@ -117,14 +117,16 @@ public class Utils {
             @Override
             public int compare(Note note1, Note note2, NoteSorting.Direction direction) {
                 int sorting = 0;
+                String note1Color = note1.getColor() == null ? "" : note1.getColor().getHexcode();
+                String note2Color = note2.getColor() == null ? "" : note2.getColor().getHexcode();
                 if(direction == NoteSorting.Direction.ASC){
-                    sorting = note1.getColor().getHexcode().compareTo(note2.getColor().getHexcode());
+                    sorting = note1Color.compareTo(note2Color);
 
                     if(sorting == 0){
                         sorting = note1.getAuditInformation().compareTo(note2.getAuditInformation());
                     }
                 }else{
-                    sorting = note2.getColor().getHexcode().compareTo(note1.getColor().getHexcode());
+                    sorting = note2Color.compareTo(note1Color);
 
                     if(sorting == 0){
                         sorting = note2.getAuditInformation().compareTo(note1.getAuditInformation());
@@ -351,7 +353,13 @@ public class Utils {
     public static void initColumnSpinner(Context context, Spinner spinner, int spinnerLayout, AdapterView.OnItemSelectedListener listener, String selection){
         int select = 1;
         if(selection != null){
-            select = Arrays.binarySearch(SortingColumns.valuesToStringArray(),selection);
+            final String[] strings = SortingColumns.valuesToStringArray();
+            for(int i=0;i<strings.length;i++){
+                if(strings[i].trim().equalsIgnoreCase(selection.trim())){
+                    select = i;
+                    break;
+                }
+            }
         }
 
         final String[] columnNames = context.getResources().getStringArray(R.array.sorting_columns);
