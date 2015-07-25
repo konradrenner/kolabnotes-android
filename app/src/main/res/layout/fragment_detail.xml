@@ -4,10 +4,6 @@
     android:layout_height="match_parent"
     >
 
-    <ScrollView
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent">
-
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
@@ -243,16 +239,26 @@
             android:hint="@string/text_summary"
             android:textColorHint="@color/secondary_text_default_material_light" />
 
-        <jp.wasabeef.richeditor.RichEditor
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@id/detail_description"
-            android:gravity="top"
-            android:textColor="@color/primary_text_default_material_light"
-            android:textColorHint="@color/secondary_text_default_material_light"
-            android:hint="@string/description_hint"
-            android:editable="true"
-            />
+
+        <ScrollView
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent">
+            <FrameLayout
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent">
+
+                    <jp.wasabeef.richeditor.RichEditor
+                        android:layout_width="fill_parent"
+                        android:layout_height="fill_parent"
+                        android:id="@id/detail_description"
+                        android:gravity="top"
+                        android:textColor="@color/primary_text_default_material_light"
+                        android:textColorHint="@color/secondary_text_default_material_light"
+                        android:hint="@string/description_hint"
+                        android:editable="true"
+                        />
+
+            </FrameLayout>
+        </ScrollView>
     </LinearLayout>
-    </ScrollView>
 </FrameLayout>
