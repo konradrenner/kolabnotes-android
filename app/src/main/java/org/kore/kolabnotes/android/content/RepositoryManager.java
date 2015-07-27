@@ -1,6 +1,7 @@
 package org.kore.kolabnotes.android.content;
 
 import android.content.Context;
+import android.util.Log;
 
 import org.kore.kolab.notes.Note;
 import org.kore.kolab.notes.Notebook;
@@ -86,16 +87,21 @@ public class RepositoryManager {
                 Notebook remoteNotebook = repo.getNotebookBySummary(localNotebook.getSummary());
 
                 if(remoteNotebook == null){
+                    Log.d("localIntoRepository","Creating new notebook on server:"+localNotebook.getSummary());
                     remoteNotebook = repo.createNotebook(localNotebook.getIdentification().getUid(), localNotebook.getSummary());
                 }
 
                 if(ModificationRepository.ModificationType.INS.equals(modification.getType())){
+                    Log.d("localIntoRepository","Creating new note:"+note);
                     remoteNotebook.addNote(note);
                 }else{
                     Note remoteNote = remoteNotebook.getNote(note.getIdentification().getUid());
 
                     //Just do something, if the remote note is not deleted or was not updated after local note
                     if(remoteNote != null && note.getAuditInformation().getLastModificationDate().after(remoteNote.getAuditInformation().getLastModificationDate())){
+
+                        Log.d("localIntoRepository","Updating note:"+note);
+
                         remoteNote.setClassification(note.getClassification());
                         remoteNote.setDescription(note.getDescription());
                         remoteNote.setSummary(note.getSummary());
@@ -118,6 +124,7 @@ public class RepositoryManager {
             Note remoteNote = repo.getNote(deletion.getUid());
 
             if(remoteNote != null && deletion.getModificationDate().after(remoteNote.getAuditInformation().getLastModificationDate())){
+                Log.d("localIntoRepository","Deleting note:"+remoteNote);
                 Notebook localNotebook = notebookRepository.getByUID(email, rootFolder, deletion.getUidNotebook());
                 repo.getNotebookBySummary(localNotebook.getSummary()).deleteNote(deletion.getUid());
             }
@@ -129,6 +136,7 @@ public class RepositoryManager {
             Notebook toDelete = repo.getNotebook(deletion.getUid());
 
             if(toDelete != null && deletion.getModificationDate().after(toDelete.getAuditInformation().getLastModificationDate())){
+                Log.d("localIntoRepository","Deleting notebook:"+toDelete.getSummary());
                 repo.deleteNotebook(deletion.getUid());
             }
         }
