@@ -8,6 +8,8 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.graphics.Outline;
 import android.os.Build;
 import android.text.TextUtils;
@@ -373,5 +375,11 @@ public class Utils {
     public static String getColumnNameOfSelection(int selection){
         final SortingColumns[] values = SortingColumns.values();
         return values[selection].toString();
+    }
+
+    public static boolean isTablet(Resources res){
+            return (res.getConfiguration().screenLayout
+                    & Configuration.SCREENLAYOUT_SIZE_MASK)
+                    >= Configuration.SCREENLAYOUT_SIZE_LARGE;
     }
 }

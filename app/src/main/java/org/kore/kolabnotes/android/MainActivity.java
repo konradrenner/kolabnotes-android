@@ -5,10 +5,13 @@ import android.accounts.AccountManager;
 import android.app.Fragment;
 import android.content.Intent;
 import android.content.SyncStatusObserver;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.widget.Toast;
+
+import com.mikepenz.materialdrawer.util.KeyboardUtil;
 
 import org.kore.kolabnotes.android.content.ActiveAccount;
 import org.kore.kolabnotes.android.content.ActiveAccountRepository;
@@ -33,6 +36,11 @@ public class MainActivity extends AppCompatActivity implements SyncStatusObserve
         overviewFragment = (OverviewFragment)getFragmentManager().findFragmentById(R.id.overview_fragment);
 
         mAccountManager = AccountManager.get(this);
+
+        if(Utils.isTablet(getResources())) {
+            KeyboardUtil keyboardUtil = new KeyboardUtil(this, findViewById(R.id.activity_main));
+            keyboardUtil.enable();
+        }
     }
 
     @Override

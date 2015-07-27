@@ -10,6 +10,7 @@ import android.content.ContentResolver;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -141,7 +142,7 @@ public class OverviewFragment extends Fragment implements NoteAdapter.NoteSelect
         activity.setSupportActionBar(toolbar);
         activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        tabletMode = isTablet();
+        tabletMode = Utils.isTablet(getResources());
 
         setHasOptionsMenu(true);
 
@@ -1240,11 +1241,5 @@ public class OverviewFragment extends Fragment implements NoteAdapter.NoteSelect
         drawer.getDrawerItems().add(new DividerDrawerItem());
         drawer.getDrawerItems().add(new PrimaryDrawerItem().withName(getResources().getString(R.string.drawer_item_tags)).withTag("HEADING_TAG").setEnabled(false).withDisabledTextColor(R.color.material_drawer_dark_header_selection_text).withIcon(R.drawable.ic_action_labels));
 
-    }
-
-    public boolean isTablet() {
-        return (getResources().getConfiguration().screenLayout
-                & Configuration.SCREENLAYOUT_SIZE_MASK)
-                >= Configuration.SCREENLAYOUT_SIZE_LARGE;
     }
 }
