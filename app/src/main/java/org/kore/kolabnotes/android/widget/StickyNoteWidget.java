@@ -8,7 +8,9 @@ import android.appwidget.AppWidgetProvider;
 import android.content.Context;
 import android.content.Intent;
 import android.text.Html;
+import android.text.SpannableString;
 import android.text.Spanned;
+import android.text.TextUtils;
 import android.util.Log;
 import android.widget.RemoteViews;
 
@@ -99,7 +101,12 @@ public class StickyNoteWidget extends AppWidgetProvider {
 
             views.setTextViewText(R.id.sticky_note_summary, note.getSummary());
 
-            Spanned fromHtml = Html.fromHtml(note.getDescription());
+            Spanned fromHtml;
+            if(TextUtils.isEmpty(note.getDescription())){
+                fromHtml = new SpannableString("");
+            }else{
+                fromHtml = Html.fromHtml(note.getDescription());
+            }
 
             views.setTextViewText(R.id.sticky_note_description, fromHtml);
 
