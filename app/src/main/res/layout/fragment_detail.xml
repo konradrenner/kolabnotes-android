@@ -1,7 +1,7 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/detail_fragment"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
     >
 
     <LinearLayout
@@ -227,38 +227,35 @@
             android:clickable="true"
             android:minHeight="@dimen/abc_text_size_headline_material" />
 
-        <EditText
+        <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@id/detail_summary"
-            android:layout_gravity="center_horizontal"
-            android:inputType="text"
-            android:enabled="true"
-            android:editable="true"
-            android:textColor="@color/primary_text_default_material_light"
-            android:hint="@string/text_summary"
-            android:textColorHint="@color/secondary_text_default_material_light" />
+            android:background="@color/background_material_light">
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@id/detail_summary"
+                android:layout_gravity="center_horizontal"
+                android:inputType="text"
+                android:enabled="true"
+                android:editable="true"
+                android:textColor="@color/primary_text_default_material_light"
+                android:hint="@string/text_summary"
+                android:textColorHint="@color/secondary_text_default_material_light" />
+        </FrameLayout>
 
 
-        <ScrollView
+        <jp.wasabeef.richeditor.RichEditor
             android:layout_width="fill_parent"
-            android:layout_height="fill_parent">
-            <FrameLayout
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent">
+            android:layout_height="fill_parent"
+            android:id="@id/detail_description"
+            android:gravity="top"
+            android:isScrollContainer="true"
+            android:textColor="@color/primary_text_default_material_light"
+            android:textColorHint="@color/secondary_text_default_material_light"
+            android:hint="@string/description_hint"
+            android:editable="true"
+            />
 
-                    <jp.wasabeef.richeditor.RichEditor
-                        android:layout_width="fill_parent"
-                        android:layout_height="fill_parent"
-                        android:id="@id/detail_description"
-                        android:gravity="top"
-                        android:textColor="@color/primary_text_default_material_light"
-                        android:textColorHint="@color/secondary_text_default_material_light"
-                        android:hint="@string/description_hint"
-                        android:editable="true"
-                        />
-
-            </FrameLayout>
-        </ScrollView>
     </LinearLayout>
 </FrameLayout>
