@@ -79,6 +79,8 @@ public class RepositoryManager {
     void putLocalDataIntoRepository(String email, String rootFolder){
         List<Note> localNotes = noteRepository.getAllForSync(email, rootFolder);
 
+        List<Modification> deletedNbs = modificationRepository.getDeletions(email, rootFolder, Modification.Descriminator.NOTEBOOK);
+
         for(Note note : localNotes){
             Modification modification = modificationRepository.getUnique(email, rootFolder, note.getIdentification().getUid());
 
@@ -130,14 +132,15 @@ public class RepositoryManager {
             }
         }
 
-        deletions = modificationRepository.getDeletions(email, rootFolder, Modification.Descriminator.NOTEBOOK);
+        for(Modification deletion : deletedNbs){
 
-        for(Modification deletion : deletions){
-            Notebook toDelete = repo.getNotebook(deletion.getUid());
+            //Because Notebooks are IMAP-Folders, there is no persistent UID, so in the UidNotebook field, ist the summary of the notebook, which identifies the notebook persistent
+            Notebook toDelete = repo.getNotebookBySummary(deletion.getUidNotebook());
 
-            if(toDelete != null && deletion.getModificationDate().after(toDelete.getAuditInformation().getLastModificationDate())){
+            //Also there is no modification date, so if there is a notebook (folder) with this name, delete it
+            if(toDelete != null){
                 Log.d("localIntoRepository","Deleting notebook:"+toDelete.getSummary());
-                repo.deleteNotebook(deletion.getUid());
+                repo.deleteNotebook(toDelete.getIdentification().getUid());
             }
         }
     }

@@ -130,7 +130,7 @@ public class NotebookRepository {
         Modification modification = modificationRepository.getUnique(account,rootFolder,note.getIdentification().getUid());
 
         if(modification == null){
-            modificationRepository.insert(account,rootFolder,note.getIdentification().getUid(), ModificationRepository.ModificationType.DEL,null, Modification.Descriminator.NOTEBOOK);
+            modificationRepository.insert(account,rootFolder,note.getIdentification().getUid(), ModificationRepository.ModificationType.DEL,note.getSummary(), Modification.Descriminator.NOTEBOOK);
         }
         close();
     }
