@@ -41,6 +41,7 @@ import org.kore.kolab.notes.Identification;
 import org.kore.kolab.notes.Note;
 import org.kore.kolab.notes.Notebook;
 import org.kore.kolab.notes.Tag;
+import org.kore.kolab.notes.v3.KolabNotesParserV3;
 import org.kore.kolabnotes.android.R;
 import org.kore.kolabnotes.android.Utils;
 import org.kore.kolabnotes.android.content.ActiveAccount;
@@ -199,11 +200,11 @@ public class DetailFragment extends Fragment{
 
             if(!TextUtils.isEmpty(hdescription)) {
                 String updatedDesc = initImageMap(hdescription.toString());
-                editor.setHtml(updatedDesc);
+                setHtml(updatedDesc);
             }else if(!TextUtils.isEmpty(description)) {
 
                 String updatedDesc = initImageMap(description.toString());
-                editor.setHtml(updatedDesc);
+                setHtml(updatedDesc);
             }
 
             if(!TextUtils.isEmpty(summary)) {
@@ -241,7 +242,7 @@ public class DetailFragment extends Fragment{
                 String desc = note.getDescription();
                 if(!TextUtils.isEmpty(desc)) {
                     String updatedDesc = initImageMap(note.getDescription());
-                    editor.setHtml(updatedDesc);
+                    setHtml(updatedDesc);
                     note.setDescription(updatedDesc);
                 }
 
@@ -267,6 +268,24 @@ public class DetailFragment extends Fragment{
 
         setNotebook(activeAccount, notebook, startNotebook != null);
         intialNotebookName = getNotebookSpinnerSelectionName();
+    }
+
+    void setHtml(String text){
+        final String stripped = stripBody(text);
+        editor.setHtml(stripped);
+    }
+
+    String stripBody(String html){
+        if(TextUtils.isEmpty(html)){
+            return null;
+        }
+
+        int start = html.indexOf("<body>");
+        int end = html.indexOf("</body>");
+
+        start = start + 6;
+
+        return html.substring(start,end);
     }
 
     public void setStartUid(String startUid) {
@@ -858,10 +877,10 @@ public class DetailFragment extends Fragment{
             String notebookName = getNotebookSpinnerSelectionName();
 
             String descriptionValue = repairImages(getDescriptionFromView());
+
             if(descriptionValue != null && !descriptionValue.startsWith("<!DOCTYPE HTML")){
                 descriptionValue = HTMLSTART + repairImages(getDescriptionFromView()) + HTMLEND;
             }
-
 
             if (note == null) {
                 final String uuid = UUID.randomUUID().toString();

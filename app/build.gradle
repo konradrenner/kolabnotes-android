@@ -29,7 +29,7 @@ android {
 dependencies {
     //compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.github.yukuku:ambilwarna:2.0'
-    compile 'com.github.konradrenner:kolabnotes-java:0.6.4'
+    compile 'com.github.konradrenner:kolabnotes-java:0.6.5'
     compile 'com.android.support:support-v4:22.2.0'
     compile 'com.android.support:appcompat-v7:22.2.0'
     compile 'com.android.support:recyclerview-v7:22.2.0'
