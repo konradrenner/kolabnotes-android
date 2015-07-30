@@ -121,7 +121,7 @@
     <string name="title_delete_notebook">Notizbuch löschen</string>
     <string name="dialog_delete_nb_warning">Notizbuch löschen</string>
     <string name="no_nb_selected">Kein Notizbuch ausgewählt</string>
-    <string name="dialog_question_delete_nb">Das Notizbuch und alle sein Notizen werden gelöscht, sind Sie sicher?</string>
+    <string name="dialog_question_delete_nb">Das Notizbuch und alle darin befindlichen Notizen werden gelöscht, sind Sie sicher?</string>
     <string name="send_to">Noitz teilen mit...</string>
     <string name="empty_note">Leere Notiz kann nicht geteilt werden</string>
     <string name="sort_with_heading">Sortierung nach:</string>
