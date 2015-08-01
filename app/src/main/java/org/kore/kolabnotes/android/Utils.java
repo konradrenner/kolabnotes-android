@@ -302,7 +302,6 @@ public class Utils {
         Note note = new Note(source.getIdentification(),source.getAuditInformation(),source.getClassification(),source.getSummary());
         note.setDescription(source.getDescription());
         note.setColor(source.getColor());
-        note.setAttachment(source.getAttachment());
         note.addCategories(source.getCategories().toArray(new Tag[source.getCategories().size()]));
 
         return note;
@@ -332,9 +331,6 @@ public class Utils {
             return true;
         }
         if(!Objects.equals(one.getColor(),two.getColor())){
-            return true;
-        }
-        if(!Objects.equals(one.getAttachment(),two.getAttachment())){
             return true;
         }
         if(!Objects.equals(one.getSummary(),two.getSummary())){
