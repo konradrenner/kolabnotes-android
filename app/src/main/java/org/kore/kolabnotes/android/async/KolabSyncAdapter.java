@@ -93,10 +93,13 @@ public class KolabSyncAdapter extends AbstractThreadedSyncAdapter {
             builder.disableFolderAnnotation();
         }
 
+        boolean doit = true;
         AccountInformation info = builder.build();
         ImapNotesRepository imapRepository = new ImapNotesRepository(new KolabNotesParserV3(), info, rootFolder, new KolabConfigurationParserV3());
         try {
-            imapRepository.refresh(new RefreshListener());
+            if(doit) {
+                imapRepository.refresh(new RefreshListener());
+            }
         }catch(Exception e){
             final Notification notification = new NotificationCompat.Builder(context)
                     .setSmallIcon(R.drawable.ic_kjots)
@@ -107,11 +110,14 @@ public class KolabSyncAdapter extends AbstractThreadedSyncAdapter {
 
             NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
             notificationManager.notify(1,notification);
+            doit = false;
         }
 
         RepositoryManager manager = new RepositoryManager(getContext(),imapRepository);
         try{
-            manager.sync(email, rootFolder);
+            if(doit) {
+                manager.sync(email, rootFolder);
+            }
         }catch(Exception e){
             final Notification notification =  new NotificationCompat.Builder(context)
                     .setSmallIcon(R.drawable.ic_kjots)
@@ -122,12 +128,15 @@ public class KolabSyncAdapter extends AbstractThreadedSyncAdapter {
 
             NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
             notificationManager.notify(2,notification);
+            doit = false;
         }
 
         Utils.updateWidgetsForChange(getContext());
 
         try{
-            imapRepository.merge();
+            if(doit) {
+                imapRepository.merge();
+            }
         }catch(Exception e){
             final Notification notification =  new NotificationCompat.Builder(context)
                     .setSmallIcon(R.drawable.ic_kjots)
