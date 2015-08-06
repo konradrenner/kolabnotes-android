@@ -125,9 +125,10 @@ public class ListWidgetRemoteViewsFactory implements RemoteViewsService.RemoteVi
         i.putExtra(Utils.INTENT_ACCOUNT_EMAIL,accountEmail);
         i.putExtra(Utils.INTENT_ACCOUNT_ROOT_FOLDER,rootFolder);
 
-        String correctNotebookUID= notesRepository.getUIDofNotebook(accountEmail,rootFolder,note.getIdentification().getUid());
+        //if the widget is not updated after a sync, the UID of the notebook is not OK, the notebook UID mus always be read when needed
+        //String correctNotebookUID= notesRepository.getUIDofNotebook(accountEmail,rootFolder,note.getIdentification().getUid());
 
-        i.putExtra(Utils.NOTEBOOK_UID, correctNotebookUID);
+        //i.putExtra(Utils.NOTEBOOK_UID, correctNotebookUID);
 
         row.setOnClickFillInIntent(R.id.list_widget_row_summary, i);
 
