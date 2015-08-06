@@ -281,7 +281,14 @@ public class DetailFragment extends Fragment{
         }
 
         int start = html.indexOf("<body>");
+
+        if(start < 0){
+            return html;
+        }
+
         int end = html.indexOf("</body>");
+
+        end = end < 0 ? html.length() : end;
 
         start = start + 6;
 
