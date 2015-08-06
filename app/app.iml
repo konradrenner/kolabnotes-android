@@ -101,7 +101,7 @@
     <orderEntry type="library" exported="" name="kore-javamail-1.0.2" level="project" />
     <orderEntry type="library" exported="" name="support-v4-22.2.0" level="project" />
     <orderEntry type="library" exported="" name="support-annotations-22.2.0" level="project" />
-    <orderEntry type="library" exported="" name="kolabnotes-java-1.0.0" level="project" />
+    <orderEntry type="library" exported="" name="kolabnotes-java-1.0.1" level="project" />
     <orderEntry type="library" exported="" name="recyclerview-v7-22.2.0" level="project" />
     <orderEntry type="library" exported="" name="iconics-1.2.0" level="project" />
     <orderEntry type="library" exported="" name="cardview-v7-22.2.0" level="project" />
