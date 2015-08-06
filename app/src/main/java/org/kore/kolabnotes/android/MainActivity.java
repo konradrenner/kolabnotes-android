@@ -11,8 +11,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.mikepenz.materialdrawer.Drawer;
+import com.mikepenz.materialdrawer.model.BaseDrawerItem;
+import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.mikepenz.materialdrawer.util.KeyboardUtil;
 
+import org.kore.kolab.notes.Notebook;
 import org.kore.kolabnotes.android.content.ActiveAccount;
 import org.kore.kolabnotes.android.content.ActiveAccountRepository;
 import org.kore.kolabnotes.android.fragment.DetailFragment;
@@ -49,7 +53,6 @@ public class MainActivity extends AppCompatActivity implements SyncStatusObserve
 
         if(Utils.getReloadDataAfterDetail(this)){
             Utils.setReloadDataAfterDetail(this,false);
-            overviewFragment.setFromDetail();
         }
     }
 
@@ -63,14 +66,11 @@ public class MainActivity extends AppCompatActivity implements SyncStatusObserve
         if(ResultCode.DELETED == code){
             Toast.makeText(this, R.string.note_deleted, Toast.LENGTH_LONG);
             overviewFragment.displayBlankFragment();
-            overviewFragment.setFromDetail();
             overviewFragment.onResume();
         }else if(ResultCode.SAVED == code){
             Toast.makeText(this, R.string.note_saved, Toast.LENGTH_LONG);
-            overviewFragment.setFromDetail();
             overviewFragment.onResume();
         }else if(ResultCode.BACK == code){
-            overviewFragment.setFromDetail();
             overviewFragment.onResume();
             overviewFragment.openDrawer();
         }
@@ -101,7 +101,8 @@ public class MainActivity extends AppCompatActivity implements SyncStatusObserve
 
         for (Account acc : accounts) {
             String email = mAccountManager.getUserData(acc, AuthenticatorActivity.KEY_EMAIL);
-            if (activeAccount.getAccount().equalsIgnoreCase(email)) {
+            String folder = mAccountManager.getUserData(acc, AuthenticatorActivity.KEY_ROOT_FOLDER);
+            if (activeAccount.getAccount().equalsIgnoreCase(email) && activeAccount.getRootFolder().equalsIgnoreCase(folder)) {
                 selectedAccount = acc;
                 break;
             }
@@ -110,6 +111,35 @@ public class MainActivity extends AppCompatActivity implements SyncStatusObserve
         overviewFragment.refreshFinished(selectedAccount);
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        final Drawer drawer = overviewFragment.getDrawer();
+        final int currentSelection = drawer.getCurrentSelection();
+
+        final IDrawerItem drawerItem = drawer.getDrawerItems().get(currentSelection);
+
+        if(drawerItem instanceof BaseDrawerItem){
+            BaseDrawerItem selected = (BaseDrawerItem)drawerItem;
+
+            String tag = drawerItem.getTag() == null || drawerItem.getTag().toString().trim().length() == 0 ? "ALL_NOTEBOOK" :  drawerItem.getTag().toString();
+
+            if("NOTEBOOK".equalsIgnoreCase(tag)){
+                Utils.setSelectedNotebookName(this, selected.getName());
+                Utils.setSelectedTagName(this,null);
+            }else if("TAG".equalsIgnoreCase(tag)){
+                Utils.setSelectedNotebookName(this, null);
+                Utils.setSelectedTagName(this,selected.getName());
+            }else if("ALL_NOTES".equalsIgnoreCase(tag)){
+                Utils.setSelectedNotebookName(this, null);
+                Utils.setSelectedTagName(this,null);
+            }else{
+                Utils.setSelectedNotebookName(this, null);
+                Utils.setSelectedTagName(this,null);
+            }
+        }
+    }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {

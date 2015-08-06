@@ -88,7 +88,6 @@ public class OverviewFragment extends Fragment implements NoteAdapter.NoteSelect
     private SwipeRefreshLayout mSwipeRefreshLayout;
 
     private AccountManager mAccountManager;
-    private boolean fromDetailActivity = false;
     private DataCaches dataCache;
 
     private NoteRepository notesRepository;
@@ -347,18 +346,6 @@ public class OverviewFragment extends Fragment implements NoteAdapter.NoteSelect
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode == DETAIL_ACTIVITY_RESULT_CODE){
-            setFromDetail();
-        }
-    }
-
-    public void setFromDetail(){
-        fromDetailActivity = true;
-    }
-
-    @Override
     public void onResume(){
         super.onResume();
 
@@ -403,23 +390,21 @@ public class OverviewFragment extends Fragment implements NoteAdapter.NoteSelect
             return;
         }
 
-        if(fromDetailActivity || tabletMode){
-            if(selectedNotebookName != null) {
-                Notebook nb = notebookRepository.getBySummary(activeAccount.getAccount(), activeAccount.getRootFolder(), selectedNotebookName);
+        if(selectedNotebookName != null) {
+            Notebook nb = notebookRepository.getBySummary(activeAccount.getAccount(), activeAccount.getRootFolder(), selectedNotebookName);
 
-                //GitHub Issue 31
-                if (nb != null) {
-                    notebookUID = nb.getIdentification().getUid();
-                }
+            //GitHub Issue 31
+            if (nb != null) {
+                notebookUID = nb.getIdentification().getUid();
             }
-            fromDetailActivity = false;
-
-            //Refresh the loaded data because it could be that something changed, after coming back from detail activity
-            this.dataCache.reloadTags();
-            this.dataCache.getNoteCache(activeAccount).reloadData();
         }
+
+        //Refresh the loaded data because it could be that something changed, after coming back from detail activity
+        this.dataCache.reloadTags();
+        this.dataCache.getNoteCache(activeAccount).reloadData();
         new AccountChangeThread(activeAccount,notebookUID).run();
     }
+
 
     class AccountChangeThread extends Thread{
 
@@ -719,6 +704,10 @@ public class OverviewFragment extends Fragment implements NoteAdapter.NoteSelect
             }
         });
         return builder.create();
+    }
+
+    public Drawer getDrawer(){
+        return mDrawer;
     }
 
     @Override
