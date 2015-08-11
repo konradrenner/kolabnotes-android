@@ -30,6 +30,7 @@ public class ListWidget extends AppWidgetProvider {
         for (int i = 0; i < appWidgetIds.length; ++i) {
             updateAppWidget(context,appWidgetManager,appWidgetIds[i]);
         }
+        appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIds, R.id.widget_list_notes);
         super.onUpdate(context, appWidgetManager, appWidgetIds);
     }
 
