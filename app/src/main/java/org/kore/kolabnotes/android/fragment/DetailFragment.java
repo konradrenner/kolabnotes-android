@@ -10,7 +10,6 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
@@ -23,14 +22,10 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.JavascriptInterface;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
-import android.support.v7.widget.ShareActionProvider;
 import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
 import android.widget.Toast;
@@ -41,7 +36,6 @@ import org.kore.kolab.notes.Identification;
 import org.kore.kolab.notes.Note;
 import org.kore.kolab.notes.Notebook;
 import org.kore.kolab.notes.Tag;
-import org.kore.kolab.notes.v3.KolabNotesParserV3;
 import org.kore.kolabnotes.android.R;
 import org.kore.kolabnotes.android.Utils;
 import org.kore.kolabnotes.android.content.ActiveAccount;
@@ -53,7 +47,6 @@ import org.kore.kolabnotes.android.content.TagRepository;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -1104,7 +1097,7 @@ public class DetailFragment extends Fragment{
 
             String nb = spinner.getSelectedItem().toString();
 
-            boolean nbSameNames = Objects.equals(intialNotebookName, nb);
+            boolean nbSameNames = nb.equals(intialNotebookName);
             differences = Utils.differentMutableData(note, newNote) || !nbSameNames || isDescriptionDirty;
         }
         return  differences;

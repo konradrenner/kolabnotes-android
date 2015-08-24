@@ -40,6 +40,14 @@ public class ActiveAccountRepository {
     }
 
     public synchronized ActiveAccount switchAccount(String account, String rootFolder){
+        final ActiveAccount toCheck = getActiveAccount();
+        ActiveAccount newActive = new ActiveAccount(account,rootFolder);
+
+        if(newActive.equals(toCheck)){
+            currentActive = newActive;
+            return currentActive;
+        }
+
         open();
         ContentValues values = new ContentValues();
         values.put(DatabaseHelper.COLUMN_ROOT_FOLDER, rootFolder);
@@ -50,7 +58,7 @@ public class ActiveAccountRepository {
                 null,
                 null);
 
-        currentActive = new ActiveAccount(account,rootFolder);
+        currentActive = newActive;
         close();
         return currentActive;
     }

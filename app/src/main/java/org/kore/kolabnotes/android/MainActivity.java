@@ -5,7 +5,6 @@ import android.accounts.AccountManager;
 import android.app.Fragment;
 import android.content.Intent;
 import android.content.SyncStatusObserver;
-import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
@@ -16,7 +15,6 @@ import com.mikepenz.materialdrawer.model.BaseDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.mikepenz.materialdrawer.util.KeyboardUtil;
 
-import org.kore.kolab.notes.Notebook;
 import org.kore.kolabnotes.android.content.ActiveAccount;
 import org.kore.kolabnotes.android.content.ActiveAccountRepository;
 import org.kore.kolabnotes.android.fragment.DetailFragment;
