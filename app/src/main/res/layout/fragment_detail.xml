@@ -8,6 +8,7 @@
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@color/background_material_light"
         android:weightSum="1">
 
         <HorizontalScrollView
@@ -244,10 +245,12 @@
                 android:textColorHint="@color/secondary_text_default_material_light" />
         </FrameLayout>
 
-
         <jp.wasabeef.richeditor.RichEditor
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
+            android:layout_marginLeft="4dp"
+            android:layout_marginRight="4dp"
+            android:layout_marginBottom="4dp"
             android:id="@id/detail_description"
             android:gravity="top"
             android:isScrollContainer="true"
