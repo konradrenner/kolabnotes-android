@@ -9,8 +9,6 @@ import android.app.FragmentTransaction;
 import android.content.ContentResolver;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.res.Configuration;
-import android.content.res.Resources;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -55,12 +53,10 @@ import org.kore.kolabnotes.android.Utils;
 import org.kore.kolabnotes.android.adapter.NoteAdapter;
 import org.kore.kolabnotes.android.content.ActiveAccount;
 import org.kore.kolabnotes.android.content.ActiveAccountRepository;
-import org.kore.kolabnotes.android.content.DataCache;
-import org.kore.kolabnotes.android.content.DataCaches;
 import org.kore.kolabnotes.android.content.NoteRepository;
+import org.kore.kolabnotes.android.content.NoteSorting;
 import org.kore.kolabnotes.android.content.NoteTagRepository;
 import org.kore.kolabnotes.android.content.NotebookRepository;
-import org.kore.kolabnotes.android.content.NoteSorting;
 import org.kore.kolabnotes.android.content.TagRepository;
 import org.kore.kolabnotes.android.security.AuthenticatorActivity;
 
@@ -88,7 +84,6 @@ public class OverviewFragment extends Fragment implements NoteAdapter.NoteSelect
     private SwipeRefreshLayout mSwipeRefreshLayout;
 
     private AccountManager mAccountManager;
-    private DataCaches dataCache;
 
     private NoteRepository notesRepository;
     private NotebookRepository notebookRepository;
@@ -123,7 +118,6 @@ public class OverviewFragment extends Fragment implements NoteAdapter.NoteSelect
 
         this.activity = (MainActivity)activity;
 
-        dataCache = new DataCaches(activity);
         notesRepository = new NoteRepository(activity);
         notebookRepository = new NotebookRepository(activity);
         tagRepository = new TagRepository(activity);
@@ -356,7 +350,8 @@ public class OverviewFragment extends Fragment implements NoteAdapter.NoteSelect
         String email = startIntent.getStringExtra(Utils.INTENT_ACCOUNT_EMAIL);
         String rootFolder = startIntent.getStringExtra(Utils.INTENT_ACCOUNT_ROOT_FOLDER);
         //if called from the widget
-        String notebookUID = startIntent.getStringExtra(Utils.NOTEBOOK_UID);
+        String notebookName = startIntent.getStringExtra(Utils.SELECTED_NOTEBOOK_NAME);
+        String tagName = startIntent.getStringExtra(Utils.SELECTED_TAG_NAME);
 
         ActiveAccount activeAccount;
         if(email != null && rootFolder != null) {
@@ -366,8 +361,12 @@ public class OverviewFragment extends Fragment implements NoteAdapter.NoteSelect
         }
 
         //if called from the widget
-        if(notebookUID != null){
-            Utils.setSelectedNotebookName(activity, notebookRepository.getByUID(activeAccount.getAccount(),activeAccount.getRootFolder(),notebookUID).getSummary());
+        if(notebookName != null){
+            Utils.setSelectedNotebookName(activity, notebookName);
+            Utils.setSelectedTagName(activity,null);
+        }else if(tagName != null){
+            Utils.setSelectedNotebookName(activity, null);
+            Utils.setSelectedTagName(activity,tagName);
         }
 
         String selectedNotebookName = Utils.getSelectedNotebookName(activity);
@@ -395,14 +394,12 @@ public class OverviewFragment extends Fragment implements NoteAdapter.NoteSelect
 
             //GitHub Issue 31
             if (nb != null) {
-                notebookUID = nb.getIdentification().getUid();
+                notebookName = nb.getIdentification().getUid();
             }
         }
 
         //Refresh the loaded data because it could be that something changed, after coming back from detail activity
-        this.dataCache.reloadTags();
-        this.dataCache.getNoteCache(activeAccount).reloadData();
-        new AccountChangeThread(activeAccount,notebookUID).run();
+        new AccountChangeThread(activeAccount,notebookName).run();
     }
 
 
@@ -467,22 +464,21 @@ public class OverviewFragment extends Fragment implements NoteAdapter.NoteSelect
             });
 
             List<Note> notes;
-            DataCache noteCache = dataCache.getNoteCache(activeAccount);
             String selectedTagName = Utils.getSelectedTagName(activity);
             if(resetDrawerSelection || (notebookUID == null && selectedTagName == null)){
                 if(resetDrawerSelection){
                     Utils.setSelectedNotebookName(activity, null);
                     Utils.setSelectedTagName(activity, null);
                 }
-                notes = noteCache.getNotes();
+                notes = notesRepository.getAll(activeAccount.getAccount(),activeAccount.getRootFolder(),Utils.getNoteSorting(getActivity()));
             }else if(selectedTagName != null){
                 notes = notetagRepository.getNotesWith(activeAccount.getAccount(), activeAccount.getRootFolder(), selectedTagName, Utils.getNoteSorting(activity));
             }else{
-                notes = noteCache.getNotesFromNotebook(notebookUID);
+                notes = notesRepository.getFromNotebook(activeAccount.getAccount(),activeAccount.getRootFolder(),notebookUID,Utils.getNoteSorting(getActivity()));
             }
 
-            List<String> tags = dataCache.getTags();
-            List<Notebook> notebooks = noteCache.getNotebooks();
+            List<String> tags = tagRepository.getAll();
+            List<Notebook> notebooks = notebookRepository.getAll(activeAccount.getAccount(),activeAccount.getRootFolder());
 
             if(preventBlankDisplaying){
                 preventBlankDisplaying = false;
@@ -782,7 +778,16 @@ public class OverviewFragment extends Fragment implements NoteAdapter.NoteSelect
             final Intent mainIntent = new Intent(Intent.ACTION_MAIN, null);
             mainIntent.addCategory(Intent.CATEGORY_LAUNCHER);
 
-            ActiveAccount activeAccount = activeAccountRepository.getActiveAccount();
+            Intent startIntent = getActivity().getIntent();
+            String email = startIntent.getStringExtra(Utils.INTENT_ACCOUNT_EMAIL);
+            String rootFolder = startIntent.getStringExtra(Utils.INTENT_ACCOUNT_ROOT_FOLDER);
+
+            ActiveAccount activeAccount;
+            if(email != null && rootFolder != null){
+                activeAccount = activeAccountRepository.switchAccount(email,rootFolder);
+            }else{
+                activeAccount = activeAccountRepository.getActiveAccount();
+            }
 
             new AccountChangeThread(activeAccount).run();
         }
@@ -835,10 +840,10 @@ public class OverviewFragment extends Fragment implements NoteAdapter.NoteSelect
 
     final void reloadData(){
         ActiveAccount activeAccount = activeAccountRepository.getActiveAccount();
-        DataCache noteCache = this.dataCache.getNoteCache(activeAccount);
-        noteCache.reloadData();
-        this.dataCache.reloadTags();
-        reloadData(noteCache.getNotebooks(), noteCache.getNotes(), dataCache.getTags());
+        final List<Note> notes = notesRepository.getAll(activeAccount.getAccount(), activeAccount.getRootFolder(), Utils.getNoteSorting(getActivity()));
+        final List<Notebook> notebooks = notebookRepository.getAll(activeAccount.getAccount(), activeAccount.getRootFolder());
+        final List<String> tags = tagRepository.getAll();
+        reloadData(notebooks, notes, tags);
     }
 
     class CreateButtonListener implements View.OnClickListener{
@@ -1132,6 +1137,9 @@ public class OverviewFragment extends Fragment implements NoteAdapter.NoteSelect
             }else if(selectedTagName != null){
                 selected = selectedTagName;
                 notebookSelected = false;
+                if(selection < 0){
+                    allnotesSelected = false;
+                }
             }
 
             Collections.sort(tags);
@@ -1183,6 +1191,16 @@ public class OverviewFragment extends Fragment implements NoteAdapter.NoteSelect
             if(selection < 1 || (selectedItem != null && selection >= drawer.getDrawerItems().size())){
                 //default if nothing is selected, choose "all notes form actual account"
                 selection = 1;
+            }else {
+
+                //fallback: if the notebook heading or tag heading is selected, select all notes
+                final IDrawerItem fallbackCheck = drawer.getDrawerItems().get(selection);
+                if (fallbackCheck != null) {
+                    Object itemName = fallbackCheck.getTag();
+                    if(itemName == null || itemName.toString().startsWith("HEADING")){
+                        selection = 1;
+                    }
+                }
             }
 
             drawer.setSelection(selection);

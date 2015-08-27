@@ -5,7 +5,6 @@ import android.util.Log;
 
 import org.kore.kolab.notes.Note;
 import org.kore.kolab.notes.Notebook;
-import org.kore.kolab.notes.NotesRepository;
 import org.kore.kolab.notes.Tag;
 import org.kore.kolab.notes.imap.ImapNotesRepository;
 import org.kore.kolab.notes.imap.RemoteTags;

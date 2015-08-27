@@ -1,7 +1,5 @@
 package org.kore.kolabnotes.android.content;
 
-import java.io.Serializable;
-
 /**
  * Created by koni on 30.04.15.
  */

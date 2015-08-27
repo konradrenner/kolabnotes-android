@@ -16,8 +16,8 @@ import org.kore.kolabnotes.android.NoteSortingComparator;
 import org.kore.kolabnotes.android.R;
 import org.kore.kolabnotes.android.Utils;
 import org.kore.kolabnotes.android.content.NoteRepository;
-import org.kore.kolabnotes.android.content.NotebookRepository;
 import org.kore.kolabnotes.android.content.NoteSorting;
+import org.kore.kolabnotes.android.content.NotebookRepository;
 import org.kore.kolabnotes.android.security.AuthenticatorActivity;
 
 import java.util.ArrayList;

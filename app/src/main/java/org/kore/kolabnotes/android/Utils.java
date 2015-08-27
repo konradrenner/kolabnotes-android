@@ -23,17 +23,13 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 
 import org.kore.kolab.notes.Note;
-import org.kore.kolab.notes.NotesRepository;
 import org.kore.kolab.notes.Tag;
 import org.kore.kolabnotes.android.content.AccountIdentifier;
-import org.kore.kolabnotes.android.content.DatabaseHelper;
 import org.kore.kolabnotes.android.content.NoteSorting;
 import org.kore.kolabnotes.android.security.AuthenticatorActivity;
 import org.kore.kolabnotes.android.widget.ListWidget;
 import org.kore.kolabnotes.android.widget.StickyNoteWidget;
 
-import java.util.Arrays;
-import java.util.Comparator;
 import java.util.Objects;
 
 public class Utils {
