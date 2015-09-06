@@ -28,12 +28,6 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.ViewHolder> {
     private Context context;
     private NoteSelectedListener listener;
     private DateFormat dateFormatter;
-    private static final int CYAN = 210;
-    private static final int RED = 0;
-    private static final int RED_ORANGE = 20;
-    private static final int HUE = 0;
-    private static final int SATURATION = 1;
-    private static final int BRIGHTNESS = 2;
 
     public NoteAdapter(List<Note> notes, int rowLayout, Context context, NoteSelectedListener listener) {
         this.notes = notes;
@@ -95,16 +89,11 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.ViewHolder> {
             viewHolder.categories.setBackgroundColor(Color.parseColor(note.getColor().getHexcode()));
 
             /*
-            * Text color depending on background color.
-            */
-            float[] HSV = new float[3];
-            Color.colorToHSV(Color.parseColor(note.getColor().getHexcode()), HSV);
-
-            /*
+            * Text color depending on background color:
             * If spectrum from cyan to red and saturation greater than or equal to 0.5 - text is white.
             * If spectrum is not included in these borders or brightness greater than or equal to 0.8 - text is black.
             */
-            if (((HSV[HUE] >= CYAN || (HSV[HUE] >= RED && HSV[HUE] <= RED_ORANGE)) && HSV[SATURATION] >= 0.5) || HSV[BRIGHTNESS] <= 0.8) {
+            if (Utils.useLightTextColor(note.getColor())) {
                 viewHolder.name.setTextColor(Color.WHITE);
                 viewHolder.classification.setTextColor(Color.WHITE);
                 viewHolder.createdDate.setTextColor(Color.WHITE);

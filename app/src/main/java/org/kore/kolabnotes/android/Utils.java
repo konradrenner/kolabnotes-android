@@ -22,6 +22,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Spinner;
 
+import org.kore.kolab.notes.Color;
 import org.kore.kolab.notes.Note;
 import org.kore.kolab.notes.Tag;
 import org.kore.kolabnotes.android.content.AccountIdentifier;
@@ -33,6 +34,13 @@ import org.kore.kolabnotes.android.widget.StickyNoteWidget;
 import java.util.Objects;
 
 public class Utils {
+
+    private static final int CYAN = 210;
+    private static final int RED = 0;
+    private static final int RED_ORANGE = 20;
+    private static final int HUE = 0;
+    private static final int SATURATION = 1;
+    private static final int BRIGHTNESS = 2;
 
     public enum SortingColumns{
         summary {
@@ -288,6 +296,20 @@ public class Utils {
         return new AccountIdentifier(email,rootFolder);
     }
 
+    public static boolean useLightTextColor(Color colorOfNote){
+        if(colorOfNote == null){
+            return false;
+        }
+
+        float[] HSV = new float[3];
+        android.graphics.Color.colorToHSV(android.graphics.Color.parseColor(colorOfNote.getHexcode()), HSV);
+
+        if (((HSV[HUE] >= CYAN || (HSV[HUE] >= RED && HSV[HUE] <= RED_ORANGE)) && HSV[SATURATION] >= 0.5) || HSV[BRIGHTNESS] <= 0.8) {
+            return true;
+        }
+        return false;
+    }
+
     /**
      * Creates a exact copy of an note
      *
@@ -323,13 +345,13 @@ public class Utils {
     }
 
     public static final boolean differentMutableData(Note one, Note two){
-        if(!Objects.equals(one.getClassification(),two.getClassification())){
+        if(!equals(one.getClassification(), two.getClassification())){
             return true;
         }
-        if(!Objects.equals(one.getColor(),two.getColor())){
+        if(!equals(one.getColor(), two.getColor())){
             return true;
         }
-        if(!Objects.equals(one.getSummary(),two.getSummary())){
+        if(!equals(one.getSummary(), two.getSummary())){
             return true;
         }
         if(one.getCategories().size() != two.getCategories().size() || !one.getCategories().containsAll(two.getCategories())){
@@ -337,6 +359,14 @@ public class Utils {
         }
 
         return false;
+    }
+
+    public static boolean equals(Object o1, Object o2){
+        if(o1 == null){
+            return o2 == null;
+        }
+
+        return o1.equals(o2);
     }
 
     public static void initColumnSpinner(Context context, Spinner spinner, int spinnerLayout, AdapterView.OnItemSelectedListener listener){
