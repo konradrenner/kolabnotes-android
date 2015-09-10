@@ -173,19 +173,19 @@ public class Utils {
     }
     */
 
-    public static void saveLastSyncTime(Context context) {
+    public static void saveLastSyncTime(Context context,String accountName) {
         SharedPreferences.Editor prefs = context.getSharedPreferences("org.kore.kolabnotes.android.async.KolabSyncAdapter", 0).edit();
-        prefs.putLong("lastSyncTst", System.currentTimeMillis());
+        prefs.putLong("lastSyncTst_"+accountName, System.currentTimeMillis());
         prefs.commit();
     }
 
-    public static Timestamp getLastSyncTime(Context context) {
+    public static Timestamp getLastSyncTime(Context context,String accountName) {
         SharedPreferences prefs = context.getSharedPreferences("org.kore.kolabnotes.android.async.KolabSyncAdapter", 0);
         if(prefs == null){
             Log.d("getLastSyncTime","KolabSyncAdapter prefs are null");
             return null;
         }
-        long millis = prefs.getLong("lastSyncTst", -1);
+        long millis = prefs.getLong("lastSyncTst_"+accountName, -1);
         if(millis < 0){
             return null;
         }

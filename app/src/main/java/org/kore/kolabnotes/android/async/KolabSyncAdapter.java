@@ -76,6 +76,7 @@ public class KolabSyncAdapter extends AbstractThreadedSyncAdapter {
         AccountManager accountManager = AccountManager.get(context);
 
         String email = accountManager.getUserData(account, AuthenticatorActivity.KEY_EMAIL);
+        String accName = accountManager.getUserData(account, AuthenticatorActivity.KEY_ACCOUNT_NAME);
         String rootFolder = accountManager.getUserData(account,AuthenticatorActivity.KEY_ROOT_FOLDER);
         String url = accountManager.getUserData(account, AuthenticatorActivity.KEY_SERVER);
         String sport = accountManager.getUserData(account,AuthenticatorActivity.KEY_PORT);
@@ -101,7 +102,7 @@ public class KolabSyncAdapter extends AbstractThreadedSyncAdapter {
         ImapNotesRepository imapRepository = new ImapNotesRepository(new KolabNotesParserV3(), info, rootFolder, new KolabConfigurationParserV3());
         try {
             if(doit) {
-                final Timestamp lastSyncTime = Utils.getLastSyncTime(context);
+                final Timestamp lastSyncTime = Utils.getLastSyncTime(context,accName);
 
                 Log.d("syncNow","lastSyncTime:"+lastSyncTime);
                 //Just load data completely, which was changed after the given date
@@ -147,7 +148,7 @@ public class KolabSyncAdapter extends AbstractThreadedSyncAdapter {
         try{
             if(doit) {
                 imapRepository.merge();
-                Utils.saveLastSyncTime(context);
+                Utils.saveLastSyncTime(context,accName);
             }
         }catch(Exception e){
             final Notification notification =  new NotificationCompat.Builder(context)
