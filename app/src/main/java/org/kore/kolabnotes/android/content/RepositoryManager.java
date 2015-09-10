@@ -115,8 +115,12 @@ public class RepositoryManager {
                         remoteNote.addCategories(localCategories.toArray(new Tag[localCategories.size()]));
                         remoteNote.setColor(note.getColor());
                         remoteNote.getAuditInformation().setLastModificationDate(note.getAuditInformation().getLastModificationDate().getTime());
+                        remoteNote.getAuditInformation().setCreationDate(note.getAuditInformation().getCreationDate().getTime());
                     }
                 }
+            }else{
+                //Fill the unchanged, unloaded notes, so that in the later step, everything can be replaced in the local repo with data from the remote repo
+                repo.fillUnloadedNote(note);
             }
         }
 

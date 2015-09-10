@@ -31,6 +31,7 @@ import org.kore.kolabnotes.android.security.AuthenticatorActivity;
 import org.kore.kolabnotes.android.widget.ListWidget;
 import org.kore.kolabnotes.android.widget.StickyNoteWidget;
 
+import java.sql.Timestamp;
 import java.util.Objects;
 
 public class Utils {
@@ -171,6 +172,26 @@ public class Utils {
         w.setEnterTransition(ex);
     }
     */
+
+    public static void saveLastSyncTime(Context context) {
+        SharedPreferences.Editor prefs = context.getSharedPreferences("org.kore.kolabnotes.android.async.KolabSyncAdapter", 0).edit();
+        prefs.putLong("lastSyncTst", System.currentTimeMillis());
+        prefs.commit();
+    }
+
+    public static Timestamp getLastSyncTime(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences("org.kore.kolabnotes.android.async.KolabSyncAdapter", 0);
+        if(prefs == null){
+            Log.d("getLastSyncTime","KolabSyncAdapter prefs are null");
+            return null;
+        }
+        long millis = prefs.getLong("lastSyncTst", -1);
+        if(millis < 0){
+            return null;
+        }
+
+        return new Timestamp(millis);
+    }
 
     public static void saveNoteSorting(Context context, NoteSorting noteSorting) {
         SharedPreferences.Editor prefs = context.getSharedPreferences("org.kore.kolabnotes.android.widget.MainActivity", 0).edit();

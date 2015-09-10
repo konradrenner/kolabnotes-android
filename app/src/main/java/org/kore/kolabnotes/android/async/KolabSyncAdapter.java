@@ -18,10 +18,13 @@ import org.kore.kolab.notes.RemoteNotesRepository;
 import org.kore.kolab.notes.imap.ImapNotesRepository;
 import org.kore.kolab.notes.v3.KolabConfigurationParserV3;
 import org.kore.kolab.notes.v3.KolabNotesParserV3;
+import org.kore.kolabnotes.android.MainActivity;
 import org.kore.kolabnotes.android.R;
 import org.kore.kolabnotes.android.Utils;
 import org.kore.kolabnotes.android.content.RepositoryManager;
 import org.kore.kolabnotes.android.security.AuthenticatorActivity;
+
+import java.sql.Timestamp;
 
 /**
  * Created by koni on 18.04.15.
@@ -98,7 +101,15 @@ public class KolabSyncAdapter extends AbstractThreadedSyncAdapter {
         ImapNotesRepository imapRepository = new ImapNotesRepository(new KolabNotesParserV3(), info, rootFolder, new KolabConfigurationParserV3());
         try {
             if(doit) {
-                imapRepository.refresh(new RefreshListener());
+                final Timestamp lastSyncTime = Utils.getLastSyncTime(context);
+
+                Log.d("syncNow","lastSyncTime:"+lastSyncTime);
+                //Just load data completely, which was changed after the given date
+                if(lastSyncTime == null){
+                    imapRepository.refresh(new RefreshListener());
+                }else{
+                    imapRepository.refresh(lastSyncTime, new RefreshListener());
+                }
             }
         }catch(Exception e){
             final Notification notification = new NotificationCompat.Builder(context)
@@ -136,6 +147,7 @@ public class KolabSyncAdapter extends AbstractThreadedSyncAdapter {
         try{
             if(doit) {
                 imapRepository.merge();
+                Utils.saveLastSyncTime(context);
             }
         }catch(Exception e){
             final Notification notification =  new NotificationCompat.Builder(context)
