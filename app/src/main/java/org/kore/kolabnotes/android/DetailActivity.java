@@ -1,23 +1,29 @@
 package org.kore.kolabnotes.android;
 
+import android.app.FragmentManager;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.widget.Toast;
 
+import org.kore.kolabnotes.android.content.AccountIdentifier;
+import org.kore.kolabnotes.android.fragment.ChooseAccountDialogFragment;
 import org.kore.kolabnotes.android.fragment.DetailFragment;
+import org.kore.kolabnotes.android.fragment.OnAccountChooseListener;
 import org.kore.kolabnotes.android.fragment.OnFragmentCallback;
 
-public class DetailActivity extends AppCompatActivity implements OnFragmentCallback {
+public class DetailActivity extends AppCompatActivity implements OnFragmentCallback, OnAccountChooseListener {
 
     private DetailFragment detailFragment;
+    private Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
         if(toolbar != null){
             toolbar.setTitle("");
         }
@@ -30,6 +36,25 @@ public class DetailActivity extends AppCompatActivity implements OnFragmentCallb
 
         detailFragment.setStartNotebook(notebook);
         detailFragment.setStartUid(uid);
+
+        String action = startIntent.getAction();
+        if (Intent.ACTION_SEND.equals(action)) {
+            showAccountChooseDialog();
+        }
+    }
+
+    private void showAccountChooseDialog() {
+        FragmentManager fm = getFragmentManager();
+        ChooseAccountDialogFragment chooseAccountDialog = new ChooseAccountDialogFragment();
+        chooseAccountDialog.show(fm, "fragment_choose_account");
+    }
+
+    @Override
+    public void onAccountElected(String name,AccountIdentifier accountIdentifier){
+        detailFragment.resetSpinner();
+        if(toolbar != null){
+            toolbar.setTitle(name);
+        }
     }
 
     @Override

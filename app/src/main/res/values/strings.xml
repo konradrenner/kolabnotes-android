@@ -100,4 +100,6 @@
     <string name="radio_asc">Ascending</string>
     <string name="title_dialog_sorting">Change sorting</string>
     <string name="color">Color</string>
+    <string name="account_choose_title">Choose an account</string>
+    <string name="select_button">Select</string>
 </resources>

@@ -316,7 +316,7 @@ public class DetailFragment extends Fragment{
             }
         }
     }
-    
+
     void initEditor(){
         editor.setOnTextChangeListener(new RichEditor.OnTextChangeListener() {
             @Override
@@ -1021,10 +1021,17 @@ public class DetailFragment extends Fragment{
         }
     }
 
-    void initSpinner(){
+    public void resetSpinner(){
+        Spinner spinner = initSpinner();
+        spinner.setSelection(0);
+    }
+
+    Spinner initSpinner(){
         Spinner spinner = (Spinner) activity.findViewById(R.id.spinner_notebook);
 
-        List<Notebook> notebooks = notebookRepository.getAll(  activeAccountRepository.getActiveAccount().getAccount(),  activeAccountRepository.getActiveAccount().getRootFolder());
+        final ActiveAccount activeAccount = activeAccountRepository.getActiveAccount();
+
+        List<Notebook> notebooks = notebookRepository.getAll(activeAccount.getAccount(), activeAccount.getRootFolder());
 
         String[] notebookArr = new String[notebooks.size()];
 
@@ -1037,6 +1044,8 @@ public class DetailFragment extends Fragment{
         ArrayAdapter<CharSequence> adapter = new ArrayAdapter<CharSequence>(activity,R.layout.notebook_spinner_item,notebookArr);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
+
+        return spinner;
     }
 
     @Override
