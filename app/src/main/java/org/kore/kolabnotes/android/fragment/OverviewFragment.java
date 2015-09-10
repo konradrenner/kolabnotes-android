@@ -1224,9 +1224,10 @@ public class OverviewFragment extends Fragment implements NoteAdapter.NoteSelect
                 account = "local";
                 rootFolder = ((ProfileDrawerItem)profile).getTag().toString();
             }else{
-                changed = !activeAccount.getAccount().equalsIgnoreCase(profile.getEmail());
+                String folder = ((ProfileDrawerItem)profile).getTag().toString();
+                changed = !activeAccount.getAccount().equalsIgnoreCase(profile.getEmail()) || !activeAccount.getRootFolder().equalsIgnoreCase(folder);
                 account = profile.getEmail();
-                rootFolder = ((ProfileDrawerItem)profile).getTag().toString();
+                rootFolder = folder;
             }
 
             if(changed){
