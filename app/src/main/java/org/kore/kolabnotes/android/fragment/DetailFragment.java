@@ -245,11 +245,7 @@ public class DetailFragment extends Fragment{
                 }
 
                 selectedColor = note.getColor();
-                if (selectedColor != null) {
-                    toolbar.setBackgroundColor(Color.parseColor(selectedColor.getHexcode()));
-                }else{
-                    toolbar.setBackgroundColor(getResources().getColor(R.color.theme_default_primary));
-                }
+                setToolbarColor();
 
                 if(notebook == null){
                     notebook = noteRepository.getUIDofNotebook(activeAccount.getAccount(), activeAccount.getRootFolder(), uid);
@@ -261,6 +257,18 @@ public class DetailFragment extends Fragment{
 
         setNotebook(activeAccount, notebook, startNotebook != null);
         intialNotebookName = getNotebookSpinnerSelectionName();
+    }
+
+    void setToolbarColor(){
+        boolean lightText = true;
+        if (selectedColor != null) {
+            toolbar.setBackgroundColor(Color.parseColor(selectedColor.getHexcode()));
+            lightText = Utils.useLightTextColor(activity, selectedColor);
+        }else{
+            toolbar.setBackgroundColor(getResources().getColor(R.color.theme_default_primary));
+        }
+
+        Utils.setToolbarTextAndIconColor(toolbar,lightText);
     }
 
     void setHtml(String text){
@@ -667,7 +675,7 @@ public class DetailFragment extends Fragment{
             @Override
             public void onOk(AmbilWarnaDialog dialog, int color) {
                 selectedColor = Colors.getColor(String.format("#%06X", (0xFFFFFF & color)));
-                toolbar.setBackgroundColor(color);
+                setToolbarColor();
             }
 
             @Override

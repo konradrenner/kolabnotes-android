@@ -344,6 +344,7 @@ public class OverviewFragment extends Fragment implements NoteAdapter.NoteSelect
         super.onResume();
 
         toolbar.setBackgroundColor(getResources().getColor(R.color.theme_default_primary));
+        Utils.setToolbarTextAndIconColor(toolbar,true);
         //displayBlankFragment();
 
         Intent startIntent = getActivity().getIntent();

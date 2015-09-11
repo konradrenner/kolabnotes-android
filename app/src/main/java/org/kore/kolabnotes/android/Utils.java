@@ -10,8 +10,12 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.graphics.ColorFilter;
+import android.graphics.ColorMatrixColorFilter;
 import android.graphics.Outline;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -317,7 +321,41 @@ public class Utils {
         return new AccountIdentifier(email,rootFolder);
     }
 
-    public static boolean useLightTextColor(Color colorOfNote){
+    public static void setToolbarTextAndIconColor(Toolbar toolbar, boolean lightText){
+        if(lightText){
+            toolbar.setTitleTextColor(android.graphics.Color.WHITE);
+
+            toolbar.getNavigationIcon().clearColorFilter();
+
+            for(int i=0; i< toolbar.getMenu().size(); i++){
+                toolbar.getMenu().getItem(i).getIcon().clearColorFilter();
+            }
+        }else{
+            toolbar.setTitleTextColor(android.graphics.Color.BLACK);
+
+            //To generate negative image
+            float[] colorMatrix_Negative = {
+                    -1.0f, 0, 0, 0, 255, //red
+                    0, -1.0f, 0, 0, 255, //green
+                    0, 0, -1.0f, 0, 255, //blue
+                    0, 0, 0, 1.0f, 0 //alpha
+            };
+
+            ColorFilter colorFilter_Negative = new ColorMatrixColorFilter(colorMatrix_Negative);
+
+            final Drawable navIcon = toolbar.getNavigationIcon().mutate();
+            navIcon.setColorFilter(colorFilter_Negative);
+            toolbar.setNavigationIcon(navIcon);
+
+            for(int i=0; i< toolbar.getMenu().size(); i++){
+                final Drawable drawable = toolbar.getMenu().getItem(i).getIcon().mutate();
+                drawable.setColorFilter(colorFilter_Negative);
+                toolbar.getMenu().getItem(i).setIcon(drawable);
+            }
+        }
+    }
+
+    public static boolean useLightTextColor(Context context, Color colorOfNote){
         if(colorOfNote == null){
             return false;
         }

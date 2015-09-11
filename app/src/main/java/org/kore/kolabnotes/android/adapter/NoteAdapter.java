@@ -93,7 +93,7 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.ViewHolder> {
             * If spectrum from cyan to red and saturation greater than or equal to 0.5 - text is white.
             * If spectrum is not included in these borders or brightness greater than or equal to 0.8 - text is black.
             */
-            if (Utils.useLightTextColor(note.getColor())) {
+            if (Utils.useLightTextColor(context, note.getColor())) {
                 viewHolder.name.setTextColor(Color.WHITE);
                 viewHolder.classification.setTextColor(Color.WHITE);
                 viewHolder.createdDate.setTextColor(Color.WHITE);
