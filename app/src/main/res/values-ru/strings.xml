@@ -52,7 +52,7 @@
     <string name="error_invalid_password">Пароль слишком короткий</string>
     <string name="hello_world">Привет, мир!</string>
     <string name="imap_root_folder">Корневая папака IMAP (по умолчанию Заметки)</string>
-    <string name="imap_server_url">URL сервера IMAP (без префикса)</string>
+    <string name="imap_server_url">imap.myserver.com</string>
     <string name="kolab_enabled">Расширения Kolab</string>
     <string name="login_label">Войти</string>
     <string name="modificationDate">Последнее изменение</string>
@@ -118,4 +118,5 @@
     <string name="yes">Да</string>
     <string name="account_choose_title">Выберите учетную запись</string>
     <string name="select_button">выбрать</string>
+    <string name="extended_options" >Другие варианты</string>
 </resources>

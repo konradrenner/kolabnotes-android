@@ -12,6 +12,7 @@ import android.view.View;
 import android.widget.AutoCompleteTextView;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.Toast;
 
@@ -47,6 +48,15 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
 
     private AccountManager mAccountManager;
 
+    private Switch mExtendedOptions;
+    private EditText mRootFolderView;
+    private EditText mPortView;
+    private CheckBox mEnableSSLView;
+    private EditText mSyncView;
+    private Switch mKolabView;
+    private EditText mIMAPServerView;
+    private Spinner mAccountType;
+
     /**
      * Called when the activity is first created.
      */
@@ -62,18 +72,42 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
                 submit();
             }
         });
+
+        mPortView = (EditText) findViewById(R.id.port_number);
+        mEnableSSLView = (CheckBox) findViewById(R.id.enable_ssl);
+        mSyncView = (EditText) findViewById(R.id.sync_intervall);
+        mKolabView = (Switch) findViewById(R.id.enable_kolab);
+        mRootFolderView = (EditText)findViewById(R.id.imap_root_folder);
+        mIMAPServerView = (EditText)findViewById(R.id.imap_server_url);
+        //TODO Account type spinner int
+        mAccountType = (Spinner)findViewById(R.id.spinner_accountType);
+
+        mExtendedOptions = (Switch) findViewById(R.id.enable_kolab);
+        mExtendedOptions.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(((Switch)view).isChecked()){
+                    showExtendedOptions();
+                }else{
+                    showExtendedOptions();
+                }
+            }
+        });
     }
+
+    void showExtendedOptions(){
+        //TODO
+    }
+
+    void hideExtendedOptions(){
+        //TODO
+    }
+
     public void submit() {
 
         final EditText mAccountNameView = (EditText)findViewById(R.id.accountName);
-        final EditText mRootFolderView = (EditText)findViewById(R.id.imap_root_folder);
-        final EditText mIMAPServerView = (EditText)findViewById(R.id.imap_server_url);
         final AutoCompleteTextView mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
         final EditText mPasswordView = (EditText) findViewById(R.id.accountPassword);
-        final EditText mPortView = (EditText) findViewById(R.id.port_number);
-        final CheckBox mEnableSSLView = (CheckBox) findViewById(R.id.enable_ssl);
-        final EditText mSyncView = (EditText) findViewById(R.id.sync_intervall);
-        final Switch mKolabView = (Switch) findViewById(R.id.enable_kolab);
 
         Log.d("kolabnotes", TAG + "> Started authenticating");
 

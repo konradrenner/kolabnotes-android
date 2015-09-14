@@ -72,7 +72,7 @@
     <string name="dialog_question_cancel">All changes will be discarded, are you sure?</string>
     <string name="account_name">Account name</string>
     <string name="imap_root_folder">IMAP root folder (default is Notes)</string>
-    <string name="imap_server_url">IMAP server url (without prefix)</string>
+    <string name="imap_server_url">imap.myserver.com</string>
     <string name="port_number">Port number (default is 993)</string>
 
     <string name="error_generic">An error occurred</string>
@@ -102,4 +102,5 @@
     <string name="color">Color</string>
     <string name="account_choose_title">Choose an account</string>
     <string name="select_button">Select</string>
+    <string name="extended_options" >More options</string>
 </resources>
