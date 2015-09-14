@@ -268,7 +268,7 @@ public class DetailFragment extends Fragment{
             toolbar.setBackgroundColor(getResources().getColor(R.color.theme_default_primary));
         }
 
-        Utils.setToolbarTextAndIconColor(toolbar,lightText);
+        Utils.setToolbarTextAndIconColor(activity, toolbar,lightText);
     }
 
     void setHtml(String text){

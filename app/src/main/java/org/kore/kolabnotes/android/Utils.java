@@ -3,6 +3,7 @@ package org.kore.kolabnotes.android;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.appwidget.AppWidgetManager;
 import android.content.ComponentName;
 import android.content.Context;
@@ -16,12 +17,15 @@ import android.graphics.Outline;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.internal.widget.TintImageView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.ViewOutlineProvider;
+import android.view.ViewTreeObserver;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
@@ -38,6 +42,8 @@ import org.kore.kolabnotes.android.widget.ListWidget;
 import org.kore.kolabnotes.android.widget.StickyNoteWidget;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class Utils {
@@ -323,8 +329,9 @@ public class Utils {
         return new AccountIdentifier(email,rootFolder);
     }
 
-    public static void setToolbarTextAndIconColor(Toolbar toolbar, boolean lightText){
+    public static void setToolbarTextAndIconColor(final Activity activity, final Toolbar toolbar, final boolean lightText){
 
+        setOverflowButtonColor(activity,lightText);
         if(lightText){
             toolbar.setTitleTextColor(android.graphics.Color.WHITE);
 
@@ -360,6 +367,28 @@ public class Utils {
                 item.setIcon(drawable);
             }
         }
+    }
+
+    public static void setOverflowButtonColor(final Activity activity, final boolean lightColor){
+        final String overflowDescription = activity.getString(R.string.abc_action_menu_overflow_description);
+        final ViewGroup decorView = (ViewGroup) activity.getWindow().getDecorView();
+        final ViewTreeObserver viewTreeObserver = decorView.getViewTreeObserver();
+
+        viewTreeObserver.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                final ArrayList<View> outViews = new ArrayList<View>();
+                decorView.findViewsWithText(outViews, overflowDescription, View.FIND_VIEWS_WITH_CONTENT_DESCRIPTION);
+
+                if(outViews.isEmpty()){
+                    return;
+                }
+
+                TintImageView overflow = (TintImageView)outViews.get(0);
+                overflow.setColorFilter(lightColor ? android.graphics.Color.WHITE : android.graphics.Color.BLACK);
+                decorView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+            }
+        });
     }
 
     public static boolean useLightTextColor(Context context, Color colorOfNote){
