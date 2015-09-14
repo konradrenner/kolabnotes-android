@@ -15,9 +15,11 @@ import android.graphics.ColorMatrixColorFilter;
 import android.graphics.Outline;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewOutlineProvider;
 import android.widget.AdapterView;
@@ -322,17 +324,19 @@ public class Utils {
     }
 
     public static void setToolbarTextAndIconColor(Toolbar toolbar, boolean lightText){
+
         if(lightText){
             toolbar.setTitleTextColor(android.graphics.Color.WHITE);
 
             toolbar.getNavigationIcon().clearColorFilter();
 
             for(int i=0; i< toolbar.getMenu().size(); i++){
-                toolbar.getMenu().getItem(i).getIcon().clearColorFilter();
+                final MenuItem item = toolbar.getMenu().getItem(i);
+                final Drawable drawable = item.getIcon().mutate();
+                drawable.clearColorFilter();
+                item.setIcon(drawable);
             }
         }else{
-            toolbar.setTitleTextColor(android.graphics.Color.BLACK);
-
             //To generate negative image
             float[] colorMatrix_Negative = {
                     -1.0f, 0, 0, 0, 255, //red
@@ -343,14 +347,17 @@ public class Utils {
 
             ColorFilter colorFilter_Negative = new ColorMatrixColorFilter(colorMatrix_Negative);
 
+            toolbar.setTitleTextColor(android.graphics.Color.BLACK);
+
             final Drawable navIcon = toolbar.getNavigationIcon().mutate();
             navIcon.setColorFilter(colorFilter_Negative);
             toolbar.setNavigationIcon(navIcon);
 
             for(int i=0; i< toolbar.getMenu().size(); i++){
-                final Drawable drawable = toolbar.getMenu().getItem(i).getIcon().mutate();
+                final MenuItem item = toolbar.getMenu().getItem(i);
+                final Drawable drawable = item.getIcon().mutate();
                 drawable.setColorFilter(colorFilter_Negative);
-                toolbar.getMenu().getItem(i).setIcon(drawable);
+                item.setIcon(drawable);
             }
         }
     }
