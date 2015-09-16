@@ -1,0 +1,40 @@
+<resources>
+    <string name="title_activity_settings">Réglages</string>
+    <string name="title_create_notebook">Nouveau carnet de notes</string>
+    <string name="title_create_tag">Nouveau tag</string>
+    <string name="title_dialog_search">Rechercher une note</string>
+    <string name="title_ok">OK</string>
+    <string name="title_share">Partager</string>
+    <string name="title_delete">Supprimer</string>
+    <string name="title_change_classification">Modifier la classification</string>
+
+    <!-- Strings related to Settings -->
+    <!-- Example General main_toolbar -->
+    <string name="pref_header_general">Général</string>
+
+    <string name="pref_title_social_recommendations">Activer les recommandations sociales</string>
+    <string name="pref_description_social_recommendations">Les recommandations des personnes à contacter
+        sont basées sur l&apos;historique de vos messages
+    </string>
+
+    <string name="pref_title_display_name">Nom d&apos;affichage</string>
+    <string name="pref_default_display_name">John Smith</string>
+
+    <string name="pref_title_add_friends_to_messages">Ajouter des amis au message</string>
+
+    <!-- Example main_toolbar for Data & Sync -->
+    <string name="pref_header_data_sync">Données &amp; Synchronisation</string>
+
+    <string name="pref_title_sync_frequency">Fréquence de synchronisation</string>
+
+    <string name="pref_title_system_sync_settings">Réglages de synchronisation système</string>
+
+    <!-- Example main_toolbar for Notifications -->
+    <string name="pref_header_notifications">Notifications</string>
+
+    <string name="pref_title_new_message_notifications">Notifications de nouveau message</string>
+
+    <string name="pref_title_ringtone">Sonnerie</string>
+    <string name="pref_ringtone_silent">Silencieux</string>
+    <string name="pref_title_vibrate">Vibration</string>
+</resources>
