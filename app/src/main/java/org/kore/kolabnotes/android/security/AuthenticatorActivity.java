@@ -89,7 +89,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
                 if(((Switch)view).isChecked()){
                     showExtendedOptions();
                 }else{
-                    showExtendedOptions();
+                    hideExtendedOptions();
                 }
             }
         });

@@ -1,0 +1,14 @@
+<resources>
+    <string name="title_activity_kolab_login">Sign in</string>
+
+    <!-- Strings related to login -->
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Passwort</string>
+    <string name="action_sign_in">Log in</string>
+    <string name="error_invalid_email">Die Email-Adresse ist falsch</string>
+    <string name="error_invalid_password">Das Passwort ist zu kurz</string>
+    <string name="error_incorrect_password">Das Passwort ist falsch</string>
+    <string name="error_connection">Es ist ein Fehler beim Verbindungsaufbau aufgetreten</string>
+    <string name="error_field_required">Dieses Feld muss befüllt werden</string>
+    <string name="error_field_to_low">Der Wert dieses Feld muss zwischen 1 und 90 liegen</string>
+</resources>
