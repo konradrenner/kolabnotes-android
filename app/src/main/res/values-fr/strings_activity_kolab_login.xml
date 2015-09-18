@@ -8,7 +8,7 @@
     <string name="error_invalid_email">Cette adresse email est invalide</string>
     <string name="error_invalid_password">Ce mot de passe est trop court</string>
     <string name="error_incorrect_password">Ce mot de passe est incorrect</string>
-    <string name="error_connection">Une erreur est survenue pendant que la connexion s&apos;établissait</string>
+    <string name="error_connection">Une erreur est survenue pendant que la connexion s\'établissait</string>
     <string name="error_field_required">Ce champ est requis</string>
     <string name="error_field_to_low">Cette valeur doit être comprise entre 1 et 90</string>
 </resources>

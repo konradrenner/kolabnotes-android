@@ -85,7 +85,7 @@
     <string name="title_colorpicker">Choose Color</string>
     <string name="button_add">button_add</string>
     <string name="kolab_enabled">Kolab extensions</string>
-    <string name="sync_intervall">Sync intervall in hours (default 24)</string>
+    <string name="sync_intervall">Sync intervall (default 24)</string>
     <string name="note_not_found">Note not found!</string>
     <string name="create_or_select_text">Select or create a note</string>
     <string name="select_or_create_hint">select or create note icon</string>
@@ -103,4 +103,8 @@
     <string name="account_choose_title">Choose an account</string>
     <string name="select_button">Select</string>
     <string name="extended_options" >More options</string>
+
+    <string name="day">Day</string>
+    <string name="hour">Hour</string>
+    <string name="minute">Minute</string>
 </resources>

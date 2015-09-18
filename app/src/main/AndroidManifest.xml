@@ -46,7 +46,7 @@
         </activity>
         <activity
             android:name=".security.AuthenticatorActivity"
-            android:windowSoftInputMode="adjustResize|stateHidden"
+            android:windowSoftInputMode="adjustPan|stateHidden"
             android:label="@string/login_label" />
 
         <provider

@@ -9,9 +9,13 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.Toast;
@@ -34,6 +38,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
     // Sync interval constants
     public static final long SECONDS_PER_MINUTE = 60L;
     public static final long MINUTES_PER_HOUR = 60L;
+    public static final long HOURS_PER_DAY = 24L;
 
     public final static String KEY_ACCOUNT_NAME = "account_name";
     public final static String KEY_ROOT_FOLDER = "root_folder";
@@ -56,6 +61,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
     private Switch mKolabView;
     private EditText mIMAPServerView;
     private Spinner mAccountType;
+    private Spinner mIntervallType;
 
     /**
      * Called when the activity is first created.
@@ -79,28 +85,63 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
         mKolabView = (Switch) findViewById(R.id.enable_kolab);
         mRootFolderView = (EditText)findViewById(R.id.imap_root_folder);
         mIMAPServerView = (EditText)findViewById(R.id.imap_server_url);
-        //TODO Account type spinner int
         mAccountType = (Spinner)findViewById(R.id.spinner_accountType);
+        mIntervallType = (Spinner)findViewById(R.id.spinner_intervall);
 
-        mExtendedOptions = (Switch) findViewById(R.id.enable_kolab);
-        mExtendedOptions.setOnClickListener(new View.OnClickListener() {
+        mExtendedOptions = (Switch) findViewById(R.id.enable_more_config);
+        mExtendedOptions.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+
             @Override
-            public void onClick(View view) {
-                if(((Switch)view).isChecked()){
-                    showExtendedOptions();
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if(b){
+                   showExtendedOptions();
                 }else{
                     hideExtendedOptions();
                 }
             }
         });
+
+        initAccountTypeSpinner();
+        initIntervallSpinner();
+
+        hideExtendedOptions();
+    }
+
+    void initAccountTypeSpinner(){
+        String[] values = {"KolabNow","Kolab Server","IMAP Server"};
+
+        ArrayAdapter<CharSequence> adapter = new ArrayAdapter<CharSequence>(this, R.layout.accounttype_spinner_item, values);
+        adapter.setDropDownViewResource(R.layout.accounttype_spinner_item);
+        mAccountType.setAdapter(adapter);
+        mAccountType.setSelection(0);
+        mAccountType.setOnItemSelectedListener(new AccountTypeSelectedListener());
+    }
+
+    void initIntervallSpinner(){
+        String[] values = getResources().getStringArray(R.array.sync_intervall_types);
+
+        ArrayAdapter<CharSequence> adapter = new ArrayAdapter<CharSequence>(this, R.layout.intervall_spinner_item, values);
+        adapter.setDropDownViewResource(R.layout.intervall_spinner_item);
+        mIntervallType.setAdapter(adapter);
+        mIntervallType.setSelection(1);
     }
 
     void showExtendedOptions(){
-        //TODO
+        mPortView.setVisibility(View.VISIBLE);
+        mEnableSSLView.setVisibility(View.VISIBLE);
+        mSyncView.setVisibility(View.VISIBLE);
+        mKolabView.setVisibility(View.VISIBLE);
+        mRootFolderView.setVisibility(View.VISIBLE);
+        mIntervallType.setVisibility(View.VISIBLE);
     }
 
     void hideExtendedOptions(){
-        //TODO
+        mPortView.setVisibility(View.INVISIBLE);
+        mEnableSSLView.setVisibility(View.INVISIBLE);
+        mSyncView.setVisibility(View.INVISIBLE);
+        mKolabView.setVisibility(View.INVISIBLE);
+        mRootFolderView.setVisibility(View.INVISIBLE);
+        mIntervallType.setVisibility(View.INVISIBLE);
     }
 
     public void submit() {
@@ -186,10 +227,12 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
                     ContentResolver.setIsSyncable(account, MainActivity.AUTHORITY, 1);
                     ContentResolver.setSyncAutomatically(account, MainActivity.AUTHORITY, true);
 
+
+
                     ContentResolver.addPeriodicSync(account,
                             MainActivity.AUTHORITY,
                             Bundle.EMPTY,
-                            syncIntervall*MINUTES_PER_HOUR*SECONDS_PER_MINUTE);
+                            calculateIntervall(syncIntervall));
 
                     Intent intent = new Intent(this,MainActivity.class);
 
@@ -204,6 +247,15 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
         }
     }
 
+    private long calculateIntervall(long given){
+        if(mIntervallType.getSelectedItemPosition() == 0){
+            return given*SECONDS_PER_MINUTE;
+        }else if(mIntervallType.getSelectedItemPosition() == 0){
+            return given*MINUTES_PER_HOUR*SECONDS_PER_MINUTE;
+        }
+        return given*HOURS_PER_DAY*MINUTES_PER_HOUR*SECONDS_PER_MINUTE;
+    }
+
     private Bundle createAuthBundle(KolabAccount kolabAccount) {
         Bundle bundle = new Bundle();
         bundle.putString(KEY_ACCOUNT_NAME, kolabAccount.getAccountName());
@@ -214,5 +266,40 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
         bundle.putString(KEY_SSL, Boolean.toString(kolabAccount.getAccountInformation().isSSLEnabled()));
         bundle.putString(KEY_KOLAB, Boolean.toString(kolabAccount.getAccountInformation().isFolderAnnotationEnabled()));
         return bundle;
+    }
+
+    class AccountTypeSelectedListener implements AdapterView.OnItemSelectedListener{
+        @Override
+        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+            if(position == 0){
+                setKolabNowValues();
+            }else if(position == 1){
+                setKolabValues();
+            }else{
+                setIMAPValues();
+            }
+        }
+
+        @Override
+        public void onNothingSelected(AdapterView<?> parent) {
+            //nothing
+        }
+
+        private void setKolabNowValues(){
+            mPortView.setText("993");
+            mEnableSSLView.setChecked(true);
+            mKolabView.setChecked(true);
+            mIMAPServerView.setText("imap.kolabnow.com");
+        }
+
+        private void setKolabValues(){
+            mKolabView.setChecked(true);
+            mIMAPServerView.setText("");
+        }
+
+        private void setIMAPValues(){
+            mKolabView.setChecked(false);
+            mIMAPServerView.setText("");
+        }
     }
 }

@@ -7,4 +7,10 @@
         <item>@string/classification</item>
         <item>@string/color</item>
     </string-array>
+
+    <string-array name="sync_intervall_types">
+        <item>@string/minute</item>
+        <item>@string/hour</item>
+        <item>@string/day</item>
+    </string-array>
 </resources>

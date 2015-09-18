@@ -111,7 +111,7 @@
     <string name="title_ok">OK</string>
     <string name="title_share">Teilen</string>
     <string name="kolab_enabled">Kolaberweiterungen</string>
-    <string name="sync_intervall">Sync-Intervall in Stunden (Standard 24)</string>
+    <string name="sync_intervall">Sync-Intervall (Standard 24)</string>
     <string name="note_not_found">Notiz nicht gefunden!</string>
     <string name="create_or_select_text">Erstellen oder wählen Sie eine Notiz aus</string>
     <string name="select_or_create_hint">select or create note icon</string>
@@ -132,4 +132,8 @@
     <string name="account_choose_title">Kontoauswahl</string>
     <string name="select_button">Übernehmen</string>
     <string name="extended_options" >Mehr Optionen</string>
+
+    <string name="day">Tag(e)</string>
+    <string name="hour">Stunde(n)</string>
+    <string name="minute">Minute(n)</string>
 </resources>

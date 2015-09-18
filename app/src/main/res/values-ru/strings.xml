@@ -95,7 +95,7 @@
     <string name="sticky_note_name">Kolab стикеры</string>
     <string name="summary_text">Большой текст</string>
     <string name="sync_failed">Ошибка синхронизации</string>
-    <string name="sync_intervall">Интервал синхронизации в часах (по умолчанию 24)</string>
+    <string name="sync_intervall">Интервал синхронизации (по умолчанию 24)</string>
     <string name="tags">Метки</string>
     <string name="text_description">Средний текст</string>
     <string name="text_summary">Название</string>
@@ -119,4 +119,8 @@
     <string name="account_choose_title">Выберите учетную запись</string>
     <string name="select_button">выбрать</string>
     <string name="extended_options" >Другие варианты</string>
+
+    <string name="day">день</string>
+    <string name="hour">час</string>
+    <string name="minute">минут</string>
 </resources>

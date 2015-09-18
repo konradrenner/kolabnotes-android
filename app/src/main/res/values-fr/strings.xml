@@ -26,7 +26,7 @@
     <string name="radio_confidential">Confidentielle</string>
     <string name="radio_private">Privée</string>
 
-    <string name="activity_detail_title">Détails d&apos;activité</string>
+    <string name="activity_detail_title">Détails d\'activité</string>
 
     <string name="drawer_item_tags">Tags</string>
     <string name="drawer_item_notebooks">Carnets de notes</string>
@@ -38,7 +38,7 @@
 
     <string name="dialog_nointernet">Pas de connexion à Internet !</string>
     <string name="dialog_uploading">Exemple de progression&#8230;</string>
-    <string name="dialog_processinganduploading">Affichage d&apos;un exemple de progression. Veuillez être patient ! (Ceci ne fait rien d&apos;autre que stopper l&apos;pplication pendant 100ms)</string>
+    <string name="dialog_processinganduploading">Affichage d\'un exemple de progression. Veuillez être patient ! (Ceci ne fait rien d\'autre que stopper l\'pplication pendant 100ms)</string>
     <string name="title_activity_phone">Activité du téléphone</string>
 
     <string name="hello_world">Hello world !</string>
@@ -59,9 +59,9 @@
     <string name="dialog_input_text_notebook">Nouveau carnet de notes</string>
     <string name="dialog_input_text_search">Rechercher dans cette note</string>
     <string name="dialog_delete_note">Supprimer cette note</string>
-    <string name="dialog_cancel_warning">Annuler l&apos;avertissement</string>
+    <string name="dialog_cancel_warning">Annuler l\'avertissement</string>
     <string name="dialog_delete_nb_warning">Supprimer ce carnet de notes</string>
-    <string name="dialog_question_delete_nb">Ce carnet (et toutes les notes qu&apos;il contient) va être supprimé, êtes vous certain de le vouloir ?</string>
+    <string name="dialog_question_delete_nb">Ce carnet (et toutes les notes qu\'il contient) va être supprimé, êtes vous certain de le vouloir ?</string>
     <string name="dialog_input_text_tag">Nouveau tag</string>
     <string name="dialog_change_classification">Modifier la classification</string>
     <string name="dialog_change_tags">Modifier les tags</string>
@@ -85,7 +85,7 @@
     <string name="title_colorpicker">Choisir une couleur</string>
     <string name="button_add">button_add</string>
     <string name="kolab_enabled">Extensions Kolab</string>
-    <string name="sync_intervall">Intervalle de synchronisation en heures (par défaut : 24)</string>
+    <string name="sync_intervall">Intervalle de synchronisation (par défaut : 24)</string>
     <string name="note_not_found">Note non trouvée !</string>
     <string name="create_or_select_text">Sélectionner ou créer une note</string>
     <string name="select_or_create_hint">Sélectionner ou créer une icône de note</string>
@@ -102,5 +102,10 @@
     <string name="color">Couleur</string>
     <string name="account_choose_title">Choosir un compte</string>
     <string name="select_button">Sélectionner</string>
-    <string name="extended_options" >Plus d&apos;options</string>
+    <string name="extended_options" >Plus d\'options</string>
+
+
+    <string name="day">jour</string>
+    <string name="hour">heure</string>
+    <string name="minute">minute</string>
 </resources>

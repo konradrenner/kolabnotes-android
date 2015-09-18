@@ -363,6 +363,7 @@ public class Utils {
             for(int i=0; i< toolbar.getMenu().size(); i++){
                 final MenuItem item = toolbar.getMenu().getItem(i);
                 final Drawable drawable = item.getIcon().mutate();
+                drawable.clearColorFilter();
                 drawable.setColorFilter(colorFilter_Negative);
                 item.setIcon(drawable);
             }
