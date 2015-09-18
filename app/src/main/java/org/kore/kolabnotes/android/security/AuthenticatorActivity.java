@@ -23,6 +23,7 @@ import android.widget.Toast;
 import org.kore.kolab.notes.AccountInformation;
 import org.kore.kolabnotes.android.MainActivity;
 import org.kore.kolabnotes.android.R;
+import org.kore.kolabnotes.android.Utils;
 
 /**
  * The Authenticator activity.
@@ -47,6 +48,9 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
     public final static String KEY_PORT = "port";
     public final static String KEY_SSL = "enablessl";
     public final static String KEY_KOLAB = "enablekolab";
+    public final static String KEY_INTERVALL_TYPE = "intervalltype";
+    public final static String KEY_INTERVALL = "intervall";
+    public final static String KEY_ACCOUNT_TYPE = "accounttype";
 
 
     private final String TAG = this.getClass().getSimpleName();
@@ -62,6 +66,13 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
     private EditText mIMAPServerView;
     private Spinner mAccountType;
     private Spinner mIntervallType;
+
+    private EditText mAccountNameView;
+    private AutoCompleteTextView mEmailView;
+    private EditText mPasswordView;
+
+    private boolean changeAccount;
+    private Intent startIntent;
 
     /**
      * Called when the activity is first created.
@@ -88,6 +99,10 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
         mAccountType = (Spinner)findViewById(R.id.spinner_accountType);
         mIntervallType = (Spinner)findViewById(R.id.spinner_intervall);
 
+        mAccountNameView = (EditText)findViewById(R.id.accountName);
+        mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
+        mPasswordView = (EditText) findViewById(R.id.accountPassword);
+
         mExtendedOptions = (Switch) findViewById(R.id.enable_more_config);
         mExtendedOptions.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 
@@ -105,6 +120,53 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
         initIntervallSpinner();
 
         hideExtendedOptions();
+
+        startIntent = getIntent();
+        if(startIntent != null){
+            initViews(startIntent.getStringExtra(Utils.INTENT_ACCOUNT_EMAIL), startIntent.getStringExtra(Utils.INTENT_ACCOUNT_ROOT_FOLDER));
+        }
+    }
+
+    private void initViews(String email, String rootFolder){
+       if((email == null || "local".equals(email)) && (rootFolder == null || "Notes".equals(rootFolder)) ){
+           return;
+       }
+
+        changeAccount = true;
+
+        Account[] accounts = mAccountManager.getAccountsByType(AuthenticatorActivity.ARG_ACCOUNT_TYPE);
+
+        for (Account acc : accounts) {
+            String pemail = mAccountManager.getUserData(acc,AuthenticatorActivity.KEY_EMAIL);
+            String name = mAccountManager.getUserData(acc,AuthenticatorActivity.KEY_ACCOUNT_NAME);
+            String prootFolder = mAccountManager.getUserData(acc,AuthenticatorActivity.KEY_ROOT_FOLDER);
+
+            if(pemail.equals(email) && prootFolder.equals(rootFolder)){
+                mAccountNameView.setText(name);
+                mRootFolderView.setText(prootFolder);
+                mEmailView.setText(pemail);
+                mPasswordView.setText(mAccountManager.getPassword(acc));
+
+                final String isKolab = mAccountManager.getUserData(acc, AuthenticatorActivity.KEY_KOLAB);
+                final String port = mAccountManager.getUserData(acc, AuthenticatorActivity.KEY_PORT);
+                final String server = mAccountManager.getUserData(acc, AuthenticatorActivity.KEY_SERVER);
+                final String isSSL = mAccountManager.getUserData(acc, AuthenticatorActivity.KEY_SSL);
+                final String accountType = mAccountManager.getUserData(acc, AuthenticatorActivity.KEY_ACCOUNT_TYPE);
+                final String intervallType = mAccountManager.getUserData(acc, AuthenticatorActivity.KEY_INTERVALL_TYPE);
+                final String intervall = mAccountManager.getUserData(acc, AuthenticatorActivity.KEY_INTERVALL);
+
+                mIMAPServerView.setText(server);
+                mPortView.setText(port);
+                mAccountType.setSelection(Integer.parseInt(accountType));
+                mIntervallType.setSelection(Integer.parseInt(intervallType));
+                mSyncView.setText(intervall);
+
+                mKolabView.setChecked(Boolean.parseBoolean(isKolab));
+                mEnableSSLView.setChecked(Boolean.parseBoolean(isSSL));
+
+                return;
+            }
+        }
     }
 
     void initAccountTypeSpinner(){
@@ -145,10 +207,6 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
     }
 
     public void submit() {
-
-        final EditText mAccountNameView = (EditText)findViewById(R.id.accountName);
-        final AutoCompleteTextView mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
-        final EditText mPasswordView = (EditText) findViewById(R.id.accountPassword);
 
         Log.d("kolabnotes", TAG + "> Started authenticating");
 
@@ -219,26 +277,31 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
                 AccountInformation accountInformation = builder.build();
                 KolabAccount serverInfo = new KolabAccount(accountName,rootFolder,accountInformation);
 
-                Bundle userData = createAuthBundle(serverInfo);
+                final long intervall = calculateIntervall(syncIntervall);
+                Bundle userData = createAuthBundle(serverInfo,intervall);
 
-                if (mAccountManager.addAccountExplicitly(account, password, userData)) {
-                    Toast.makeText(getBaseContext(), R.string.signup_ok, Toast.LENGTH_SHORT).show();
+                if(!changeAccount) {
+                    if (mAccountManager.addAccountExplicitly(account, password, userData)) {
+                        Toast.makeText(getBaseContext(), R.string.signup_ok, Toast.LENGTH_SHORT).show();
 
-                    ContentResolver.setIsSyncable(account, MainActivity.AUTHORITY, 1);
-                    ContentResolver.setSyncAutomatically(account, MainActivity.AUTHORITY, true);
+                        ContentResolver.setIsSyncable(account, MainActivity.AUTHORITY, 1);
+                        ContentResolver.setSyncAutomatically(account, MainActivity.AUTHORITY, true);
 
 
+                        ContentResolver.addPeriodicSync(account,
+                                MainActivity.AUTHORITY,
+                                Bundle.EMPTY,
+                                intervall
+                        );
 
-                    ContentResolver.addPeriodicSync(account,
-                            MainActivity.AUTHORITY,
-                            Bundle.EMPTY,
-                            calculateIntervall(syncIntervall));
+                        Intent intent = new Intent(this, MainActivity.class);
+                        startActivity(intent);
 
-                    Intent intent = new Intent(this,MainActivity.class);
-
-                    startActivity(intent);
+                    } else {
+                        Toast.makeText(getBaseContext(), R.string.error_duplicate_account, Toast.LENGTH_LONG).show();
+                    }
                 }else{
-                    Toast.makeText(getBaseContext(), R.string.error_duplicate_account, Toast.LENGTH_LONG).show();
+                    //TODO
                 }
             }
 
@@ -256,7 +319,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
         return given*HOURS_PER_DAY*MINUTES_PER_HOUR*SECONDS_PER_MINUTE;
     }
 
-    private Bundle createAuthBundle(KolabAccount kolabAccount) {
+    private Bundle createAuthBundle(KolabAccount kolabAccount, long intervall) {
         Bundle bundle = new Bundle();
         bundle.putString(KEY_ACCOUNT_NAME, kolabAccount.getAccountName());
         bundle.putString(KEY_ROOT_FOLDER, kolabAccount.getRootFolder());
@@ -265,6 +328,11 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
         bundle.putString(KEY_PORT, Integer.toString(kolabAccount.getAccountInformation().getPort()));
         bundle.putString(KEY_SSL, Boolean.toString(kolabAccount.getAccountInformation().isSSLEnabled()));
         bundle.putString(KEY_KOLAB, Boolean.toString(kolabAccount.getAccountInformation().isFolderAnnotationEnabled()));
+
+        bundle.putString(KEY_ACCOUNT_TYPE,Integer.toString(mAccountType.getSelectedItemPosition()));
+        bundle.putString(KEY_INTERVALL_TYPE,Integer.toString(mIntervallType.getSelectedItemPosition()));
+        bundle.putString(KEY_INTERVALL,Long.toString(intervall));
+
         return bundle;
     }
 

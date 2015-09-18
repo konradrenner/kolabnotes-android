@@ -31,4 +31,9 @@
         app:showAsAction="ifRoom"
         android:icon="@drawable/ic_action_add_person"
         android:title="@string/title_add_account" />
+
+    <item android:id="@+id/update_account_menu"
+        app:showAsAction="ifRoom"
+        android:icon="@drawable/ic_action_settings"
+        android:title="@string/title_update_account" />
 </menu>

@@ -559,13 +559,19 @@ public class OverviewFragment extends Fragment implements NoteAdapter.NoteSelect
                 break;
             case R.id.create_account_menu:
                 Intent intent = new Intent(activity,AuthenticatorActivity.class);
-
                 startActivity(intent);
                 break;
             case R.id.create_sort_menu:
                 AlertDialog newSortingDialog = createSortingDialog();
                 newSortingDialog.show();
                 break;
+            case R.id.update_account_menu:
+                Intent updateIntent = new Intent(activity,AuthenticatorActivity.class);
+                final ActiveAccount activeAccount = activeAccountRepository.getActiveAccount();
+                updateIntent.putExtra(Utils.INTENT_ACCOUNT_EMAIL,activeAccount.getAccount());
+                updateIntent.putExtra(Utils.INTENT_ACCOUNT_ROOT_FOLDER,activeAccount.getRootFolder());
+
+                startActivity(updateIntent);
             default:
                 activity.dispatchMenuEvent(item);
                 break;

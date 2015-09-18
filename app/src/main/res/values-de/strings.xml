@@ -65,6 +65,7 @@
     <string name="error_duplicate_account">Kann Konto nicht erstellen (existiert bereits eines mit gleichem Namen?)</string>
     <string name="enable_ssl">SSL aktiviert</string>
     <string name="title_add_account">Konto hinzufügen</string>
+    <string name="title_update_account">Konto ändern</string>
     <string name="configure">Konfigurieren</string>
     <string name="add_widget">Widget hinzufügen</string>
     <string name="title_colorpicker">Farbauswahl</string>
