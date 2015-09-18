@@ -245,7 +245,6 @@ public class DetailFragment extends Fragment{
                 }
 
                 selectedColor = note.getColor();
-                setToolbarColor();
 
                 if(notebook == null){
                     notebook = noteRepository.getUIDofNotebook(activeAccount.getAccount(), activeAccount.getRootFolder(), uid);
@@ -258,6 +257,8 @@ public class DetailFragment extends Fragment{
         setNotebook(activeAccount, notebook, startNotebook != null);
         intialNotebookName = getNotebookSpinnerSelectionName();
     }
+
+
 
     void setToolbarColor(){
         boolean lightText = true;
@@ -601,6 +602,8 @@ public class DetailFragment extends Fragment{
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.detail_toolbar, menu);
+
+        setToolbarColor();
     }
 
     String setShareIntentSubject(Intent shareIntent){
