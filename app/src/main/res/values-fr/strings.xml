@@ -79,6 +79,7 @@
     <string name="error_duplicate_account">Impossible de créer ce compte (un compte avec ce nom existe-t-il déjà ?)</string>
     <string name="enable_ssl">SSL activée</string>
     <string name="title_add_account">Ajouter un compte</string>
+    <string name="local_account_change">Compte local ne peut pas être changé</string>
     <string name="title_update_account">changement compte</string>
     <string name="appwidget_text">EXEMPLE</string>
     <string name="configure">Configurer</string>

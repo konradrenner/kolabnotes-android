@@ -566,12 +566,18 @@ public class OverviewFragment extends Fragment implements NoteAdapter.NoteSelect
                 newSortingDialog.show();
                 break;
             case R.id.update_account_menu:
-                Intent updateIntent = new Intent(activity,AuthenticatorActivity.class);
                 final ActiveAccount activeAccount = activeAccountRepository.getActiveAccount();
-                updateIntent.putExtra(Utils.INTENT_ACCOUNT_EMAIL,activeAccount.getAccount());
-                updateIntent.putExtra(Utils.INTENT_ACCOUNT_ROOT_FOLDER,activeAccount.getRootFolder());
 
-                startActivity(updateIntent);
+                if(activeAccount.getAccount().equals("local") && activeAccount.getRootFolder().equals("Notes")) {
+                    Toast.makeText(activity,R.string.local_account_change,Toast.LENGTH_LONG).show();
+                }else {
+
+                    Intent updateIntent = new Intent(activity, AuthenticatorActivity.class);
+                    updateIntent.putExtra(Utils.INTENT_ACCOUNT_EMAIL, activeAccount.getAccount());
+                    updateIntent.putExtra(Utils.INTENT_ACCOUNT_ROOT_FOLDER, activeAccount.getRootFolder());
+
+                    startActivity(updateIntent);
+                }
             default:
                 activity.dispatchMenuEvent(item);
                 break;

@@ -66,6 +66,7 @@
     <string name="dialog_change_classification">Edit Classification</string>
     <string name="dialog_change_tags">Edit Tags</string>
     <string name="no_nb_selected">No notebook selected</string>
+    <string name="local_account_change">Local account cannot be changed</string>
     <string name="add">add</string>
     <string name="title_edit_tag">Edit Tags</string>
     <string name="dialog_question_delete">Do you really want to delete this note?</string>

@@ -13,6 +13,7 @@
     <string name="cancel">Отменить</string>
     <string name="classification">Группа</string>
     <string name="color">Цвет</string>
+    <string name="local_account_change">Местное счет не может быть изменен</string>
     <string name="configure">Настроить</string>
     <string name="create_or_select_text">Выбрать или создать заметку</string>
     <string name="creationDate">Создана</string>

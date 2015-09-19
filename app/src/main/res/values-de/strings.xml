@@ -66,6 +66,7 @@
     <string name="enable_ssl">SSL aktiviert</string>
     <string name="title_add_account">Konto hinzufügen</string>
     <string name="title_update_account">Konto ändern</string>
+    <string name="local_account_change">Lokales Konto kann nicht geändert werden</string>
     <string name="configure">Konfigurieren</string>
     <string name="add_widget">Widget hinzufügen</string>
     <string name="title_colorpicker">Farbauswahl</string>
