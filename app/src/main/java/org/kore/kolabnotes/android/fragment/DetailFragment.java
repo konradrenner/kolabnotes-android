@@ -28,6 +28,7 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.kore.kolab.notes.AuditInformation;
@@ -49,6 +50,7 @@ import org.kore.kolabnotes.android.content.TagRepository;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.sql.Timestamp;
+import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -669,6 +671,9 @@ public class DetailFragment extends Fragment{
             case R.id.colorpicker:
                 chooseColor();
                 break;
+            case R.id.metainformation:
+                showMetainformation();
+                break;
             case R.id.share:
                 Intent shareIntent = new Intent();
                 shareIntent.setAction(Intent.ACTION_SEND);
@@ -696,6 +701,39 @@ public class DetailFragment extends Fragment{
             }
         });
         dialog.show();
+    }
+
+    void showMetainformation(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+
+        builder.setTitle(R.string.title_metainformation);
+
+        LayoutInflater inflater = activity.getLayoutInflater();
+        View view = inflater.inflate(R.layout.dialog_metainformation, null);
+
+        builder.setView(view);
+
+        builder.setNeutralButton(R.string.ok, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                //just close dialog
+            }
+        });
+
+        final DateFormat dateFormat = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.DEFAULT);
+
+        final Timestamp now = new Timestamp(System.currentTimeMillis());
+        final String productID = note == null ? "kolabnotes-android" : note.getIdentification().getProductId();
+        final String uid = note == null ? "" : note.getIdentification().getUid();
+        final Timestamp createdAt = note == null ? now : note.getAuditInformation().getCreationDate();
+        final Timestamp modification = note == null ? now : note.getAuditInformation().getLastModificationDate();
+
+        ((TextView) view.findViewById(R.id.createdDate)).setText(dateFormat.format(createdAt));
+        ((TextView) view.findViewById(R.id.modificationDate)).setText(dateFormat.format(modification));
+        ((TextView) view.findViewById(R.id.productID)).setText(productID);
+        ((TextView) view.findViewById(R.id.UID)).setText(uid);
+
+        builder.show();
     }
 
     void editClassification(){

@@ -124,4 +124,7 @@
     <string name="day">Tag(e)</string>
     <string name="hour">Stunde(n)</string>
     <string name="minute">Minute(n)</string>
+    <string name="title_metainformation">Metainformationen</string>
+    <string name="productID">Produkt ID</string>
+    <string name="uid">UID</string>
 </resources>

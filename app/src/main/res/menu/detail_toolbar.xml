@@ -22,6 +22,11 @@
         android:icon="@drawable/ic_action_choose_color"
         android:title="@string/title_colorpicker"/>
 
+    <item android:id="@+id/metainformation"
+        app:showAsAction="ifRoom"
+        android:icon="@drawable/ic_info_white_48dp"
+        android:title="@string/title_metainformation"/>
+
     <item android:id="@+id/share"
         app:showAsAction="ifRoom"
         android:icon="@drawable/ic_action_share"
