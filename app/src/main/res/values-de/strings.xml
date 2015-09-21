@@ -127,4 +127,5 @@
     <string name="title_metainformation">Metainformationen</string>
     <string name="productID">Produkt ID</string>
     <string name="uid">UID</string>
+    <string name="title_characteristics">Eigenschaften</string>
 </resources>

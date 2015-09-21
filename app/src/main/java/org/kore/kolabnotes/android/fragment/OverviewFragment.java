@@ -530,6 +530,13 @@ public class OverviewFragment extends Fragment implements NoteAdapter.NoteSelect
     }
 
     @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        super.onPrepareOptionsMenu(menu);
+        menu.findItem(R.id.show_metainformation).setChecked(Utils.getShowMetainformation(activity));
+        menu.findItem(R.id.show_characteristics).setChecked(Utils.getShowCharacteristics(activity));
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()){
             case R.id.create_notebook_menu:
@@ -578,6 +585,30 @@ public class OverviewFragment extends Fragment implements NoteAdapter.NoteSelect
 
                     startActivity(updateIntent);
                 }
+            case R.id.show_metainformation:
+                final boolean isChecked = !item.isChecked();
+                item.setChecked(isChecked);
+                Utils.saveShowMetainformation(activity,isChecked);
+
+                activity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mAdapter.setMetainformationVisible(isChecked);
+                    }
+                });
+                break;
+            case R.id.show_characteristics:
+                final boolean isCChecked = !item.isChecked();
+                item.setChecked(isCChecked);
+                Utils.saveShowCharacteristics(activity, isCChecked);
+
+                activity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mAdapter.setCharacteristicsVisible(isCChecked);
+                    }
+                });
+                break;
             default:
                 activity.dispatchMenuEvent(item);
                 break;

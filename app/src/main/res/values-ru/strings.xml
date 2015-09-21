@@ -114,4 +114,5 @@
     <string name="title_metainformation">метаинформации</string>
     <string name="productID">Код товара</string>
     <string name="uid">UID</string>
+    <string name="title_characteristics">характеристика</string>
 </resources>

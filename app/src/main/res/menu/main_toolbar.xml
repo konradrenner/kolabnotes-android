@@ -27,6 +27,16 @@
         android:icon="@drawable/ic_action_sort_by_size"
         android:title="@string/title_dialog_sorting" />
 
+    <item android:id="@+id/show_characteristics"
+        app:showAsAction="never"
+        android:checkable="true"
+        android:title="@string/title_characteristics" />
+
+    <item android:id="@+id/show_metainformation"
+        app:showAsAction="never"
+        android:checkable="true"
+        android:title="@string/title_metainformation" />
+
     <item android:id="@id/create_account_menu"
         app:showAsAction="ifRoom"
         android:icon="@drawable/ic_action_add_person"

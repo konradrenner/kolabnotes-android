@@ -110,7 +110,8 @@
     <string name="day">jour</string>
     <string name="hour">heure</string>
     <string name="minute">minute</string>
-    <string name="title_metainformation">métainformation</string>
+    <string name="title_metainformation">Métainformation</string>
     <string name="productID">ID de produit</string>
     <string name="uid">UID</string>
+    <string name="title_characteristics">Caractéristiques</string>
 </resources>

@@ -205,6 +205,38 @@ public class Utils {
         return new Timestamp(millis);
     }
 
+    public static void saveShowMetainformation(Context context, boolean showMetainformation) {
+        SharedPreferences.Editor prefs = context.getSharedPreferences("org.kore.kolabnotes.android.widget.MainActivity", 0).edit();
+        prefs.putBoolean("metainformation", showMetainformation);
+        prefs.commit();
+    }
+
+    public static boolean getShowMetainformation(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences("org.kore.kolabnotes.android.widget.MainActivity", 0);
+        if(prefs == null){
+            Log.d("getNoteSorting","MainActivity prefs are null");
+            return true;
+        }
+        return prefs.getBoolean("metainformation", true);
+
+    }
+
+    public static void saveShowCharacteristics(Context context, boolean showCharacteristics) {
+        SharedPreferences.Editor prefs = context.getSharedPreferences("org.kore.kolabnotes.android.widget.MainActivity", 0).edit();
+        prefs.putBoolean("characteristics", showCharacteristics);
+        prefs.commit();
+    }
+
+    public static boolean getShowCharacteristics(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences("org.kore.kolabnotes.android.widget.MainActivity", 0);
+        if(prefs == null){
+            Log.d("getNoteSorting","MainActivity prefs are null");
+            return true;
+        }
+        return prefs.getBoolean("characteristics", true);
+
+    }
+
     public static void saveNoteSorting(Context context, NoteSorting noteSorting) {
         SharedPreferences.Editor prefs = context.getSharedPreferences("org.kore.kolabnotes.android.widget.MainActivity", 0).edit();
         prefs.putString("direction", noteSorting.getDirection().toString());
@@ -339,9 +371,11 @@ public class Utils {
 
             for(int i=0; i< toolbar.getMenu().size(); i++){
                 final MenuItem item = toolbar.getMenu().getItem(i);
-                final Drawable drawable = item.getIcon().mutate();
-                drawable.clearColorFilter();
-                item.setIcon(drawable);
+                if(item.getIcon() != null) {
+                    final Drawable drawable = item.getIcon().mutate();
+                    drawable.clearColorFilter();
+                    item.setIcon(drawable);
+                }
             }
         }else{
             //To generate negative image
@@ -362,10 +396,12 @@ public class Utils {
 
             for(int i=0; i< toolbar.getMenu().size(); i++){
                 final MenuItem item = toolbar.getMenu().getItem(i);
-                final Drawable drawable = item.getIcon().mutate();
-                drawable.clearColorFilter();
-                drawable.setColorFilter(colorFilter_Negative);
-                item.setIcon(drawable);
+                if(item.getIcon() != null) {
+                    final Drawable drawable = item.getIcon().mutate();
+                    drawable.clearColorFilter();
+                    drawable.setColorFilter(colorFilter_Negative);
+                    item.setIcon(drawable);
+                }
             }
         }
     }

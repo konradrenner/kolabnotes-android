@@ -18,6 +18,7 @@ import org.kore.kolabnotes.android.R;
 import org.kore.kolabnotes.android.Utils;
 
 import java.text.DateFormat;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -29,12 +30,15 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.ViewHolder> {
     private NoteSelectedListener listener;
     private DateFormat dateFormatter;
 
+    private List<ViewHolder> views;
+
     public NoteAdapter(List<Note> notes, int rowLayout, Context context, NoteSelectedListener listener) {
         this.notes = notes;
         this.rowLayout = rowLayout;
         this.context = context;
         this.listener = listener;
         this.dateFormatter = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
+        views = new ArrayList<>(notes.size());
     }
 
 
@@ -60,6 +64,31 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.ViewHolder> {
         View v = LayoutInflater.from(viewGroup.getContext()).inflate(rowLayout, viewGroup, false);
 
         return new ViewHolder(v);
+    }
+
+
+    public void setMetainformationVisible(boolean value){
+        for(ViewHolder holder : this.views){
+            if(value){
+                holder.showMetainformation();
+            }else{
+                holder.hideMetainformation();
+            }
+        }
+
+        notifyDataSetChanged();
+    }
+
+    public void setCharacteristicsVisible(boolean value){
+        for(ViewHolder holder : this.views){
+            if(value){
+                holder.showCharacteristics();
+            }else{
+                holder.hideCharacteristics();
+            }
+        }
+
+        notifyDataSetChanged();
     }
 
     @Override
@@ -124,6 +153,18 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.ViewHolder> {
         Utils.setElevation(viewHolder.cardView,5);
 
         viewHolder.itemView.setOnClickListener(new ClickListener(i));
+
+        if(Utils.getShowMetainformation(context)){
+            viewHolder.showMetainformation();
+        }else{
+            viewHolder.hideMetainformation();
+        }
+
+        if(Utils.getShowCharacteristics(context)){
+            viewHolder.showCharacteristics();
+        }else{
+            viewHolder.hideCharacteristics();
+        }
     }
 
     class ClickListener implements View.OnClickListener{
@@ -169,6 +210,26 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.ViewHolder> {
             modificationDate = (TextView) itemView.findViewById(R.id.modificationDate);
             categories = (TextView) itemView.findViewById(R.id.categories);
             cardView = (CardView)itemView;
+        }
+
+        void hideMetainformation(){
+            createdDate.setVisibility(View.GONE);
+            modificationDate.setVisibility(View.GONE);
+        }
+
+        void showMetainformation(){
+            createdDate.setVisibility(View.VISIBLE);
+            modificationDate.setVisibility(View.VISIBLE);
+        }
+
+        void hideCharacteristics(){
+            classification.setVisibility(View.GONE);
+            categories.setVisibility(View.GONE);
+        }
+
+        void showCharacteristics(){
+            classification.setVisibility(View.VISIBLE);
+            categories.setVisibility(View.VISIBLE);
         }
     }
 

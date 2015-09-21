@@ -112,4 +112,5 @@
     <string name="title_metainformation">Metainformation</string>
     <string name="productID">Product ID</string>
     <string name="uid">UID</string>
+    <string name="title_characteristics">Characteristics</string>
 </resources>
