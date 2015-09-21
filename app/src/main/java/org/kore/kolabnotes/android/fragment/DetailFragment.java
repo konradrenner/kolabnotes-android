@@ -38,6 +38,7 @@ import org.kore.kolab.notes.Notebook;
 import org.kore.kolab.notes.Tag;
 import org.kore.kolabnotes.android.R;
 import org.kore.kolabnotes.android.Utils;
+import org.kore.kolabnotes.android.content.AccountIdentifier;
 import org.kore.kolabnotes.android.content.ActiveAccount;
 import org.kore.kolabnotes.android.content.ActiveAccountRepository;
 import org.kore.kolabnotes.android.content.NoteRepository;
@@ -220,9 +221,16 @@ public class DetailFragment extends Fragment{
 
         toolbar.setTitle(Utils.getNameOfActiveAccount(activity, activeAccount.getAccount(), activeAccount.getRootFolder()));
 
-        initSpinner();
-
         if(uid != null) {
+
+            //if a note was selected from the "all notes" overview
+            final AccountIdentifier accountFromNote = noteRepository.getAccountFromNote(uid);
+            if(!activeAccount.getAccount().equals(accountFromNote.getAccount()) || !activeAccount.getRootFolder().equals(accountFromNote.getRootFolder())){
+                activeAccount = activeAccountRepository.switchAccount(accountFromNote.getAccount(),accountFromNote.getRootFolder());
+            }
+
+            initSpinner();
+
             note = noteRepository.getByUID(activeAccount.getAccount(), activeAccount.getRootFolder(), uid);
 
             //Maybe the note got deleted (sync happend after a click on a note was done) => Issues 34 on GitHub
@@ -251,6 +259,7 @@ public class DetailFragment extends Fragment{
                 }
             }
         }else{
+            initSpinner();
             isNewNote = true;
         }
 

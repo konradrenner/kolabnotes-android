@@ -286,6 +286,26 @@ public class NoteRepository {
         return note;
     }
 
+    public AccountIdentifier getAccountFromNote(String uid) {
+        openReadonly();
+        Cursor cursor = database.query(DatabaseHelper.TABLE_NOTES,
+                allColumns,
+                        DatabaseHelper.COLUMN_UID + " = '" + uid+"' AND "+
+                        DatabaseHelper.COLUMN_DISCRIMINATOR+" = '"+DatabaseHelper.DESCRIMINATOR_NOTE+"' ",
+                null,
+                null,
+                null,
+                DatabaseHelper.COLUMN_MODIFICATIONDATE+" DESC");
+
+        AccountIdentifier ident = null;
+        if (cursor.moveToNext()) {
+            ident = new AccountIdentifier(cursor.getString(1),cursor.getString(2));
+        }
+        cursor.close();
+        close();
+        return ident;
+    }
+
     public String getUIDofNotebook(String account, String rootFolder,String uid) {
         openReadonly();
         Cursor cursor = database.query(DatabaseHelper.TABLE_NOTES,
