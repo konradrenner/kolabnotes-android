@@ -33,6 +33,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public static final String TABLE_TAGS = "tags";
     public static final String COLUMN_TAGNAME = "tagname";
+    public static final String COLUMN_PRIORITY = "priority";
 
     public static final String TABLE_NOTE_TAGS = "notes_tags";
     public static final String COLUMN_IDNOTE = "id_note";
@@ -42,7 +43,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String COLUMN_MODIFICATIONTYPE = "modificationType";
 
     private static final String DATABASE_NAME = "kolabnotes.db";
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
 
     // Database creation sql statement
     private static final String CREATE_NOTES = "create table "
@@ -64,7 +65,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String CREATE_TAGS = "create table "
             + TABLE_TAGS +
             "(" + COLUMN_ID+ " integer primary key autoincrement, "
-            + COLUMN_TAGNAME + " text not null unique );";
+            + COLUMN_ACCOUNT + " text not null, "
+            + COLUMN_ROOT_FOLDER + " text not null, "
+            + COLUMN_COLOR + " text, "
+            + COLUMN_PRIORITY + " integer, "
+            + COLUMN_TAGNAME + " text not null );";
 
     private static final String CREATE_TAGS_NOTES = "create table "
             + TABLE_NOTE_TAGS +
@@ -114,15 +119,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        Log.w(DatabaseHelper.class.getName(),
-                "Upgrading database from version " + oldVersion + " to "
-                        + newVersion + ", which will destroy all old data");
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_MODIFICATION);
+        Log.w(DatabaseHelper.class.getName(), "Upgrading database from version " + oldVersion + " to version "+ newVersion);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_NOTE_TAGS);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_TAGS);
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_NOTES);
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_ACTIVEACCOUNT);
-        onCreate(db);
+        db.execSQL(CREATE_TAGS_NOTES);
+        db.execSQL(CREATE_TAGS);
     }
 
 }

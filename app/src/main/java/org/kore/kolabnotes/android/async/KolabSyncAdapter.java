@@ -116,7 +116,7 @@ public class KolabSyncAdapter extends AbstractThreadedSyncAdapter {
             final Notification notification = new NotificationCompat.Builder(context)
                     .setSmallIcon(R.drawable.ic_kjots)
                     .setContentTitle(context.getResources().getString(R.string.sync_failed))
-                    .setContentText("Refresh failed")
+                    .setContentText(accName+" refresh failed")
                     .setStyle(new NotificationCompat.BigTextStyle().bigText(e.toString()))
                     .build();
 
@@ -134,7 +134,7 @@ public class KolabSyncAdapter extends AbstractThreadedSyncAdapter {
             final Notification notification =  new NotificationCompat.Builder(context)
                     .setSmallIcon(R.drawable.ic_kjots)
                     .setContentTitle(context.getResources().getString(R.string.sync_failed))
-                    .setContentText("Sync failed")
+                    .setContentText(accName+" sync failed")
                     .setStyle(new NotificationCompat.BigTextStyle().bigText(e.toString()))
                     .build();
 
@@ -154,7 +154,7 @@ public class KolabSyncAdapter extends AbstractThreadedSyncAdapter {
             final Notification notification =  new NotificationCompat.Builder(context)
                     .setSmallIcon(R.drawable.ic_kjots)
                     .setContentTitle(context.getResources().getString(R.string.sync_failed))
-                    .setContentText("Merge failed")
+                    .setContentText(accName+" merge failed")
                     .setStyle(new NotificationCompat.BigTextStyle().bigText(e.toString()))
                     .build();
 

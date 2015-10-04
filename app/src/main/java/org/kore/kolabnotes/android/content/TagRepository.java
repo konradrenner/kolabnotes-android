@@ -34,10 +34,14 @@ public class TagRepository {
         dbHelper.close();
     }
 
-    public boolean insert(String tagname) {
+    public boolean insert(String account, String rootFolder, String tagname, String color, int priority) {
         open();
         ContentValues values = new ContentValues();
+        values.put(DatabaseHelper.COLUMN_ACCOUNT,account);
+        values.put(DatabaseHelper.COLUMN_ROOT_FOLDER,rootFolder);
         values.put(DatabaseHelper.COLUMN_TAGNAME,tagname);
+        values.put(DatabaseHelper.COLUMN_COLOR,color);
+        values.put(DatabaseHelper.COLUMN_PRIORITY,priority);
 
         long rowId = database.insert(DatabaseHelper.TABLE_TAGS, null,values);
         close();
