@@ -67,6 +67,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             "(" + COLUMN_ID+ " integer primary key autoincrement, "
             + COLUMN_ACCOUNT + " text not null, "
             + COLUMN_ROOT_FOLDER + " text not null, "
+            + COLUMN_UID + " text not null unique, "
+            + COLUMN_PRODUCTID + " text not null, "
+            + COLUMN_CREATIONDATE + " integer, "
+            + COLUMN_MODIFICATIONDATE + " integer, " //milliseconds
             + COLUMN_COLOR + " text, "
             + COLUMN_PRIORITY + " integer, "
             + COLUMN_TAGNAME + " text not null );";

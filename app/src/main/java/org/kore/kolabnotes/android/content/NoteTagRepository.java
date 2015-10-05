@@ -28,6 +28,23 @@ public class NoteTagRepository {
             ", note."+DatabaseHelper.COLUMN_CLASSIFICATION+
             ", note."+DatabaseHelper.COLUMN_COLOR;
 
+    private final static String TAG_COLUMNS = "note."+DatabaseHelper.COLUMN_UID+
+            ", note."+DatabaseHelper.COLUMN_PRODUCTID+
+            ", note."+DatabaseHelper.COLUMN_CREATIONDATE+
+            ", note."+DatabaseHelper.COLUMN_MODIFICATIONDATE+
+            ", note."+DatabaseHelper.COLUMN_TAGNAME+
+            ", note."+DatabaseHelper.COLUMN_PRIORITY+
+            ", note."+DatabaseHelper.COLUMN_COLOR;
+
+    private final static String QUERY_TAGS_WITH_NOTEID = "SELECT "+TAG_COLUMNS+" from "+DatabaseHelper.TABLE_TAGS+" tag, "+DatabaseHelper.TABLE_NOTE_TAGS+" notetags " +
+            " where notetags."+DatabaseHelper.COLUMN_ACCOUNT+" = ? " +
+            " and notetags."+DatabaseHelper.COLUMN_ROOT_FOLDER+" = ? " +
+            " and notetags."+DatabaseHelper.COLUMN_IDNOTE+" = ? " +
+            " and notetags."+DatabaseHelper.COLUMN_IDTAG+" = tag."+ DatabaseHelper.COLUMN_TAGNAME+" " +
+            " and notetags."+DatabaseHelper.COLUMN_ACCOUNT+" = tag."+ DatabaseHelper.COLUMN_ACCOUNT+" "+
+            " and notetags."+DatabaseHelper.COLUMN_ROOT_FOLDER+" = tag."+ DatabaseHelper.COLUMN_ROOT_FOLDER+" ";
+
+
     private final static String QUERY_NOTES = "SELECT "+NOTES_COLUMNS+" from "+DatabaseHelper.TABLE_NOTES+" note, "+DatabaseHelper.TABLE_NOTE_TAGS+" notetags " +
             " where notetags."+DatabaseHelper.COLUMN_ACCOUNT+" = ? " +
             " and notetags."+DatabaseHelper.COLUMN_ROOT_FOLDER+" = ? " +
@@ -97,7 +114,21 @@ public class NoteTagRepository {
         close();
     }
 
-    public List<String> getTagsFor(String account,String rootFolder, String noteuid) {
+    public List<Tag> getTagsFor(String account,String rootFolder, String noteuid) {
+        openReadonly();
+        List<Tag> tags = new ArrayList<Tag>();
+
+        Cursor cursor = database.rawQuery(QUERY_TAGS_WITH_NOTEID, new String[]{account, rootFolder, noteuid});
+
+        while (cursor.moveToNext()) {
+            tags.add(cursorToTag(cursor));
+        }
+        cursor.close();
+        close();
+        return tags;
+    }
+
+    public List<String> getTagNamesFor(String account,String rootFolder, String noteuid) {
         openReadonly();
         List<String> tags = new ArrayList<String>();
 
@@ -112,7 +143,7 @@ public class NoteTagRepository {
                 null);
 
         while (cursor.moveToNext()) {
-            tags.add(cursorToTag(cursor));
+            tags.add(cursorToTagName(cursor));
         }
         cursor.close();
         close();
@@ -144,11 +175,11 @@ public class NoteTagRepository {
 
         //load the tags for each note
         for(Note note : notes){
-            List<String> tags = getTagsFor(account, rootFolder, note.getIdentification().getUid());
+            List<Tag> tags = getTagsFor(account, rootFolder, note.getIdentification().getUid());
 
             if (tags != null && tags.size() > 0) {
-                for(String tag : tags){
-                    note.addCategories(new Tag(tag));
+                for(Tag tag : tags){
+                    note.addCategories(tag);
                 }
             }
         }
@@ -156,7 +187,7 @@ public class NoteTagRepository {
         return notes;
     }
 
-    private String cursorToTag(Cursor cursor) {
+    private String cursorToTagName(Cursor cursor) {
         return cursor.getString(1);
     }
 
@@ -176,5 +207,25 @@ public class NoteTagRepository {
         note.setColor(Colors.getColor(color));
 
         return note;
+    }
+
+    private Tag cursorToTag(Cursor cursor){
+        String uid = cursor.getString(0);
+        String productId = cursor.getString(1);
+        Long creationDate = cursor.getLong(2);
+        Long modificationDate = cursor.getLong(3);
+        String tagName = cursor.getString(4);
+        String color = cursor.getString(5);
+        int priority = cursor.getInt(6);
+
+        AuditInformation audit = new AuditInformation(new Timestamp(creationDate),new Timestamp(modificationDate));
+        Identification ident = new Identification(uid,productId);
+
+        Tag tag = new Tag(ident,audit);
+        tag.setColor(Colors.getColor(color));
+        tag.setName(tagName);
+        tag.setPriority(priority);
+
+        return tag;
     }
 }

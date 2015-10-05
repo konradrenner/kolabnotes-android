@@ -5,6 +5,7 @@ import android.util.Log;
 
 import org.kore.kolab.notes.Note;
 import org.kore.kolab.notes.Notebook;
+import org.kore.kolab.notes.NotesRepository;
 import org.kore.kolab.notes.Tag;
 import org.kore.kolab.notes.imap.ImapNotesRepository;
 import org.kore.kolab.notes.imap.RemoteTags;
@@ -75,6 +76,15 @@ public class RepositoryManager {
         noteTagRepository.cleanAccount(email,rootFolder);
     }
 
+    private Notebook searchNotebookOfNote(NotesRepository repo, String noteUID){
+        for(Notebook notebook : repo.getNotebooks()){
+            if(notebook.getNote(noteUID) != null){
+                return notebook;
+            }
+        }
+        return null;
+    }
+
     void putLocalDataIntoRepository(String email, String rootFolder){
         List<Note> localNotes = noteRepository.getAllForSync(email, rootFolder);
 
@@ -97,6 +107,18 @@ public class RepositoryManager {
                     remoteNotebook.addNote(note);
                 }else{
                     Note remoteNote = remoteNotebook.getNote(note.getIdentification().getUid());
+
+                    //if the notebook of the note was changed locally
+                    if(remoteNote == null){
+                        final Notebook notebook = searchNotebookOfNote(repo, note.getIdentification().getUid());
+
+                        //the note exists in another notebook
+                        if(notebook != null){
+                            notebook.deleteNote(note.getIdentification().getUid());
+                            remoteNotebook.addNote(note);
+                            remoteNote = note;
+                        }
+                    }
 
                     //Just do something, if the remote note is not deleted or was not updated after local note
                     if(remoteNote != null && note.getAuditInformation().getLastModificationDate().after(remoteNote.getAuditInformation().getLastModificationDate())){
