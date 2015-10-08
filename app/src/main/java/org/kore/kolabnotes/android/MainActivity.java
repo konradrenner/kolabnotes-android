@@ -124,11 +124,11 @@ public class MainActivity extends AppCompatActivity implements SyncStatusObserve
             String tag = drawerItem.getTag() == null || drawerItem.getTag().toString().trim().length() == 0 ? "ALL_NOTEBOOK" :  drawerItem.getTag().toString();
 
             if("NOTEBOOK".equalsIgnoreCase(tag)){
-                Utils.setSelectedNotebookName(this, selected.getName().getText());
+                Utils.setSelectedNotebookName(this, selected.getName());
                 Utils.setSelectedTagName(this,null);
             }else if("TAG".equalsIgnoreCase(tag)){
                 Utils.setSelectedNotebookName(this, null);
-                Utils.setSelectedTagName(this,selected.getName().getText());
+                Utils.setSelectedTagName(this,selected.getName());
             }else if("ALL_NOTES".equalsIgnoreCase(tag)){
                 Utils.setSelectedNotebookName(this, null);
                 Utils.setSelectedTagName(this,null);
