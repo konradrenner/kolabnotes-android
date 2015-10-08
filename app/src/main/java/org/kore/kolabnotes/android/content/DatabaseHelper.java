@@ -1,5 +1,6 @@
 package org.kore.kolabnotes.android.content;
 
+import android.accounts.AccountManager;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -31,9 +32,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String DESCRIMINATOR_NOTEBOOK = "NOTEBOOK";
     public static final String DESCRIMINATOR_NOTE = "NOTE";
 
-    public static final String TABLE_TAGS = "tags";
+    public static final String TABLE_TAGS = "newtags";
     public static final String COLUMN_TAGNAME = "tagname";
     public static final String COLUMN_PRIORITY = "priority";
+
+    public static final String TABLE_OLD_TAGS = "tags";
 
     public static final String TABLE_NOTE_TAGS = "notes_tags";
     public static final String COLUMN_IDNOTE = "id_note";
@@ -106,7 +109,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + COLUMN_ROOT_FOLDER + " )" +
             "VALUES ('local','Notes');";
 
-
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
@@ -124,9 +126,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         Log.w(DatabaseHelper.class.getName(), "Upgrading database from version " + oldVersion + " to version "+ newVersion);
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_NOTE_TAGS);
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_TAGS);
-        db.execSQL(CREATE_TAGS_NOTES);
         db.execSQL(CREATE_TAGS);
     }
 

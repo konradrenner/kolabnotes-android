@@ -1,5 +1,7 @@
 package org.kore.kolabnotes.android.content;
 
+import android.accounts.Account;
+import android.accounts.AccountManager;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -10,6 +12,7 @@ import org.kore.kolab.notes.Colors;
 import org.kore.kolab.notes.Identification;
 import org.kore.kolab.notes.Note;
 import org.kore.kolab.notes.Tag;
+import org.kore.kolabnotes.android.security.AuthenticatorActivity;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -35,9 +38,13 @@ public class TagRepository {
             DatabaseHelper.COLUMN_COLOR,
             DatabaseHelper.COLUMN_PRIORITY,
             DatabaseHelper.COLUMN_TAGNAME};
+    private final Context context;
 
     public TagRepository(Context context) {
+        this.context = context;
         dbHelper = new DatabaseHelper(context);
+
+        migrateTags();
     }
 
     public void open() {
@@ -52,6 +59,49 @@ public class TagRepository {
         dbHelper.close();
     }
 
+    public void migrateTags(){
+        open();
+        List<String> tags = new ArrayList<String>();
+
+        String[] oldColumns = { DatabaseHelper.COLUMN_ID, DatabaseHelper.COLUMN_TAGNAME};
+
+        Cursor cursor = database.query(DatabaseHelper.TABLE_OLD_TAGS,
+                oldColumns,
+                null,
+                null,
+                null,
+                null,
+                null);
+
+        while (cursor.moveToNext()) {
+            tags.add(cursor.getString(1));
+        }
+
+        if(tags.isEmpty()){
+            //Already migrated
+            close();
+            return;
+        }
+
+        final AccountManager accountManager = AccountManager.get(context);
+        Account[] accounts = accountManager.getAccountsByType(AuthenticatorActivity.ARG_ACCOUNT_TYPE);
+
+        for(int i=0;i<accounts.length;i++) {
+            String email = accountManager.getUserData(accounts[i],AuthenticatorActivity.KEY_EMAIL);
+            String rootFolder = accountManager.getUserData(accounts[i],AuthenticatorActivity.KEY_ROOT_FOLDER);
+
+            for(String tagname : tags){
+                doInsert(email,rootFolder, Tag.createNewTag(tagname));
+            }
+        }
+
+        database.delete(DatabaseHelper.TABLE_OLD_TAGS,
+                null,
+                null);
+
+        close();
+    }
+
     public boolean insert(String account, String rootFolder, Tag tag) {
         open();
 
@@ -60,6 +110,12 @@ public class TagRepository {
             return false;
         }
 
+        long rowId = doInsert(account, rootFolder, tag);
+        close();
+        return rowId >= 0;
+    }
+
+    private long doInsert(String account, String rootFolder, Tag tag){
         ContentValues values = new ContentValues();
         values.put(DatabaseHelper.COLUMN_ACCOUNT,account);
         values.put(DatabaseHelper.COLUMN_ROOT_FOLDER,rootFolder);
@@ -71,9 +127,7 @@ public class TagRepository {
         values.put(DatabaseHelper.COLUMN_COLOR,tag.getColor() == null ? null : tag.getColor().getHexcode());
         values.put(DatabaseHelper.COLUMN_PRIORITY,tag.getPriority());
 
-        long rowId = database.insert(DatabaseHelper.TABLE_TAGS, null,values);
-        close();
-        return rowId >= 0;
+        return database.insert(DatabaseHelper.TABLE_TAGS, null,values);
     }
 
     public void update(String account, String rootFolder,Tag tag){
