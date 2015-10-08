@@ -13,7 +13,9 @@ import org.kore.kolab.notes.Tag;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by koni on 12.03.15.
@@ -197,6 +199,27 @@ public class TagRepository {
 
         while (cursor.moveToNext()) {
             tags.add(cursorToTag(cursor));
+        }
+        cursor.close();
+        close();
+        return tags;
+    }
+
+    public Map<String,Tag> getAllAsMap() {
+        openReadonly();
+        HashMap<String,Tag> tags = new HashMap<String,Tag>();
+
+        Cursor cursor = database.query(DatabaseHelper.TABLE_TAGS,
+                allColumns,
+                null,
+                null,
+                null,
+                null,
+                null);
+
+        while (cursor.moveToNext()) {
+            Tag tag = cursorToTag(cursor);
+            tags.put(tag.getName(),tag);
         }
         cursor.close();
         close();

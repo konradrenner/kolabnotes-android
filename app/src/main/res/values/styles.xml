@@ -34,7 +34,7 @@
     <style name="NoteOverviewSummary">
         <item name="android:paddingLeft">5dp</item>
         <item name="android:paddingBottom">2dp</item>
-        <item name="android:textColor">@color/primary_text</item>
+        <item name="android:textColor">@color/primary_text_default_material_light</item>
         <item name="android:textSize">20sp</item>
         <item name="android:shadowColor">#ffffffff</item>
         <item name="android:shadowDx">0</item>
@@ -46,7 +46,7 @@
     <style name="NoteOverviewInfoText">
         <item name="android:paddingLeft">8dp</item>
         <item name="android:paddingBottom">2dp</item>
-        <item name="android:textColor">@color/secondary_text</item>
+        <item name="android:textColor">@color/secondary_text_default_material_light</item>
         <item name="android:textSize">10sp</item>
         <item name="android:shadowColor">#ffffffff</item>
         <item name="android:shadowDx">0</item>
@@ -58,7 +58,7 @@
     <style name="NoteOverviewTagText">
         <item name="android:paddingLeft">8dp</item>
         <item name="android:paddingBottom">2dp</item>
-        <item name="android:textColor">@color/primary_text</item>
+        <item name="android:textColor">@color/primary_text_default_material_light</item>
         <item name="android:textSize">13sp</item>
         <item name="android:shadowColor">#ffffffff</item>
         <item name="android:shadowDx">0</item>
