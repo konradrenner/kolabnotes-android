@@ -28,13 +28,13 @@ public class NoteTagRepository {
             ", note."+DatabaseHelper.COLUMN_CLASSIFICATION+
             ", note."+DatabaseHelper.COLUMN_COLOR;
 
-    private final static String TAG_COLUMNS = "note."+DatabaseHelper.COLUMN_UID+
-            ", note."+DatabaseHelper.COLUMN_PRODUCTID+
-            ", note."+DatabaseHelper.COLUMN_CREATIONDATE+
-            ", note."+DatabaseHelper.COLUMN_MODIFICATIONDATE+
-            ", note."+DatabaseHelper.COLUMN_TAGNAME+
-            ", note."+DatabaseHelper.COLUMN_PRIORITY+
-            ", note."+DatabaseHelper.COLUMN_COLOR;
+    private final static String TAG_COLUMNS = "tag."+DatabaseHelper.COLUMN_UID+
+            ", tag."+DatabaseHelper.COLUMN_PRODUCTID+
+            ", tag."+DatabaseHelper.COLUMN_CREATIONDATE+
+            ", tag."+DatabaseHelper.COLUMN_MODIFICATIONDATE+
+            ", tag."+DatabaseHelper.COLUMN_TAGNAME+
+            ", tag."+DatabaseHelper.COLUMN_PRIORITY+
+            ", tag."+DatabaseHelper.COLUMN_COLOR;
 
     private final static String QUERY_TAGS_WITH_NOTEID = "SELECT "+TAG_COLUMNS+" from "+DatabaseHelper.TABLE_TAGS+" tag, "+DatabaseHelper.TABLE_NOTE_TAGS+" notetags " +
             " where notetags."+DatabaseHelper.COLUMN_ACCOUNT+" = ? " +
