@@ -6,6 +6,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteException;
 
 import org.kore.kolab.notes.AuditInformation;
 import org.kore.kolab.notes.Colors;
@@ -65,16 +66,22 @@ public class TagRepository {
 
         String[] oldColumns = { DatabaseHelper.COLUMN_ID, DatabaseHelper.COLUMN_TAGNAME};
 
-        Cursor cursor = database.query(DatabaseHelper.TABLE_OLD_TAGS,
-                oldColumns,
-                null,
-                null,
-                null,
-                null,
-                null);
+        try {
+            Cursor cursor = database.query(DatabaseHelper.TABLE_OLD_TAGS,
+                    oldColumns,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null);
 
-        while (cursor.moveToNext()) {
-            tags.add(cursor.getString(1));
+            while (cursor.moveToNext()) {
+                tags.add(cursor.getString(1));
+            }
+        }catch(SQLiteException e){
+            //Table does not exist
+            close();
+            return;
         }
 
         if(tags.isEmpty()){
