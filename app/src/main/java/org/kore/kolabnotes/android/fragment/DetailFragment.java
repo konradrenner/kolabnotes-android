@@ -90,7 +90,7 @@ public class DetailFragment extends Fragment{
 
     private Set<String> selectedTags = new LinkedHashSet<>();
 
-    private List<String> allTags = new ArrayList<>();
+    private Map<String,Tag> allTags = new HashMap<>();
 
     //Given notebook is set, if a notebook uid was in the start intent,
     //intialNotebook ist the notebook-UID which is selected after setSpinnerSelection was called
@@ -179,8 +179,6 @@ public class DetailFragment extends Fragment{
             }
         });
 
-        allTags.addAll(tagRepository.getAll());
-
         Intent startIntent = activity.getIntent();
         String uid = startUid;
         String notebook = startNotebook;
@@ -265,6 +263,7 @@ public class DetailFragment extends Fragment{
             isNewNote = true;
         }
 
+        allTags.putAll(tagRepository.getAllAsMap(activeAccount.getAccount(), activeAccount.getRootFolder()));
         setNotebook(activeAccount, notebook, startNotebook != null);
         intialNotebookName = getNotebookSpinnerSelectionName();
     }
@@ -803,7 +802,9 @@ public class DetailFragment extends Fragment{
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         builder.setTitle(R.string.dialog_change_tags);
 
-        final String[] tagArr = allTags.toArray(new String[allTags.size()]);
+        final Set<String> tagNames = allTags.keySet();
+
+        final String[] tagArr = tagNames.toArray(new String[tagNames.size()]);
         final boolean[] selectionArr = new boolean[tagArr.length];
 
         final ArrayList<Integer> selectedItems=new ArrayList<Integer> ();
@@ -1157,7 +1158,7 @@ public class DetailFragment extends Fragment{
             Tag[] tags = new Tag[selectedTags.size()];
             int i = 0;
             for (String tag : selectedTags) {
-                tags[i++] = new Tag(tag);
+                tags[i++] = allTags.get(tag);
             }
 
             newNote.addCategories(tags);

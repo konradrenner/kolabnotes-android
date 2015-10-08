@@ -165,13 +165,14 @@ public class TagRepository {
         return tag;
     }
 
-    public List<String> getAllTagNames() {
+    public List<String> getAllTagNames(String account, String rootFolder) {
         openReadonly();
         List<String> tags = new ArrayList<String>();
 
         Cursor cursor = database.query(DatabaseHelper.TABLE_TAGS,
                 allColumns,
-                null,
+                DatabaseHelper.COLUMN_ACCOUNT + " = '" + account+"' AND "+
+                        DatabaseHelper.COLUMN_ROOT_FOLDER + " = '" + rootFolder+"' ",
                 null,
                 null,
                 null,
@@ -185,13 +186,14 @@ public class TagRepository {
         return tags;
     }
 
-    public List<Tag> getAll() {
+    public List<Tag> getAll(String account, String rootFolder) {
         openReadonly();
         List<Tag> tags = new ArrayList<Tag>();
 
         Cursor cursor = database.query(DatabaseHelper.TABLE_TAGS,
                 allColumns,
-                null,
+                DatabaseHelper.COLUMN_ACCOUNT + " = '" + account+"' AND "+
+                        DatabaseHelper.COLUMN_ROOT_FOLDER + " = '" + rootFolder+"' ",
                 null,
                 null,
                 null,
@@ -205,13 +207,14 @@ public class TagRepository {
         return tags;
     }
 
-    public Map<String,Tag> getAllAsMap() {
+    public Map<String,Tag> getAllAsMap(String account, String rootFolder) {
         openReadonly();
         HashMap<String,Tag> tags = new HashMap<String,Tag>();
 
         Cursor cursor = database.query(DatabaseHelper.TABLE_TAGS,
                 allColumns,
-                null,
+                DatabaseHelper.COLUMN_ACCOUNT + " = '" + account+"' AND "+
+                        DatabaseHelper.COLUMN_ROOT_FOLDER + " = '" + rootFolder+"' ",
                 null,
                 null,
                 null,
@@ -219,7 +222,7 @@ public class TagRepository {
 
         while (cursor.moveToNext()) {
             Tag tag = cursorToTag(cursor);
-            tags.put(tag.getName(),tag);
+            tags.put(tag.getName(), tag);
         }
         cursor.close();
         close();

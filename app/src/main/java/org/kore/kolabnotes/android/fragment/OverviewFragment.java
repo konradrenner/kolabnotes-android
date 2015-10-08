@@ -482,7 +482,7 @@ public class OverviewFragment extends Fragment implements NoteAdapter.NoteSelect
                 notes = notesRepository.getFromNotebook(activeAccount.getAccount(),activeAccount.getRootFolder(),notebookUID,Utils.getNoteSorting(getActivity()));
             }
 
-            List<Tag> tags = tagRepository.getAll();
+            Map<String,Tag> tags = tagRepository.getAllAsMap(activeAccount.getAccount(),activeAccount.getRootFolder());
             List<Notebook> notebooks = notebookRepository.getAll(activeAccount.getAccount(),activeAccount.getRootFolder());
 
             if(preventBlankDisplaying){
@@ -500,9 +500,9 @@ public class OverviewFragment extends Fragment implements NoteAdapter.NoteSelect
     public class ReloadDataThread extends Thread{
         private final List<Notebook> notebooks;
         private final List<Note> notes;
-        private final List<Tag> tags;
+        private final Map<String,Tag> tags;
 
-        ReloadDataThread(List<Notebook> notebooks, List<Note> notes, List<Tag> tags) {
+        ReloadDataThread(List<Notebook> notebooks, List<Note> notes, Map<String,Tag> tags) {
             this.notebooks = notebooks;
             this.notes = notes;
             this.tags = tags;
@@ -641,7 +641,7 @@ public class OverviewFragment extends Fragment implements NoteAdapter.NoteSelect
 
                 mDrawer.setSelection(1);
 
-                orderDrawerItems(mDrawer, null);
+                orderDrawerItems(tagRepository.getAllAsMap(activeAccount.getAccount(),activeAccount.getRootFolder()), mDrawer, null);
             }
         });
         builder.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
@@ -871,12 +871,12 @@ public class OverviewFragment extends Fragment implements NoteAdapter.NoteSelect
         return item;
     }
 
-    final synchronized void reloadData(List<Notebook> notebooks, List<Note> notes, List<Tag> tags){
+    final synchronized void reloadData(List<Notebook> notebooks, List<Note> notes, Map<String,Tag> tags){
         mDrawer.getDrawerItems().clear();
 
         addDrawerStandardItems(mDrawer);
         //Query the tags
-        for (Tag tag : tags) {
+        for (Tag tag : tags.values()) {
             mDrawer.getDrawerItems().add(createTagItem(tag));
         }
 
@@ -885,7 +885,7 @@ public class OverviewFragment extends Fragment implements NoteAdapter.NoteSelect
             mDrawer.getDrawerItems().add(new SecondaryDrawerItem().withName(notebook.getSummary()).withTag("NOTEBOOK"));
         }
 
-        orderDrawerItems(mDrawer);
+        orderDrawerItems(tags, mDrawer);
 
         if(mAdapter == null){
             mAdapter = new NoteAdapter(new ArrayList<Note>(), R.layout.row_note_overview, activity,this);
@@ -903,7 +903,7 @@ public class OverviewFragment extends Fragment implements NoteAdapter.NoteSelect
         ActiveAccount activeAccount = activeAccountRepository.getActiveAccount();
         final List<Note> notes = notesRepository.getAll(activeAccount.getAccount(), activeAccount.getRootFolder(), Utils.getNoteSorting(getActivity()));
         final List<Notebook> notebooks = notebookRepository.getAll(activeAccount.getAccount(), activeAccount.getRootFolder());
-        final List<Tag> tags = tagRepository.getAll();
+        final Map<String,Tag> tags = tagRepository.getAllAsMap(activeAccount.getAccount(),activeAccount.getRootFolder());
         reloadData(notebooks, notes, tags);
     }
 
@@ -963,7 +963,7 @@ public class OverviewFragment extends Fragment implements NoteAdapter.NoteSelect
 
                 mDrawer.addItem(new SecondaryDrawerItem().withName(value).withTag("TAG"));
 
-                orderDrawerItems(mDrawer);
+                orderDrawerItems(tagRepository.getAllAsMap(activeAccount.getAccount(),activeAccount.getRootFolder()), mDrawer);
 
                 displayBlankFragment();
             }
@@ -1020,7 +1020,7 @@ public class OverviewFragment extends Fragment implements NoteAdapter.NoteSelect
                 }
 
                 List<Notebook> notebooks = notebookRepository.getAll(activeAccount.getAccount(), activeAccount.getRootFolder());
-                List<Tag> tags = tagRepository.getAll();
+                Map<String,Tag> tags = tagRepository.getAllAsMap(activeAccount.getAccount(),activeAccount.getRootFolder());
 
                 displayBlankFragment();
 
@@ -1071,7 +1071,7 @@ public class OverviewFragment extends Fragment implements NoteAdapter.NoteSelect
                 }
 
                 List<Notebook> notebooks = notebookRepository.getAll(activeAccount.getAccount(), activeAccount.getRootFolder());
-                List<Tag> tags = tagRepository.getAll();
+                Map<String,Tag> tags = tagRepository.getAllAsMap(activeAccount.getAccount(),activeAccount.getRootFolder());
 
                 displayBlankFragment();
 
@@ -1111,7 +1111,7 @@ public class OverviewFragment extends Fragment implements NoteAdapter.NoteSelect
             if(notebookRepository.insert(activeAccount.getAccount(), activeAccount.getRootFolder(), nb)) {
                 mDrawer.addItem(new SecondaryDrawerItem().withName(value).withTag("NOTEBOOK"));
 
-                orderDrawerItems(mDrawer, value);
+                orderDrawerItems(tagRepository.getAllAsMap(activeAccount.getAccount(),activeAccount.getRootFolder()), mDrawer, value);
             }
 
             if(intent != null){
@@ -1132,22 +1132,25 @@ public class OverviewFragment extends Fragment implements NoteAdapter.NoteSelect
         }
     }
 
-    void orderDrawerItems(Drawer drawer){
-        orderDrawerItems(drawer,null);
+    void orderDrawerItems(Map<String,Tag> allTags, Drawer drawer){
+        orderDrawerItems(allTags,drawer,null);
     }
 
     class Orderer implements Runnable{
         private final Drawer drawer;
         private final String selectionName;
+        private final Map<String, Tag> allTags;
 
-        Orderer(Drawer drawer, String selectionName) {
+        Orderer(Map<String, Tag> allTags,Drawer drawer, String selectionName) {
             this.drawer = drawer;
             this.selectionName = selectionName;
+            this.allTags = allTags;
         }
 
-        private Orderer(Drawer drawer) {
+        private Orderer(Map<String, Tag> allTags,Drawer drawer) {
             this.drawer = drawer;
             this.selectionName = null;
+            this.allTags = allTags;
         }
 
         @Override
@@ -1214,7 +1217,6 @@ public class OverviewFragment extends Fragment implements NoteAdapter.NoteSelect
 
             int idx = 3;
             Set<String> displayedTags = new HashSet<>();
-            final Map<String, Tag> allTags = tagRepository.getAllAsMap();
             for(String tag : tags){
                 if(displayedTags.contains(tag)){
                     continue;
@@ -1270,8 +1272,8 @@ public class OverviewFragment extends Fragment implements NoteAdapter.NoteSelect
         }
     }
 
-    void orderDrawerItems(Drawer drawer, String selectionName){
-        getActivity().runOnUiThread(new Orderer(drawer, selectionName));
+    void orderDrawerItems(Map<String,Tag> allTags, Drawer drawer, String selectionName){
+        getActivity().runOnUiThread(new Orderer(allTags,drawer, selectionName));
     }
 
     class ProfileChanger implements AccountHeader.OnAccountHeaderListener{
