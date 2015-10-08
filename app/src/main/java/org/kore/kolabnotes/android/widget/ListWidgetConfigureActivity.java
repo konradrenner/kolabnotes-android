@@ -297,7 +297,17 @@ public class ListWidgetConfigureActivity extends Activity {
     }
 
     void updateTagSpinner(){
-        List<String> tags = tagRepository.getAll();
+        String rootFolder;
+        String email;
+        if(selectedAccount == null){
+            rootFolder = "Notes";
+            email = "local";
+        }else{
+            rootFolder = mAccountManager.getUserData(selectedAccount,AuthenticatorActivity.KEY_ROOT_FOLDER);
+            email = mAccountManager.getUserData(selectedAccount,AuthenticatorActivity.KEY_EMAIL);
+        }
+
+        List<String> tags = tagRepository.getAllTagNames(email,rootFolder);
 
         Collections.sort(tags);
 

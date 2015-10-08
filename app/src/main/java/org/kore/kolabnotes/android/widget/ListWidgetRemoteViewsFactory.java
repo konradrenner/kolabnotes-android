@@ -18,6 +18,7 @@ import org.kore.kolabnotes.android.Utils;
 import org.kore.kolabnotes.android.content.NoteRepository;
 import org.kore.kolabnotes.android.content.NoteSorting;
 import org.kore.kolabnotes.android.content.NotebookRepository;
+import org.kore.kolabnotes.android.content.TagRepository;
 import org.kore.kolabnotes.android.security.AuthenticatorActivity;
 
 import java.util.ArrayList;
@@ -35,6 +36,7 @@ public class ListWidgetRemoteViewsFactory implements RemoteViewsService.RemoteVi
     private String rootFolder;
     private String accountEmail;
     private NoteRepository notesRepository;
+    private TagRepository tagRepository;
 
     public ListWidgetRemoteViewsFactory(Application app, Intent intent) {
         this.app = app;
@@ -56,6 +58,7 @@ public class ListWidgetRemoteViewsFactory implements RemoteViewsService.RemoteVi
         notes.clear();
         Context context = app.getApplicationContext();
         notesRepository = new NoteRepository(context);
+        tagRepository = new TagRepository(context);
         NotebookRepository notebookRepository = new NotebookRepository(context);
 
         String account = ListWidgetConfigureActivity.loadListWidgetAccountPref(context, appWidgetId);
@@ -87,7 +90,7 @@ public class ListWidgetRemoteViewsFactory implements RemoteViewsService.RemoteVi
 
         ArrayList<Note> filtered = new ArrayList<>();
         if(tag != null){
-            Tag tagObject = new Tag(tag);
+            Tag tagObject = tagRepository.getTagWithName(accountEmail,rootFolder,tag);
             for(Note note : notes){
                 if(note.getCategories().contains(tagObject)){
                     filtered.add(note);
