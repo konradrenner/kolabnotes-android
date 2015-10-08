@@ -11,6 +11,7 @@ import org.kore.kolab.notes.imap.ImapNotesRepository;
 import org.kore.kolab.notes.imap.RemoteTags;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -26,16 +27,18 @@ public class RepositoryManager {
     private final NoteRepository noteRepository;
     private final NotebookRepository notebookRepository;
     private final ModificationRepository modificationRepository;
+    private final Date lastSync;
 
     private final ImapNotesRepository repo;
 
-    public RepositoryManager(Context context, ImapNotesRepository repo) {
+    public RepositoryManager(Context context, ImapNotesRepository repo, Date lastSync) {
         this.noteTagRepository = new NoteTagRepository(context);
         this.tagRepository = new TagRepository(context);
         this.noteRepository = new NoteRepository(context);
         this.notebookRepository = new NotebookRepository(context);
         this.modificationRepository = new ModificationRepository(context);
         this.repo = repo;
+        this.lastSync = new Date(lastSync.getTime());
     }
 
     public void sync(String email, String rootFolder){
@@ -57,13 +60,11 @@ public class RepositoryManager {
         }
 
         RemoteTags remoteTags = repo.getRemoteTags();
-        List<String> localTags = tagRepository.getAll();
 
         for(RemoteTags.TagDetails detail : remoteTags.getTags()){
-            String remoteName = detail.getTag().getName();
-            if(!localTags.contains(remoteName)){
-                tagRepository.insert(remoteName);
-            }
+            final Tag tag = detail.getTag();
+            String remoteName = tag.getName();
+            tagRepository.insert(email,rootFolder, tag);
 
             for(String noteUid : detail.getMembers()){
                 noteTagRepository.insert(email,rootFolder,noteUid,remoteName);
@@ -74,6 +75,7 @@ public class RepositoryManager {
     void cleanLocalData(String email, String rootFolder){
         noteRepository.cleanAccount(email,rootFolder);
         noteTagRepository.cleanAccount(email,rootFolder);
+        tagRepository.cleanAccount(email,rootFolder);
     }
 
     private Notebook searchNotebookOfNote(NotesRepository repo, String noteUID){
@@ -168,5 +170,9 @@ public class RepositoryManager {
                 repo.deleteNotebook(toDelete.getIdentification().getUid());
             }
         }
+
+        //Update the tags
+        final List<Tag> allModifiedAfter = tagRepository.getAllModifiedAfter(email, rootFolder, lastSync);
+        repo.getRemoteTags().applyLocalChanges(allModifiedAfter.toArray(new Tag[allModifiedAfter.size()]));
     }
 }

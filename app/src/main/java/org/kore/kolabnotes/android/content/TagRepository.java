@@ -13,6 +13,7 @@ import org.kore.kolab.notes.Tag;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -205,6 +206,38 @@ public class TagRepository {
         cursor.close();
         close();
         return tags;
+    }
+
+    public List<Tag> getAllModifiedAfter(String account, String rootFolder, Date date) {
+        openReadonly();
+        List<Tag> tags = new ArrayList<Tag>();
+
+        Cursor cursor = database.query(DatabaseHelper.TABLE_TAGS,
+                allColumns,
+                DatabaseHelper.COLUMN_ACCOUNT + " = '" + account+"' AND "+
+                        DatabaseHelper.COLUMN_ROOT_FOLDER + " = '" + rootFolder+"' AND "+
+                DatabaseHelper.COLUMN_MODIFICATIONDATE + " > "+ date.getTime(),
+                null,
+                null,
+                null,
+                null);
+
+        while (cursor.moveToNext()) {
+            tags.add(cursorToTag(cursor));
+        }
+        cursor.close();
+        close();
+        return tags;
+    }
+
+    void cleanAccount(String account, String rootFolder){
+        open();
+        database.delete(DatabaseHelper.TABLE_TAGS,
+                DatabaseHelper.COLUMN_ACCOUNT + " = '" + account+"' AND "+
+                        DatabaseHelper.COLUMN_ROOT_FOLDER + " = '" + rootFolder+"' ",
+                null);
+
+        close();
     }
 
     public Map<String,Tag> getAllAsMap(String account, String rootFolder) {

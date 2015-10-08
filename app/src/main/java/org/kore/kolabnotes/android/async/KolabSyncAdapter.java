@@ -25,6 +25,7 @@ import org.kore.kolabnotes.android.content.RepositoryManager;
 import org.kore.kolabnotes.android.security.AuthenticatorActivity;
 
 import java.sql.Timestamp;
+import java.util.Date;
 
 /**
  * Created by koni on 18.04.15.
@@ -100,10 +101,9 @@ public class KolabSyncAdapter extends AbstractThreadedSyncAdapter {
         boolean doit = true;
         AccountInformation info = builder.build();
         ImapNotesRepository imapRepository = new ImapNotesRepository(new KolabNotesParserV3(), info, rootFolder, new KolabConfigurationParserV3());
+        final Timestamp lastSyncTime = Utils.getLastSyncTime(context,accName);
         try {
             if(doit) {
-                final Timestamp lastSyncTime = Utils.getLastSyncTime(context,accName);
-
                 Log.d("syncNow","lastSyncTime:"+lastSyncTime);
                 //Just load data completely, which was changed after the given date
                 if(lastSyncTime == null){
@@ -125,7 +125,14 @@ public class KolabSyncAdapter extends AbstractThreadedSyncAdapter {
             doit = false;
         }
 
-        RepositoryManager manager = new RepositoryManager(getContext(),imapRepository);
+        Date lastSync;
+        if(lastSyncTime == null){
+            lastSync = new Date(0);
+        }else{
+            lastSync = new Date(lastSyncTime.getTime());
+        }
+
+        RepositoryManager manager = new RepositoryManager(getContext(),imapRepository,lastSync);
         try{
             if(doit) {
                 manager.sync(email, rootFolder);

@@ -346,11 +346,11 @@ public class NoteRepository {
         note.setColor(Colors.getColor(color));
 
         if(account != null && rootFolder != null) {
-            List<String> tags = new NoteTagRepository(context).getTagsFor(account, rootFolder, uid);
+            List<Tag> tags = new NoteTagRepository(context).getTagsFor(account, rootFolder, uid);
 
             if (tags != null && tags.size() > 0) {
-                for(String tag : tags){
-                    note.addCategories(new Tag(tag));
+                for(Tag tag : tags){
+                    note.addCategories(tag);
                 }
             }
         }
@@ -373,11 +373,11 @@ public class NoteRepository {
         note.setColor(Colors.getColor(color));
 
         if(account != null && rootFolder != null) {
-            List<String> tags = new NoteTagRepository(context).getTagsFor(account, rootFolder, uid);
+            List<Tag> tags = new NoteTagRepository(context).getTagsFor(account, rootFolder, uid);
 
             if (tags != null && tags.size() > 0) {
-                for(String tag : tags){
-                    note.addCategories(new Tag(tag));
+                for(Tag tag : tags){
+                    note.addCategories(tag);
                 }
             }
         }
