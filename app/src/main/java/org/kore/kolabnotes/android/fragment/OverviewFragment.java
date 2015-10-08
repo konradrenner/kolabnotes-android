@@ -10,6 +10,8 @@ import android.content.ContentResolver;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -44,6 +46,7 @@ import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IProfile;
 
 import org.kore.kolab.notes.AuditInformation;
+import org.kore.kolab.notes.Colors;
 import org.kore.kolab.notes.Identification;
 import org.kore.kolab.notes.Note;
 import org.kore.kolab.notes.Notebook;
@@ -70,6 +73,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+
+import yuku.ambilwarna.AmbilWarnaDialog;
 
 /**
  * Fragment which displays the notes overview and implements the logic for the overview
@@ -526,6 +531,33 @@ public class OverviewFragment extends Fragment implements NoteAdapter.NoteSelect
         }
     }
 
+    void chooseTagColor(String tagname){
+
+        final ActiveAccount activeAccount = activeAccountRepository.getActiveAccount();
+        final Tag tag = tagRepository.getTagWithName(activeAccount.getAccount(), activeAccount.getRootFolder(), tagname);
+
+        org.kore.kolab.notes.Color selectedColor = tag.getColor();
+        final int initialColor = selectedColor == null ? Color.WHITE : Color.parseColor(selectedColor.getHexcode());
+
+        AmbilWarnaDialog dialog = new AmbilWarnaDialog(activity, initialColor, new AmbilWarnaDialog.OnAmbilWarnaListener() {
+            @Override
+            public void onOk(AmbilWarnaDialog dialog, int color) {
+                final org.kore.kolab.notes.Color newColor = Colors.getColor(String.format("#%06X", (0xFFFFFF & color)));
+                tag.setColor(newColor);
+
+                tagRepository.update(activeAccount.getAccount(),activeAccount.getRootFolder(),tag);
+
+                orderDrawerItems(tagRepository.getAllAsMap(activeAccount.getAccount(),activeAccount.getRootFolder()), mDrawer, null);
+            }
+
+            @Override
+            public void onCancel(AmbilWarnaDialog dialog) {
+                // do nothing
+            }
+        });
+        dialog.show();
+    }
+
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu,inflater);
@@ -562,6 +594,18 @@ public class OverviewFragment extends Fragment implements NoteAdapter.NoteSelect
             case R.id.create_tag_menu:
                 AlertDialog newTagDialog = createTagDialog();
                 newTagDialog.show();
+                break;
+            case R.id.choose_tag_color_menu:
+
+                int tagselection = mDrawer.getCurrentSelection();
+                final IDrawerItem idrawerItem = mDrawer.getDrawerItems().get(tagselection);
+                String type = idrawerItem.getTag() == null || idrawerItem.getTag().toString().trim().length() == 0 ? null : idrawerItem.getTag().toString();
+
+                if(type == null || !type.equals("TAG")){
+                    Toast.makeText(activity,R.string.no_tag_selected,Toast.LENGTH_LONG).show();
+                }else {
+                    chooseTagColor(((BaseDrawerItem)idrawerItem).getName());
+                }
                 break;
             case R.id.create_search_menu:
                 AlertDialog newSearchDialog = createSearchDialog();
@@ -864,7 +908,10 @@ public class OverviewFragment extends Fragment implements NoteAdapter.NoteSelect
         item.withTextColorRes(R.color.abc_primary_text_material_light);
         if(tag.getColor() != null){
             final int color = Color.parseColor(tag.getColor().getHexcode());
-            item.withBadge("TAG");
+            final Drawable drawable = getResources().getDrawable(R.drawable.color_background_with_border).mutate();
+            drawable.setColorFilter(color, PorterDuff.Mode.MULTIPLY);
+            item.setIcon(drawable);
+            //item.setTextColor(color);
             //item.withBadgeStyle(new BadgeStyle(color,color).withTextColor(color));
         }
 

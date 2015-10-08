@@ -28,13 +28,16 @@
             android:background="@drawable/button_rect_list_normal"
             />
 
-        <TextView
+        <LinearLayout
             android:id="@+id/categories"
+            android:orientation="horizontal"
             android:layout_row="2"
+            android:dividerPadding="2dp"
+            android:divider="@android:color/transparent"
             style="@style/NoteOverviewTagText"
-            android:clickable="false"
-            android:background="@drawable/button_rect_list_normal"
-            />
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+        </LinearLayout>
 
         <TextView
             android:id="@+id/classification"

@@ -2,12 +2,15 @@ package org.kore.kolabnotes.android.adapter;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import org.kore.kolab.notes.Note;
@@ -97,15 +100,45 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.ViewHolder> {
         viewHolder.classification.setText(context.getResources().getString(R.string.classification)+": "+note.getClassification());
         viewHolder.createdDate.setText(context.getResources().getString(R.string.creationDate)+": "+ dateFormatter.format(note.getAuditInformation().getCreationDate()));
         viewHolder.modificationDate.setText(context.getResources().getString(R.string.modificationDate)+": "+dateFormatter.format(note.getAuditInformation().getLastModificationDate()));
-        StringBuilder tags = new StringBuilder();
-        for(Tag tag : note.getCategories()){
-            tags.append(tag.getName());
-            tags.append(", ");
-        }
-        if(tags.length() > 0) {
-            viewHolder.categories.setText(context.getResources().getString(R.string.tags)+": "+tags.substring(0, tags.length() - 2));
+
+        boolean useLightColor = Utils.useLightTextColor(context, note.getColor());
+
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        params.setMargins(12, 0, 0, 0);
+
+        if(note.getCategories().isEmpty()){
+            TextView textView = new TextView(context);
+            textView.setText(context.getResources().getString(R.string.notags));
+            textView.setTextColor(useLightColor ? Color.WHITE : Color.BLACK);
+            viewHolder.categories.addView(textView);
         }else{
-            viewHolder.categories.setText(context.getResources().getString(R.string.notags));
+            TextView textView = new TextView(context);
+            textView.setText(context.getResources().getString(R.string.tags));
+            textView.setTextColor(useLightColor ? Color.WHITE : Color.BLACK);
+            viewHolder.categories.addView(textView);
+
+            for(Tag tag : note.getCategories()){
+                if(tag.getColor() == null){
+                    TextView tagTextView = new TextView(context);
+                    tagTextView.setText(tag.getName());
+                    tagTextView.setTextColor(useLightColor ? Color.WHITE : Color.BLACK);
+                    tagTextView.setLayoutParams(params);
+
+                    viewHolder.categories.addView(tagTextView);
+                }else{
+                    boolean useLight = Utils.useLightTextColor(context, tag.getColor());
+
+                    TextView tagTextView = new TextView(context);
+                    tagTextView.setText(tag.getName());
+                    tagTextView.setTextColor(useLight ? Color.WHITE : Color.BLACK);
+                    final Drawable drawable = context.getResources().getDrawable(R.drawable.color_background_with_border).mutate();
+                    drawable.setColorFilter(Color.parseColor(tag.getColor().getHexcode()), PorterDuff.Mode.MULTIPLY);
+                    tagTextView.setBackground(drawable);
+                    tagTextView.setLayoutParams(params);
+
+                    viewHolder.categories.addView(tagTextView);
+                }
+            }
         }
 
         if(note != null && note.getColor() != null){
@@ -121,18 +154,16 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.ViewHolder> {
             * If spectrum from cyan to red and saturation greater than or equal to 0.5 - text is white.
             * If spectrum is not included in these borders or brightness greater than or equal to 0.8 - text is black.
             */
-            if (Utils.useLightTextColor(context, note.getColor())) {
+            if (useLightColor) {
                 viewHolder.name.setTextColor(Color.WHITE);
                 viewHolder.classification.setTextColor(Color.WHITE);
                 viewHolder.createdDate.setTextColor(Color.WHITE);
                 viewHolder.modificationDate.setTextColor(Color.WHITE);
-                viewHolder.categories.setTextColor(Color.WHITE);
             } else {
                 viewHolder.name.setTextColor(Color.BLACK);
                 viewHolder.classification.setTextColor(Color.GRAY);
                 viewHolder.createdDate.setTextColor(Color.GRAY);
                 viewHolder.modificationDate.setTextColor(Color.GRAY);
-                viewHolder.categories.setTextColor(Color.BLACK);
             }
 
         }else{
@@ -147,7 +178,6 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.ViewHolder> {
             viewHolder.classification.setTextColor(Color.GRAY);
             viewHolder.createdDate.setTextColor(Color.GRAY);
             viewHolder.modificationDate.setTextColor(Color.GRAY);
-            viewHolder.categories.setTextColor(Color.BLACK);
         }
         Utils.setElevation(viewHolder.cardView,5);
 
@@ -198,7 +228,7 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.ViewHolder> {
         TextView classification;
         TextView createdDate;
         TextView modificationDate;
-        TextView categories;
+        LinearLayout categories;
         CardView cardView;
 
         public ViewHolder(View itemView) {
@@ -207,7 +237,7 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.ViewHolder> {
             classification = (TextView) itemView.findViewById(R.id.classification);
             createdDate = (TextView) itemView.findViewById(R.id.createdDate);
             modificationDate = (TextView) itemView.findViewById(R.id.modificationDate);
-            categories = (TextView) itemView.findViewById(R.id.categories);
+            categories = (LinearLayout) itemView.findViewById(R.id.categories);
             cardView = (CardView)itemView;
         }
 

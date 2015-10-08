@@ -215,8 +215,8 @@ public class NoteTagRepository {
         Long creationDate = cursor.getLong(2);
         Long modificationDate = cursor.getLong(3);
         String tagName = cursor.getString(4);
-        String color = cursor.getString(5);
-        int priority = cursor.getInt(6);
+        int priority = cursor.getInt(5);
+        String color = cursor.getString(6);
 
         AuditInformation audit = new AuditInformation(new Timestamp(creationDate),new Timestamp(modificationDate));
         Identification ident = new Identification(uid,productId);

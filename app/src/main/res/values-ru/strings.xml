@@ -84,7 +84,7 @@
     <string name="summary_text">Большой текст</string>
     <string name="sync_failed">Ошибка синхронизации</string>
     <string name="sync_intervall">Интервал синхронизации (по умолчанию 24)</string>
-    <string name="tags">Метки</string>
+    <string name="tags">Метки:</string>
     <string name="text_description">Средний текст</string>
     <string name="text_summary">Название</string>
     <string name="title_activity_kolab_login">Вход</string>
@@ -115,4 +115,6 @@
     <string name="productID">Код товара</string>
     <string name="uid">UID</string>
     <string name="title_characteristics">характеристика</string>
+    <string name="title_choose_tag_color">Выберите цвет тегов</string>
+    <string name="no_tag_selected">Нет тегов выбран</string>
 </resources>

@@ -20,7 +20,7 @@
     <string name="classification">Classification</string>
     <string name="creationDate">Created</string>
     <string name="modificationDate">Last modified</string>
-    <string name="tags">Tags</string>
+    <string name="tags">Tags:</string>
     <string name="notags">No Tags</string>
     <string name="radio_public">Public</string>
     <string name="radio_confidential">Confidential</string>
@@ -113,4 +113,6 @@
     <string name="productID">Product ID</string>
     <string name="uid">UID</string>
     <string name="title_characteristics">Characteristics</string>
+    <string name="title_choose_tag_color">Choose tag color</string>
+    <string name="no_tag_selected">No tag selected</string>
 </resources>
