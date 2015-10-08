@@ -100,6 +100,7 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.ViewHolder> {
         viewHolder.classification.setText(context.getResources().getString(R.string.classification)+": "+note.getClassification());
         viewHolder.createdDate.setText(context.getResources().getString(R.string.creationDate)+": "+ dateFormatter.format(note.getAuditInformation().getCreationDate()));
         viewHolder.modificationDate.setText(context.getResources().getString(R.string.modificationDate)+": "+dateFormatter.format(note.getAuditInformation().getLastModificationDate()));
+        viewHolder.categories.removeAllViews();
 
         boolean useLightColor = Utils.useLightTextColor(context, note.getColor());
 
@@ -117,7 +118,11 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.ViewHolder> {
             textView.setTextColor(useLightColor ? Color.WHITE : Color.BLACK);
             viewHolder.categories.addView(textView);
 
-            for(Tag tag : note.getCategories()){
+            ArrayList<Tag> sorted = new ArrayList<>(note.getCategories());
+
+            Collections.sort(sorted);
+
+            for(Tag tag : sorted){
                 if(tag.getColor() == null){
                     TextView tagTextView = new TextView(context);
                     tagTextView.setText(tag.getName());
