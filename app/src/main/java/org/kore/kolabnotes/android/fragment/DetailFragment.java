@@ -446,10 +446,15 @@ public class DetailFragment extends Fragment{
 
             @Override
             public void onClick(View v) {
-                AmbilWarnaDialog dialog = new AmbilWarnaDialog(activity, Color.BLACK, new AmbilWarnaDialog.OnAmbilWarnaListener() {
+                AmbilWarnaDialog dialog = new AmbilWarnaDialog(activity, Color.BLACK, false, new AmbilWarnaDialog.OnAmbilWarnaListener() {
                     @Override
                     public void onOk(AmbilWarnaDialog dialog, int color) {
                         editor.setTextColor(color);
+                    }
+
+                    @Override
+                    public void onRemove(AmbilWarnaDialog dialog) {
+                        // do nothing
                     }
 
                     @Override
@@ -464,10 +469,15 @@ public class DetailFragment extends Fragment{
         activity.findViewById(R.id.action_bg_color).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                AmbilWarnaDialog dialog = new AmbilWarnaDialog(activity, Color.WHITE, new AmbilWarnaDialog.OnAmbilWarnaListener() {
+                AmbilWarnaDialog dialog = new AmbilWarnaDialog(activity, Color.WHITE, false, new AmbilWarnaDialog.OnAmbilWarnaListener() {
                     @Override
                     public void onOk(AmbilWarnaDialog dialog, int color) {
                         editor.setTextBackgroundColor(color == Color.WHITE ? Color.TRANSPARENT : color);
+                    }
+
+                    @Override
+                    public void onRemove(AmbilWarnaDialog dialog) {
+                        // do nothing
                     }
 
                     @Override
@@ -686,10 +696,16 @@ public class DetailFragment extends Fragment{
 
         final int initialColor = selectedColor == null ? Color.WHITE : Color.parseColor(selectedColor.getHexcode());
 
-        AmbilWarnaDialog dialog = new AmbilWarnaDialog(activity, initialColor, new AmbilWarnaDialog.OnAmbilWarnaListener() {
+        AmbilWarnaDialog dialog = new AmbilWarnaDialog(activity, initialColor, true, new AmbilWarnaDialog.OnAmbilWarnaListener() {
             @Override
             public void onOk(AmbilWarnaDialog dialog, int color) {
                 selectedColor = Colors.getColor(String.format("#%06X", (0xFFFFFF & color)));
+                setToolbarColor();
+            }
+
+            @Override
+            public void onRemove(AmbilWarnaDialog dialog) {
+                selectedColor = null;
                 setToolbarColor();
             }
 

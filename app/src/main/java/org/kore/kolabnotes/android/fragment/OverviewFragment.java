@@ -539,7 +539,7 @@ public class OverviewFragment extends Fragment implements NoteAdapter.NoteSelect
         org.kore.kolab.notes.Color selectedColor = tag.getColor();
         final int initialColor = selectedColor == null ? Color.WHITE : Color.parseColor(selectedColor.getHexcode());
 
-        AmbilWarnaDialog dialog = new AmbilWarnaDialog(activity, initialColor, new AmbilWarnaDialog.OnAmbilWarnaListener() {
+        AmbilWarnaDialog dialog = new AmbilWarnaDialog(activity, initialColor,true, new AmbilWarnaDialog.OnAmbilWarnaListener() {
             @Override
             public void onOk(AmbilWarnaDialog dialog, int color) {
                 final org.kore.kolab.notes.Color newColor = Colors.getColor(String.format("#%06X", (0xFFFFFF & color)));
@@ -553,6 +553,15 @@ public class OverviewFragment extends Fragment implements NoteAdapter.NoteSelect
             @Override
             public void onCancel(AmbilWarnaDialog dialog) {
                 // do nothing
+            }
+
+            @Override
+            public void onRemove(AmbilWarnaDialog dialog) {
+                tag.setColor(null);
+
+                tagRepository.update(activeAccount.getAccount(),activeAccount.getRootFolder(),tag);
+
+                orderDrawerItems(tagRepository.getAllAsMap(activeAccount.getAccount(),activeAccount.getRootFolder()), mDrawer, null);
             }
         });
         dialog.show();

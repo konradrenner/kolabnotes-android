@@ -130,4 +130,5 @@
     <string name="title_characteristics">Eigenschaften</string>
     <string name="title_choose_tag_color">Kategoriefarbe wählen</string>
     <string name="no_tag_selected">Keine Kategorie ausgewählt</string>
+    <string name="remove">Entfernen</string>
 </resources>

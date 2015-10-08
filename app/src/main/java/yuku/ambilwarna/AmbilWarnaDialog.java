@@ -21,6 +21,8 @@ public class AmbilWarnaDialog {
 		void onCancel(AmbilWarnaDialog dialog);
 
 		void onOk(AmbilWarnaDialog dialog, int color);
+
+		void onRemove(AmbilWarnaDialog dialog);
 	}
 
 	final AlertDialog dialog;
@@ -37,6 +39,7 @@ public class AmbilWarnaDialog {
 	final ImageView viewAlphaCheckered;
 	final ViewGroup viewContainer;
 	final float[] currentColorHsv = new float[3];
+    final boolean withRemove;
 	int alpha;
 
 	/**
@@ -46,8 +49,8 @@ public class AmbilWarnaDialog {
 	 * @param color current color
 	 * @param listener an OnAmbilWarnaListener, allowing you to get back error or OK
 	 */
-	public AmbilWarnaDialog(final Context context, int color, OnAmbilWarnaListener listener) {
-		this(context, color, false, listener);
+	public AmbilWarnaDialog(final Context context, int color, boolean withRemove, OnAmbilWarnaListener listener) {
+		this(context, color, withRemove, false, listener);
 	}
 
 	/**
@@ -58,9 +61,10 @@ public class AmbilWarnaDialog {
 	 * @param supportsAlpha whether alpha/transparency controls are enabled
 	 * @param listener an OnAmbilWarnaListener, allowing you to get back error or OK
 	 */
-	public AmbilWarnaDialog(final Context context, int color, boolean supportsAlpha, OnAmbilWarnaListener listener) {
+	public AmbilWarnaDialog(final Context context, int color, boolean withRemove, boolean supportsAlpha, OnAmbilWarnaListener listener) {
 		this.supportsAlpha = supportsAlpha;
 		this.listener = listener;
+        this.withRemove = withRemove;
 
 		if (!supportsAlpha) { // remove alpha if not supported
 			color = color | 0xff000000;
@@ -173,34 +177,46 @@ public class AmbilWarnaDialog {
 			}
 		});
 
-		dialog = new AlertDialog.Builder(context)
+        AlertDialog.Builder builder = new AlertDialog.Builder(context)
 		.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-			@Override
-			public void onClick(DialogInterface dialog, int which) {
-				if (AmbilWarnaDialog.this.listener != null) {
-					AmbilWarnaDialog.this.listener.onOk(AmbilWarnaDialog.this, getColor());
-				}
-			}
-		})
-		.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
-			@Override
-			public void onClick(DialogInterface dialog, int which) {
-				if (AmbilWarnaDialog.this.listener != null) {
-					AmbilWarnaDialog.this.listener.onCancel(AmbilWarnaDialog.this);
-				}
-			}
-		})
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                if (AmbilWarnaDialog.this.listener != null) {
+                    AmbilWarnaDialog.this.listener.onOk(AmbilWarnaDialog.this, getColor());
+                }
+            }
+        })
+        .setNeutralButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                if (AmbilWarnaDialog.this.listener != null) {
+                    AmbilWarnaDialog.this.listener.onCancel(AmbilWarnaDialog.this);
+                }
+            }
+        })
 		.setOnCancelListener(new OnCancelListener() {
-			// if back button is used, call back our listener.
-			@Override
-			public void onCancel(DialogInterface paramDialogInterface) {
-				if (AmbilWarnaDialog.this.listener != null) {
-					AmbilWarnaDialog.this.listener.onCancel(AmbilWarnaDialog.this);
-				}
+            // if back button is used, call back our listener.
+            @Override
+            public void onCancel(DialogInterface paramDialogInterface) {
+                if (AmbilWarnaDialog.this.listener != null) {
+                    AmbilWarnaDialog.this.listener.onCancel(AmbilWarnaDialog.this);
+                }
 
-			}
-		})
-		.create();
+            }
+        });
+
+        if(withRemove){
+            builder.setNegativeButton(R.string.remove, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    if (AmbilWarnaDialog.this.listener != null) {
+                        AmbilWarnaDialog.this.listener.onRemove(AmbilWarnaDialog.this);
+                    }
+                }
+            });
+        }
+
+        dialog = builder.create();
 		// kill all padding from the dialog window
 		dialog.setView(view, 0, 0, 0, 0);
 

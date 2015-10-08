@@ -36,12 +36,17 @@ public class AmbilWarnaPreference extends Preference {
 	}
 
 	@Override protected void onClick() {
-		new AmbilWarnaDialog(getContext(), value, supportsAlpha, new AmbilWarnaDialog.OnAmbilWarnaListener() {
+		new AmbilWarnaDialog(getContext(), value, false, supportsAlpha, new AmbilWarnaDialog.OnAmbilWarnaListener() {
 			@Override public void onOk(AmbilWarnaDialog dialog, int color) {
 				if (!callChangeListener(color)) return; // They don't want the value to be set
 				value = color;
 				persistInt(value);
 				notifyChanged();
+			}
+
+			@Override
+			public void onRemove(AmbilWarnaDialog dialog) {
+				//nothing todo
 			}
 
 			@Override public void onCancel(AmbilWarnaDialog dialog) {
