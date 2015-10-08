@@ -1,6 +1,5 @@
 package org.kore.kolabnotes.android.content;
 
-import android.accounts.AccountManager;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;

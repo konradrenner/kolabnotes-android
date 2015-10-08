@@ -16,7 +16,6 @@ import android.graphics.ColorMatrixColorFilter;
 import android.graphics.Outline;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
-import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.internal.widget.TintImageView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
@@ -43,8 +42,6 @@ import org.kore.kolabnotes.android.widget.StickyNoteWidget;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
 
 public class Utils {
 

@@ -18,7 +18,6 @@ import org.kore.kolab.notes.RemoteNotesRepository;
 import org.kore.kolab.notes.imap.ImapNotesRepository;
 import org.kore.kolab.notes.v3.KolabConfigurationParserV3;
 import org.kore.kolab.notes.v3.KolabNotesParserV3;
-import org.kore.kolabnotes.android.MainActivity;
 import org.kore.kolabnotes.android.R;
 import org.kore.kolabnotes.android.Utils;
 import org.kore.kolabnotes.android.content.RepositoryManager;

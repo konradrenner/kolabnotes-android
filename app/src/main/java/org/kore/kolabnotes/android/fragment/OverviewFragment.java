@@ -23,7 +23,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.RadioButton;
@@ -482,7 +481,7 @@ public class OverviewFragment extends Fragment implements NoteAdapter.NoteSelect
                 notes = notesRepository.getFromNotebook(activeAccount.getAccount(),activeAccount.getRootFolder(),notebookUID,Utils.getNoteSorting(getActivity()));
             }
 
-            Map<String,Tag> tags = tagRepository.getAllAsMap(activeAccount.getAccount(),activeAccount.getRootFolder());
+            Map<String,Tag> tags = tagRepository.getAllAsMap(activeAccount.getAccount(), activeAccount.getRootFolder());
             List<Notebook> notebooks = notebookRepository.getAll(activeAccount.getAccount(),activeAccount.getRootFolder());
 
             if(preventBlankDisplaying){
@@ -903,7 +902,7 @@ public class OverviewFragment extends Fragment implements NoteAdapter.NoteSelect
         ActiveAccount activeAccount = activeAccountRepository.getActiveAccount();
         final List<Note> notes = notesRepository.getAll(activeAccount.getAccount(), activeAccount.getRootFolder(), Utils.getNoteSorting(getActivity()));
         final List<Notebook> notebooks = notebookRepository.getAll(activeAccount.getAccount(), activeAccount.getRootFolder());
-        final Map<String,Tag> tags = tagRepository.getAllAsMap(activeAccount.getAccount(),activeAccount.getRootFolder());
+        final Map<String,Tag> tags = tagRepository.getAllAsMap(activeAccount.getAccount(), activeAccount.getRootFolder());
         reloadData(notebooks, notes, tags);
     }
 
@@ -1020,7 +1019,7 @@ public class OverviewFragment extends Fragment implements NoteAdapter.NoteSelect
                 }
 
                 List<Notebook> notebooks = notebookRepository.getAll(activeAccount.getAccount(), activeAccount.getRootFolder());
-                Map<String,Tag> tags = tagRepository.getAllAsMap(activeAccount.getAccount(),activeAccount.getRootFolder());
+                Map<String,Tag> tags = tagRepository.getAllAsMap(activeAccount.getAccount(), activeAccount.getRootFolder());
 
                 displayBlankFragment();
 
@@ -1071,7 +1070,7 @@ public class OverviewFragment extends Fragment implements NoteAdapter.NoteSelect
                 }
 
                 List<Notebook> notebooks = notebookRepository.getAll(activeAccount.getAccount(), activeAccount.getRootFolder());
-                Map<String,Tag> tags = tagRepository.getAllAsMap(activeAccount.getAccount(),activeAccount.getRootFolder());
+                Map<String,Tag> tags = tagRepository.getAllAsMap(activeAccount.getAccount(), activeAccount.getRootFolder());
 
                 displayBlankFragment();
 

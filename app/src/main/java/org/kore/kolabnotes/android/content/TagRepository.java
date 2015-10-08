@@ -11,7 +11,6 @@ import android.database.sqlite.SQLiteException;
 import org.kore.kolab.notes.AuditInformation;
 import org.kore.kolab.notes.Colors;
 import org.kore.kolab.notes.Identification;
-import org.kore.kolab.notes.Note;
 import org.kore.kolab.notes.Tag;
 import org.kore.kolabnotes.android.security.AuthenticatorActivity;
 
