@@ -126,6 +126,7 @@
             android:layout_height="wrap_content">
 
             <LinearLayout
+                android:id="@+id/predefined_colors"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
@@ -134,78 +135,91 @@
                     android:layout_width="35dp"
                     android:layout_height="35dp"
                     android:layout_marginRight="5dp"
+                    android:clickable="true"
                     android:background="@drawable/white_circle" />
 
                 <View
                     android:layout_width="35dp"
                     android:layout_height="35dp"
                     android:layout_marginRight="5dp"
+                    android:clickable="true"
                     android:background="@drawable/light_green_circle" />
 
                 <View
                     android:layout_width="35dp"
                     android:layout_height="35dp"
                     android:layout_marginRight="5dp"
+                    android:clickable="true"
                     android:background="@drawable/dark_green_circle" />
 
                 <View
                     android:layout_width="35dp"
                     android:layout_height="35dp"
                     android:layout_marginRight="5dp"
+                    android:clickable="true"
                     android:background="@drawable/light_blue_circle" />
 
                 <View
                     android:layout_width="35dp"
                     android:layout_height="35dp"
                     android:layout_marginRight="5dp"
+                    android:clickable="true"
                     android:background="@drawable/dark_blue_circle" />
 
                 <View
                     android:layout_width="35dp"
                     android:layout_height="35dp"
                     android:layout_marginRight="5dp"
+                    android:clickable="true"
                     android:background="@drawable/purple_circle" />
 
                 <View
                     android:layout_width="35dp"
                     android:layout_height="35dp"
                     android:layout_marginRight="5dp"
+                    android:clickable="true"
                     android:background="@drawable/pink_circle" />
 
                 <View
                     android:layout_width="35dp"
                     android:layout_height="35dp"
                     android:layout_marginRight="5dp"
+                    android:clickable="true"
                     android:background="@drawable/yellow_circle" />
 
                 <View
                     android:layout_width="35dp"
                     android:layout_height="35dp"
                     android:layout_marginRight="5dp"
+                    android:clickable="true"
                     android:background="@drawable/light_red_circle" />
 
                 <View
                     android:layout_width="35dp"
                     android:layout_height="35dp"
                     android:layout_marginRight="5dp"
+                    android:clickable="true"
                     android:background="@drawable/dark_red_circle" />
 
                 <View
                     android:layout_width="35dp"
                     android:layout_height="35dp"
                     android:layout_marginRight="5dp"
+                    android:clickable="true"
                     android:background="@drawable/orange_circle" />
 
                 <View
                     android:layout_width="35dp"
                     android:layout_height="35dp"
                     android:layout_marginRight="5dp"
+                    android:clickable="true"
                     android:background="@drawable/brown_circle" />
 
                 <View
                     android:layout_width="35dp"
                     android:layout_height="35dp"
                     android:layout_marginRight="5dp"
+                    android:clickable="true"
                     android:background="@drawable/black_circle" />
             </LinearLayout>
 

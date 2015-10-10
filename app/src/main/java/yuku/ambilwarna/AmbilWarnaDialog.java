@@ -232,7 +232,24 @@ public class AmbilWarnaDialog {
 				view.getViewTreeObserver().removeGlobalOnLayoutListener(this);
 			}
 		});
+
+        setClickListener(view);
 	}
+
+	private void setClickListener(View dialog){
+        ViewGroup parent = (ViewGroup)dialog.findViewById(R.id.predefined_colors);
+
+        for(int i=0; i<parent.getChildCount(); ++i) {
+            View nextChild = parent.getChildAt(i);
+
+            nextChild.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    viewNewColor.setBackground(view.getBackground());
+                }
+            });
+        }
+    }
 
 	protected void moveCursor() {
 		float y = viewHue.getMeasuredHeight() - (getHue() * viewHue.getMeasuredHeight() / 360.f);
