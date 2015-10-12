@@ -43,6 +43,8 @@ public class NoteRepository {
         dbHelper = new DatabaseHelper(context);
         this.context = context;
         this.modificationRepository = new ModificationRepository(context);
+
+        new TagRepository(context).migrateTags();
     }
 
     public void open() {

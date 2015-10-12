@@ -43,8 +43,6 @@ public class TagRepository {
     public TagRepository(Context context) {
         this.context = context;
         dbHelper = new DatabaseHelper(context);
-
-        migrateTags();
     }
 
     public void open() {
@@ -323,7 +321,7 @@ public class TagRepository {
     }
 
     private String cursorToTagName(Cursor cursor) {
-        return cursor.getString(10);
+        return cursor.getString(9);
     }
 
 
