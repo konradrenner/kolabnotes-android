@@ -4,8 +4,16 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.ShapeDrawable;
+import android.graphics.drawable.shapes.OvalShape;
+import android.graphics.drawable.shapes.Shape;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -245,7 +253,21 @@ public class AmbilWarnaDialog {
             nextChild.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    viewNewColor.setBackground(view.getBackground());
+                    final Drawable background = view.getBackground();
+
+                    final Bitmap.Config argb8888 = Bitmap.Config.ARGB_8888;
+                    final int width = view.getWidth();
+                    final int heigth = view.getHeight();
+                    final Bitmap bitmap = Bitmap.createBitmap(width, heigth, argb8888);
+                    Canvas canvas = new Canvas(bitmap);
+
+                    background.draw(canvas);
+
+                    //center pixel
+                    final int pixel = bitmap.getPixel(width / 2, heigth / 2);
+
+                    Color.colorToHSV(pixel, currentColorHsv);
+                    viewNewColor.setBackgroundColor(pixel);
                 }
             });
         }
