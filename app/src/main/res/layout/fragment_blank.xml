@@ -14,7 +14,7 @@
             android:layout_above="@+id/textView"
             android:id="@+id/imageView"
             android:contentDescription="@string/select_or_create_hint"
-            android:src="@drawable/abc_ab_share_pack_mtrl_alpha" />
+            android:src="@drawable/select_note" />
 
         <TextView
             android:layout_width="wrap_content"
