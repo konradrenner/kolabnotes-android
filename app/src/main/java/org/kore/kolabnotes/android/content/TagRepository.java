@@ -87,12 +87,19 @@ public class TagRepository {
             return;
         }
 
+        String email = "local";
+        String rootFolder = "Notes";
+
+        for(String tagname : tags){
+            doInsert(email,rootFolder, Tag.createNewTag(tagname));
+        }
+
         final AccountManager accountManager = AccountManager.get(context);
         Account[] accounts = accountManager.getAccountsByType(AuthenticatorActivity.ARG_ACCOUNT_TYPE);
 
         for(int i=0;i<accounts.length;i++) {
-            String email = accountManager.getUserData(accounts[i],AuthenticatorActivity.KEY_EMAIL);
-            String rootFolder = accountManager.getUserData(accounts[i],AuthenticatorActivity.KEY_ROOT_FOLDER);
+            email = accountManager.getUserData(accounts[i],AuthenticatorActivity.KEY_EMAIL);
+            rootFolder = accountManager.getUserData(accounts[i],AuthenticatorActivity.KEY_ROOT_FOLDER);
 
             for(String tagname : tags){
                 doInsert(email,rootFolder, Tag.createNewTag(tagname));
@@ -101,7 +108,7 @@ public class TagRepository {
 
         database.delete(DatabaseHelper.TABLE_OLD_TAGS,
                 null,
-                null);
+               null);
 
         close();
     }
