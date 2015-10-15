@@ -7,6 +7,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
+import android.provider.ContactsContract;
 
 import org.kore.kolab.notes.AuditInformation;
 import org.kore.kolab.notes.Colors;
@@ -20,6 +21,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * Created by koni on 12.03.15.
@@ -31,13 +33,14 @@ public class TagRepository {
     private String[] allColumns = { DatabaseHelper.COLUMN_ID,
             DatabaseHelper.COLUMN_ACCOUNT,
             DatabaseHelper.COLUMN_ROOT_FOLDER,
-            DatabaseHelper.COLUMN_UID,
+            DatabaseHelper.COLUMN_TAG_UID,
             DatabaseHelper.COLUMN_PRODUCTID,
             DatabaseHelper.COLUMN_CREATIONDATE,
             DatabaseHelper.COLUMN_MODIFICATIONDATE,
             DatabaseHelper.COLUMN_COLOR,
             DatabaseHelper.COLUMN_PRIORITY,
-            DatabaseHelper.COLUMN_TAGNAME};
+            DatabaseHelper.COLUMN_TAGNAME,
+            DatabaseHelper.COLUMN_UID};
     private final Context context;
 
     public TagRepository(Context context) {
@@ -130,7 +133,8 @@ public class TagRepository {
         ContentValues values = new ContentValues();
         values.put(DatabaseHelper.COLUMN_ACCOUNT,account);
         values.put(DatabaseHelper.COLUMN_ROOT_FOLDER,rootFolder);
-        values.put(DatabaseHelper.COLUMN_UID,tag.getIdentification().getUid());
+        values.put(DatabaseHelper.COLUMN_UID, UUID.randomUUID().toString());
+        values.put(DatabaseHelper.COLUMN_TAG_UID,tag.getIdentification().getUid());
         values.put(DatabaseHelper.COLUMN_PRODUCTID,tag.getIdentification().getProductId());
         values.put(DatabaseHelper.COLUMN_CREATIONDATE,tag.getAuditInformation().getCreationDate().getTime());
         values.put(DatabaseHelper.COLUMN_MODIFICATIONDATE,tag.getAuditInformation().getLastModificationDate().getTime());
@@ -146,7 +150,7 @@ public class TagRepository {
         ContentValues values = new ContentValues();
         values.put(DatabaseHelper.COLUMN_ACCOUNT,account);
         values.put(DatabaseHelper.COLUMN_ROOT_FOLDER,rootFolder);
-        values.put(DatabaseHelper.COLUMN_UID,tag.getIdentification().getUid());
+        values.put(DatabaseHelper.COLUMN_TAG_UID,tag.getIdentification().getUid());
         values.put(DatabaseHelper.COLUMN_PRODUCTID,tag.getIdentification().getProductId());
         values.put(DatabaseHelper.COLUMN_CREATIONDATE,tag.getAuditInformation().getCreationDate().getTime());
         values.put(DatabaseHelper.COLUMN_MODIFICATIONDATE,tag.getAuditInformation().getLastModificationDate().getTime());
@@ -158,7 +162,7 @@ public class TagRepository {
                 values,
                 DatabaseHelper.COLUMN_ACCOUNT + " = '" + account+"' AND "+
                         DatabaseHelper.COLUMN_ROOT_FOLDER + " = '" + rootFolder+"' AND "+
-                        DatabaseHelper.COLUMN_UID + " = '" + tag.getIdentification().getUid()+"' ",
+                        DatabaseHelper.COLUMN_TAG_UID + " = '" + tag.getIdentification().getUid()+"' ",
                 null);
 
         close();
@@ -216,7 +220,7 @@ public class TagRepository {
                 allColumns,
                 DatabaseHelper.COLUMN_ACCOUNT + " = '" + account+"' AND "+
                         DatabaseHelper.COLUMN_ROOT_FOLDER + " = '" + rootFolder+"' AND "+
-                        DatabaseHelper.COLUMN_UID + " = '"+ uid+"' ",
+                        DatabaseHelper.COLUMN_TAG_UID + " = '"+ uid+"' ",
                 null,
                 null,
                 null,
@@ -340,9 +344,15 @@ public class TagRepository {
         String color = cursor.getString(7);
         int priority = cursor.getInt(8);
         String tagName = cursor.getString(9);
+        String oldUID = cursor.getString(10);
+
+        String correctUID = uid;
+        if(correctUID == null){
+            correctUID = oldUID;
+        }
 
         AuditInformation audit = new AuditInformation(new Timestamp(creationDate),new Timestamp(modificationDate));
-        Identification ident = new Identification(uid,productId);
+        Identification ident = new Identification(correctUID,productId);
 
         Tag tag = new Tag(ident,audit);
         tag.setColor(Colors.getColor(color));

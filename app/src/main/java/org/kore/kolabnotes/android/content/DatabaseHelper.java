@@ -19,6 +19,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String COLUMN_ID = "_id";
     public static final String COLUMN_COLOR = "color";
     public static final String COLUMN_UID = "uid";
+    public static final String COLUMN_TAG_UID = "uidtag";
     public static final String COLUMN_UID_NOTEBOOK = "uid_notebook";
     public static final String COLUMN_DISCRIMINATOR = "discriminator";
     public static final String COLUMN_PRODUCTID = "productId";
@@ -45,7 +46,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String COLUMN_MODIFICATIONTYPE = "modificationType";
 
     private static final String DATABASE_NAME = "kolabnotes.db";
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 3;
 
     // Database creation sql statement
     private static final String CREATE_NOTES = "create table "
@@ -70,6 +71,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + COLUMN_ACCOUNT + " text not null, "
             + COLUMN_ROOT_FOLDER + " text not null, "
             + COLUMN_UID + " text not null unique, "
+            + COLUMN_TAG_UID + " text not null, "
             + COLUMN_PRODUCTID + " text not null, "
             + COLUMN_CREATIONDATE + " integer, "
             + COLUMN_MODIFICATIONDATE + " integer, " //milliseconds
@@ -125,7 +127,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         Log.w(DatabaseHelper.class.getName(), "Upgrading database from version " + oldVersion + " to version "+ newVersion);
-        db.execSQL(CREATE_TAGS);
+        if(oldVersion == 2){
+            db.execSQL("ALTER TABLE "+TABLE_TAGS+" ADD COLUMN "+COLUMN_TAG_UID+" text ");
+        }else {
+            db.execSQL(CREATE_TAGS);
+        }
     }
 
 }

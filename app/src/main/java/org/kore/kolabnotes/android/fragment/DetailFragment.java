@@ -820,6 +820,9 @@ public class DetailFragment extends Fragment{
         final Set<String> tagNames = allTags.keySet();
 
         final String[] tagArr = tagNames.toArray(new String[tagNames.size()]);
+
+        Arrays.sort(tagArr);
+
         final boolean[] selectionArr = new boolean[tagArr.length];
 
         final ArrayList<Integer> selectedItems=new ArrayList<Integer> ();

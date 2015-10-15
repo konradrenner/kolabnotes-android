@@ -28,13 +28,14 @@ public class NoteTagRepository {
             ", note."+DatabaseHelper.COLUMN_CLASSIFICATION+
             ", note."+DatabaseHelper.COLUMN_COLOR;
 
-    private final static String TAG_COLUMNS = "tag."+DatabaseHelper.COLUMN_UID+
+    private final static String TAG_COLUMNS = "tag."+DatabaseHelper.COLUMN_TAG_UID+
             ", tag."+DatabaseHelper.COLUMN_PRODUCTID+
             ", tag."+DatabaseHelper.COLUMN_CREATIONDATE+
             ", tag."+DatabaseHelper.COLUMN_MODIFICATIONDATE+
             ", tag."+DatabaseHelper.COLUMN_TAGNAME+
             ", tag."+DatabaseHelper.COLUMN_PRIORITY+
-            ", tag."+DatabaseHelper.COLUMN_COLOR;
+            ", tag."+DatabaseHelper.COLUMN_COLOR+
+            ", tag."+DatabaseHelper.COLUMN_UID;
 
     private final static String QUERY_TAGS_WITH_NOTEID = "SELECT "+TAG_COLUMNS+" from "+DatabaseHelper.TABLE_TAGS+" tag, "+DatabaseHelper.TABLE_NOTE_TAGS+" notetags " +
             " where notetags."+DatabaseHelper.COLUMN_ACCOUNT+" = ? " +
@@ -217,6 +218,11 @@ public class NoteTagRepository {
         String tagName = cursor.getString(4);
         int priority = cursor.getInt(5);
         String color = cursor.getString(6);
+        String oldUID = cursor.getString(7);
+
+        if(uid == null){
+            uid = oldUID;
+        }
 
         AuditInformation audit = new AuditInformation(new Timestamp(creationDate),new Timestamp(modificationDate));
         Identification ident = new Identification(uid,productId);
