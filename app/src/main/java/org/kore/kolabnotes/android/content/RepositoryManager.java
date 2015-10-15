@@ -92,6 +92,8 @@ public class RepositoryManager {
 
         List<Modification> deletedNbs = modificationRepository.getDeletions(email, rootFolder, Modification.Descriminator.NOTEBOOK);
 
+        final RemoteTags remoteTags = repo.getRemoteTags();
+
         for(Note note : localNotes){
             Modification modification = modificationRepository.getUnique(email, rootFolder, note.getIdentification().getUid());
 
@@ -136,10 +138,14 @@ public class RepositoryManager {
                         remoteNote.removeCategories(remoteCategories.toArray(new Tag[remoteCategories.size()]));
 
                         Set<Tag> localCategories = note.getCategories();
-                        remoteNote.addCategories(localCategories.toArray(new Tag[localCategories.size()]));
+                        final Tag[] tagArray = localCategories.toArray(new Tag[localCategories.size()]);
+                        remoteNote.addCategories(tagArray);
                         remoteNote.setColor(note.getColor());
                         remoteNote.getAuditInformation().setLastModificationDate(note.getAuditInformation().getLastModificationDate().getTime());
                         remoteNote.getAuditInformation().setCreationDate(note.getAuditInformation().getCreationDate().getTime());
+
+                        remoteTags.removeTags(note.getIdentification().getUid());
+                        remoteTags.attachTags(note.getIdentification().getUid(), tagArray);
                     }
                 }
             }else{
@@ -173,6 +179,6 @@ public class RepositoryManager {
 
         //Update the tags
         final List<Tag> allModifiedAfter = tagRepository.getAllModifiedAfter(email, rootFolder, lastSync);
-        repo.getRemoteTags().applyLocalChanges(allModifiedAfter.toArray(new Tag[allModifiedAfter.size()]));
+        remoteTags.applyLocalChanges(allModifiedAfter.toArray(new Tag[allModifiedAfter.size()]));
     }
 }
