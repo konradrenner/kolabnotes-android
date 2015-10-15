@@ -544,6 +544,7 @@ public class OverviewFragment extends Fragment implements NoteAdapter.NoteSelect
             public void onOk(AmbilWarnaDialog dialog, int color) {
                 final org.kore.kolab.notes.Color newColor = Colors.getColor(String.format("#%06X", (0xFFFFFF & color)));
                 tag.setColor(newColor);
+                tag.getAuditInformation().setLastModificationDate(System.currentTimeMillis());
 
                 tagRepository.update(activeAccount.getAccount(),activeAccount.getRootFolder(),tag);
 
