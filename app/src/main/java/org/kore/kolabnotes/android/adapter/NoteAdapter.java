@@ -127,6 +127,12 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.ViewHolder> {
                     TextView tagTextView = new TextView(context);
                     tagTextView.setText(tag.getName());
                     tagTextView.setTextColor(useLightColor ? Color.WHITE : Color.BLACK);
+                    final Drawable drawable = context.getResources().getDrawable(R.drawable.color_background_with_dashedborder).mutate();
+
+                    int backgroundColor = note.getColor() == null ? Color.WHITE : Color.parseColor(note.getColor().getHexcode());
+
+                    drawable.setColorFilter(backgroundColor, PorterDuff.Mode.MULTIPLY);
+                    tagTextView.setBackground(drawable);
                     tagTextView.setLayoutParams(params);
 
                     viewHolder.categories.addView(tagTextView);
