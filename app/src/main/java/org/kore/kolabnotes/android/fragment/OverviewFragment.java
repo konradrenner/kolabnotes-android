@@ -365,6 +365,10 @@ public class OverviewFragment extends Fragment implements NoteAdapter.NoteSelect
         ActiveAccount activeAccount;
         if(email != null && rootFolder != null) {
             activeAccount = activeAccountRepository.switchAccount(email,rootFolder);
+
+            //remove the values because if one selects an other account and then goes into detail an then back, the values will be present, in phone mode
+            startIntent.removeExtra(Utils.INTENT_ACCOUNT_EMAIL);
+            startIntent.removeExtra(Utils.INTENT_ACCOUNT_ROOT_FOLDER);
         }else{
             activeAccount = activeAccountRepository.getActiveAccount();
         }
