@@ -16,7 +16,6 @@ import android.graphics.ColorMatrixColorFilter;
 import android.graphics.Outline;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
-import android.support.v7.internal.widget.TintImageView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
@@ -418,7 +417,7 @@ public class Utils {
                     return;
                 }
 
-                TintImageView overflow = (TintImageView)outViews.get(0);
+                ImageView overflow = (ImageView)outViews.get(0);
                 overflow.setColorFilter(lightColor ? android.graphics.Color.WHITE : android.graphics.Color.BLACK);
                 decorView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
             }
