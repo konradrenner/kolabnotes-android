@@ -50,6 +50,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
     public final static String KEY_INTERVALL_TYPE = "intervalltype";
     public final static String KEY_INTERVALL = "intervall";
     public final static String KEY_ACCOUNT_TYPE = "accounttype";
+    public final static String KEY_SHARED_FOLDERS = "shared_folders";
 
 
     private final String TAG = this.getClass().getSimpleName();
@@ -62,6 +63,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
     private CheckBox mEnableSSLView;
     private EditText mSyncView;
     private Switch mKolabView;
+    private Switch mSharedFoldersView;
     private EditText mIMAPServerView;
     private Spinner mAccountType;
     private Spinner mIntervallType;
@@ -94,6 +96,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
         mEnableSSLView = (CheckBox) findViewById(R.id.enable_ssl);
         mSyncView = (EditText) findViewById(R.id.sync_intervall);
         mKolabView = (Switch) findViewById(R.id.enable_kolab);
+        mSharedFoldersView = (Switch) findViewById(R.id.enable_shared_folders);
         mRootFolderView = (EditText)findViewById(R.id.imap_root_folder);
         mIMAPServerView = (EditText)findViewById(R.id.imap_server_url);
         mAccountType = (Spinner)findViewById(R.id.spinner_accountType);
@@ -155,6 +158,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
                 final String port = mAccountManager.getUserData(acc, AuthenticatorActivity.KEY_PORT);
                 final String server = mAccountManager.getUserData(acc, AuthenticatorActivity.KEY_SERVER);
                 final String isSSL = mAccountManager.getUserData(acc, AuthenticatorActivity.KEY_SSL);
+                final String isSharedFolders = mAccountManager.getUserData(acc, AuthenticatorActivity.KEY_SHARED_FOLDERS);
                 final String intervallType = mAccountManager.getUserData(acc, AuthenticatorActivity.KEY_INTERVALL_TYPE);
                 final String intervall = mAccountManager.getUserData(acc, AuthenticatorActivity.KEY_INTERVALL);
 
@@ -173,6 +177,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
 
                 mKolabView.setChecked(Boolean.parseBoolean(isKolab));
                 mEnableSSLView.setChecked(Boolean.parseBoolean(isSSL));
+                mSharedFoldersView.setChecked(Boolean.parseBoolean(isSharedFolders));
 
                 return;
             }
@@ -203,6 +208,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
         mEnableSSLView.setVisibility(View.VISIBLE);
         mSyncView.setVisibility(View.VISIBLE);
         mKolabView.setVisibility(View.VISIBLE);
+        mSharedFoldersView.setVisibility(View.VISIBLE);
         mRootFolderView.setVisibility(View.VISIBLE);
         mIntervallType.setVisibility(View.VISIBLE);
     }
@@ -212,6 +218,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
         mEnableSSLView.setVisibility(View.INVISIBLE);
         mSyncView.setVisibility(View.INVISIBLE);
         mKolabView.setVisibility(View.INVISIBLE);
+        mSharedFoldersView.setVisibility(View.INVISIBLE);
         mRootFolderView.setVisibility(View.INVISIBLE);
         mIntervallType.setVisibility(View.INVISIBLE);
     }
@@ -283,6 +290,10 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
                     builder.disableFolderAnnotation();
                 }
 
+                if(mSharedFoldersView.isChecked()){
+                    builder.enableSharedFolders();
+                }
+
                 AccountInformation accountInformation = builder.build();
                 KolabAccount serverInfo = new KolabAccount(accountName,rootFolder,accountInformation);
 
@@ -347,6 +358,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
     private Bundle createAuthBundle(KolabAccount kolabAccount, long intervall) {
         final String ssl = Boolean.toString(kolabAccount.getAccountInformation().isSSLEnabled());
         final String kolab = Boolean.toString(kolabAccount.getAccountInformation().isFolderAnnotationEnabled());
+        final String shared = Boolean.toString(kolabAccount.getAccountInformation().isSharedFoldersEnabled());
         Bundle bundle = new Bundle();
         bundle.putString(KEY_ACCOUNT_NAME, kolabAccount.getAccountName());
         bundle.putString(KEY_ROOT_FOLDER, kolabAccount.getRootFolder());
@@ -355,6 +367,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
         bundle.putString(KEY_PORT, Integer.toString(kolabAccount.getAccountInformation().getPort()));
         bundle.putString(KEY_SSL, ssl);
         bundle.putString(KEY_KOLAB, kolab);
+        bundle.putString(KEY_SHARED_FOLDERS, shared);
 
         bundle.putString(KEY_ACCOUNT_TYPE,Integer.toString(mAccountType.getSelectedItemPosition()));
         bundle.putString(KEY_INTERVALL_TYPE,Integer.toString(mIntervallType.getSelectedItemPosition()));
@@ -366,6 +379,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
     private void setAuthBundle(Account account, KolabAccount kolabAccount, long intervall) {
         final String ssl = Boolean.toString(kolabAccount.getAccountInformation().isSSLEnabled());
         final String kolab = Boolean.toString(kolabAccount.getAccountInformation().isFolderAnnotationEnabled());
+        final String shared = Boolean.toString(kolabAccount.getAccountInformation().isSharedFoldersEnabled());
 
         mAccountManager.setUserData(account, KEY_ACCOUNT_NAME, kolabAccount.getAccountName());
         mAccountManager.setUserData(account, KEY_ROOT_FOLDER, kolabAccount.getRootFolder());
@@ -374,6 +388,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
         mAccountManager.setUserData(account, KEY_PORT, Integer.toString(kolabAccount.getAccountInformation().getPort()));
         mAccountManager.setUserData(account, KEY_SSL, ssl);
         mAccountManager.setUserData(account, KEY_KOLAB, kolab);
+        mAccountManager.setUserData(account, KEY_SHARED_FOLDERS, shared);
         mAccountManager.setUserData(account, KEY_ACCOUNT_TYPE, Integer.toString(mAccountType.getSelectedItemPosition()));
         mAccountManager.setUserData(account, KEY_INTERVALL_TYPE, Integer.toString(mIntervallType.getSelectedItemPosition()));
         mAccountManager.setUserData(account, KEY_INTERVALL, Long.toString(intervall));
@@ -400,16 +415,19 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
             mPortView.setText("993");
             mEnableSSLView.setChecked(true);
             mKolabView.setChecked(true);
+            mSharedFoldersView.setChecked(true);
             mIMAPServerView.setText("imap.kolabnow.com");
         }
 
         private void setKolabValues(){
             mKolabView.setChecked(true);
+            mSharedFoldersView.setChecked(true);
             mIMAPServerView.setText("");
         }
 
         private void setIMAPValues(){
             mKolabView.setChecked(false);
+            mSharedFoldersView.setChecked(false);
             mIMAPServerView.setText("");
         }
     }

@@ -116,4 +116,5 @@
     <string name="title_choose_tag_color">Choose tag color</string>
     <string name="no_tag_selected">No tag selected</string>
     <string name="remove">Remove</string>
+    <string name="shared_folders">Shared notebooks</string>
 </resources>

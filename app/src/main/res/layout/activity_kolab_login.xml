@@ -154,6 +154,17 @@
                     android:paddingBottom="5dp"
                     android:clickable="true" />
 
+                <Switch
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/shared_folders"
+                    android:id="@+id/enable_shared_folders"
+                    android:textColor="@android:color/black"
+                    android:checked="true"
+                    android:paddingTop="5dp"
+                    android:paddingBottom="5dp"
+                    android:clickable="true" />
+
 
                 <Button android:id="@+id/submit"
                     android:layout_width="match_parent" android:layout_height="wrap_content"

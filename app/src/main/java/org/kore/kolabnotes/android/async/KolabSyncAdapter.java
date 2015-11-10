@@ -82,9 +82,11 @@ public class KolabSyncAdapter extends AbstractThreadedSyncAdapter {
         String sport = accountManager.getUserData(account,AuthenticatorActivity.KEY_PORT);
         String sssl = accountManager.getUserData(account,AuthenticatorActivity.KEY_SSL);
         String skolab = accountManager.getUserData(account,AuthenticatorActivity.KEY_KOLAB);
+        String sshared = accountManager.getUserData(account,AuthenticatorActivity.KEY_SHARED_FOLDERS);
         int port = Integer.valueOf(sport == null ? "993" : sport);
         boolean sslEnabled = sssl == null ? true : Boolean.valueOf(sssl);
         boolean kolabEnabled = skolab == null ? true : Boolean.valueOf(skolab);
+        boolean sharedFoldersEnabled = sshared == null ? true : Boolean.valueOf(sshared);
         String password = accountManager.getPassword(account);
 
         AccountInformation.Builder builder = AccountInformation.createForHost(url).username(email).password(password).port(port);
@@ -95,6 +97,10 @@ public class KolabSyncAdapter extends AbstractThreadedSyncAdapter {
 
         if(!kolabEnabled){
             builder.disableFolderAnnotation();
+        }
+
+        if(sharedFoldersEnabled){
+            builder.enableSharedFolders();
         }
 
         boolean doit = true;

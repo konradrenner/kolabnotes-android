@@ -9,6 +9,7 @@ import org.kore.kolab.notes.AuditInformation;
 import org.kore.kolab.notes.Identification;
 import org.kore.kolab.notes.Note;
 import org.kore.kolab.notes.Notebook;
+import org.kore.kolab.notes.SharedNotebook;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -33,7 +34,8 @@ public class NotebookRepository {
             DatabaseHelper.COLUMN_SUMMARY ,
             DatabaseHelper.COLUMN_DESCRIPTION ,
             DatabaseHelper.COLUMN_CLASSIFICATION,
-            DatabaseHelper.COLUMN_DISCRIMINATOR };
+            DatabaseHelper.COLUMN_DISCRIMINATOR,
+            DatabaseHelper.COLUMN_SHARED};
     private ModificationRepository modificationRepository;
 
     public NotebookRepository(Context context) {
@@ -72,6 +74,7 @@ public class NotebookRepository {
         values.put(DatabaseHelper.COLUMN_SUMMARY, note.getSummary());
         values.put(DatabaseHelper.COLUMN_DESCRIPTION, note.getDescription());
         values.put(DatabaseHelper.COLUMN_CLASSIFICATION, note.getClassification().toString());
+        values.put(DatabaseHelper.COLUMN_SHARED, Boolean.FALSE.toString());
 
         long rowId = database.insert(DatabaseHelper.TABLE_NOTES, null,values);
 
@@ -150,7 +153,7 @@ public class NotebookRepository {
 
         Notebook note = null;
         if (cursor.moveToNext()) {
-            note = cursorToNote(account,rootFolder,cursor);
+            note = cursorToNotebook(account, rootFolder, cursor);
         }
         cursor.close();
         close();
@@ -173,7 +176,7 @@ public class NotebookRepository {
 
         Notebook nb = null;
         if (cursor.moveToNext()) {
-            nb = cursorToNote(account,rootFolder,cursor);
+            nb = cursorToNotebook(account, rootFolder, cursor);
         }
         cursor.close();
         close();
@@ -195,7 +198,7 @@ public class NotebookRepository {
                 null);
 
         while (cursor.moveToNext()) {
-            Notebook note = cursorToNote(account,rootFolder,cursor);
+            Notebook note = cursorToNotebook(account, rootFolder, cursor);
             notes.add(note);
         }
         cursor.close();
@@ -203,7 +206,7 @@ public class NotebookRepository {
         return notes;
     }
 
-    private Notebook cursorToNote(String account, String rootFolder,Cursor cursor) {
+    private Notebook cursorToNotebook(String account, String rootFolder,Cursor cursor) {
         String uid = cursor.getString(3);
         String productId = cursor.getString(4);
         Long creationDate = cursor.getLong(5);
@@ -211,13 +214,21 @@ public class NotebookRepository {
         String summary = cursor.getString(7);
         String description = cursor.getString(8);
         String classification = cursor.getString(9);
+        boolean shared = Boolean.parseBoolean(cursor.getString(11));
 
         AuditInformation audit = new AuditInformation(new Timestamp(creationDate),new Timestamp(modificationDate));
         Identification ident = new Identification(uid,productId);
 
-        Notebook note = new Notebook(ident,audit, Note.Classification.valueOf(classification),summary);
-        note.setDescription(description);
+        Notebook notebook;
+        if(shared){
+            SharedNotebook nb = new SharedNotebook(ident,audit, Note.Classification.valueOf(classification),summary);
+            nb.setShortName(summary.substring(summary.lastIndexOf('/')+1));
+            notebook = nb;
+        }else{
+            notebook = new Notebook(ident,audit, Note.Classification.valueOf(classification),summary);
+        }
+        notebook.setDescription(description);
 
-        return note;
+        return notebook;
     }
 }
