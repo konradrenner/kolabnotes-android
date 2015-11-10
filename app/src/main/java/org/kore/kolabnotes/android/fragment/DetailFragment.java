@@ -36,6 +36,7 @@ import org.kore.kolab.notes.Colors;
 import org.kore.kolab.notes.Identification;
 import org.kore.kolab.notes.Note;
 import org.kore.kolab.notes.Notebook;
+import org.kore.kolab.notes.SharedNotebook;
 import org.kore.kolab.notes.Tag;
 import org.kore.kolabnotes.android.R;
 import org.kore.kolabnotes.android.Utils;
@@ -323,7 +324,14 @@ public class DetailFragment extends Fragment{
             //GitHub Issue 37
             Notebook notebook = notebookRepository.getByUID(activeAccount.getAccount(), activeAccount.getRootFolder(), uid);
             if(notebook != null) {
-                String notebookSummary = notebook.getSummary();
+
+                String summary = notebook.getSummary();
+
+                if(notebook.isShared()){
+                    summary = ((SharedNotebook)notebook).getShortName();
+                }
+
+                String notebookSummary = summary;
                 setSpinnerSelection(notebookSummary);
                 if(setGivenNotebook){
                     givenNotebook = notebookSummary;
@@ -994,8 +1002,15 @@ public class DetailFragment extends Fragment{
                 }
 
                 String selectedNotebookName = Utils.getSelectedNotebookName(activity);
-                if(selectedNotebookName != null && !selectedNotebookName.equals(book.getSummary())){
-                    Utils.setSelectedNotebookName(activity,book.getSummary());
+
+                String corrSumm = book.getSummary();
+
+                if(book.isShared()){
+                    corrSumm = ((SharedNotebook)book).getShortName();
+                }
+
+                if(selectedNotebookName != null && !selectedNotebookName.equals(corrSumm)){
+                    Utils.setSelectedNotebookName(activity,corrSumm);
                 }
             }
 
@@ -1113,7 +1128,13 @@ public class DetailFragment extends Fragment{
         String[] notebookArr = new String[notebooks.size()];
 
         for(int i=0; i<notebooks.size();i++){
-            notebookArr[i] = notebooks.get(i).getSummary();
+            String summary = notebooks.get(i).getSummary();
+
+            if(notebooks.get(i).isShared()){
+                summary = ((SharedNotebook)notebooks.get(i)).getShortName();
+            }
+
+            notebookArr[i] = summary;
         }
 
         Arrays.sort(notebookArr);

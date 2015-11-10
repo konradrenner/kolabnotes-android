@@ -50,6 +50,7 @@ import org.kore.kolab.notes.Colors;
 import org.kore.kolab.notes.Identification;
 import org.kore.kolab.notes.Note;
 import org.kore.kolab.notes.Notebook;
+import org.kore.kolab.notes.SharedNotebook;
 import org.kore.kolab.notes.Tag;
 import org.kore.kolabnotes.android.DetailActivity;
 import org.kore.kolabnotes.android.MainActivity;
@@ -845,7 +846,13 @@ public class OverviewFragment extends Fragment implements NoteAdapter.NoteSelect
                 Notebook notebook = notebookRepository.getBySummary(activeAccount.getAccount(), activeAccount.getRootFolder(), drawerItem.getName());
                 notes = notesRepository.getFromNotebook(activeAccount.getAccount(),activeAccount.getRootFolder(),notebook.getIdentification().getUid(),Utils.getNoteSorting(activity));
 
-                Utils.setSelectedNotebookName(activity, notebook.getSummary());
+                String summary = notebook.getSummary();
+
+                if(notebook.isShared()){
+                    summary = ((SharedNotebook)notebook).getShortName();
+                }
+
+                Utils.setSelectedNotebookName(activity, summary);
                 Utils.setSelectedTagName(activity,null);
             }else if("TAG".equalsIgnoreCase(tag)){
                 notes = notetagRepository.getNotesWith(activeAccount.getAccount(), activeAccount.getRootFolder(), drawerItem.getName(),Utils.getNoteSorting(activity));
@@ -943,7 +950,14 @@ public class OverviewFragment extends Fragment implements NoteAdapter.NoteSelect
 
         //Query the notebooks
         for (Notebook notebook : notebooks) {
-            mDrawer.getDrawerItems().add(new SecondaryDrawerItem().withName(notebook.getSummary()).withTag("NOTEBOOK"));
+
+            String summary = notebook.getSummary();
+
+            if(notebook.isShared()){
+                summary = ((SharedNotebook)notebook).getShortName();
+            }
+
+            mDrawer.getDrawerItems().add(new SecondaryDrawerItem().withName(summary).withTag("NOTEBOOK"));
         }
 
         orderDrawerItems(tags, mDrawer);

@@ -74,7 +74,7 @@ public class NotebookRepository {
         values.put(DatabaseHelper.COLUMN_SUMMARY, note.getSummary());
         values.put(DatabaseHelper.COLUMN_DESCRIPTION, note.getDescription());
         values.put(DatabaseHelper.COLUMN_CLASSIFICATION, note.getClassification().toString());
-        values.put(DatabaseHelper.COLUMN_SHARED, Boolean.FALSE.toString());
+        values.put(DatabaseHelper.COLUMN_SHARED, Boolean.toString(note.isShared()));
 
         long rowId = database.insert(DatabaseHelper.TABLE_NOTES, null,values);
 
@@ -102,9 +102,9 @@ public class NotebookRepository {
 
         database.update(DatabaseHelper.TABLE_NOTES,
                 values,
-                DatabaseHelper.COLUMN_ACCOUNT + " = '" + account+"' AND "+
-                DatabaseHelper.COLUMN_ROOT_FOLDER + " = '" + rootFolder+"' AND "+
-                DatabaseHelper.COLUMN_UID + " = '" + note.getIdentification().getUid()+"' AND ",
+                DatabaseHelper.COLUMN_ACCOUNT + " = '" + account + "' AND " +
+                        DatabaseHelper.COLUMN_ROOT_FOLDER + " = '" + rootFolder + "' AND " +
+                        DatabaseHelper.COLUMN_UID + " = '" + note.getIdentification().getUid() + "' AND ",
                 null);
 
         Modification modification = modificationRepository.getUnique(account,rootFolder,note.getIdentification().getUid());
@@ -119,15 +119,15 @@ public class NotebookRepository {
         open();
 
         database.delete(DatabaseHelper.TABLE_NOTES,
-                DatabaseHelper.COLUMN_ACCOUNT + " = '" + account+"' AND "+
-                        DatabaseHelper.COLUMN_ROOT_FOLDER + " = '" + rootFolder+"' AND "+
-                        DatabaseHelper.COLUMN_UID_NOTEBOOK + " = '" + note.getIdentification().getUid()+"' ",
+                DatabaseHelper.COLUMN_ACCOUNT + " = '" + account + "' AND " +
+                        DatabaseHelper.COLUMN_ROOT_FOLDER + " = '" + rootFolder + "' AND " +
+                        DatabaseHelper.COLUMN_UID_NOTEBOOK + " = '" + note.getIdentification().getUid() + "' ",
                 null);
 
         database.delete(DatabaseHelper.TABLE_NOTES,
-                DatabaseHelper.COLUMN_ACCOUNT + " = '" + account+"' AND "+
-                DatabaseHelper.COLUMN_ROOT_FOLDER + " = '" + rootFolder+"' AND "+
-                DatabaseHelper.COLUMN_UID + " = '" + note.getIdentification().getUid()+"' ",
+                DatabaseHelper.COLUMN_ACCOUNT + " = '" + account + "' AND " +
+                        DatabaseHelper.COLUMN_ROOT_FOLDER + " = '" + rootFolder + "' AND " +
+                        DatabaseHelper.COLUMN_UID + " = '" + note.getIdentification().getUid() + "' ",
                 null);
 
         Modification modification = modificationRepository.getUnique(account,rootFolder,note.getIdentification().getUid());
@@ -177,6 +177,24 @@ public class NotebookRepository {
         Notebook nb = null;
         if (cursor.moveToNext()) {
             nb = cursorToNotebook(account, rootFolder, cursor);
+        }else{
+            cursor.close();
+            //try with 'Other User' added
+            String withOther = "Other Users/"+name;
+            cursor = database.query(DatabaseHelper.TABLE_NOTES,
+                    allColumns,
+                    DatabaseHelper.COLUMN_ACCOUNT + " = '" + account+"' AND "+
+                            DatabaseHelper.COLUMN_ROOT_FOLDER + " = '" + rootFolder+"' AND "+
+                            DatabaseHelper.COLUMN_SUMMARY + " = '" + withOther+"' AND "+
+                            DatabaseHelper.COLUMN_DISCRIMINATOR+" = '"+DatabaseHelper.DESCRIMINATOR_NOTEBOOK+"' ",
+                    null,
+                    null,
+                    null,
+                    null);
+
+            if (cursor.moveToNext()) {
+                nb = cursorToNotebook(account, rootFolder, cursor);
+            }
         }
         cursor.close();
         close();
@@ -222,7 +240,12 @@ public class NotebookRepository {
         Notebook notebook;
         if(shared){
             SharedNotebook nb = new SharedNotebook(ident,audit, Note.Classification.valueOf(classification),summary);
-            nb.setShortName(summary.substring(summary.lastIndexOf('/')+1));
+            if(nb.isGlobalShared()){
+                nb.setShortName(summary);
+            }else{
+                //Removing of 'Other Users' saves space
+                nb.setShortName(summary.substring(summary.indexOf('/')+1));
+            }
             notebook = nb;
         }else{
             notebook = new Notebook(ident,audit, Note.Classification.valueOf(classification),summary);

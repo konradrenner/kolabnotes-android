@@ -109,6 +109,10 @@ public class RepositoryManager {
                 if(ModificationRepository.ModificationType.INS.equals(modification.getType())){
                     Log.d("localIntoRepository","Creating new note:"+note);
                     remoteNotebook.addNote(note);
+
+                    Set<Tag> localCategories = note.getCategories();
+                    final Tag[] tagArray = localCategories.toArray(new Tag[localCategories.size()]);
+                    remoteTags.attachTags(note.getIdentification().getUid(), tagArray);
                 }else{
                     Note remoteNote = remoteNotebook.getNote(note.getIdentification().getUid());
 

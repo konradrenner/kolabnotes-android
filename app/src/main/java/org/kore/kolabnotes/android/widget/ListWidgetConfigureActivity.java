@@ -17,6 +17,7 @@ import android.widget.RadioButton;
 import android.widget.Spinner;
 
 import org.kore.kolab.notes.Notebook;
+import org.kore.kolab.notes.SharedNotebook;
 import org.kore.kolabnotes.android.R;
 import org.kore.kolabnotes.android.Utils;
 import org.kore.kolabnotes.android.content.DatabaseHelper;
@@ -273,7 +274,13 @@ public class ListWidgetConfigureActivity extends Activity {
         String[] notebookArr = new String[notebooks.size()+1];
         notebookArr[0] = getResources().getString(R.string.no_selection);
         for(int i=0; i<notebooks.size();i++){
-            notebookArr[i+1] = notebooks.get(i).getSummary();
+            String summary = notebooks.get(i).getSummary();
+
+            if(notebooks.get(i).isShared()){
+                summary = ((SharedNotebook)notebooks.get(i)).getShortName();
+            }
+
+            notebookArr[i+1] = summary;
         }
 
         ArrayAdapter<CharSequence> adapter = new ArrayAdapter<CharSequence>(this, R.layout.widget_config_spinner_item, notebookArr);
