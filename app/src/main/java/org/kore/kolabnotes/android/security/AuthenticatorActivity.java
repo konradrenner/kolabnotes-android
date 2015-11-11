@@ -52,6 +52,10 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
     public final static String KEY_ACCOUNT_TYPE = "accounttype";
     public final static String KEY_SHARED_FOLDERS = "shared_folders";
 
+    public final static int ID_ACCOUNT_TYPE_KOLAB = 1;
+    public final static int ID_ACCOUNT_TYPE_KOLABNOW = 0;
+    public final static int ID_ACCOUNT_TYPE_IMAP = 2;
+
 
     private final String TAG = this.getClass().getSimpleName();
 
@@ -145,6 +149,10 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
             if(pemail.equals(email) && prootFolder.equals(rootFolder)){
                 accountToChange = acc;
 
+                String accType = mAccountManager.getUserData(acc,AuthenticatorActivity.KEY_ACCOUNT_TYPE);
+                if(accType != null) {
+                    mAccountType.setSelection(Integer.parseInt(accType));
+                }
                 mAccountType.setVisibility(View.GONE);
 
                 mAccountNameView.setText(name);
@@ -397,9 +405,9 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
     class AccountTypeSelectedListener implements AdapterView.OnItemSelectedListener{
         @Override
         public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-            if(position == 0){
+            if(position == ID_ACCOUNT_TYPE_KOLABNOW){
                 setKolabNowValues();
-            }else if(position == 1){
+            }else if(position == ID_ACCOUNT_TYPE_KOLAB){
                 setKolabValues();
             }else{
                 setIMAPValues();

@@ -152,14 +152,27 @@ public class OverviewFragment extends Fragment implements NoteAdapter.NoteSelect
         Account[] accounts = mAccountManager.getAccountsByType(AuthenticatorActivity.ARG_ACCOUNT_TYPE);
 
         ProfileDrawerItem[] profiles = new ProfileDrawerItem[accounts.length+1];
-        profiles[0] = new ProfileDrawerItem().withName(getResources().getString(R.string.drawer_account_local)).withTag("Notes");
+        profiles[0] = new ProfileDrawerItem().withName(getResources().getString(R.string.drawer_account_local)).withTag("Notes").withIcon(getResources().getDrawable(R.drawable.ic_local_account));
 
         for(int i=0;i<accounts.length;i++) {
             String email = mAccountManager.getUserData(accounts[i],AuthenticatorActivity.KEY_EMAIL);
             String name = mAccountManager.getUserData(accounts[i],AuthenticatorActivity.KEY_ACCOUNT_NAME);
             String rootFolder = mAccountManager.getUserData(accounts[i],AuthenticatorActivity.KEY_ROOT_FOLDER);
+            String accountType = mAccountManager.getUserData(accounts[i], AuthenticatorActivity.KEY_ACCOUNT_TYPE);
 
             ProfileDrawerItem item = new ProfileDrawerItem().withName(name).withTag(rootFolder).withEmail(email);
+
+            if(accountType != null) {
+                int type = Integer.parseInt(accountType);
+
+                if(type == AuthenticatorActivity.ID_ACCOUNT_TYPE_KOLABNOW){
+                    item.withIcon(getResources().getDrawable(R.drawable.ic_kolabnow));
+                }else if(type == AuthenticatorActivity.ID_ACCOUNT_TYPE_KOLAB){
+                    item.withIcon(getResources().getDrawable(R.drawable.ic_kolab));
+                }else{
+                    item.withIcon(getResources().getDrawable(R.drawable.ic_imap));
+                }
+            }
 
             //GitHub issue 47
             item.setNameShown(true);
