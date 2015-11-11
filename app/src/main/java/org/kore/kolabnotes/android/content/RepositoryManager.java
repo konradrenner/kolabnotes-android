@@ -1,6 +1,9 @@
 package org.kore.kolabnotes.android.content;
 
+import android.app.Notification;
+import android.app.NotificationManager;
 import android.content.Context;
+import android.support.v7.app.NotificationCompat;
 import android.util.Log;
 
 import org.kore.kolab.notes.Note;
@@ -9,6 +12,7 @@ import org.kore.kolab.notes.NotesRepository;
 import org.kore.kolab.notes.Tag;
 import org.kore.kolab.notes.imap.ImapNotesRepository;
 import org.kore.kolab.notes.imap.RemoteTags;
+import org.kore.kolabnotes.android.R;
 
 import java.util.Collection;
 import java.util.Date;
@@ -28,6 +32,7 @@ public class RepositoryManager {
     private final NotebookRepository notebookRepository;
     private final ModificationRepository modificationRepository;
     private final Date lastSync;
+    private final Context context;
 
     private final ImapNotesRepository repo;
 
@@ -39,6 +44,7 @@ public class RepositoryManager {
         this.modificationRepository = new ModificationRepository(context);
         this.repo = repo;
         this.lastSync = new Date(lastSync.getTime());
+        this.context = context;
     }
 
     public void sync(String email, String rootFolder){
@@ -50,12 +56,35 @@ public class RepositoryManager {
 
     void putDataIntoDB(String email, String rootFolder){
         Collection<Notebook> notebooks = repo.getNotebooks();
+        NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 
+        int i = 5;
         for(Notebook book : notebooks){
             notebookRepository.insert(email,rootFolder,book);
 
             for(Note note : book.getNotes()){
                 noteRepository.insert(email,rootFolder,note,book.getIdentification().getUid());
+
+                //inform user for new or updated notes in shared notebooks
+                if(book.isShared()){
+                    if(lastSync != null && lastSync.before(note.getAuditInformation().getLastModificationDate())){
+                        final Notification notification = new NotificationCompat.Builder(context)
+                                .setSmallIcon(R.drawable.ic_kjots)
+                                .setContentTitle(context.getResources().getString(R.string.changed_content_shared_folder))
+                                .setContentText(context.getResources().getString(R.string.note_changed))
+                                .setStyle(new NotificationCompat.BigTextStyle().bigText(note.getSummary()+" "+ context.getResources().getString(R.string.in_notebook)+ " "+ book.getSummary())).build();
+
+                        notificationManager.notify(i++,notification);
+                    }else if(lastSync != null && lastSync.before(note.getAuditInformation().getCreationDate())){
+                        final Notification notification = new NotificationCompat.Builder(context)
+                                .setSmallIcon(R.drawable.ic_kjots)
+                                .setContentTitle(context.getResources().getString(R.string.changed_content_shared_folder))
+                                .setContentText(context.getResources().getString(R.string.note_created))
+                                .setStyle(new NotificationCompat.BigTextStyle().bigText(note.getSummary()+" "+ context.getResources().getString(R.string.in_notebook)+ " "+ book.getSummary())).build();
+
+                        notificationManager.notify(i++,notification);
+                    }
+                }
             }
         }
 

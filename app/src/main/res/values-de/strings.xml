@@ -132,4 +132,8 @@
     <string name="no_tag_selected">Keine Kategorie ausgewählt</string>
     <string name="remove">Entfernen</string>
     <string name="shared_folders">Geteilte Notizbücher</string>
+    <string name="changed_content_shared_folder">Änderung in geteilten Notizbuch</string>
+    <string name="note_changed">Notiz wurde geändert</string>
+    <string name="in_notebook">in Notizbuch</string>
+    <string name="note_created">Neue Notiz</string>
 </resources>

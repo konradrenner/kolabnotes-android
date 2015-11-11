@@ -118,4 +118,8 @@
     <string name="no_tag_selected">Aucune balise sélectionnée</string>
     <string name="remove">Supprimer</string>
     <string name="shared_folders">Blocs-notes partagés</string>
+    <string name="changed_content_shared_folder">Changement de bloc-notes partagé</string>
+    <string name="note_changed">Remarque ont été changés</string>
+    <string name="in_notebook">dans le cahier</string>
+    <string name="note_created">Nouvelle note</string>
 </resources>

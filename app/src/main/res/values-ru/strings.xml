@@ -119,4 +119,8 @@
     <string name="no_tag_selected">Нет тегов выбран</string>
     <string name="remove">Удалить</string>
     <string name="shared_folders">Общие записные книжки</string>
+    <string name="changed_content_shared_folder">Изменение общей записной книжке</string>
+    <string name="note_changed">Примечание были изменены</string>
+    <string name="in_notebook">в записной книжке</string>
+    <string name="note_created">Новая заметка</string>
 </resources>

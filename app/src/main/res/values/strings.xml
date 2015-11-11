@@ -117,4 +117,8 @@
     <string name="no_tag_selected">No tag selected</string>
     <string name="remove">Remove</string>
     <string name="shared_folders">Shared notebooks</string>
+    <string name="changed_content_shared_folder">Change in shared notebook</string>
+    <string name="note_changed">Note got changed</string>
+    <string name="in_notebook">in notebook</string>
+    <string name="note_created">New note</string>
 </resources>
