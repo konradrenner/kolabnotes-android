@@ -77,7 +77,7 @@
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/com.android.support/support-v4/23.1.0/jars" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/com.mikepenz/iconics/1.2.0/jars" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/com.mikepenz/materialdrawer/3.1.2/jars" />
-      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/jp.wasabeef/richeditor-android/0.3.0/jars" />
+      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/jp.wasabeef/richeditor-android/1.0.0/jars" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/incremental" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/jacoco" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/javaResources" />
@@ -98,12 +98,12 @@
     <orderEntry type="library" exported="" name="materialdrawer-3.1.2" level="project" />
     <orderEntry type="library" exported="" name="recyclerview-v7-23.1.0" level="project" />
     <orderEntry type="library" exported="" name="iconics-1.2.0" level="project" />
-    <orderEntry type="library" exported="" name="kolabnotes-java-1.4.0" level="project" />
     <orderEntry type="library" exported="" name="kore-javamail-1.0.2" level="project" />
+    <orderEntry type="library" exported="" name="kolabnotes-java-1.4.0" level="project" />
     <orderEntry type="library" exported="" name="cardview-v7-23.1.0" level="project" />
+    <orderEntry type="library" exported="" name="richeditor-android-1.0.0" level="project" />
     <orderEntry type="library" exported="" name="support-v4-23.1.0" level="project" />
     <orderEntry type="library" exported="" name="appcompat-v7-23.1.0" level="project" />
-    <orderEntry type="library" exported="" name="richeditor-android-0.3.0" level="project" />
     <orderEntry type="library" exported="" name="support-annotations-23.1.0" level="project" />
   </component>
 </module>
