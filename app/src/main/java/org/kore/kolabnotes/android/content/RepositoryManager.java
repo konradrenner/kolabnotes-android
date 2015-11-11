@@ -14,10 +14,13 @@ import org.kore.kolab.notes.imap.ImapNotesRepository;
 import org.kore.kolab.notes.imap.RemoteTags;
 import org.kore.kolabnotes.android.R;
 
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.TimeZone;
 
 /**
  * This class syncs the database with data from a given repository
@@ -33,6 +36,7 @@ public class RepositoryManager {
     private final ModificationRepository modificationRepository;
     private final Date lastSync;
     private final Context context;
+    private final Set<String> localChangedNotes;
 
     private final ImapNotesRepository repo;
 
@@ -45,6 +49,7 @@ public class RepositoryManager {
         this.repo = repo;
         this.lastSync = new Date(lastSync.getTime());
         this.context = context;
+        this.localChangedNotes = new HashSet<>();
     }
 
     public void sync(String email, String rootFolder){
@@ -58,6 +63,7 @@ public class RepositoryManager {
         Collection<Notebook> notebooks = repo.getNotebooks();
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 
+
         int i = 5;
         for(Notebook book : notebooks){
             notebookRepository.insert(email,rootFolder,book);
@@ -66,21 +72,22 @@ public class RepositoryManager {
                 noteRepository.insert(email,rootFolder,note,book.getIdentification().getUid());
 
                 //inform user for new or updated notes in shared notebooks
-                if(book.isShared()){
-                    if(lastSync != null && lastSync.before(note.getAuditInformation().getLastModificationDate())){
+                if(book.isShared() && !localChangedNotes.contains(note.getIdentification().getUid()) && lastSync != null){
+
+                    if(lastSync.getTime() < note.getAuditInformation().getCreationDate().getTime()){
                         final Notification notification = new NotificationCompat.Builder(context)
                                 .setSmallIcon(R.drawable.ic_kjots)
                                 .setContentTitle(context.getResources().getString(R.string.changed_content_shared_folder))
                                 .setContentText(context.getResources().getString(R.string.note_changed))
-                                .setStyle(new NotificationCompat.BigTextStyle().bigText(note.getSummary()+" "+ context.getResources().getString(R.string.in_notebook)+ " "+ book.getSummary())).build();
+                                .setStyle(new NotificationCompat.BigTextStyle().bigText(context.getResources().getString(R.string.note_changed) + ": " + note.getSummary() + " " + context.getResources().getString(R.string.in_notebook) + " " + book.getSummary())).build();
 
                         notificationManager.notify(i++,notification);
-                    }else if(lastSync != null && lastSync.before(note.getAuditInformation().getCreationDate())){
+                    }else if(lastSync.getTime() < note.getAuditInformation().getLastModificationDate().getTime()){
                         final Notification notification = new NotificationCompat.Builder(context)
                                 .setSmallIcon(R.drawable.ic_kjots)
                                 .setContentTitle(context.getResources().getString(R.string.changed_content_shared_folder))
                                 .setContentText(context.getResources().getString(R.string.note_created))
-                                .setStyle(new NotificationCompat.BigTextStyle().bigText(note.getSummary()+" "+ context.getResources().getString(R.string.in_notebook)+ " "+ book.getSummary())).build();
+                                .setStyle(new NotificationCompat.BigTextStyle().bigText(context.getResources().getString(R.string.note_created) + ": " +note.getSummary() + " " + context.getResources().getString(R.string.in_notebook) + " " + book.getSummary())).build();
 
                         notificationManager.notify(i++,notification);
                     }
@@ -142,6 +149,7 @@ public class RepositoryManager {
                     Set<Tag> localCategories = note.getCategories();
                     final Tag[] tagArray = localCategories.toArray(new Tag[localCategories.size()]);
                     remoteTags.attachTags(note.getIdentification().getUid(), tagArray);
+                    localChangedNotes.add(note.getIdentification().getUid());
                 }else{
                     Note remoteNote = remoteNotebook.getNote(note.getIdentification().getUid());
 
@@ -179,6 +187,8 @@ public class RepositoryManager {
 
                         remoteTags.removeTags(note.getIdentification().getUid());
                         remoteTags.attachTags(note.getIdentification().getUid(), tagArray);
+
+                        localChangedNotes.add(note.getIdentification().getUid());
                     }
                 }
             }else{

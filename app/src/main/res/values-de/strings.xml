@@ -136,4 +136,5 @@
     <string name="note_changed">Notiz wurde geändert</string>
     <string name="in_notebook">in Notizbuch</string>
     <string name="note_created">Neue Notiz</string>
+    <string name="dialog_input_link">Verlinkung zuweisen</string>
 </resources>

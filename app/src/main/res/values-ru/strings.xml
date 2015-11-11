@@ -123,4 +123,5 @@
     <string name="note_changed">Примечание были изменены</string>
     <string name="in_notebook">в записной книжке</string>
     <string name="note_created">Новая заметка</string>
+    <string name="dialog_input_link">Прикрепите ссылку</string>
 </resources>

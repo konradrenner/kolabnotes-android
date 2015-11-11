@@ -156,6 +156,7 @@ public class DetailFragment extends Fragment{
 
         editor = (RichEditor)activity.findViewById(R.id.detail_description);
         editor.setBackgroundColor(getResources().getColor(R.color.background_material_light));
+        editor.setEditorHeight(300);
         editor.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View view, boolean b) {
@@ -552,12 +553,48 @@ public class DetailFragment extends Fragment{
             }
         });
 
-        /*activity.findViewById(R.id.action_insert_link).setOnClickListener(new View.OnClickListener() {
+        activity.findViewById(R.id.action_insert_link).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                editor.insertLink("https://github.com/wasabeef", "wasabeef");
+                AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+
+                builder.setTitle(R.string.dialog_input_link);
+
+                LayoutInflater inflater = activity.getLayoutInflater();
+                final View view = inflater.inflate(R.layout.dialog_link_input, null);
+
+                builder.setView(view);
+
+                builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        TextView text = (TextView) view.findViewById(R.id.dialog_text_input_field);
+
+                        CharSequence input = text.getText();
+                        if(input == null || input.toString().trim().length() == 0){
+                            Toast.makeText(activity,R.string.error_field_required,Toast.LENGTH_SHORT).show();
+                        }else {
+                            editor.insertLink(input.toString(), input.toString());
+                        }
+                    }
+                });
+                builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        //nothing
+                    }
+                });
+
+                builder.show();
             }
-        });*/
+        });
+
+        activity.findViewById(R.id.action_insert_checkbox).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                editor.insertTodo();
+            }
+        });
     }
 
     @Override

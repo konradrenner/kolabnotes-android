@@ -121,4 +121,5 @@
     <string name="note_changed">Note got changed</string>
     <string name="in_notebook">in notebook</string>
     <string name="note_created">New note</string>
+    <string name="dialog_input_link">Attach link</string>
 </resources>
