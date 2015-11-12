@@ -9,3 +9,27 @@ The app is also available on F-Droid: https://f-droid.org/repository/browse/?fdi
   <img alt="Get it on Google Play"
        src="https://developer.android.com/images/brand/en_generic_rgb_wo_45.png" />
 </a>
+
+Already implemented features (help is highly desired!):
+ * Material-Design
+ * Create, update and delete notes
+ * Create notebooks and tags
+ * Organise your notes with notebooks
+ * Organise your notes with categories/tags
+ * Support for shared notebooks for sync with Kolab server
+ * Apply a colour to a note 
+ * Apply a colour to a tag
+ * Search for notes
+ * "Sticky-Note"-Widget for displaying a single note on the homescreen
+ * List-Widget for displaying a configurable list of notes on the homescreen
+ * Support for multiple accounts
+ * Sync with Kolab and IMAP server in the Kolab v3 storage format
+ * Local notes thanks to a local account
+ * Tablet interface
+ * Support for Richtext and inline images
+
+Translations (help is highly desired!):
+ * English
+ * German
+ * Russian (thanks Yaroslav Pronin!)
+ * French (thanks kekh!)
