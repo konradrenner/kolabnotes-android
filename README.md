@@ -16,7 +16,7 @@ Already implemented features (help is highly desired!):
  * Create notebooks and tags
  * Organise your notes with notebooks
  * Organise your notes with categories/tags
- * Support for shared notebooks for sync with Kolab server
+ * Support for shared notebooks for sync with Kolab server (thanks to Daniele Gobbetti for providing a test account!)
  * Apply a colour to a note 
  * Apply a colour to a tag
  * Search for notes
