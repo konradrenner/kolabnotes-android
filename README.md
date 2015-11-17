@@ -33,3 +33,4 @@ Translations (help is highly desired!):
  * German
  * Russian (thanks Yaroslav Pronin!)
  * French (thanks kekh!)
+ * Italian (thanks to Daniele Gobbetti!)
