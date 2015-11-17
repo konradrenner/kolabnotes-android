@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Kolab Notes</string>
+
+    <string name="sticky_note_name">Kolab Sticky-Note</string>
+
+    <string name="drawer_open">Menu aperto</string>
+    <string name="drawer_close">Menu chiuso</string>
+
+    <string name="action_settings">Impostazioni</string>
+
+    <string name="ok">Ok</string>
+    <string name="cancel">Annulla</string>
+
+    <string name="yes">Si</string>
+    <string name="no">No</string>
+    <string name="no_selection">Nessuna selezione</string>
+
+    <string name="classification">Classificazione</string>
+    <string name="creationDate">Creazione</string>
+    <string name="modificationDate">Ultima modifica</string>
+    <string name="tags">Tag:</string>
+    <string name="notags">Nessun Tag</string>
+    <string name="radio_public">Pubblica</string>
+    <string name="radio_confidential">Confidenziale</string>
+    <string name="radio_private">Privata</string>
+
+    <string name="activity_detail_title">DetailActivity</string>
+
+    <string name="drawer_item_tags">Tag</string>
+    <string name="drawer_item_notebooks">Blocchi note</string>
+    <string name="drawer_item_allnotes">Note dell\'account corrente</string>
+    <string name="widget_allnotes">Tutto dell\'account</string>
+    <string name="drawer_item_allaccount_notes">Note di tutti gli account</string>
+    <string name="drawer_account_local">Account locale</string>
+
+
+    <string name="dialog_nointernet">Controlla la connessione a internet!</string>
+    <string name="dialog_uploading">Progress Sample&#8230;</string>
+    <string name="dialog_processinganduploading">Showing a sample progress. Please be patient! (This does nothing. Just waiting 100ms / application)</string>
+    <string name="title_activity_phone">PhoneActivity</string>
+
+    <string name="hello_world">Hello world!</string>
+
+    <string name="label">Kolab Notes</string>
+
+    <string name="signup_title">Crea nuovo account</string>
+    <string name="signup_ok">Account creato</string>
+    <string name="login_label">Log in</string>
+    <string name="summary_text">Large Text</string>
+    <string name="text_summary">Sommario</string>
+    <string name="description_text">Medium Text</string>
+    <string name="description_hint">Descrizione</string>
+    <string name="text_description">Medium Text</string>
+
+    <string name="dialog_input_text_hint">Sommario</string>
+    <string name="dialog_input_text_search_hint">Cerca note con sommario</string>
+    <string name="dialog_input_text_notebook">Nuovo blocco note</string>
+    <string name="dialog_input_text_search">Cerca Note</string>
+    <string name="dialog_delete_note">Cancella Nota</string>
+    <string name="dialog_cancel_warning">Annulla Warning</string>
+    <string name="dialog_delete_nb_warning">Cancella blocco note</string>
+    <string name="dialog_question_delete_nb">Il blocco note e tutto il suo contenuto verranno cancellati, sei sicuro?</string>
+    <string name="dialog_input_text_tag">Nuovo tag</string>
+    <string name="dialog_change_classification">Modifica classificazione</string>
+    <string name="dialog_change_tags">Modifica i tag</string>
+    <string name="no_nb_selected">Nessun blocco note selezionato</string>
+    <string name="local_account_change">L\'account locale non può essere modificato</string>
+    <string name="add">aggiungi</string>
+    <string name="title_edit_tag">Modifica Tag</string>
+    <string name="dialog_question_delete">Sei sicuro di voler cancellare questa nota?</string>
+    <string name="dialog_question_cancel">Tutte le modifiche saranno perse, se sicuro?</string>
+    <string name="account_name">Nome account</string>
+    <string name="imap_root_folder">Cartella radice IMAP (default: Notes)</string>
+    <string name="imap_server_url">imap.myserver.com</string>
+    <string name="port_number">Numero porta (default: 993)</string>
+
+    <string name="error_generic">Si è verificato un errore</string>
+    <string name="error_duplicate_account">Impossibile creare l\'account (controlla che non esista già un account con lo stesso nome)</string>
+    <string name="enable_ssl">Abilita SSL</string>
+    <string name="title_add_account">Aggiungi account</string>
+    <string name="title_update_account">Modifica Account</string>
+    <string name="appwidget_text">ESEMPIO</string>
+    <string name="configure">Configura</string>
+    <string name="add_widget">Aggiungi widget</string>
+    <string name="title_colorpicker">Scegli il colore</string>
+    <string name="button_add">button_add</string>
+    <string name="kolab_enabled">Estensioni kolab</string>
+    <string name="sync_intervall">Intervallo di sincronizzazione (default: 24)</string>
+    <string name="note_not_found">Nota non trovata!</string>
+    <string name="create_or_select_text">Seleziona o crea una nota</string>
+    <string name="select_or_create_hint">select or create note icon</string>
+    <string name="note_deleted">Nota cancellata</string>
+    <string name="note_saved">Nota salvata</string>
+    <string name="sync_failed">Sincronizzazione non riuscita</string>
+    <string name="title_delete_notebook">Cancella blocco note</string>
+    <string name="send_to">Condividi nota con...</string>
+    <string name="empty_note">La nota è vuota</string>
+    <string name="sort_with_heading">Ordina per:</string>
+    <string name="radio_desc">Discendente</string>
+    <string name="radio_asc">Ascendente</string>
+    <string name="title_dialog_sorting">Modifica ordinamento</string>
+    <string name="color">Colore</string>
+    <string name="account_choose_title">Seleziona un account</string>
+    <string name="select_button">Seleziona</string>
+    <string name="extended_options" >Mostra più opzioni</string>
+
+    <string name="day">Giorni</string>
+    <string name="hour">Ore</string>
+    <string name="minute">Minuti</string>
+    <string name="title_metainformation">Informazioni meta</string>
+    <string name="productID">Product ID</string>
+    <string name="uid">UID</string>
+    <string name="title_characteristics">Caratteristiche</string>
+    <string name="title_choose_tag_color">Scegli un colore per il tag</string>
+    <string name="no_tag_selected">Nessun tag selezionato</string>
+    <string name="remove">Rimuovi</string>
+    <string name="shared_folders">Blocchi note condivisi</string>
+    <string name="changed_content_shared_folder">Modifica nel blocco note condiviso</string>
+    <string name="note_changed">La nota è stata modificata</string>
+    <string name="in_notebook">nel blocco note</string>
+    <string name="note_created">Nuova nota</string>
+    <string name="dialog_input_link">Aggiungi link</string>
+</resources>
