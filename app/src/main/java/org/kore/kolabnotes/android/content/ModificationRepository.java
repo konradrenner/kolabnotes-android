@@ -18,9 +18,8 @@ public class ModificationRepository {
         UPD,DEL,INS;
     }
 
+    private Context context;
     // Database fields
-    private SQLiteDatabase database;
-    private DatabaseHelper dbHelper;
     private String[] allColumns = { DatabaseHelper.COLUMN_ID,
             DatabaseHelper.COLUMN_ACCOUNT,
             DatabaseHelper.COLUMN_ROOT_FOLDER,
@@ -31,19 +30,11 @@ public class ModificationRepository {
             DatabaseHelper.COLUMN_DISCRIMINATOR };
 
     public ModificationRepository(Context context) {
-        dbHelper = new DatabaseHelper(context);
+        this.context = context;
     }
 
-    public void open(){
-        database = dbHelper.getWritableDatabase();
-    }
-
-    public void close() {
-        dbHelper.close();
-    }
 
     public void insert(String account, String rootFolder, String uid, ModificationType type, String uidNotebook, Modification.Descriminator desc) {
-        open();
         ContentValues values = new ContentValues();
         values.put(DatabaseHelper.COLUMN_UID, uid);
         values.put(DatabaseHelper.COLUMN_ACCOUNT, account);
@@ -53,29 +44,25 @@ public class ModificationRepository {
         values.put(DatabaseHelper.COLUMN_UID_NOTEBOOK, uidNotebook);
         values.put(DatabaseHelper.COLUMN_DISCRIMINATOR, desc.toString());
 
-        database.insert(DatabaseHelper.TABLE_MODIFICATION, null,values);
-        close();
+        ConnectionManager.getDatabase(context).insert(DatabaseHelper.TABLE_MODIFICATION, null, values);
     }
 
     void cleanAccount(String account, String rootFolder){
-        open();
-        database.delete(DatabaseHelper.TABLE_MODIFICATION,
-                DatabaseHelper.COLUMN_ACCOUNT + " = '" + account+"' AND "+
-                DatabaseHelper.COLUMN_ROOT_FOLDER + " = '" + rootFolder+"' ",
+        ConnectionManager.getDatabase(context).delete(DatabaseHelper.TABLE_MODIFICATION,
+                DatabaseHelper.COLUMN_ACCOUNT + " = '" + account + "' AND " +
+                        DatabaseHelper.COLUMN_ROOT_FOLDER + " = '" + rootFolder + "' ",
                 null);
 
-        close();
     }
 
     public void deleteAll() {
-       database.delete(DatabaseHelper.TABLE_MODIFICATION, null, null);
+        ConnectionManager.getDatabase(context).delete(DatabaseHelper.TABLE_MODIFICATION, null, null);
     }
 
     public List<Modification> getAll() {
-        open();
         List<Modification> modifications = new ArrayList<Modification>();
 
-        Cursor cursor = database.query(DatabaseHelper.TABLE_MODIFICATION,
+        Cursor cursor = ConnectionManager.getDatabase(context).query(DatabaseHelper.TABLE_MODIFICATION,
                 allColumns,
                 null,
                 null,
@@ -88,18 +75,16 @@ public class ModificationRepository {
             modifications.add(mod);
         }
         cursor.close();
-        close();
         return modifications;
     }
 
     public List<Modification> getDeletions(String account, String rootFolder, Modification.Descriminator descriminator) {
-        open();
-        Cursor cursor = database.query(DatabaseHelper.TABLE_MODIFICATION,
+        Cursor cursor = ConnectionManager.getDatabase(context).query(DatabaseHelper.TABLE_MODIFICATION,
                 allColumns,
-                DatabaseHelper.COLUMN_ACCOUNT+" = '"+account+"' AND "+
-                DatabaseHelper.COLUMN_ROOT_FOLDER+" = '"+rootFolder+"' AND "+
-                DatabaseHelper.COLUMN_DISCRIMINATOR+" = '"+descriminator.toString()+"' AND "+
-                DatabaseHelper.COLUMN_MODIFICATIONTYPE+" = '"+ModificationType.DEL.toString()+"' ",
+                DatabaseHelper.COLUMN_ACCOUNT + " = '" + account + "' AND " +
+                        DatabaseHelper.COLUMN_ROOT_FOLDER + " = '" + rootFolder + "' AND " +
+                        DatabaseHelper.COLUMN_DISCRIMINATOR + " = '" + descriminator.toString() + "' AND " +
+                        DatabaseHelper.COLUMN_MODIFICATIONTYPE + " = '" + ModificationType.DEL.toString() + "' ",
                 null,
                 null,
                 null,
@@ -110,17 +95,15 @@ public class ModificationRepository {
             mod.add(cursorToModification(cursor));
         }
         cursor.close();
-        close();
         return mod;
     }
 
     public Modification getUnique(String account, String rootFolder,String uid) {
-        open();
-        Cursor cursor = database.query(DatabaseHelper.TABLE_MODIFICATION,
+        Cursor cursor = ConnectionManager.getDatabase(context).query(DatabaseHelper.TABLE_MODIFICATION,
                 allColumns,
-                DatabaseHelper.COLUMN_ACCOUNT+" = '"+account+"' AND "+
-                DatabaseHelper.COLUMN_ROOT_FOLDER+" = '"+rootFolder+"' AND "+
-                DatabaseHelper.COLUMN_UID+" = '"+uid+"' ",
+                DatabaseHelper.COLUMN_ACCOUNT + " = '" + account + "' AND " +
+                        DatabaseHelper.COLUMN_ROOT_FOLDER + " = '" + rootFolder + "' AND " +
+                        DatabaseHelper.COLUMN_UID + " = '" + uid + "' ",
                 null,
                 null,
                 null,
@@ -131,7 +114,6 @@ public class ModificationRepository {
             mod = cursorToModification(cursor);
         }
         cursor.close();
-        close();
         return mod;
     }
 

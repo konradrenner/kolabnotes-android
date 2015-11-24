@@ -27,8 +27,6 @@ import java.util.UUID;
  */
 public class TagRepository {
     // Database fields
-    private SQLiteDatabase database;
-    private DatabaseHelper dbHelper;
     private String[] allColumns = { DatabaseHelper.COLUMN_ID,
             DatabaseHelper.COLUMN_ACCOUNT,
             DatabaseHelper.COLUMN_ROOT_FOLDER,
@@ -44,29 +42,15 @@ public class TagRepository {
 
     public TagRepository(Context context) {
         this.context = context;
-        dbHelper = new DatabaseHelper(context);
-    }
-
-    public void open() {
-        database = dbHelper.getWritableDatabase();
-    }
-
-    public void openReadonly() {
-        database = dbHelper.getReadableDatabase();
-    }
-
-    public void close() {
-        dbHelper.close();
     }
 
     public void migrateTags(){
-        open();
         List<String> tags = new ArrayList<String>();
 
         String[] oldColumns = { DatabaseHelper.COLUMN_ID, DatabaseHelper.COLUMN_TAGNAME};
 
         try {
-            Cursor cursor = database.query(DatabaseHelper.TABLE_OLD_TAGS,
+            Cursor cursor = ConnectionManager.getDatabase(context).query(DatabaseHelper.TABLE_OLD_TAGS,
                     oldColumns,
                     null,
                     null,
@@ -79,13 +63,11 @@ public class TagRepository {
             }
         }catch(SQLiteException e){
             //Table does not exist
-            close();
             return;
         }
 
         if(tags.isEmpty()){
             //Already migrated
-            close();
             return;
         }
 
@@ -108,15 +90,13 @@ public class TagRepository {
             }
         }
 
-        database.delete(DatabaseHelper.TABLE_OLD_TAGS,
+        ConnectionManager.getDatabase(context).delete(DatabaseHelper.TABLE_OLD_TAGS,
                 null,
-               null);
+                null);
 
-        close();
     }
 
     public boolean insert(String account, String rootFolder, Tag tag) {
-        open();
 
         if(existsTagNameForAccount(account,rootFolder,tag.getName())){
             //do nothing if the tag already exists with this name, for this account
@@ -124,7 +104,6 @@ public class TagRepository {
         }
 
         long rowId = doInsert(account, rootFolder, tag);
-        close();
         return rowId >= 0;
     }
 
@@ -141,11 +120,10 @@ public class TagRepository {
         values.put(DatabaseHelper.COLUMN_COLOR,tag.getColor() == null ? null : tag.getColor().getHexcode());
         values.put(DatabaseHelper.COLUMN_PRIORITY,tag.getPriority());
 
-        return database.insert(DatabaseHelper.TABLE_TAGS, null,values);
+        return ConnectionManager.getDatabase(context).insert(DatabaseHelper.TABLE_TAGS, null, values);
     }
 
     public void update(String account, String rootFolder,Tag tag){
-        open();
         ContentValues values = new ContentValues();
         values.put(DatabaseHelper.COLUMN_ACCOUNT,account);
         values.put(DatabaseHelper.COLUMN_ROOT_FOLDER,rootFolder);
@@ -155,31 +133,27 @@ public class TagRepository {
         values.put(DatabaseHelper.COLUMN_MODIFICATIONDATE,tag.getAuditInformation().getLastModificationDate().getTime());
         values.put(DatabaseHelper.COLUMN_TAGNAME,tag.getName());
         values.put(DatabaseHelper.COLUMN_COLOR,tag.getColor() == null ? null : tag.getColor().getHexcode());
-        values.put(DatabaseHelper.COLUMN_PRIORITY,tag.getPriority());
+        values.put(DatabaseHelper.COLUMN_PRIORITY, tag.getPriority());
 
-        database.update(DatabaseHelper.TABLE_TAGS,
+        ConnectionManager.getDatabase(context).update(DatabaseHelper.TABLE_TAGS,
                 values,
-                DatabaseHelper.COLUMN_ACCOUNT + " = '" + account+"' AND "+
-                        DatabaseHelper.COLUMN_ROOT_FOLDER + " = '" + rootFolder+"' AND "+
-                        DatabaseHelper.COLUMN_TAG_UID + " = '" + tag.getIdentification().getUid()+"' ",
+                DatabaseHelper.COLUMN_ACCOUNT + " = '" + account + "' AND " +
+                        DatabaseHelper.COLUMN_ROOT_FOLDER + " = '" + rootFolder + "' AND " +
+                        DatabaseHelper.COLUMN_TAG_UID + " = '" + tag.getIdentification().getUid() + "' ",
                 null);
-
-        close();
     }
 
     public boolean existsTagNameFor(String account, String rootFolder, String tagName){
-        openReadonly();
         boolean ret = existsTagNameForAccount(account,rootFolder,tagName);
-        close();
         return ret;
     }
 
     private boolean existsTagNameForAccount(String account, String rootFolder, String tagName){
-        Cursor cursor = database.query(DatabaseHelper.TABLE_TAGS,
+        Cursor cursor = ConnectionManager.getDatabase(context).query(DatabaseHelper.TABLE_TAGS,
                 allColumns,
-                DatabaseHelper.COLUMN_ACCOUNT + " = '" + account+"' AND "+
-                        DatabaseHelper.COLUMN_ROOT_FOLDER + " = '" + rootFolder+"' AND "+
-                DatabaseHelper.COLUMN_TAGNAME + " = '"+ tagName+"' ",
+                DatabaseHelper.COLUMN_ACCOUNT + " = '" + account + "' AND " +
+                        DatabaseHelper.COLUMN_ROOT_FOLDER + " = '" + rootFolder + "' AND " +
+                        DatabaseHelper.COLUMN_TAGNAME + " = '" + tagName + "' ",
                 null,
                 null,
                 null,
@@ -193,12 +167,11 @@ public class TagRepository {
     }
 
     public Tag getTagWithName(String account, String rootFolder, String tagName){
-        openReadonly();
-        Cursor cursor = database.query(DatabaseHelper.TABLE_TAGS,
+        Cursor cursor = ConnectionManager.getDatabase(context).query(DatabaseHelper.TABLE_TAGS,
                 allColumns,
-                DatabaseHelper.COLUMN_ACCOUNT + " = '" + account+"' AND "+
-                        DatabaseHelper.COLUMN_ROOT_FOLDER + " = '" + rootFolder+"' AND "+
-                        DatabaseHelper.COLUMN_TAGNAME + " = '"+ tagName+"' ",
+                DatabaseHelper.COLUMN_ACCOUNT + " = '" + account + "' AND " +
+                        DatabaseHelper.COLUMN_ROOT_FOLDER + " = '" + rootFolder + "' AND " +
+                        DatabaseHelper.COLUMN_TAGNAME + " = '" + tagName + "' ",
                 null,
                 null,
                 null,
@@ -208,18 +181,15 @@ public class TagRepository {
         if(cursor.moveToNext()){
             tag = cursorToTag(cursor);
         }
-
-        close();
         return tag;
     }
 
     public Tag getTagWithUID(String account, String rootFolder, String uid){
-        openReadonly();
-        Cursor cursor = database.query(DatabaseHelper.TABLE_TAGS,
+        Cursor cursor = ConnectionManager.getDatabase(context).query(DatabaseHelper.TABLE_TAGS,
                 allColumns,
-                DatabaseHelper.COLUMN_ACCOUNT + " = '" + account+"' AND "+
-                        DatabaseHelper.COLUMN_ROOT_FOLDER + " = '" + rootFolder+"' AND "+
-                        DatabaseHelper.COLUMN_TAG_UID + " = '"+ uid+"' ",
+                DatabaseHelper.COLUMN_ACCOUNT + " = '" + account + "' AND " +
+                        DatabaseHelper.COLUMN_ROOT_FOLDER + " = '" + rootFolder + "' AND " +
+                        DatabaseHelper.COLUMN_TAG_UID + " = '" + uid + "' ",
                 null,
                 null,
                 null,
@@ -230,18 +200,16 @@ public class TagRepository {
             tag = cursorToTag(cursor);
         }
 
-        close();
         return tag;
     }
 
     public List<String> getAllTagNames(String account, String rootFolder) {
-        openReadonly();
         List<String> tags = new ArrayList<String>();
 
-        Cursor cursor = database.query(DatabaseHelper.TABLE_TAGS,
+        Cursor cursor = ConnectionManager.getDatabase(context).query(DatabaseHelper.TABLE_TAGS,
                 allColumns,
-                DatabaseHelper.COLUMN_ACCOUNT + " = '" + account+"' AND "+
-                        DatabaseHelper.COLUMN_ROOT_FOLDER + " = '" + rootFolder+"' ",
+                DatabaseHelper.COLUMN_ACCOUNT + " = '" + account + "' AND " +
+                        DatabaseHelper.COLUMN_ROOT_FOLDER + " = '" + rootFolder + "' ",
                 null,
                 null,
                 null,
@@ -251,18 +219,16 @@ public class TagRepository {
             tags.add(cursorToTagName(cursor));
         }
         cursor.close();
-        close();
         return tags;
     }
 
     public List<Tag> getAll(String account, String rootFolder) {
-        openReadonly();
         List<Tag> tags = new ArrayList<Tag>();
 
-        Cursor cursor = database.query(DatabaseHelper.TABLE_TAGS,
+        Cursor cursor = ConnectionManager.getDatabase(context).query(DatabaseHelper.TABLE_TAGS,
                 allColumns,
-                DatabaseHelper.COLUMN_ACCOUNT + " = '" + account+"' AND "+
-                        DatabaseHelper.COLUMN_ROOT_FOLDER + " = '" + rootFolder+"' ",
+                DatabaseHelper.COLUMN_ACCOUNT + " = '" + account + "' AND " +
+                        DatabaseHelper.COLUMN_ROOT_FOLDER + " = '" + rootFolder + "' ",
                 null,
                 null,
                 null,
@@ -272,19 +238,17 @@ public class TagRepository {
             tags.add(cursorToTag(cursor));
         }
         cursor.close();
-        close();
         return tags;
     }
 
     public List<Tag> getAllModifiedAfter(String account, String rootFolder, Date date) {
-        openReadonly();
         List<Tag> tags = new ArrayList<Tag>();
 
-        Cursor cursor = database.query(DatabaseHelper.TABLE_TAGS,
+        Cursor cursor = ConnectionManager.getDatabase(context).query(DatabaseHelper.TABLE_TAGS,
                 allColumns,
-                DatabaseHelper.COLUMN_ACCOUNT + " = '" + account+"' AND "+
-                        DatabaseHelper.COLUMN_ROOT_FOLDER + " = '" + rootFolder+"' AND "+
-                DatabaseHelper.COLUMN_MODIFICATIONDATE + " > "+ date.getTime(),
+                DatabaseHelper.COLUMN_ACCOUNT + " = '" + account + "' AND " +
+                        DatabaseHelper.COLUMN_ROOT_FOLDER + " = '" + rootFolder + "' AND " +
+                        DatabaseHelper.COLUMN_MODIFICATIONDATE + " > " + date.getTime(),
                 null,
                 null,
                 null,
@@ -294,28 +258,23 @@ public class TagRepository {
             tags.add(cursorToTag(cursor));
         }
         cursor.close();
-        close();
         return tags;
     }
 
     void cleanAccount(String account, String rootFolder){
-        open();
-        database.delete(DatabaseHelper.TABLE_TAGS,
-                DatabaseHelper.COLUMN_ACCOUNT + " = '" + account+"' AND "+
-                        DatabaseHelper.COLUMN_ROOT_FOLDER + " = '" + rootFolder+"' ",
+        ConnectionManager.getDatabase(context).delete(DatabaseHelper.TABLE_TAGS,
+                DatabaseHelper.COLUMN_ACCOUNT + " = '" + account + "' AND " +
+                        DatabaseHelper.COLUMN_ROOT_FOLDER + " = '" + rootFolder + "' ",
                 null);
-
-        close();
     }
 
     public Map<String,Tag> getAllAsMap(String account, String rootFolder) {
-        openReadonly();
         HashMap<String,Tag> tags = new HashMap<String,Tag>();
 
-        Cursor cursor = database.query(DatabaseHelper.TABLE_TAGS,
+        Cursor cursor = ConnectionManager.getDatabase(context).query(DatabaseHelper.TABLE_TAGS,
                 allColumns,
-                DatabaseHelper.COLUMN_ACCOUNT + " = '" + account+"' AND "+
-                        DatabaseHelper.COLUMN_ROOT_FOLDER + " = '" + rootFolder+"' ",
+                DatabaseHelper.COLUMN_ACCOUNT + " = '" + account + "' AND " +
+                        DatabaseHelper.COLUMN_ROOT_FOLDER + " = '" + rootFolder + "' ",
                 null,
                 null,
                 null,
@@ -326,7 +285,6 @@ public class TagRepository {
             tags.put(tag.getName(), tag);
         }
         cursor.close();
-        close();
         return tags;
     }
 

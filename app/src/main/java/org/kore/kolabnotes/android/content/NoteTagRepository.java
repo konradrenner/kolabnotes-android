@@ -56,8 +56,7 @@ public class NoteTagRepository {
 
 
     // Database fields
-    private SQLiteDatabase database;
-    private DatabaseHelper dbHelper;
+    private Context context;
     private String[] allColumns = { DatabaseHelper.COLUMN_ID,
             DatabaseHelper.COLUMN_IDTAG,
             DatabaseHelper.COLUMN_ACCOUNT,
@@ -65,79 +64,56 @@ public class NoteTagRepository {
             DatabaseHelper.COLUMN_IDNOTE};
 
     public NoteTagRepository(Context context) {
-        dbHelper = new DatabaseHelper(context);
-    }
-
-    public void open() {
-        database = dbHelper.getWritableDatabase();
-    }
-
-    public void openReadonly() {
-        database = dbHelper.getReadableDatabase();
-    }
-
-    public void close() {
-        dbHelper.close();
+        this.context = context;
     }
 
     public void insert(String account, String rootFolder, String uidNote, String tagname) {
-        open();
         ContentValues values = new ContentValues();
         values.put(DatabaseHelper.COLUMN_IDNOTE,uidNote);
         values.put(DatabaseHelper.COLUMN_IDTAG,tagname);
         values.put(DatabaseHelper.COLUMN_ROOT_FOLDER,rootFolder);
-        values.put(DatabaseHelper.COLUMN_ACCOUNT,account);
+        values.put(DatabaseHelper.COLUMN_ACCOUNT, account);
 
-        database.insert(DatabaseHelper.TABLE_NOTE_TAGS, null,values);
-        close();
+        ConnectionManager.getDatabase(context).insert(DatabaseHelper.TABLE_NOTE_TAGS, null, values);
     }
 
     public void delete(String account, String rootFolder, String uidNote, String tagname) {
-        open();
-
-        database.delete(DatabaseHelper.TABLE_NOTE_TAGS,
+        ConnectionManager.getDatabase(context).delete(DatabaseHelper.TABLE_NOTE_TAGS,
                 DatabaseHelper.COLUMN_ACCOUNT + " = '" + account + "' AND " +
                         DatabaseHelper.COLUMN_ROOT_FOLDER + " = '" + rootFolder + "' AND " +
                         DatabaseHelper.COLUMN_IDNOTE + " = '" + uidNote + "' AND " +
                         DatabaseHelper.COLUMN_IDTAG + " = '" + tagname + "' ",
                 null);
-        close();
     }
 
     public void delete(String account, String rootFolder, String uidNote) {
-        open();
-
-        database.delete(DatabaseHelper.TABLE_NOTE_TAGS,
+        ConnectionManager.getDatabase(context).delete(DatabaseHelper.TABLE_NOTE_TAGS,
                 DatabaseHelper.COLUMN_ACCOUNT + " = '" + account + "' AND " +
                         DatabaseHelper.COLUMN_ROOT_FOLDER + " = '" + rootFolder + "' AND " +
                         DatabaseHelper.COLUMN_IDNOTE + " = '" + uidNote + "' ",
                 null);
-        close();
     }
 
     public List<Tag> getTagsFor(String account,String rootFolder, String noteuid) {
-        openReadonly();
         List<Tag> tags = new ArrayList<Tag>();
 
-        Cursor cursor = database.rawQuery(QUERY_TAGS_WITH_NOTEID, new String[]{account, rootFolder, noteuid});
+        Cursor cursor = ConnectionManager.getDatabase(context).rawQuery(QUERY_TAGS_WITH_NOTEID, new String[]{account, rootFolder, noteuid});
 
         while (cursor.moveToNext()) {
             tags.add(cursorToTag(cursor));
         }
         cursor.close();
-        close();
         return tags;
     }
 
     public List<String> getTagNamesFor(String account,String rootFolder, String noteuid) {
-        openReadonly();
         List<String> tags = new ArrayList<String>();
 
-        Cursor cursor = database.query(DatabaseHelper.TABLE_NOTE_TAGS,
+        Cursor cursor = ConnectionManager.getDatabase(context).query(DatabaseHelper.TABLE_NOTE_TAGS,
                 allColumns,
-                DatabaseHelper.COLUMN_ACCOUNT + " = '" + account+"' AND "+
-                DatabaseHelper.COLUMN_ROOT_FOLDER + " = '" + rootFolder+"' AND "+
-                DatabaseHelper.COLUMN_IDNOTE+" = '"+noteuid+"' ",
+                DatabaseHelper.COLUMN_ACCOUNT + " = '" + account + "' AND " +
+                        DatabaseHelper.COLUMN_ROOT_FOLDER + " = '" + rootFolder + "' AND " +
+                        DatabaseHelper.COLUMN_IDNOTE + " = '" + noteuid + "' ",
                 null,
                 null,
                 null,
@@ -147,32 +123,26 @@ public class NoteTagRepository {
             tags.add(cursorToTagName(cursor));
         }
         cursor.close();
-        close();
         return tags;
     }
 
     void cleanAccount(String account, String rootFolder){
-        open();
-        database.delete(DatabaseHelper.TABLE_NOTE_TAGS,
-                DatabaseHelper.COLUMN_ACCOUNT + " = '" + account+"' AND "+
-                DatabaseHelper.COLUMN_ROOT_FOLDER + " = '" + rootFolder+"' ",
+        ConnectionManager.getDatabase(context).delete(DatabaseHelper.TABLE_NOTE_TAGS,
+                DatabaseHelper.COLUMN_ACCOUNT + " = '" + account + "' AND " +
+                        DatabaseHelper.COLUMN_ROOT_FOLDER + " = '" + rootFolder + "' ",
                 null);
-
-        close();
     }
 
     public List<Note> getNotesWith(String account,String rootFolder,String tagname, NoteSorting noteSorting) {
-        openReadonly();
         List<Note> notes = new ArrayList<Note>();
 
-        Cursor cursor = database.rawQuery(QUERY_NOTES+" order by "+ noteSorting.getColumnName()+" "+ noteSorting.getDirection(),new String[]{account,rootFolder,tagname});
+        Cursor cursor = ConnectionManager.getDatabase(context).rawQuery(QUERY_NOTES + " order by " + noteSorting.getColumnName() + " " + noteSorting.getDirection(), new String[]{account, rootFolder, tagname});
 
 
         while (cursor.moveToNext()) {
             notes.add(cursorToNote(cursor));
         }
         cursor.close();
-        close();
 
         //load the tags for each note
         for(Note note : notes){
