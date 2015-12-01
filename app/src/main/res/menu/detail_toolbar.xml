@@ -11,11 +11,11 @@
         app:showAsAction="ifRoom"
         android:icon="@drawable/ic_action_labels_white"
         android:title="@string/title_edit_tag" />
-
+<!--issue 85
     <item android:id="@id/change_classification"
         app:showAsAction="ifRoom"
         android:icon="@drawable/ic_action_not_secure"
-        android:title="@string/title_change_classification" />
+        android:title="@string/title_change_classification" /> -->
 
     <item android:id="@+id/colorpicker"
         app:showAsAction="ifRoom"

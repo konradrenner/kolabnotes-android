@@ -333,7 +333,13 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
                     }
                 }else{
                     mAccountManager.setPassword(accountToChange, password);
-                    setAuthBundle(accountToChange,serverInfo,intervall);
+                    setAuthBundle(accountToChange, serverInfo, intervall);
+
+                    ContentResolver.addPeriodicSync(accountToChange,
+                            MainActivity.AUTHORITY,
+                            Bundle.EMPTY,
+                            intervall
+                    );
 
                     Intent intent = new Intent(this, MainActivity.class);
                     startActivity(intent);
@@ -348,7 +354,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
     private long calculateIntervall(long given){
         if(mIntervallType.getSelectedItemPosition() == 0){
             return given*SECONDS_PER_MINUTE;
-        }else if(mIntervallType.getSelectedItemPosition() == 0){
+        }else if(mIntervallType.getSelectedItemPosition() == 1){
             return given*MINUTES_PER_HOUR*SECONDS_PER_MINUTE;
         }
         return given*HOURS_PER_DAY*MINUTES_PER_HOUR*SECONDS_PER_MINUTE;
@@ -357,7 +363,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
     private long divideIntervall(long given){
         if(mIntervallType.getSelectedItemPosition() == 0){
             return given/SECONDS_PER_MINUTE;
-        }else if(mIntervallType.getSelectedItemPosition() == 0){
+        }else if(mIntervallType.getSelectedItemPosition() == 1){
             return given/MINUTES_PER_HOUR/SECONDS_PER_MINUTE;
         }
         return given/HOURS_PER_DAY/MINUTES_PER_HOUR/SECONDS_PER_MINUTE;

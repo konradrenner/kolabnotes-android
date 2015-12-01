@@ -268,7 +268,8 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.ViewHolder> {
         }
 
         void showCharacteristics(){
-            classification.setVisibility(View.VISIBLE);
+            //issue #85
+            classification.setVisibility(View.GONE);
             categories.setVisibility(View.VISIBLE);
         }
     }

@@ -122,4 +122,5 @@
     <string name="in_notebook">in notebook</string>
     <string name="note_created">New note</string>
     <string name="dialog_input_link">Attach link</string>
+    <string name="no_folder_permission">No permission for folder</string>
 </resources>

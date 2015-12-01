@@ -13,6 +13,8 @@ import android.os.Bundle;
 import android.support.v7.app.NotificationCompat;
 import android.util.Log;
 
+import com.sun.mail.iap.CommandFailedException;
+
 import org.kore.kolab.notes.AccountInformation;
 import org.kore.kolab.notes.RemoteNotesRepository;
 import org.kore.kolab.notes.imap.ImapNotesRepository;
@@ -102,7 +104,6 @@ public class KolabSyncAdapter extends AbstractThreadedSyncAdapter {
         if(sharedFoldersEnabled){
             builder.enableSharedFolders();
         }
-
         boolean doit = true;
         AccountInformation info = builder.build();
         ImapNotesRepository imapRepository = new ImapNotesRepository(new KolabNotesParserV3(), info, rootFolder, new KolabConfigurationParserV3());
@@ -112,9 +113,9 @@ public class KolabSyncAdapter extends AbstractThreadedSyncAdapter {
                 Log.d("syncNow","lastSyncTime:"+lastSyncTime);
                 //Just load data completely, which was changed after the given date
                 if(lastSyncTime == null){
-                    imapRepository.refresh(new RefreshListener());
+                    imapRepository.refresh(new RefreshListener(context));
                 }else{
-                    imapRepository.refresh(lastSyncTime, new RefreshListener());
+                    imapRepository.refresh(lastSyncTime, new RefreshListener(context));
                 }
             }
         }catch(Exception e){
@@ -159,7 +160,7 @@ public class KolabSyncAdapter extends AbstractThreadedSyncAdapter {
 
         try{
             if(doit) {
-                imapRepository.merge();
+                imapRepository.merge(new RefreshListener(context));
                 Utils.saveLastSyncTime(context,accName);
             }
         }catch(Exception e){
@@ -176,9 +177,38 @@ public class KolabSyncAdapter extends AbstractThreadedSyncAdapter {
     }
 
     static class RefreshListener implements RemoteNotesRepository.Listener{
+
+        private final Context context;
+
+        public RefreshListener(Context context) {
+            this.context = context;
+        }
+
         @Override
         public void onSyncUpdate(String s) {
             Log.d("onSyncUpdate","Downloaded folder:"+s);
+        }
+
+        @Override
+        public void onFolderSyncException(String folderName, Exception e) {
+            Log.e("onFolderSyncException","Folder name="+folderName+"; "+e);
+            if(e instanceof CommandFailedException){
+                String message = e.getMessage().toLowerCase();
+
+                if(message.contains("no permission")){
+                    final Notification notification =  new NotificationCompat.Builder(context)
+                            .setSmallIcon(R.drawable.ic_kjots)
+                            .setContentTitle(context.getResources().getString(R.string.no_folder_permission) +" "+ folderName)
+                            .setContentText(context.getResources().getString(R.string.no_folder_permission) +" "+ folderName)
+                            .setStyle(new NotificationCompat.BigTextStyle().bigText(e.toString()))
+                            .build();
+
+                    NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+                    notificationManager.notify(3,notification);
+                }
+            }
+
+            throw new IllegalStateException(e);
         }
     }
 }

@@ -122,4 +122,5 @@
     <string name="in_notebook">nel blocco note</string>
     <string name="note_created">Nuova nota</string>
     <string name="dialog_input_link">Aggiungi link</string>
+    <string name="no_folder_permission">Nessun permesso per la cartella</string>
 </resources>

@@ -718,9 +718,9 @@ public class DetailFragment extends Fragment{
             case R.id.edit_tag_menu:
                 editTags();
                 break;
-            case R.id.change_classification:
-                editClassification();
-                break;
+            //case R.id.change_classification: issue 85
+            //    editClassification();
+            //    break;
             case R.id.colorpicker:
                 chooseColor();
                 break;

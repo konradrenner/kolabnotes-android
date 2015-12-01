@@ -123,4 +123,5 @@
     <string name="in_notebook">dans le cahier</string>
     <string name="note_created">Nouvelle note</string>
     <string name="dialog_input_link">Fixez lien</string>
+    <string name="no_folder_permission">Aucune autorisation pour le dossier</string>
 </resources>

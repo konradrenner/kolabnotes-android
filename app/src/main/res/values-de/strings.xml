@@ -137,4 +137,5 @@
     <string name="in_notebook">in Notizbuch</string>
     <string name="note_created">Neue Notiz</string>
     <string name="dialog_input_link">Verlinkung zuweisen</string>
+    <string name="no_folder_permission">Zugriff auf Notizbuch abgelehnt</string>
 </resources>
