@@ -6,6 +6,7 @@
     <color name="theme_default_primary_dark">#e67e22</color>
     <color name="theme_accent">#e67e22</color>
     <color name="theme_window_background">#ECECEC</color>
+    <color name="theme_window_settings">#727272</color>
 
     <!-- general text colors -->
     <color name="text">#212121</color>

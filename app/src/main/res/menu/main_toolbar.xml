@@ -51,4 +51,9 @@
         app:showAsAction="ifRoom"
         android:icon="@drawable/ic_action_settings"
         android:title="@string/title_update_account" />
+
+    <item android:id="@+id/settings_menu"
+        app:showAsAction="ifRoom"
+        android:icon="@drawable/ic_action_settings"
+        android:title="@string/title_activity_settings" />
 </menu>

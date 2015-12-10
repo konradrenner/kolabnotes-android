@@ -1,0 +1,37 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <SwitchPreference
+        android:key="example_switch"
+        android:title="Show tags"
+        android:summary="Show the tags of a note in the note overview"
+        android:defaultValue="true" />
+
+    <SwitchPreference
+        android:key="show_metadata"
+        android:title="Show metadata"
+        android:summary="Show the creation and last modification date of a note in the note overview"
+        android:defaultValue="true" />
+
+    <PreferenceCategory android:key="sorting_category" android:title="Sorting" >
+
+        <ListPreference
+            android:key="example_list"
+            android:title="Property"
+            android:defaultValue="-1"
+            android:entries="@array/pref_example_list_titles"
+            android:entryValues="@array/pref_example_list_values"
+            android:negativeButtonText="@null"
+            android:positiveButtonText="@null" />
+
+        <ListPreference
+            android:key="example_direction"
+            android:title="Direction"
+            android:defaultValue="-1"
+            android:entries="@array/pref_example_list_titles"
+            android:entryValues="@array/pref_example_list_values"
+            android:negativeButtonText="@null"
+            android:positiveButtonText="@null" />
+
+    </PreferenceCategory>
+
+</PreferenceScreen>

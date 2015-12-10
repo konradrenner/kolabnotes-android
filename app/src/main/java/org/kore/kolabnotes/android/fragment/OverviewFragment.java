@@ -65,6 +65,7 @@ import org.kore.kolabnotes.android.content.NoteTagRepository;
 import org.kore.kolabnotes.android.content.NotebookRepository;
 import org.kore.kolabnotes.android.content.TagRepository;
 import org.kore.kolabnotes.android.security.AuthenticatorActivity;
+import org.kore.kolabnotes.android.setting.SettingsActivity;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -683,6 +684,10 @@ public class OverviewFragment extends Fragment implements NoteAdapter.NoteSelect
                         mAdapter.setCharacteristicsVisible(isCChecked);
                     }
                 });
+                break;
+            case R.id.settings_menu:
+                Intent settingsIntent = new Intent(activity,SettingsActivity.class);
+                startActivity(settingsIntent);
                 break;
             default:
                 activity.dispatchMenuEvent(item);

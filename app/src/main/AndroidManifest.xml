@@ -11,17 +11,19 @@
     <uses-permission android:name="android.permission.GET_ACCOUNTS" /> <!-- To auto-complete the email text field in the login form with the user's emails -->
     <uses-permission android:name="android.permission.READ_PROFILE" />
 
-    <supports-screens android:largeScreens="true" android:xlargeScreens="true" />
+    <supports-screens
+        android:largeScreens="true"
+        android:xlargeScreens="true" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_kjots"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
-
         <activity
             android:name=".MainActivity"
-            android:windowSoftInputMode="adjustResize|stateAlwaysHidden"
-            android:label="@string/app_name" >
+            android:label="@string/app_name"
+            android:windowSoftInputMode="adjustResize|stateAlwaysHidden" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -30,24 +32,27 @@
         </activity>
         <activity
             android:name=".DetailActivity"
-            android:windowSoftInputMode="adjustResize|stateHidden"
-            android:label="@string/app_name" >
-
+            android:label="@string/app_name"
+            android:windowSoftInputMode="adjustResize|stateHidden" >
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
+
                 <category android:name="android.intent.category.DEFAULT" />
+
                 <data android:mimeType="text/plain" />
             </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
+
                 <category android:name="android.intent.category.DEFAULT" />
+
                 <data android:mimeType="text/html" />
             </intent-filter>
         </activity>
         <activity
             android:name=".security.AuthenticatorActivity"
-            android:windowSoftInputMode="adjustPan|stateHidden"
-            android:label="@string/login_label" />
+            android:label="@string/login_label"
+            android:windowSoftInputMode="adjustPan|stateHidden" />
 
         <provider
             android:name=".content.KolabNotesContentProvider"
@@ -103,9 +108,10 @@
             </intent-filter>
         </activity>
 
-        <receiver android:name=".widget.StickyNoteWidget"
+        <receiver
+            android:name=".widget.StickyNoteWidget"
             android:icon="@mipmap/ic_kjots"
-            android:label="@string/sticky_note_name">
+            android:label="@string/sticky_note_name" >
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
@@ -115,12 +121,18 @@
                 android:resource="@xml/sticky_note_widget_info" />
         </receiver>
 
-        <activity android:name=".widget.StickyNoteWidgetConfigureActivity"
+        <activity
+            android:name=".widget.StickyNoteWidgetConfigureActivity"
             android:icon="@mipmap/ic_kjots"
-            android:label="@string/sticky_note_name">
+            android:label="@string/sticky_note_name" >
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
             </intent-filter>
+        </activity>
+        <activity
+            android:name=".setting.SettingsActivity"
+            android:label="@string/title_activity_settings"
+            android:theme="@style/SettingsTheme">
         </activity>
     </application>
 
