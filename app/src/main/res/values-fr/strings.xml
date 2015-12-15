@@ -124,4 +124,11 @@
     <string name="note_created">Nouvelle note</string>
     <string name="dialog_input_link">Fixez lien</string>
     <string name="no_folder_permission">Aucune autorisation pour le dossier</string>
+    <string name="pref_characteristics">Show tags</string>
+    <string name="pref_metainformation">Show metainformations</string>
+    <string name="pref_desc_metainformation">Show creation date and last modification date</string>
+    <string name="pref_column">Sorting column</string>
+    <string name="pref_direction">Sorting direction</string>
+    <string name="pref_show_sync_notifications">Show sync notifications</string>
+    <string name="pref_show_sync_notifications_summary">Notifications if notes in shared folders are changed</string>
 </resources>

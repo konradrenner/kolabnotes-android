@@ -4,8 +4,14 @@
         <item>@string/text_summary</item>
         <item>@string/modificationDate</item>
         <item>@string/creationDate</item>
-        <item>@string/classification</item>
         <item>@string/color</item>
+    </string-array>
+
+    <string-array name="sorting_columns_values">
+        <item>summary</item>
+        <item>lastModificationDate</item>
+        <item>creationDate</item>
+        <item>color</item>
     </string-array>
 
     <string-array name="sync_intervall_types">

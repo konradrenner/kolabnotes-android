@@ -23,6 +23,8 @@ import org.kore.kolab.notes.AccountInformation;
 import org.kore.kolabnotes.android.MainActivity;
 import org.kore.kolabnotes.android.R;
 import org.kore.kolabnotes.android.Utils;
+import org.kore.kolabnotes.android.content.ActiveAccount;
+import org.kore.kolabnotes.android.content.ActiveAccountRepository;
 
 /**
  * The Authenticator activity.
@@ -129,8 +131,15 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
         hideExtendedOptions();
 
         startIntent = getIntent();
-        if(startIntent != null){
-            initViews(startIntent.getStringExtra(Utils.INTENT_ACCOUNT_EMAIL), startIntent.getStringExtra(Utils.INTENT_ACCOUNT_ROOT_FOLDER));
+        if(startIntent != null && startIntent.getBooleanExtra("changeAccount",false)){
+            ActiveAccountRepository accountRepo = new ActiveAccountRepository(this);
+            ActiveAccount activeAccount = accountRepo.getActiveAccount();
+            if(activeAccount.getAccount().equals("local") && activeAccount.getRootFolder().equals("Notes")) {
+                Toast.makeText(this,R.string.local_account_change,Toast.LENGTH_LONG).show();
+                finish();
+            }else {
+                initViews(activeAccount.getAccount(), activeAccount.getRootFolder());
+            }
         }
     }
 

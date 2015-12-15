@@ -1,10 +1,9 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!-- A 'parent' preference, which enables/disables child preferences (below)
-         when checked/unchecked. -->
     <SwitchPreference
-        android:key="notifications_new_message"
-        android:title="Note changes in shared folder notifications"
+        android:key="pref_show_sync_notifications"
+        android:title="@string/pref_show_sync_notifications"
+        android:summary="@string/pref_show_sync_notifications_summary"
         android:defaultValue="true" />
 
 </PreferenceScreen>

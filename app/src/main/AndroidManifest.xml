@@ -52,7 +52,12 @@
         <activity
             android:name=".security.AuthenticatorActivity"
             android:label="@string/login_label"
-            android:windowSoftInputMode="adjustPan|stateHidden" />
+            android:windowSoftInputMode="adjustPan|stateHidden">
+            <intent-filter>
+                <action android:name="org.kore.kolabnotes.android.security.AuthenticatorActivity" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
 
         <provider
             android:name=".content.KolabNotesContentProvider"

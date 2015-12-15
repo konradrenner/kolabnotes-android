@@ -16,6 +16,7 @@ import android.graphics.ColorMatrixColorFilter;
 import android.graphics.Outline;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.preference.PreferenceManager;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
@@ -201,60 +202,51 @@ public class Utils {
         return new Timestamp(millis);
     }
 
-    public static void saveShowMetainformation(Context context, boolean showMetainformation) {
-        SharedPreferences.Editor prefs = context.getSharedPreferences("org.kore.kolabnotes.android.widget.MainActivity", 0).edit();
-        prefs.putBoolean("metainformation", showMetainformation);
-        prefs.commit();
-    }
-
     public static boolean getShowMetainformation(Context context) {
-        SharedPreferences prefs = context.getSharedPreferences("org.kore.kolabnotes.android.widget.MainActivity", 0);
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         if(prefs == null){
-            Log.d("getNoteSorting","MainActivity prefs are null");
+            Log.d("getShowMetainformation","PreferenceManager prefs are null");
             return true;
         }
-        return prefs.getBoolean("metainformation", true);
+        return prefs.getBoolean("pref_metainformation", true);
 
     }
 
-    public static void saveShowCharacteristics(Context context, boolean showCharacteristics) {
-        SharedPreferences.Editor prefs = context.getSharedPreferences("org.kore.kolabnotes.android.widget.MainActivity", 0).edit();
-        prefs.putBoolean("characteristics", showCharacteristics);
-        prefs.commit();
+    public static boolean getShowSyncNotifications(Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        if(prefs == null){
+            Log.d("getShowSyncNotification","PreferenceManager prefs are null");
+            return true;
+        }
+        return prefs.getBoolean("pref_show_sync_notifications", true);
+
     }
 
     public static boolean getShowCharacteristics(Context context) {
-        SharedPreferences prefs = context.getSharedPreferences("org.kore.kolabnotes.android.widget.MainActivity", 0);
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         if(prefs == null){
             Log.d("getNoteSorting","MainActivity prefs are null");
             return true;
         }
-        return prefs.getBoolean("characteristics", true);
+        return prefs.getBoolean("pref_characteristics", true);
 
-    }
-
-    public static void saveNoteSorting(Context context, NoteSorting noteSorting) {
-        SharedPreferences.Editor prefs = context.getSharedPreferences("org.kore.kolabnotes.android.widget.MainActivity", 0).edit();
-        prefs.putString("direction", noteSorting.getDirection().toString());
-        prefs.putString("column", noteSorting.getColumnName());
-        prefs.commit();
     }
 
     public static NoteSorting getNoteSorting(Context context) {
-        SharedPreferences prefs = context.getSharedPreferences("org.kore.kolabnotes.android.widget.MainActivity", 0);
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         if(prefs == null){
             Log.d("getNoteSorting","MainActivity prefs are null");
             return new NoteSorting();
         }
-        String direction = prefs.getString("direction", null);
-        String column = prefs.getString("column", null);
+        String direction = prefs.getString("pref_direction", null);
+        String column = prefs.getString("pref_column", null);
 
         if(TextUtils.isEmpty(direction) || TextUtils.isEmpty(column)){
             Log.d("getNoteSorting","column:"+column+"; or direction:"+direction+"; is empty, so default ordering will be returned");
             return new NoteSorting();
         }
 
-        return new NoteSorting(column, NoteSorting.Direction.valueOf(direction));
+        return new NoteSorting(column.toLowerCase(), NoteSorting.Direction.valueOf(direction));
     }
 
     public static boolean getReloadDataAfterDetail(Context context){

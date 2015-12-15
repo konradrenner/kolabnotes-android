@@ -596,8 +596,6 @@ public class OverviewFragment extends Fragment implements NoteAdapter.NoteSelect
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
         super.onPrepareOptionsMenu(menu);
-        menu.findItem(R.id.show_metainformation).setChecked(Utils.getShowMetainformation(activity));
-        menu.findItem(R.id.show_characteristics).setChecked(Utils.getShowCharacteristics(activity));
     }
 
     @Override
@@ -640,52 +638,7 @@ public class OverviewFragment extends Fragment implements NoteAdapter.NoteSelect
                 AlertDialog newSearchDialog = createSearchDialog();
                 newSearchDialog.show();
                 break;
-            case R.id.create_account_menu:
-                Intent intent = new Intent(activity,AuthenticatorActivity.class);
-                startActivity(intent);
-                break;
-            case R.id.create_sort_menu:
-                AlertDialog newSortingDialog = createSortingDialog();
-                newSortingDialog.show();
-                break;
-            case R.id.update_account_menu:
-                final ActiveAccount activeAccount = activeAccountRepository.getActiveAccount();
-
-                if(activeAccount.getAccount().equals("local") && activeAccount.getRootFolder().equals("Notes")) {
-                    Toast.makeText(activity,R.string.local_account_change,Toast.LENGTH_LONG).show();
-                }else {
-
-                    Intent updateIntent = new Intent(activity, AuthenticatorActivity.class);
-                    updateIntent.putExtra(Utils.INTENT_ACCOUNT_EMAIL, activeAccount.getAccount());
-                    updateIntent.putExtra(Utils.INTENT_ACCOUNT_ROOT_FOLDER, activeAccount.getRootFolder());
-
-                    startActivity(updateIntent);
-                }
-            case R.id.show_metainformation:
-                final boolean isChecked = !item.isChecked();
-                item.setChecked(isChecked);
-                Utils.saveShowMetainformation(activity,isChecked);
-
-                activity.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        mAdapter.setMetainformationVisible(isChecked);
-                    }
-                });
-                break;
-            case R.id.show_characteristics:
-                final boolean isCChecked = !item.isChecked();
-                item.setChecked(isCChecked);
-                Utils.saveShowCharacteristics(activity, isCChecked);
-
-                activity.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        mAdapter.setCharacteristicsVisible(isCChecked);
-                    }
-                });
-                break;
-            case R.id.settings_menu:
+           case R.id.settings_menu:
                 Intent settingsIntent = new Intent(activity,SettingsActivity.class);
                 startActivity(settingsIntent);
                 break;
@@ -729,38 +682,6 @@ public class OverviewFragment extends Fragment implements NoteAdapter.NoteSelect
         return builder.create();
     }
 
-    private AlertDialog createSortingDialog(){
-        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
-
-        builder.setTitle(R.string.title_dialog_sorting);
-
-        LayoutInflater inflater = activity.getLayoutInflater();
-        View view = inflater.inflate(R.layout.dialog_change_sorting, null);
-
-        RadioGroup radioGroup = (RadioGroup) view.findViewById(R.id.radio_group_sort_direction);
-        Spinner columns = (Spinner) view.findViewById(R.id.spinner_sort_column);
-
-        NoteSorting noteSorting = Utils.getNoteSorting(activity);
-
-        Utils.initColumnSpinner(activity,columns,R.layout.sorting_spinner_item , null, noteSorting.getColumnName());
-
-        if(NoteSorting.Direction.DESC == noteSorting.getDirection()){
-            ((RadioButton) view.findViewById(R.id.radio_desc)).toggle();
-        }else{
-            ((RadioButton) view.findViewById(R.id.radio_asc)).toggle();
-        }
-
-        builder.setView(view);
-
-        builder.setPositiveButton(R.string.ok, new SortingButtonListener(columns,radioGroup));
-        builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                //nothing
-            }
-        });
-        return builder.create();
-    }
 
     private AlertDialog createSearchDialog(){
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
@@ -1059,65 +980,6 @@ public class OverviewFragment extends Fragment implements NoteAdapter.NoteSelect
                 orderDrawerItems(tagRepository.getAllAsMap(activeAccount.getAccount(),activeAccount.getRootFolder()), mDrawer);
 
                 displayBlankFragment();
-            }
-        }
-    }
-
-    public class SortingButtonListener implements DialogInterface.OnClickListener {
-
-        private final Spinner columns;
-        private final RadioGroup direction;
-
-        public SortingButtonListener(Spinner columnSpinner, RadioGroup direction) {
-            this.columns = columnSpinner;
-            this.direction = direction;
-        }
-
-        @Override
-        public void onClick(DialogInterface dialogInterface, int i) {
-            String column = Utils.getColumnNameOfSelection(columns.getSelectedItemPosition());
-
-            NoteSorting.Direction dir;
-
-            if(direction.getCheckedRadioButtonId() == R.id.radio_asc){
-                dir = NoteSorting.Direction.ASC;
-            }else{
-                dir = NoteSorting.Direction.DESC;
-            }
-
-            NoteSorting noteSorting = new NoteSorting(column,dir);
-
-            Log.d("onClick","Changing sorting:"+ noteSorting);
-
-            Utils.saveNoteSorting(activity, noteSorting);
-
-            ActiveAccount activeAccount = activeAccountRepository.getActiveAccount();
-
-            IDrawerItem drawerItem = mDrawer.getDrawerItems().get(mDrawer.getCurrentSelection());
-            if(drawerItem instanceof BaseDrawerItem){
-                BaseDrawerItem item = (BaseDrawerItem)drawerItem;
-                String tag = item.getTag() == null || item.getTag().toString().trim().length() == 0 ? null : item.getTag().toString();
-
-                List<Note> notes;
-                if("NOTEBOOK".equalsIgnoreCase(tag)){
-                    notes = notesRepository.getFromNotebook(activeAccount.getAccount(),
-                            activeAccount.getRootFolder(),
-                            notebookRepository.getBySummary(activeAccount.getAccount(),activeAccount.getRootFolder(),item.getName()).getIdentification().getUid(),
-                            noteSorting);
-                }else if("TAG".equalsIgnoreCase(tag)){
-                    notes = notetagRepository.getNotesWith(activeAccount.getAccount(), activeAccount.getRootFolder(), item.getName(), noteSorting);
-                }else if("ALL_NOTES".equalsIgnoreCase(tag)){
-                    notes = notesRepository.getAll(noteSorting);
-                }else{
-                    notes = notesRepository.getAll(activeAccount.getAccount(),activeAccount.getRootFolder(), noteSorting);
-                }
-
-                List<Notebook> notebooks = notebookRepository.getAll(activeAccount.getAccount(), activeAccount.getRootFolder());
-                Map<String,Tag> tags = tagRepository.getAllAsMap(activeAccount.getAccount(), activeAccount.getRootFolder());
-
-                displayBlankFragment();
-
-                getActivity().runOnUiThread(new ReloadDataThread(notebooks, notes, tags));
             }
         }
     }
