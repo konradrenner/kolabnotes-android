@@ -141,6 +141,9 @@ public class RepositoryManager {
     }
 
     void putLocalDataIntoRepository(String email, String rootFolder){
+        boolean withLatest = Utils.clearConflictWithLatest(context);
+        boolean withLocal = Utils.clearConflictWithLocal(context);
+
         List<Note> localNotes = noteRepository.getAllForSync(email, rootFolder);
 
         List<Modification> deletedNbs = modificationRepository.getDeletions(email, rootFolder, Modification.Descriminator.NOTEBOOK);
@@ -179,24 +182,27 @@ public class RepositoryManager {
                             notebook.deleteNote(note.getIdentification().getUid());
                             remoteNotebook.addNote(note);
                             remoteNote = note;
+                        }else if(withLocal){
+                            //if local changes should always overrule server, recreate the note
+                            remoteNotebook.addNote(note);
+                            remoteNote = note;
                         }
                     }
 
-                    boolean withLatest = Utils.clearConflictWithLatest(context);
-                    boolean withLocal = Utils.clearConflictWithLocal(context);
-
-                    //If there is a conflict
-                    if(remoteNote.getAuditInformation().getLastModificationDate().after(lastSync)){
-                        if(withLatest){
-                            //if local note is newer then remote, update it, if not the remote will be taken
-                            if(remoteNote != null && note.getAuditInformation().getLastModificationDate().after(remoteNote.getAuditInformation().getLastModificationDate())){
+                    if(remoteNote != null) {
+                        //If there is a conflict
+                        if (remoteNote.getAuditInformation().getLastModificationDate().after(lastSync)) {
+                            if (withLatest) {
+                                //if local note is newer then remote, update it, if not the remote will be taken
+                                if (note.getAuditInformation().getLastModificationDate().after(remoteNote.getAuditInformation().getLastModificationDate())) {
+                                    updateRemoteNote(remoteTags, note, remoteNote);
+                                }
+                            } else if (withLocal) {
                                 updateRemoteNote(remoteTags, note, remoteNote);
                             }
-                        }else if(withLocal){
+                        } else {
                             updateRemoteNote(remoteTags, note, remoteNote);
                         }
-                    }else{
-                        updateRemoteNote(remoteTags, note, remoteNote);
                     }
                 }
             }else{
@@ -209,10 +215,18 @@ public class RepositoryManager {
         for(Modification deletion : deletions){
             Note remoteNote = repo.getNote(deletion.getUid());
 
-            if(remoteNote != null && deletion.getModificationDate().after(remoteNote.getAuditInformation().getLastModificationDate())){
-                Log.d("localIntoRepository","Deleting note:"+remoteNote);
-                Notebook localNotebook = notebookRepository.getByUID(email, rootFolder, deletion.getUidNotebook());
-                repo.getNotebookBySummary(localNotebook.getSummary()).deleteNote(deletion.getUid());
+            if(remoteNote != null){
+                if(withLatest){
+                    if(deletion.getModificationDate().after(remoteNote.getAuditInformation().getLastModificationDate())){
+                        Log.d("localIntoRepository","Deleting note:"+remoteNote);
+                        Notebook localNotebook = notebookRepository.getByUID(email, rootFolder, deletion.getUidNotebook());
+                        repo.getNotebookBySummary(localNotebook.getSummary()).deleteNote(deletion.getUid());
+                    }
+                }else if(withLocal){
+                    Log.d("localIntoRepository","Deleting note:"+remoteNote);
+                    Notebook localNotebook = notebookRepository.getByUID(email, rootFolder, deletion.getUidNotebook());
+                    repo.getNotebookBySummary(localNotebook.getSummary()).deleteNote(deletion.getUid());
+                }
             }
         }
 
