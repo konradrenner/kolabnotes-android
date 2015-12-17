@@ -131,4 +131,9 @@
     <string name="pref_direction">Sorting direction</string>
     <string name="pref_show_sync_notifications">Show sync notifications</string>
     <string name="pref_show_sync_notifications_summary">Notifications if notes in shared folders are changed</string>
+    <string name="pref_header_data_sync">Syncronisation</string>
+    <string name="pref_header_general">Généralement</string>
+    <string name="pref_header_notifications">Notifications</string>
+    <string name="pref_title_sync_conflict">Les conflits de synchronisation de manutention</string>
+    <string name="pref_title_system_sync_settings">Paramètres de synchronisation du système</string>
 </resources>

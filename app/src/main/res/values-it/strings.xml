@@ -130,4 +130,27 @@
     <string name="pref_direction">Sorting direction</string>
     <string name="pref_show_sync_notifications">Show sync notifications</string>
     <string name="pref_show_sync_notifications_summary">Notifications if notes in shared folders are changed</string>
+    <string name="action_sign_in">Registrati</string>
+    <string name="error_connection">Si è verificato un errore durante la connessione è stata stabilita</string>
+    <string name="error_field_required">Questo campo è obbligatorio</string>
+    <string name="error_field_to_low">Questo valore deve essere compreso tra 1 e 90</string>
+    <string name="error_incorrect_password">Questa password non è corretta</string>
+    <string name="error_invalid_email">Questo indirizzo e-mail non è valido</string>
+    <string name="error_invalid_password">Questa password è troppo corta</string>
+    <string name="pref_header_data_sync">Syncronisation</string>
+    <string name="pref_header_general">Generalmente</string>
+    <string name="pref_header_notifications">Notifiche</string>
+    <string name="pref_title_sync_conflict">Conflitti di sincronizzazione di movimentazione</string>
+    <string name="pref_title_system_sync_settings">Impostazioni di sincronizzazione del sistema</string>
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Passwort</string>
+    <string name="title_activity_kolab_login">Registrati</string>
+    <string name="title_activity_settings">Impostazioni</string>
+    <string name="title_change_classification">Modifica Classificazione</string>
+    <string name="title_create_notebook">Nuovo Notebook</string>
+    <string name="title_create_tag">Nuovo tag</string>
+    <string name="title_delete">Cancellare</string>
+    <string name="title_dialog_search">Ricerca Nota</string>
+    <string name="title_ok">OK</string>
+    <string name="title_share">Quota</string>
 </resources>

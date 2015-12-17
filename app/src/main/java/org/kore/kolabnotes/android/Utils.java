@@ -159,6 +159,11 @@ public class Utils {
             String[] arr = new String[values.length];
 
             for(int i=0;i<values.length;i++){
+
+                if("classification".equalsIgnoreCase(values[i].toString())){
+                    continue;
+                }
+
                 arr[i] = values[i].toString();
             }
             return arr;
