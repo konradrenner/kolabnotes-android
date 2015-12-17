@@ -182,30 +182,21 @@ public class RepositoryManager {
                         }
                     }
 
-                    //Just do something, if the remote note is not deleted or was not updated after local note
-                    if(remoteNote != null && note.getAuditInformation().getLastModificationDate().after(remoteNote.getAuditInformation().getLastModificationDate())){
+                    boolean withLatest = Utils.clearConflictWithLatest(context);
+                    boolean withLocal = Utils.clearConflictWithLocal(context);
 
-                        Log.d("localIntoRepository","Updating note:"+note);
-
-                        remoteNote.setClassification(note.getClassification());
-                        remoteNote.setDescription(note.getDescription());
-                        remoteNote.setSummary(note.getSummary());
-
-                        Set<Tag> remoteCategories = remoteNote.getCategories();
-
-                        remoteNote.removeCategories(remoteCategories.toArray(new Tag[remoteCategories.size()]));
-
-                        Set<Tag> localCategories = note.getCategories();
-                        final Tag[] tagArray = localCategories.toArray(new Tag[localCategories.size()]);
-                        remoteNote.addCategories(tagArray);
-                        remoteNote.setColor(note.getColor());
-                        remoteNote.getAuditInformation().setLastModificationDate(note.getAuditInformation().getLastModificationDate().getTime());
-                        remoteNote.getAuditInformation().setCreationDate(note.getAuditInformation().getCreationDate().getTime());
-
-                        remoteTags.removeTags(note.getIdentification().getUid());
-                        remoteTags.attachTags(note.getIdentification().getUid(), tagArray);
-
-                        localChangedNotes.add(note.getIdentification().getUid());
+                    //If there is a conflict
+                    if(remoteNote.getAuditInformation().getLastModificationDate().after(lastSync)){
+                        if(withLatest){
+                            //if local note is newer then remote, update it, if not the remote will be taken
+                            if(remoteNote != null && note.getAuditInformation().getLastModificationDate().after(remoteNote.getAuditInformation().getLastModificationDate())){
+                                updateRemoteNote(remoteTags, note, remoteNote);
+                            }
+                        }else if(withLocal){
+                            updateRemoteNote(remoteTags, note, remoteNote);
+                        }
+                    }else{
+                        updateRemoteNote(remoteTags, note, remoteNote);
                     }
                 }
             }else{
@@ -240,5 +231,29 @@ public class RepositoryManager {
         //Update the tags
         final List<Tag> allModifiedAfter = tagRepository.getAllModifiedAfter(email, rootFolder, lastSync);
         remoteTags.applyLocalChanges(allModifiedAfter.toArray(new Tag[allModifiedAfter.size()]));
+    }
+
+    private void updateRemoteNote(RemoteTags remoteTags, Note note, Note remoteNote) {
+        Log.d("localIntoRepository", "Updating remote note:" + note);
+
+        remoteNote.setClassification(note.getClassification());
+        remoteNote.setDescription(note.getDescription());
+        remoteNote.setSummary(note.getSummary());
+
+        Set<Tag> remoteCategories = remoteNote.getCategories();
+
+        remoteNote.removeCategories(remoteCategories.toArray(new Tag[remoteCategories.size()]));
+
+        Set<Tag> localCategories = note.getCategories();
+        final Tag[] tagArray = localCategories.toArray(new Tag[localCategories.size()]);
+        remoteNote.addCategories(tagArray);
+        remoteNote.setColor(note.getColor());
+        remoteNote.getAuditInformation().setLastModificationDate(note.getAuditInformation().getLastModificationDate().getTime());
+        remoteNote.getAuditInformation().setCreationDate(note.getAuditInformation().getCreationDate().getTime());
+
+        remoteTags.removeTags(note.getIdentification().getUid());
+        remoteTags.attachTags(note.getIdentification().getUid(), tagArray);
+
+        localChangedNotes.add(note.getIdentification().getUid());
     }
 }

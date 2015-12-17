@@ -232,6 +232,33 @@ public class Utils {
 
     }
 
+    public static boolean clearConflictWithLatest(Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        if(prefs == null){
+            Log.d("latest","PreferenceManager prefs are null");
+            return true;
+        }
+        return "LATEST".equalsIgnoreCase(prefs.getString("sync_conflict", "LATEST"));
+    }
+
+    public static boolean clearConflictWithServer(Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        if(prefs == null){
+            Log.d("latest","PreferenceManager prefs are null");
+            return true;
+        }
+        return "SERVER".equalsIgnoreCase(prefs.getString("sync_conflict","LATEST"));
+    }
+
+    public static boolean clearConflictWithLocal(Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        if(prefs == null){
+            Log.d("latest","PreferenceManager prefs are null");
+            return true;
+        }
+        return "LOCAL".equalsIgnoreCase(prefs.getString("sync_conflict","LATEST"));
+    }
+
     public static NoteSorting getNoteSorting(Context context) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         if(prefs == null){
