@@ -26,6 +26,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.TimeZone;
+import java.util.UUID;
 
 /**
  * This class syncs the database with data from a given repository
@@ -79,32 +80,33 @@ public class RepositoryManager {
                 //inform user for new or updated notes in shared notebooks
                 if(Utils.getShowSyncNotifications(context) && book.isShared() && !localChangedNotes.contains(note.getIdentification().getUid()) && lastSync != null){
 
-                    Intent startDetailIntent = new Intent();
+                    Intent startDetailIntent = new Intent(context,DetailActivity.class);
+                    startDetailIntent.setAction(UUID.randomUUID().toString());
+                    startDetailIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
                     startDetailIntent.putExtra(Utils.NOTE_UID, note.getIdentification().getUid());
                     startDetailIntent.putExtra(Utils.INTENT_ACCOUNT_EMAIL, email);
                     startDetailIntent.putExtra(Utils.INTENT_ACCOUNT_ROOT_FOLDER, rootFolder);
 
-                    TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
-                    stackBuilder.addParentStack(DetailActivity.class);
-                    stackBuilder.addNextIntent(startDetailIntent);
-                    PendingIntent pendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
+                    PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, startDetailIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
                     if(lastSync.getTime() < note.getAuditInformation().getCreationDate().getTime()){
                         final Notification notification = new NotificationCompat.Builder(context)
                                 .setSmallIcon(R.drawable.ic_kjots)
                                 .setContentTitle(context.getResources().getString(R.string.changed_content_shared_folder))
-                                .setContentText(context.getResources().getString(R.string.note_changed))
-                                .setStyle(new NotificationCompat.BigTextStyle().bigText(context.getResources().getString(R.string.note_changed) + ": " + note.getSummary() + " " + context.getResources().getString(R.string.in_notebook) + " " + book.getSummary()))
-                                .setContentIntent(pendingIntent).build();
+                                .setContentText(context.getResources().getString(R.string.note_created))
+                                .setStyle(new NotificationCompat.BigTextStyle().bigText(context.getResources().getString(R.string.note_created) + ": " + note.getSummary() + " " + context.getResources().getString(R.string.in_notebook) + " " + book.getSummary()))
+                                .setContentIntent(pendingIntent)
+                                .setAutoCancel(true).build();
 
                         notificationManager.notify(i++,notification);
                     }else if(lastSync.getTime() < note.getAuditInformation().getLastModificationDate().getTime()){
                         final Notification notification = new NotificationCompat.Builder(context)
                                 .setSmallIcon(R.drawable.ic_kjots)
                                 .setContentTitle(context.getResources().getString(R.string.changed_content_shared_folder))
-                                .setContentText(context.getResources().getString(R.string.note_created))
-                                .setStyle(new NotificationCompat.BigTextStyle().bigText(context.getResources().getString(R.string.note_created) + ": " +note.getSummary() + " " + context.getResources().getString(R.string.in_notebook) + " " + book.getSummary()))
-                                .setContentIntent(pendingIntent).build();
+                                .setContentText(context.getResources().getString(R.string.note_changed))
+                                .setStyle(new NotificationCompat.BigTextStyle().bigText(context.getResources().getString(R.string.note_changed) + ": " + note.getSummary() + " " + context.getResources().getString(R.string.in_notebook) + " " + book.getSummary()))
+                                .setContentIntent(pendingIntent)
+                                .setAutoCancel(true).build();
 
                         notificationManager.notify(i++,notification);
                     }

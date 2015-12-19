@@ -56,6 +56,7 @@ public class DetailActivity extends AppCompatActivity implements OnFragmentCallb
         chooseAccountDialog.show(fm, "fragment_choose_account");
     }
 
+
     @Override
     public void onAccountElected(String name,AccountIdentifier accountIdentifier){
         detailFragment.resetSpinner();

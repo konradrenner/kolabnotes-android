@@ -124,16 +124,23 @@
     <string name="note_created">Nouvelle note</string>
     <string name="dialog_input_link">Fixez lien</string>
     <string name="no_folder_permission">Aucune autorisation pour le dossier</string>
-    <string name="pref_characteristics">Show tags</string>
-    <string name="pref_metainformation">Show metainformations</string>
-    <string name="pref_desc_metainformation">Show creation date and last modification date</string>
-    <string name="pref_column">Sorting column</string>
-    <string name="pref_direction">Sorting direction</string>
-    <string name="pref_show_sync_notifications">Show sync notifications</string>
-    <string name="pref_show_sync_notifications_summary">Notifications if notes in shared folders are changed</string>
+    <string name="pref_characteristics">Voir les balises</string>
+    <string name="pref_metainformation">Voir metainformations</string>
+    <string name="pref_desc_metainformation">Afficher la date de création et date de dernière modification</string>
+    <string name="pref_column">colonne de tri</string>
+    <string name="pref_direction">sens du tri</string>
+    <string name="pref_show_sync_notifications">Afficher notifications de synchronisation</string>
+    <string name="pref_show_sync_notifications_summary">Notifications Si les notes dans les dossiers partagés sont modifiés</string>
     <string name="pref_header_data_sync">Syncronisation</string>
     <string name="pref_header_general">Généralement</string>
     <string name="pref_header_notifications">Notifications</string>
     <string name="pref_title_sync_conflict">Les conflits de synchronisation de manutention</string>
     <string name="pref_title_system_sync_settings">Paramètres de synchronisation du système</string>
+
+    <string-array name="pref_sync_conflict_titles">
+        <item>Dernière note modifiée</item>
+        <item>Note Server</item>
+        <item>Note locale</item>
+        <!--<item>Ask which</item>-->
+    </string-array>
 </resources>

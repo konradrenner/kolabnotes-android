@@ -123,13 +123,13 @@
     <string name="note_created">Nuova nota</string>
     <string name="dialog_input_link">Aggiungi link</string>
     <string name="no_folder_permission">Nessun permesso per la cartella</string>
-    <string name="pref_characteristics">Show tags</string>
-    <string name="pref_metainformation">Show metainformations</string>
-    <string name="pref_desc_metainformation">Show creation date and last modification date</string>
-    <string name="pref_column">Sorting column</string>
-    <string name="pref_direction">Sorting direction</string>
-    <string name="pref_show_sync_notifications">Show sync notifications</string>
-    <string name="pref_show_sync_notifications_summary">Notifications if notes in shared folders are changed</string>
+    <string name="pref_characteristics">Mostra i tag</string>
+    <string name="pref_metainformation">Mostra metainformations</string>
+    <string name="pref_desc_metainformation">Data Mostra di creazione e data dell\'ultima modifica</string>
+    <string name="pref_column">colonna Ordinamento</string>
+    <string name="pref_direction">direzione di ordinamento</string>
+    <string name="pref_show_sync_notifications">Mostra notifiche di sincronizzazione</string>
+    <string name="pref_show_sync_notifications_summary">Notifiche se le note in cartelle condivise sono cambiati</string>
     <string name="action_sign_in">Registrati</string>
     <string name="error_connection">Si è verificato un errore durante la connessione è stata stabilita</string>
     <string name="error_field_required">Questo campo è obbligatorio</string>
@@ -153,4 +153,11 @@
     <string name="title_dialog_search">Ricerca Nota</string>
     <string name="title_ok">OK</string>
     <string name="title_share">Quota</string>
+
+    <string-array name="pref_sync_conflict_titles">
+        <item>Ultima nota modifica</item>
+        <item>Nota Server</item>
+        <item>Nota locale</item>
+        <!--<item>Ask which</item>-->
+    </string-array>
 </resources>

@@ -18,6 +18,6 @@ public class NoteSortingComparator implements Comparator<Note> {
 
     @Override
     public int compare(Note note1, Note note2) {
-        return Utils.SortingColumns.valueOf(sorting.getColumnName()).compare(note1,note2,sorting.getDirection());
+        return Utils.SortingColumns.findValue(sorting.getColumnName()).compare(note1,note2,sorting.getDirection());
     }
 }

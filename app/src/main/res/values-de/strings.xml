@@ -138,16 +138,23 @@
     <string name="note_created">Neue Notiz</string>
     <string name="dialog_input_link">Verlinkung zuweisen</string>
     <string name="no_folder_permission">Zugriff auf Notizbuch abgelehnt</string>
-    <string name="pref_characteristics">Show tags</string>
-    <string name="pref_metainformation">Show metainformations</string>
-    <string name="pref_desc_metainformation">Show creation date and last modification date</string>
-    <string name="pref_column">Sorting column</string>
-    <string name="pref_direction">Sorting direction</string>
-    <string name="pref_show_sync_notifications">Show sync notifications</string>
-    <string name="pref_show_sync_notifications_summary">Notifications if notes in shared folders are changed</string>
+    <string name="pref_characteristics">Kategorien anzeigen</string>
+    <string name="pref_metainformation">Metainformationen anzeigen</string>
+    <string name="pref_desc_metainformation">Erstellungs- und Bearbeitungsdatum anzeigen</string>
+    <string name="pref_column">Feld für Sortierung</string>
+    <string name="pref_direction">Richtung der Sortierung</string>
+    <string name="pref_show_sync_notifications">Benachrichtigungen für Sync</string>
+    <string name="pref_show_sync_notifications_summary">Benachrichtigungen wenn Notizen in geteilten Notizbüchern geändert wurden</string>
     <string name="pref_header_general">Allgemein</string>
     <string name="pref_header_notifications">Benachrichtigungen</string>
     <string name="pref_header_data_sync">Synchronisation</string>
     <string name="pref_title_sync_conflict">Sync-Konfliktbehandlung</string>
     <string name="pref_title_system_sync_settings">System Sync-Einstellungen</string>
+
+    <string-array name="pref_sync_conflict_titles">
+        <item>Zuletzt geänderte Notiz</item>
+        <item>Notiz vom Server</item>
+        <item>Lokale Notiz</item>
+        <!--<item>Ask which</item>-->
+    </string-array>
 </resources>

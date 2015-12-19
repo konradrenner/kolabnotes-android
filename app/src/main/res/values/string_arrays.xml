@@ -19,4 +19,11 @@
         <item>@string/hour</item>
         <item>@string/day</item>
     </string-array>
+
+    <string-array name="pref_sync_conflict">
+        <item>LATEST</item>
+        <item>SERVER</item>
+        <item>LOCAL</item>
+        <!--<item>ASK</item>-->
+    </string-array>
 </resources>

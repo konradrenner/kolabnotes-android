@@ -168,6 +168,15 @@ public class Utils {
             }
             return arr;
         }
+
+        public static SortingColumns findValue(String value){
+            for(SortingColumns column : SortingColumns.values()){
+                if(column.toString().equalsIgnoreCase(value)){
+                    return column;
+                }
+            }
+            return SortingColumns.summary;
+        }
     }
 
     public static final String INTENT_ACCOUNT_EMAIL = "intent_account_email";

@@ -147,12 +147,6 @@
         <item>Local note</item>
         <!--<item>Ask which</item>-->
     </string-array>
-    <string-array name="pref_sync_conflict">
-        <item>LATEST</item>
-        <item>SERVER</item>
-        <item>LOCAL</item>
-        <!--<item>ASK</item>-->
-    </string-array>
 
     <string name="pref_title_system_sync_settings">System sync settings</string>
 

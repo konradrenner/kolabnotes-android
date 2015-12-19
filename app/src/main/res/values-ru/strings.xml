@@ -125,16 +125,23 @@
     <string name="note_created">Новая заметка</string>
     <string name="dialog_input_link">Прикрепите ссылку</string>
     <string name="no_folder_permission">Нет доступа для папки</string>
-    <string name="pref_characteristics">Show tags</string>
-    <string name="pref_metainformation">Show metainformations</string>
-    <string name="pref_desc_metainformation">Show creation date and last modification date</string>
-    <string name="pref_column">Sorting column</string>
-    <string name="pref_direction">Sorting direction</string>
-    <string name="pref_show_sync_notifications">Show sync notifications</string>
-    <string name="pref_show_sync_notifications_summary">Notifications if notes in shared folders are changed</string>
+    <string name="pref_characteristics">Показать метки</string>
+    <string name="pref_metainformation">Показать metainformations</string>
+    <string name="pref_desc_metainformation">Дата Показывать создание и дата последнего изменения</string>
+    <string name="pref_column">Сортировка столбца</string>
+    <string name="pref_direction">направление сортировки</string>
+    <string name="pref_show_sync_notifications">Показать уведомления синхронизации</string>
+    <string name="pref_show_sync_notifications_summary">Уведомления если ноты в общих папках изменяются</string>
     <string name="pref_header_data_sync">Syncronisation</string>
     <string name="pref_header_general">как правило</string>
     <string name="pref_header_notifications">Уведомления</string>
     <string name="pref_title_sync_conflict">Синхронизация конфликты обработки</string>
     <string name="pref_title_system_sync_settings">Настройки синхронизации системы</string>
+
+    <string-array name="pref_sync_conflict_titles">
+        <item>Последнее изменение примечание</item>
+        <item>примечание Сервер</item>
+        <item>Местное примечание</item>
+        <!--<item>Ask which</item>-->
+    </string-array>
 </resources>
