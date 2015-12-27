@@ -878,6 +878,23 @@ public class OverviewFragment extends Fragment implements NoteAdapter.NoteSelect
         return item;
     }
 
+    final SecondaryDrawerItem createNotebookForDrawer(Notebook notebook){
+        String summary = notebook.getSummary();
+
+        SecondaryDrawerItem drawerItem = new SecondaryDrawerItem();
+
+        if(notebook.isShared()){
+            SharedNotebook shared =((SharedNotebook) notebook);
+            summary = shared.getShortName();
+
+
+        }
+
+        drawerItem.withName(summary).withTag("NOTEBOOK");
+
+        return drawerItem;
+    }
+
     final synchronized void reloadData(List<Notebook> notebooks, List<Note> notes, Map<String,Tag> tags){
         mDrawer.getDrawerItems().clear();
 
