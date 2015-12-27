@@ -136,6 +136,9 @@
     <string name="pref_header_notifications">Notifications</string>
     <string name="pref_title_sync_conflict">Les conflits de synchronisation de manutention</string>
     <string name="pref_title_system_sync_settings">Paramètres de synchronisation du système</string>
+    <string name="no_write_permissions">Aucune autorisation d\'écriture dans le cahier sélectionné</string>
+    <string name="no_change_permissions">Pas de modifier les autorisations dans le cahier sélectionné</string>
+    <string name="no_create_permissions">Aucune autorisation de création dans le cahier sélectionné</string>
 
     <string-array name="pref_sync_conflict_titles">
         <item>Dernière note modifiée</item>

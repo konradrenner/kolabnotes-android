@@ -159,4 +159,7 @@
     <string name="pref_direction">Direction</string>
     <string name="pref_show_sync_notifications">Show sync notifications</string>
     <string name="pref_show_sync_notifications_summary">Show notifications if notes in shared folders are changed</string>
+    <string name="no_write_permissions">No write permissions in selected notebook</string>
+    <string name="no_change_permissions">No edit permissions in selected notebook</string>
+    <string name="no_create_permissions">No creation permission in selected notebook</string>
 </resources>

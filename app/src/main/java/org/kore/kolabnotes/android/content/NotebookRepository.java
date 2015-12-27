@@ -33,7 +33,9 @@ public class NotebookRepository {
             DatabaseHelper.COLUMN_DESCRIPTION ,
             DatabaseHelper.COLUMN_CLASSIFICATION,
             DatabaseHelper.COLUMN_DISCRIMINATOR,
-            DatabaseHelper.COLUMN_SHARED};
+            DatabaseHelper.COLUMN_SHARED,
+            DatabaseHelper.COLUMN_CREATION_ALLOWED,
+            DatabaseHelper.COLUMN_MODIFICATION_ALLOWED};
     private ModificationRepository modificationRepository;
 
     public NotebookRepository(Context context) {
@@ -59,6 +61,11 @@ public class NotebookRepository {
         values.put(DatabaseHelper.COLUMN_DESCRIPTION, note.getDescription());
         values.put(DatabaseHelper.COLUMN_CLASSIFICATION, note.getClassification().toString());
         values.put(DatabaseHelper.COLUMN_SHARED, Boolean.toString(note.isShared()));
+        if(note.isShared()) {
+            SharedNotebook shared = (SharedNotebook)note;
+            values.put(DatabaseHelper.COLUMN_CREATION_ALLOWED, Boolean.toString(shared.isNoteCreationAllowed()));
+            values.put(DatabaseHelper.COLUMN_MODIFICATION_ALLOWED, Boolean.toString(shared.isNoteModificationAllowed()));
+        }
 
         long rowId = ConnectionManager.getDatabase(context).insert(DatabaseHelper.TABLE_NOTES, null, values);
 
@@ -205,6 +212,8 @@ public class NotebookRepository {
         String description = cursor.getString(8);
         String classification = cursor.getString(9);
         boolean shared = Boolean.parseBoolean(cursor.getString(11));
+        boolean creation = Boolean.parseBoolean(cursor.getString(12));
+        boolean modification = Boolean.parseBoolean(cursor.getString(13));
 
         AuditInformation audit = new AuditInformation(new Timestamp(creationDate),new Timestamp(modificationDate));
         Identification ident = new Identification(uid,productId);
@@ -212,6 +221,8 @@ public class NotebookRepository {
         Notebook notebook;
         if(shared){
             SharedNotebook nb = new SharedNotebook(ident,audit, Note.Classification.valueOf(classification),summary);
+            nb.setNoteCreationAllowed(creation);
+            nb.setNoteModificationAllowed(modification);
             if(nb.isGlobalShared()){
                 nb.setShortName(summary);
             }else{

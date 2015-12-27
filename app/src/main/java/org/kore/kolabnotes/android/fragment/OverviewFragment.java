@@ -887,6 +887,13 @@ public class OverviewFragment extends Fragment implements NoteAdapter.NoteSelect
             SharedNotebook shared =((SharedNotebook) notebook);
             summary = shared.getShortName();
 
+            if(shared.isNoteCreationAllowed() && !shared.isNoteModificationAllowed()){
+                drawerItem.withBadgeBackgroundResource(R.drawable.ic_note_add_black_24dp).withBadge("   ");
+            }else if(!shared.isNoteCreationAllowed() && !shared.isNoteModificationAllowed()){
+                drawerItem.withBadgeBackgroundResource(R.drawable.ic_lock_black_24dp).withBadge("   ");
+            }else if(!shared.isNoteCreationAllowed() && shared.isNoteModificationAllowed()){
+                drawerItem.withBadgeBackgroundResource(R.drawable.ic_create_black_24dp).withBadge("   ");
+            }
 
         }
 
@@ -907,13 +914,7 @@ public class OverviewFragment extends Fragment implements NoteAdapter.NoteSelect
         //Query the notebooks
         for (Notebook notebook : notebooks) {
 
-            String summary = notebook.getSummary();
-
-            if(notebook.isShared()){
-                summary = ((SharedNotebook)notebook).getShortName();
-            }
-
-            mDrawer.getDrawerItems().add(new SecondaryDrawerItem().withName(summary).withTag("NOTEBOOK"));
+            mDrawer.getDrawerItems().add(createNotebookForDrawer(notebook));
         }
 
         orderDrawerItems(tags, mDrawer);
@@ -1081,7 +1082,7 @@ public class OverviewFragment extends Fragment implements NoteAdapter.NoteSelect
             Notebook nb = new Notebook(ident,audit, Note.Classification.PUBLIC, value);
             nb.setDescription(value);
             if(notebookRepository.insert(activeAccount.getAccount(), activeAccount.getRootFolder(), nb)) {
-                mDrawer.addItem(new SecondaryDrawerItem().withName(value).withTag("NOTEBOOK"));
+                mDrawer.addItem(createNotebookForDrawer(nb));
 
                 orderDrawerItems(tagRepository.getAllAsMap(activeAccount.getAccount(),activeAccount.getRootFolder()), mDrawer, value);
             }
@@ -1127,6 +1128,7 @@ public class OverviewFragment extends Fragment implements NoteAdapter.NoteSelect
 
         @Override
         public void run() {
+            ActiveAccount activeAccount = activeAccountRepository.getActiveAccount();
             ArrayList<IDrawerItem> items = drawer.getDrawerItems();
 
             List<String> tags = new ArrayList<>();
@@ -1213,7 +1215,7 @@ public class OverviewFragment extends Fragment implements NoteAdapter.NoteSelect
             }
             BaseDrawerItem selectedItem = null;
             for(String notebook : notebooks){
-                BaseDrawerItem item = new SecondaryDrawerItem().withName(notebook).withTag("NOTEBOOK");
+                BaseDrawerItem item = createNotebookForDrawer(notebookRepository.getBySummary(activeAccount.getAccount(),activeAccount.getRootFolder(),notebook));
                 item.withTextColorRes(R.color.abc_primary_text_material_light);
                 drawer.getDrawerItems().add(item);
 

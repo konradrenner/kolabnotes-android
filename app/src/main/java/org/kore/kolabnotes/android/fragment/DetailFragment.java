@@ -280,7 +280,7 @@ public class DetailFragment extends Fragment{
             toolbar.setBackgroundColor(getResources().getColor(R.color.theme_default_primary));
         }
 
-        Utils.setToolbarTextAndIconColor(activity, toolbar,lightText);
+        Utils.setToolbarTextAndIconColor(activity, toolbar, lightText);
     }
 
     void setHtml(String text){
@@ -329,7 +329,18 @@ public class DetailFragment extends Fragment{
                 String summary = notebook.getSummary();
 
                 if(notebook.isShared()){
-                    summary = ((SharedNotebook)notebook).getShortName();
+                    SharedNotebook shared = (SharedNotebook)notebook;
+                    summary = shared.getShortName();
+
+                    if(!shared.isNoteCreationAllowed() && !shared.isNoteModificationAllowed()){
+                        Toast.makeText(activity, R.string.no_write_permissions, Toast.LENGTH_LONG).show();
+                    }else if(shared.isNoteCreationAllowed() && !shared.isNoteModificationAllowed()){
+                        if(note != null) {
+                            Toast.makeText(activity, R.string.no_change_permissions, Toast.LENGTH_LONG).show();
+                        }
+                    }else if(!shared.isNoteCreationAllowed() && shared.isNoteModificationAllowed()){
+                        Toast.makeText(activity, R.string.no_create_permissions, Toast.LENGTH_LONG).show();
+                    }
                 }
 
                 String notebookSummary = summary;
@@ -935,7 +946,7 @@ public class DetailFragment extends Fragment{
 
         builder.setView(view);
 
-        builder.setPositiveButton(R.string.ok,new CreateNotebookButtonListener((EditText)view.findViewById(R.id.dialog_text_input_field)));
+        builder.setPositiveButton(R.string.ok, new CreateNotebookButtonListener((EditText) view.findViewById(R.id.dialog_text_input_field)));
         builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -1016,6 +1027,13 @@ public class DetailFragment extends Fragment{
 
                 Notebook book = notebookRepository.getBySummary(activeAccountRepository.getActiveAccount().getAccount(), activeAccountRepository.getActiveAccount().getRootFolder(), notebookName);
 
+                if(book.isShared()){
+                    if(!((SharedNotebook)book).isNoteCreationAllowed()){
+                        Toast.makeText(activity, R.string.no_create_permissions, Toast.LENGTH_LONG).show();
+                        return;
+                    }
+                }
+
                 noteRepository.insert(activeAccountRepository.getActiveAccount().getAccount(), activeAccountRepository.getActiveAccount().getRootFolder(), note, book.getIdentification().getUid());
                 noteTagRepository.delete(activeAccountRepository.getActiveAccount().getAccount(), activeAccountRepository.getActiveAccount().getRootFolder(), uuid);
                 for (String tag : selectedTags) {
@@ -1030,6 +1048,8 @@ public class DetailFragment extends Fragment{
                 note.getAuditInformation().setLastModificationDate(System.currentTimeMillis());
 
                 Notebook book = notebookRepository.getBySummary(activeAccountRepository.getActiveAccount().getAccount(), activeAccountRepository.getActiveAccount().getRootFolder(), notebookName);
+
+                if (checkModificationPermissions(book)) return;
 
                 noteRepository.update(activeAccountRepository.getActiveAccount().getAccount(), activeAccountRepository.getActiveAccount().getRootFolder(), note, book.getIdentification().getUid());
 
@@ -1063,6 +1083,34 @@ public class DetailFragment extends Fragment{
         }
     }
 
+    private boolean checkModificationPermissions(Notebook book) {
+        String oldNBUid = noteRepository.getUIDofNotebook(activeAccountRepository.getActiveAccount().getAccount(), activeAccountRepository.getActiveAccount().getRootFolder(),note.getIdentification().getUid());
+
+        if(book.isShared() || (oldNBUid != null && !oldNBUid.equals(book.getIdentification().getUid()))){
+            if(!oldNBUid.equals(book.getIdentification().getUid())){
+                //notebook got changed, so one needs the modification rights in the old an creation right in the new book
+                Notebook oldOne = notebookRepository.getByUID(activeAccountRepository.getActiveAccount().getAccount(), activeAccountRepository.getActiveAccount().getRootFolder(), oldNBUid);
+                if(oldOne.isShared()){
+                    if(!((SharedNotebook)oldOne).isNoteModificationAllowed()){
+                        Toast.makeText(activity, R.string.no_change_permissions, Toast.LENGTH_LONG).show();
+                        return true;
+                    }
+                }
+
+                if(!((SharedNotebook)book).isNoteCreationAllowed()){
+                    Toast.makeText(activity, R.string.no_create_permissions, Toast.LENGTH_LONG).show();
+                    return true;
+                }
+            }else {
+                if(!((SharedNotebook)book).isNoteModificationAllowed()){
+                    Toast.makeText(activity, R.string.no_change_permissions, Toast.LENGTH_LONG).show();
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     /**
      * Android WebView adds line terminators to inline images, these must be deleted
      * @param html
@@ -1084,7 +1132,7 @@ public class DetailFragment extends Fragment{
 
             String altContent = html.substring(startOfAltContent,endOfAlt);
 
-            repaired.replace(withoutTag,endOfImage,base64Images.get(altContent));
+            repaired.replace(withoutTag, endOfImage,base64Images.get(altContent));
 
             start = endOfAlt;
         }
@@ -1123,6 +1171,15 @@ public class DetailFragment extends Fragment{
 
     void deleteNote(){
         if(note != null){
+            Notebook book = notebookRepository.getByUID(activeAccountRepository.getActiveAccount().getAccount(), activeAccountRepository.getActiveAccount().getRootFolder(), noteRepository.getUIDofNotebook(activeAccountRepository.getActiveAccount().getAccount(), activeAccountRepository.getActiveAccount().getRootFolder(), note.getIdentification().getUid()));
+
+            if(book.isShared()){
+                if(!((SharedNotebook)book).isNoteModificationAllowed()){
+                    Toast.makeText(activity, R.string.no_change_permissions, Toast.LENGTH_LONG).show();
+                    return;
+                }
+            }
+
             AlertDialog.Builder builder = new AlertDialog.Builder(activity);
 
             builder.setTitle(R.string.dialog_delete_note);

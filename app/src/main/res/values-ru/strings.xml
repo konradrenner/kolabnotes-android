@@ -137,6 +137,9 @@
     <string name="pref_header_notifications">Уведомления</string>
     <string name="pref_title_sync_conflict">Синхронизация конфликты обработки</string>
     <string name="pref_title_system_sync_settings">Настройки синхронизации системы</string>
+    <string name="no_write_permissions">Нет права на запись в выбранный ноутбук</string>
+    <string name="no_change_permissions">Нет редактировать разрешения в выбранной записной книжке</string>
+    <string name="no_create_permissions">Нет доступа создание в выбранном ноутбуке</string>
 
     <string-array name="pref_sync_conflict_titles">
         <item>Последнее изменение примечание</item>

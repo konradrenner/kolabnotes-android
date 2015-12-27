@@ -153,6 +153,9 @@
     <string name="title_dialog_search">Ricerca Nota</string>
     <string name="title_ok">OK</string>
     <string name="title_share">Quota</string>
+    <string name="no_write_permissions">Non ci sono i permessi di scrittura in notebook selezionati</string>
+    <string name="no_change_permissions">Nessun permesso modificare in notebook selezionati</string>
+    <string name="no_create_permissions">Nessuna autorizzazione creazione nel taccuino selezionato</string>
 
     <string-array name="pref_sync_conflict_titles">
         <item>Ultima nota modifica</item>

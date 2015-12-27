@@ -29,6 +29,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String COLUMN_SUMMARY = "summary";
     public static final String COLUMN_DESCRIPTION = "description";
     public static final String COLUMN_SHARED = "shared";
+    public static final String COLUMN_MODIFICATION_ALLOWED = "mod_allowed";
+    public static final String COLUMN_CREATION_ALLOWED = "create_allowed";
 
     public static final String DESCRIMINATOR_NOTEBOOK = "NOTEBOOK";
     public static final String DESCRIMINATOR_NOTE = "NOTE";
@@ -47,7 +49,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String COLUMN_MODIFICATIONTYPE = "modificationType";
 
     private static final String DATABASE_NAME = "kolabnotes.db";
-    private static final int DATABASE_VERSION = 4;
+    private static final int DATABASE_VERSION = 5;
 
     // Database creation sql statement
     private static final String CREATE_NOTES = "create table "
@@ -65,6 +67,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + COLUMN_COLOR + " text, "
             + COLUMN_SUMMARY + " text not null, "
             + COLUMN_SHARED + " text, " //false or true
+            + COLUMN_MODIFICATION_ALLOWED + " text, " //false or true
+            + COLUMN_CREATION_ALLOWED + " text, " //false or true
             + COLUMN_DESCRIPTION + " text);";
 
     private static final String CREATE_TAGS = "create table "
@@ -137,6 +141,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         if(oldVersion < 4){
             db.execSQL("ALTER TABLE "+TABLE_NOTES+" ADD COLUMN "+COLUMN_SHARED+" text ");
+        }
+
+        if(oldVersion < 5){
+            db.execSQL("ALTER TABLE "+TABLE_NOTES+" ADD COLUMN "+COLUMN_MODIFICATION_ALLOWED+" text ");
+            db.execSQL("ALTER TABLE "+TABLE_NOTES+" ADD COLUMN "+COLUMN_CREATION_ALLOWED+" text ");
         }
     }
 
