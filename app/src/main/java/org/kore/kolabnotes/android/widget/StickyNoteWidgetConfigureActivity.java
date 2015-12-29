@@ -37,7 +37,7 @@ public class StickyNoteWidgetConfigureActivity extends Activity {
     public static final String PREF_PREFIX_KEY_NOTE = "appwidget_note_sticky_";
     public static final String PREF_PREFIX_KEY_ACCOUNT = "appwidget_account_sticky_";
 
-    private NoteRepository noteRepository = new NoteRepository(this);
+    private NoteRepository noteRepository;
     private AccountManager mAccountManager;
     private Spinner accountSpinner;
     private Spinner noteSpinner;
@@ -61,6 +61,8 @@ public class StickyNoteWidgetConfigureActivity extends Activity {
 
         setContentView(R.layout.sticky_note_widget_configure);
         findViewById(R.id.add_button).setOnClickListener(mOnClickListener);
+
+        noteRepository = new NoteRepository(this);
 
         accountSpinner = (Spinner) findViewById(R.id.spinner_account);
         noteSpinner = (Spinner) findViewById(R.id.spinner_note);

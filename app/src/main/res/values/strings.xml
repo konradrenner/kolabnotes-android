@@ -20,7 +20,7 @@
     <string name="classification">Classification</string>
     <string name="creationDate">Created</string>
     <string name="modificationDate">Last modified</string>
-    <string name="tags">Tags</string>
+    <string name="tags">Tags:</string>
     <string name="notags">No Tags</string>
     <string name="radio_public">Public</string>
     <string name="radio_confidential">Confidential</string>
@@ -66,26 +66,28 @@
     <string name="dialog_change_classification">Edit Classification</string>
     <string name="dialog_change_tags">Edit Tags</string>
     <string name="no_nb_selected">No notebook selected</string>
+    <string name="local_account_change">Local account cannot be changed</string>
     <string name="add">add</string>
     <string name="title_edit_tag">Edit Tags</string>
     <string name="dialog_question_delete">Do you really want to delete this note?</string>
     <string name="dialog_question_cancel">All changes will be discarded, are you sure?</string>
     <string name="account_name">Account name</string>
     <string name="imap_root_folder">IMAP root folder (default is Notes)</string>
-    <string name="imap_server_url">IMAP server url (without prefix)</string>
+    <string name="imap_server_url">imap.myserver.com</string>
     <string name="port_number">Port number (default is 993)</string>
 
     <string name="error_generic">An error occurred</string>
     <string name="error_duplicate_account">Could not create account (account with this name already existing?)</string>
     <string name="enable_ssl">SSL enabled</string>
     <string name="title_add_account">Add Account</string>
+    <string name="title_update_account">Change Account</string>
     <string name="appwidget_text">EXAMPLE</string>
     <string name="configure">Configure</string>
     <string name="add_widget">Add widget</string>
     <string name="title_colorpicker">Choose Color</string>
     <string name="button_add">button_add</string>
     <string name="kolab_enabled">Kolab extensions</string>
-    <string name="sync_intervall">Sync intervall in hours (default 24)</string>
+    <string name="sync_intervall">Sync intervall (default 24)</string>
     <string name="note_not_found">Note not found!</string>
     <string name="create_or_select_text">Select or create a note</string>
     <string name="select_or_create_hint">select or create note icon</string>
@@ -100,4 +102,64 @@
     <string name="radio_asc">Ascending</string>
     <string name="title_dialog_sorting">Change sorting</string>
     <string name="color">Color</string>
+    <string name="account_choose_title">Choose an account</string>
+    <string name="select_button">Select</string>
+    <string name="extended_options" >More options</string>
+
+    <string name="day">Day</string>
+    <string name="hour">Hour</string>
+    <string name="minute">Minute</string>
+    <string name="title_metainformation">Metainformation</string>
+    <string name="productID">Product ID</string>
+    <string name="uid">UID</string>
+    <string name="title_characteristics">Characteristics</string>
+    <string name="title_choose_tag_color">Choose tag color</string>
+    <string name="no_tag_selected">No tag selected</string>
+    <string name="remove">Remove</string>
+    <string name="shared_folders">Shared notebooks</string>
+    <string name="changed_content_shared_folder">Change in shared notebook</string>
+    <string name="note_changed">Note got changed</string>
+    <string name="in_notebook">in notebook</string>
+    <string name="note_created">New note</string>
+    <string name="dialog_input_link">Attach link</string>
+    <string name="no_folder_permission">No permission for folder</string>
+    <string name="title_activity_settings">Settings</string>
+
+    <!-- Strings related to Settings -->
+    <!-- General settings -->
+    <string name="pref_header_general">General</string>
+    <string-array name="pref_direction_titles">
+        <item>@string/radio_asc</item>
+        <item>@string/radio_desc</item>
+    </string-array>
+    <string-array name="pref_direction_values">
+        <item>ASC</item>
+        <item>DESC</item>
+    </string-array>
+
+    <!-- Settings for Data & Sync -->
+    <string name="pref_header_data_sync">Data &amp; sync</string>
+
+    <string name="pref_title_sync_conflict">Sync conflicts handling</string>
+    <string-array name="pref_sync_conflict_titles">
+        <item>Last modified note</item>
+        <item>Server note</item>
+        <item>Local note</item>
+        <!--<item>Ask which</item>-->
+    </string-array>
+
+    <string name="pref_title_system_sync_settings">System sync settings</string>
+
+    <!-- Settings for Notifications -->
+    <string name="pref_header_notifications">Notifications</string>
+    <string name="pref_characteristics">Show tags</string>
+    <string name="pref_metainformation">Show metainformations</string>
+    <string name="pref_desc_metainformation">Show creation date and last modification date</string>
+    <string name="pref_column">Column</string>
+    <string name="pref_direction">Direction</string>
+    <string name="pref_show_sync_notifications">Show sync notifications</string>
+    <string name="pref_show_sync_notifications_summary">Show notifications if notes in shared folders are changed</string>
+    <string name="no_write_permissions">No write permissions in selected notebook</string>
+    <string name="no_change_permissions">No edit permissions in selected notebook</string>
+    <string name="no_create_permissions">No creation permission in selected notebook</string>
 </resources>

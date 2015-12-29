@@ -28,6 +28,24 @@ public class NoteTagRepository {
             ", note."+DatabaseHelper.COLUMN_CLASSIFICATION+
             ", note."+DatabaseHelper.COLUMN_COLOR;
 
+    private final static String TAG_COLUMNS = "tag."+DatabaseHelper.COLUMN_TAG_UID+
+            ", tag."+DatabaseHelper.COLUMN_PRODUCTID+
+            ", tag."+DatabaseHelper.COLUMN_CREATIONDATE+
+            ", tag."+DatabaseHelper.COLUMN_MODIFICATIONDATE+
+            ", tag."+DatabaseHelper.COLUMN_TAGNAME+
+            ", tag."+DatabaseHelper.COLUMN_PRIORITY+
+            ", tag."+DatabaseHelper.COLUMN_COLOR+
+            ", tag."+DatabaseHelper.COLUMN_UID;
+
+    private final static String QUERY_TAGS_WITH_NOTEID = "SELECT "+TAG_COLUMNS+" from "+DatabaseHelper.TABLE_TAGS+" tag, "+DatabaseHelper.TABLE_NOTE_TAGS+" notetags " +
+            " where notetags."+DatabaseHelper.COLUMN_ACCOUNT+" = ? " +
+            " and notetags."+DatabaseHelper.COLUMN_ROOT_FOLDER+" = ? " +
+            " and notetags."+DatabaseHelper.COLUMN_IDNOTE+" = ? " +
+            " and notetags."+DatabaseHelper.COLUMN_IDTAG+" = tag."+ DatabaseHelper.COLUMN_TAGNAME+" " +
+            " and notetags."+DatabaseHelper.COLUMN_ACCOUNT+" = tag."+ DatabaseHelper.COLUMN_ACCOUNT+" "+
+            " and notetags."+DatabaseHelper.COLUMN_ROOT_FOLDER+" = tag."+ DatabaseHelper.COLUMN_ROOT_FOLDER+" ";
+
+
     private final static String QUERY_NOTES = "SELECT "+NOTES_COLUMNS+" from "+DatabaseHelper.TABLE_NOTES+" note, "+DatabaseHelper.TABLE_NOTE_TAGS+" notetags " +
             " where notetags."+DatabaseHelper.COLUMN_ACCOUNT+" = ? " +
             " and notetags."+DatabaseHelper.COLUMN_ROOT_FOLDER+" = ? " +
@@ -38,8 +56,7 @@ public class NoteTagRepository {
 
 
     // Database fields
-    private SQLiteDatabase database;
-    private DatabaseHelper dbHelper;
+    private Context context;
     private String[] allColumns = { DatabaseHelper.COLUMN_ID,
             DatabaseHelper.COLUMN_IDTAG,
             DatabaseHelper.COLUMN_ACCOUNT,
@@ -47,108 +64,93 @@ public class NoteTagRepository {
             DatabaseHelper.COLUMN_IDNOTE};
 
     public NoteTagRepository(Context context) {
-        dbHelper = new DatabaseHelper(context);
-    }
-
-    public void open() {
-        database = dbHelper.getWritableDatabase();
-    }
-
-    public void openReadonly() {
-        database = dbHelper.getReadableDatabase();
-    }
-
-    public void close() {
-        dbHelper.close();
+        this.context = context;
     }
 
     public void insert(String account, String rootFolder, String uidNote, String tagname) {
-        open();
         ContentValues values = new ContentValues();
         values.put(DatabaseHelper.COLUMN_IDNOTE,uidNote);
         values.put(DatabaseHelper.COLUMN_IDTAG,tagname);
         values.put(DatabaseHelper.COLUMN_ROOT_FOLDER,rootFolder);
-        values.put(DatabaseHelper.COLUMN_ACCOUNT,account);
+        values.put(DatabaseHelper.COLUMN_ACCOUNT, account);
 
-        database.insert(DatabaseHelper.TABLE_NOTE_TAGS, null,values);
-        close();
+        ConnectionManager.getDatabase(context).insert(DatabaseHelper.TABLE_NOTE_TAGS, null, values);
     }
 
     public void delete(String account, String rootFolder, String uidNote, String tagname) {
-        open();
-
-        database.delete(DatabaseHelper.TABLE_NOTE_TAGS,
+        ConnectionManager.getDatabase(context).delete(DatabaseHelper.TABLE_NOTE_TAGS,
                 DatabaseHelper.COLUMN_ACCOUNT + " = '" + account + "' AND " +
                         DatabaseHelper.COLUMN_ROOT_FOLDER + " = '" + rootFolder + "' AND " +
                         DatabaseHelper.COLUMN_IDNOTE + " = '" + uidNote + "' AND " +
                         DatabaseHelper.COLUMN_IDTAG + " = '" + tagname + "' ",
                 null);
-        close();
     }
 
     public void delete(String account, String rootFolder, String uidNote) {
-        open();
-
-        database.delete(DatabaseHelper.TABLE_NOTE_TAGS,
+        ConnectionManager.getDatabase(context).delete(DatabaseHelper.TABLE_NOTE_TAGS,
                 DatabaseHelper.COLUMN_ACCOUNT + " = '" + account + "' AND " +
                         DatabaseHelper.COLUMN_ROOT_FOLDER + " = '" + rootFolder + "' AND " +
                         DatabaseHelper.COLUMN_IDNOTE + " = '" + uidNote + "' ",
                 null);
-        close();
     }
 
-    public List<String> getTagsFor(String account,String rootFolder, String noteuid) {
-        openReadonly();
+    public List<Tag> getTagsFor(String account,String rootFolder, String noteuid) {
+        List<Tag> tags = new ArrayList<Tag>();
+
+        Cursor cursor = ConnectionManager.getDatabase(context).rawQuery(QUERY_TAGS_WITH_NOTEID, new String[]{account, rootFolder, noteuid});
+
+        while (cursor.moveToNext()) {
+            tags.add(cursorToTag(cursor));
+        }
+        cursor.close();
+        return tags;
+    }
+
+    public List<String> getTagNamesFor(String account,String rootFolder, String noteuid) {
         List<String> tags = new ArrayList<String>();
 
-        Cursor cursor = database.query(DatabaseHelper.TABLE_NOTE_TAGS,
+        Cursor cursor = ConnectionManager.getDatabase(context).query(DatabaseHelper.TABLE_NOTE_TAGS,
                 allColumns,
-                DatabaseHelper.COLUMN_ACCOUNT + " = '" + account+"' AND "+
-                DatabaseHelper.COLUMN_ROOT_FOLDER + " = '" + rootFolder+"' AND "+
-                DatabaseHelper.COLUMN_IDNOTE+" = '"+noteuid+"' ",
+                DatabaseHelper.COLUMN_ACCOUNT + " = '" + account + "' AND " +
+                        DatabaseHelper.COLUMN_ROOT_FOLDER + " = '" + rootFolder + "' AND " +
+                        DatabaseHelper.COLUMN_IDNOTE + " = '" + noteuid + "' ",
                 null,
                 null,
                 null,
                 null);
 
         while (cursor.moveToNext()) {
-            tags.add(cursorToTag(cursor));
+            tags.add(cursorToTagName(cursor));
         }
         cursor.close();
-        close();
         return tags;
     }
 
     void cleanAccount(String account, String rootFolder){
-        open();
-        database.delete(DatabaseHelper.TABLE_NOTE_TAGS,
-                DatabaseHelper.COLUMN_ACCOUNT + " = '" + account+"' AND "+
-                DatabaseHelper.COLUMN_ROOT_FOLDER + " = '" + rootFolder+"' ",
+        ConnectionManager.getDatabase(context).delete(DatabaseHelper.TABLE_NOTE_TAGS,
+                DatabaseHelper.COLUMN_ACCOUNT + " = '" + account + "' AND " +
+                        DatabaseHelper.COLUMN_ROOT_FOLDER + " = '" + rootFolder + "' ",
                 null);
-
-        close();
     }
 
     public List<Note> getNotesWith(String account,String rootFolder,String tagname, NoteSorting noteSorting) {
-        openReadonly();
         List<Note> notes = new ArrayList<Note>();
 
-        Cursor cursor = database.rawQuery(QUERY_NOTES+" order by "+ noteSorting.getColumnName()+" "+ noteSorting.getDirection(),new String[]{account,rootFolder,tagname});
+        Cursor cursor = ConnectionManager.getDatabase(context).rawQuery(QUERY_NOTES + " order by " + noteSorting.getColumnName() + " " + noteSorting.getDirection(), new String[]{account, rootFolder, tagname});
 
 
         while (cursor.moveToNext()) {
             notes.add(cursorToNote(cursor));
         }
         cursor.close();
-        close();
 
         //load the tags for each note
         for(Note note : notes){
-            List<String> tags = getTagsFor(account, rootFolder, note.getIdentification().getUid());
+            List<Tag> tags = getTagsFor(account, rootFolder, note.getIdentification().getUid());
 
             if (tags != null && tags.size() > 0) {
-                for(String tag : tags){
-                    note.addCategories(new Tag(tag));
+                for(Tag tag : tags){
+                    note.addCategories(tag);
                 }
             }
         }
@@ -156,7 +158,7 @@ public class NoteTagRepository {
         return notes;
     }
 
-    private String cursorToTag(Cursor cursor) {
+    private String cursorToTagName(Cursor cursor) {
         return cursor.getString(1);
     }
 
@@ -176,5 +178,30 @@ public class NoteTagRepository {
         note.setColor(Colors.getColor(color));
 
         return note;
+    }
+
+    private Tag cursorToTag(Cursor cursor){
+        String uid = cursor.getString(0);
+        String productId = cursor.getString(1);
+        Long creationDate = cursor.getLong(2);
+        Long modificationDate = cursor.getLong(3);
+        String tagName = cursor.getString(4);
+        int priority = cursor.getInt(5);
+        String color = cursor.getString(6);
+        String oldUID = cursor.getString(7);
+
+        if(uid == null){
+            uid = oldUID;
+        }
+
+        AuditInformation audit = new AuditInformation(new Timestamp(creationDate),new Timestamp(modificationDate));
+        Identification ident = new Identification(uid,productId);
+
+        Tag tag = new Tag(ident,audit);
+        tag.setColor(Colors.getColor(color));
+        tag.setName(tagName);
+        tag.setPriority(priority);
+
+        return tag;
     }
 }

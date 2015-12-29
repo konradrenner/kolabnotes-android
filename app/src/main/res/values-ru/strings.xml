@@ -8,10 +8,12 @@
     <string name="add">Добавить</string>
     <string name="add_widget">Добавить виджет</string>
     <string name="appwidget_text">ПРИМЕР</string>
+    <string name="title_update_account">Изменение учетной записи</string>
     <string name="button_add">button_add</string>
     <string name="cancel">Отменить</string>
     <string name="classification">Группа</string>
     <string name="color">Цвет</string>
+    <string name="local_account_change">Местное счет не может быть изменен</string>
     <string name="configure">Настроить</string>
     <string name="create_or_select_text">Выбрать или создать заметку</string>
     <string name="creationDate">Создана</string>
@@ -52,7 +54,7 @@
     <string name="error_invalid_password">Пароль слишком короткий</string>
     <string name="hello_world">Привет, мир!</string>
     <string name="imap_root_folder">Корневая папака IMAP (по умолчанию Заметки)</string>
-    <string name="imap_server_url">URL сервера IMAP (без префикса)</string>
+    <string name="imap_server_url">imap.myserver.com</string>
     <string name="kolab_enabled">Расширения Kolab</string>
     <string name="login_label">Войти</string>
     <string name="modificationDate">Последнее изменение</string>
@@ -65,20 +67,6 @@
     <string name="note_saved">Заметка сохранена</string>
     <string name="ok">Ок</string>
     <string name="port_number">Номер порта (по умолчанию 993)</string>
-    <string name="pref_default_display_name">Иван Иванов</string>
-    <string name="pref_description_social_recommendations">Рекомендации для людей на основе вашей истории сообщений</string>
-    <string name="pref_header_data_sync">Синхронизация данных</string>
-    <string name="pref_header_general">Общее</string>
-    <string name="pref_header_notifications">Уведомления</string>
-    <string name="pref_ringtone_silent">Без звука</string>
-    <string name="pref_title_add_friends_to_messages">Добавить друзей</string>
-    <string name="pref_title_display_name">Отображаемое имя</string>
-    <string name="pref_title_new_message_notifications">Новое сообщение</string>
-    <string name="pref_title_ringtone">Мелодия</string>
-    <string name="pref_title_social_recommendations">Включить социальные рекомендации</string>
-    <string name="pref_title_sync_frequency">Частота синхронизации</string>
-    <string name="pref_title_system_sync_settings">Настройки синхронизации</string>
-    <string name="pref_title_vibrate">Вибрация</string>
     <string name="prompt_email">E-mail</string>
     <string name="prompt_password">Пароль</string>
     <string name="radio_asc">По возрастанию</string>
@@ -95,8 +83,8 @@
     <string name="sticky_note_name">Kolab стикеры</string>
     <string name="summary_text">Большой текст</string>
     <string name="sync_failed">Ошибка синхронизации</string>
-    <string name="sync_intervall">Интервал синхронизации в часах (по умолчанию 24)</string>
-    <string name="tags">Метки</string>
+    <string name="sync_intervall">Интервал синхронизации (по умолчанию 24)</string>
+    <string name="tags">Метки:</string>
     <string name="text_description">Средний текст</string>
     <string name="text_summary">Название</string>
     <string name="title_activity_kolab_login">Вход</string>
@@ -116,4 +104,47 @@
     <string name="title_share">Поделиться</string>
     <string name="widget_allnotes">Все заметки аккаунта</string>
     <string name="yes">Да</string>
+    <string name="account_choose_title">Выберите учетную запись</string>
+    <string name="select_button">выбрать</string>
+    <string name="extended_options" >Другие варианты</string>
+
+    <string name="day">день</string>
+    <string name="hour">час</string>
+    <string name="minute">минут</string>
+    <string name="title_metainformation">метаинформации</string>
+    <string name="productID">Код товара</string>
+    <string name="uid">UID</string>
+    <string name="title_characteristics">характеристика</string>
+    <string name="title_choose_tag_color">Выберите цвет тегов</string>
+    <string name="no_tag_selected">Нет тегов выбран</string>
+    <string name="remove">Удалить</string>
+    <string name="shared_folders">Общие записные книжки</string>
+    <string name="changed_content_shared_folder">Изменение общей записной книжке</string>
+    <string name="note_changed">Примечание были изменены</string>
+    <string name="in_notebook">в записной книжке</string>
+    <string name="note_created">Новая заметка</string>
+    <string name="dialog_input_link">Прикрепите ссылку</string>
+    <string name="no_folder_permission">Нет доступа для папки</string>
+    <string name="pref_characteristics">Показать метки</string>
+    <string name="pref_metainformation">Показать metainformations</string>
+    <string name="pref_desc_metainformation">Дата Показывать создание и дата последнего изменения</string>
+    <string name="pref_column">Сортировка столбца</string>
+    <string name="pref_direction">направление сортировки</string>
+    <string name="pref_show_sync_notifications">Показать уведомления синхронизации</string>
+    <string name="pref_show_sync_notifications_summary">Уведомления если ноты в общих папках изменяются</string>
+    <string name="pref_header_data_sync">Syncronisation</string>
+    <string name="pref_header_general">как правило</string>
+    <string name="pref_header_notifications">Уведомления</string>
+    <string name="pref_title_sync_conflict">Синхронизация конфликты обработки</string>
+    <string name="pref_title_system_sync_settings">Настройки синхронизации системы</string>
+    <string name="no_write_permissions">Нет права на запись в выбранный ноутбук</string>
+    <string name="no_change_permissions">Нет редактировать разрешения в выбранной записной книжке</string>
+    <string name="no_create_permissions">Нет доступа создание в выбранном ноутбуке</string>
+
+    <string-array name="pref_sync_conflict_titles">
+        <item>Последнее изменение примечание</item>
+        <item>примечание Сервер</item>
+        <item>Местное примечание</item>
+        <!--<item>Ask which</item>-->
+    </string-array>
 </resources>

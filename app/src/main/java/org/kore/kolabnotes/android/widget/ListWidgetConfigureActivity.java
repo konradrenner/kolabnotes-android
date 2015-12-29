@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -16,6 +17,7 @@ import android.widget.RadioButton;
 import android.widget.Spinner;
 
 import org.kore.kolab.notes.Notebook;
+import org.kore.kolab.notes.SharedNotebook;
 import org.kore.kolabnotes.android.R;
 import org.kore.kolabnotes.android.Utils;
 import org.kore.kolabnotes.android.content.DatabaseHelper;
@@ -272,7 +274,13 @@ public class ListWidgetConfigureActivity extends Activity {
         String[] notebookArr = new String[notebooks.size()+1];
         notebookArr[0] = getResources().getString(R.string.no_selection);
         for(int i=0; i<notebooks.size();i++){
-            notebookArr[i+1] = notebooks.get(i).getSummary();
+            String summary = notebooks.get(i).getSummary();
+
+            if(notebooks.get(i).isShared()){
+                summary = ((SharedNotebook)notebooks.get(i)).getShortName();
+            }
+
+            notebookArr[i+1] = summary;
         }
 
         ArrayAdapter<CharSequence> adapter = new ArrayAdapter<CharSequence>(this, R.layout.widget_config_spinner_item, notebookArr);
@@ -297,7 +305,21 @@ public class ListWidgetConfigureActivity extends Activity {
     }
 
     void updateTagSpinner(){
-        List<String> tags = tagRepository.getAll();
+        String rootFolder;
+        String email;
+        if(selectedAccount == null){
+            rootFolder = "Notes";
+            email = "local";
+        }else{
+            rootFolder = mAccountManager.getUserData(selectedAccount,AuthenticatorActivity.KEY_ROOT_FOLDER);
+            email = mAccountManager.getUserData(selectedAccount,AuthenticatorActivity.KEY_EMAIL);
+        }
+
+        List<String> tags = tagRepository.getAllTagNames(email,rootFolder);
+
+        Log.d("updateTagSpinner","email:"+email);
+        Log.d("updateTagSpinner","rootFolder:"+rootFolder);
+        Log.d("updateTagSpinner","tags:"+tags);
 
         Collections.sort(tags);
 

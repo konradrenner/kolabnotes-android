@@ -3,6 +3,7 @@ package org.kore.kolabnotes.android;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.appwidget.AppWidgetManager;
 import android.content.ComponentName;
 import android.content.Context;
@@ -10,18 +11,27 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.graphics.ColorFilter;
+import android.graphics.ColorMatrixColorFilter;
 import android.graphics.Outline;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.preference.PreferenceManager;
+import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.ViewOutlineProvider;
+import android.view.ViewTreeObserver;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Spinner;
 
+import org.kore.kolab.notes.Color;
 import org.kore.kolab.notes.Note;
 import org.kore.kolab.notes.Tag;
 import org.kore.kolabnotes.android.content.AccountIdentifier;
@@ -30,9 +40,17 @@ import org.kore.kolabnotes.android.security.AuthenticatorActivity;
 import org.kore.kolabnotes.android.widget.ListWidget;
 import org.kore.kolabnotes.android.widget.StickyNoteWidget;
 
-import java.util.Objects;
+import java.sql.Timestamp;
+import java.util.ArrayList;
 
 public class Utils {
+
+    private static final int CYAN = 210;
+    private static final int RED = 0;
+    private static final int RED_ORANGE = 20;
+    private static final int HUE = 0;
+    private static final int SATURATION = 1;
+    private static final int BRIGHTNESS = 2;
 
     public enum SortingColumns{
         summary {
@@ -141,9 +159,23 @@ public class Utils {
             String[] arr = new String[values.length];
 
             for(int i=0;i<values.length;i++){
+
+                if("classification".equalsIgnoreCase(values[i].toString())){
+                    continue;
+                }
+
                 arr[i] = values[i].toString();
             }
             return arr;
+        }
+
+        public static SortingColumns findValue(String value){
+            for(SortingColumns column : SortingColumns.values()){
+                if(column.toString().equalsIgnoreCase(value)){
+                    return column;
+                }
+            }
+            return SortingColumns.summary;
         }
     }
 
@@ -164,28 +196,98 @@ public class Utils {
     }
     */
 
-    public static void saveNoteSorting(Context context, NoteSorting noteSorting) {
-        SharedPreferences.Editor prefs = context.getSharedPreferences("org.kore.kolabnotes.android.widget.MainActivity", 0).edit();
-        prefs.putString("direction", noteSorting.getDirection().toString());
-        prefs.putString("column", noteSorting.getColumnName());
+    public static void saveLastSyncTime(Context context,String accountName) {
+        SharedPreferences.Editor prefs = context.getSharedPreferences("org.kore.kolabnotes.android.async.KolabSyncAdapter", 0).edit();
+        prefs.putLong("lastSyncTst_"+accountName, System.currentTimeMillis());
         prefs.commit();
     }
 
+    public static Timestamp getLastSyncTime(Context context,String accountName) {
+        SharedPreferences prefs = context.getSharedPreferences("org.kore.kolabnotes.android.async.KolabSyncAdapter", 0);
+        if(prefs == null){
+            Log.d("getLastSyncTime","KolabSyncAdapter prefs are null");
+            return null;
+        }
+        long millis = prefs.getLong("lastSyncTst_"+accountName, -1);
+        if(millis < 0){
+            return null;
+        }
+
+        return new Timestamp(millis);
+    }
+
+    public static boolean getShowMetainformation(Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        if(prefs == null){
+            Log.d("getShowMetainformation","PreferenceManager prefs are null");
+            return true;
+        }
+        return prefs.getBoolean("pref_metainformation", true);
+
+    }
+
+    public static boolean getShowSyncNotifications(Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        if(prefs == null){
+            Log.d("getShowSyncNotification","PreferenceManager prefs are null");
+            return true;
+        }
+        return prefs.getBoolean("pref_show_sync_notifications", true);
+
+    }
+
+    public static boolean getShowCharacteristics(Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        if(prefs == null){
+            Log.d("getNoteSorting","MainActivity prefs are null");
+            return true;
+        }
+        return prefs.getBoolean("pref_characteristics", true);
+
+    }
+
+    public static boolean clearConflictWithLatest(Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        if(prefs == null){
+            Log.d("latest","PreferenceManager prefs are null");
+            return true;
+        }
+        return "LATEST".equalsIgnoreCase(prefs.getString("sync_conflict", "LATEST"));
+    }
+
+    public static boolean clearConflictWithServer(Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        if(prefs == null){
+            Log.d("latest","PreferenceManager prefs are null");
+            return true;
+        }
+        return "SERVER".equalsIgnoreCase(prefs.getString("sync_conflict","LATEST"));
+    }
+
+    public static boolean clearConflictWithLocal(Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        if(prefs == null){
+            Log.d("latest","PreferenceManager prefs are null");
+            return true;
+        }
+        return "LOCAL".equalsIgnoreCase(prefs.getString("sync_conflict","LATEST"));
+    }
+
     public static NoteSorting getNoteSorting(Context context) {
-        SharedPreferences prefs = context.getSharedPreferences("org.kore.kolabnotes.android.widget.MainActivity", 0);
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         if(prefs == null){
             Log.d("getNoteSorting","MainActivity prefs are null");
             return new NoteSorting();
         }
-        String direction = prefs.getString("direction", null);
-        String column = prefs.getString("column", null);
+        String direction = prefs.getString("pref_direction", null);
+        String column = prefs.getString("pref_column", null);
 
         if(TextUtils.isEmpty(direction) || TextUtils.isEmpty(column)){
             Log.d("getNoteSorting","column:"+column+"; or direction:"+direction+"; is empty, so default ordering will be returned");
             return new NoteSorting();
         }
 
-        return new NoteSorting(column, NoteSorting.Direction.valueOf(direction));
+        return new NoteSorting(column.toLowerCase(), NoteSorting.Direction.valueOf(direction));
     }
 
     public static boolean getReloadDataAfterDetail(Context context){
@@ -288,6 +390,87 @@ public class Utils {
         return new AccountIdentifier(email,rootFolder);
     }
 
+    public static void setToolbarTextAndIconColor(final Activity activity, final Toolbar toolbar, final boolean lightText){
+
+        setOverflowButtonColor(activity,lightText);
+        if(lightText){
+            toolbar.setTitleTextColor(android.graphics.Color.WHITE);
+
+            toolbar.getNavigationIcon().clearColorFilter();
+
+            for(int i=0; i< toolbar.getMenu().size(); i++){
+                final MenuItem item = toolbar.getMenu().getItem(i);
+                if(item.getIcon() != null) {
+                    final Drawable drawable = item.getIcon().mutate();
+                    drawable.clearColorFilter();
+                    item.setIcon(drawable);
+                }
+            }
+        }else{
+            //To generate negative image
+            float[] colorMatrix_Negative = {
+                    -1.0f, 0, 0, 0, 255, //red
+                    0, -1.0f, 0, 0, 255, //green
+                    0, 0, -1.0f, 0, 255, //blue
+                    0, 0, 0, 1.0f, 0 //alpha
+            };
+
+            ColorFilter colorFilter_Negative = new ColorMatrixColorFilter(colorMatrix_Negative);
+
+            toolbar.setTitleTextColor(android.graphics.Color.BLACK);
+
+            final Drawable navIcon = toolbar.getNavigationIcon().mutate();
+            navIcon.setColorFilter(colorFilter_Negative);
+            toolbar.setNavigationIcon(navIcon);
+
+            for(int i=0; i< toolbar.getMenu().size(); i++){
+                final MenuItem item = toolbar.getMenu().getItem(i);
+                if(item.getIcon() != null) {
+                    final Drawable drawable = item.getIcon().mutate();
+                    drawable.clearColorFilter();
+                    drawable.setColorFilter(colorFilter_Negative);
+                    item.setIcon(drawable);
+                }
+            }
+        }
+    }
+
+    public static void setOverflowButtonColor(final Activity activity, final boolean lightColor){
+        final String overflowDescription = activity.getString(R.string.abc_action_menu_overflow_description);
+        final ViewGroup decorView = (ViewGroup) activity.getWindow().getDecorView();
+        final ViewTreeObserver viewTreeObserver = decorView.getViewTreeObserver();
+
+        viewTreeObserver.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                final ArrayList<View> outViews = new ArrayList<View>();
+                decorView.findViewsWithText(outViews, overflowDescription, View.FIND_VIEWS_WITH_CONTENT_DESCRIPTION);
+
+                if(outViews.isEmpty()){
+                    return;
+                }
+
+                ImageView overflow = (ImageView)outViews.get(0);
+                overflow.setColorFilter(lightColor ? android.graphics.Color.WHITE : android.graphics.Color.BLACK);
+                decorView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+            }
+        });
+    }
+
+    public static boolean useLightTextColor(Context context, Color colorOfNote){
+        if(colorOfNote == null){
+            return false;
+        }
+
+        float[] HSV = new float[3];
+        android.graphics.Color.colorToHSV(android.graphics.Color.parseColor(colorOfNote.getHexcode()), HSV);
+
+        if (((HSV[HUE] >= CYAN || (HSV[HUE] >= RED && HSV[HUE] <= RED_ORANGE)) && HSV[SATURATION] >= 0.5) || HSV[BRIGHTNESS] <= 0.8) {
+            return true;
+        }
+        return false;
+    }
+
     /**
      * Creates a exact copy of an note
      *
@@ -323,13 +506,13 @@ public class Utils {
     }
 
     public static final boolean differentMutableData(Note one, Note two){
-        if(!Objects.equals(one.getClassification(),two.getClassification())){
+        if(!equals(one.getClassification(), two.getClassification())){
             return true;
         }
-        if(!Objects.equals(one.getColor(),two.getColor())){
+        if(!equals(one.getColor(), two.getColor())){
             return true;
         }
-        if(!Objects.equals(one.getSummary(),two.getSummary())){
+        if(!equals(one.getSummary(), two.getSummary())){
             return true;
         }
         if(one.getCategories().size() != two.getCategories().size() || !one.getCategories().containsAll(two.getCategories())){
@@ -337,6 +520,14 @@ public class Utils {
         }
 
         return false;
+    }
+
+    public static boolean equals(Object o1, Object o2){
+        if(o1 == null){
+            return o2 == null;
+        }
+
+        return o1.equals(o2);
     }
 
     public static void initColumnSpinner(Context context, Spinner spinner, int spinnerLayout, AdapterView.OnItemSelectedListener listener){

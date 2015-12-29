@@ -9,6 +9,7 @@ import org.kore.kolab.notes.AuditInformation;
 import org.kore.kolab.notes.Identification;
 import org.kore.kolab.notes.Note;
 import org.kore.kolab.notes.Notebook;
+import org.kore.kolab.notes.SharedNotebook;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -21,8 +22,6 @@ public class NotebookRepository {
 
     // Database fields
     private Context context;
-    private SQLiteDatabase database;
-    private DatabaseHelper dbHelper;
     private String[] allColumns = { DatabaseHelper.COLUMN_ID,
             DatabaseHelper.COLUMN_ACCOUNT,
             DatabaseHelper.COLUMN_ROOT_FOLDER,
@@ -33,25 +32,15 @@ public class NotebookRepository {
             DatabaseHelper.COLUMN_SUMMARY ,
             DatabaseHelper.COLUMN_DESCRIPTION ,
             DatabaseHelper.COLUMN_CLASSIFICATION,
-            DatabaseHelper.COLUMN_DISCRIMINATOR };
+            DatabaseHelper.COLUMN_DISCRIMINATOR,
+            DatabaseHelper.COLUMN_SHARED,
+            DatabaseHelper.COLUMN_CREATION_ALLOWED,
+            DatabaseHelper.COLUMN_MODIFICATION_ALLOWED};
     private ModificationRepository modificationRepository;
 
     public NotebookRepository(Context context) {
-        dbHelper = new DatabaseHelper(context);
         this.context = context;
         this.modificationRepository = new ModificationRepository(context);
-    }
-
-    public void open() {
-        database = dbHelper.getWritableDatabase();
-    }
-
-    public void openReadonly() {
-        database = dbHelper.getReadableDatabase();
-    }
-
-    public void close() {
-        dbHelper.close();
     }
 
     public boolean insert(String account, String rootFolder, Notebook note) {
@@ -60,7 +49,6 @@ public class NotebookRepository {
             return false;
         }
 
-        open();
         ContentValues values = new ContentValues();
         values.put(DatabaseHelper.COLUMN_DISCRIMINATOR, DatabaseHelper.DESCRIMINATOR_NOTEBOOK);
         values.put(DatabaseHelper.COLUMN_ROOT_FOLDER, rootFolder);
@@ -72,20 +60,24 @@ public class NotebookRepository {
         values.put(DatabaseHelper.COLUMN_SUMMARY, note.getSummary());
         values.put(DatabaseHelper.COLUMN_DESCRIPTION, note.getDescription());
         values.put(DatabaseHelper.COLUMN_CLASSIFICATION, note.getClassification().toString());
+        values.put(DatabaseHelper.COLUMN_SHARED, Boolean.toString(note.isShared()));
+        if(note.isShared()) {
+            SharedNotebook shared = (SharedNotebook)note;
+            values.put(DatabaseHelper.COLUMN_CREATION_ALLOWED, Boolean.toString(shared.isNoteCreationAllowed()));
+            values.put(DatabaseHelper.COLUMN_MODIFICATION_ALLOWED, Boolean.toString(shared.isNoteModificationAllowed()));
+        }
 
-        long rowId = database.insert(DatabaseHelper.TABLE_NOTES, null,values);
+        long rowId = ConnectionManager.getDatabase(context).insert(DatabaseHelper.TABLE_NOTES, null, values);
 
         Modification modification = modificationRepository.getUnique(account,rootFolder,note.getIdentification().getUid());
 
         if(modification == null){
             modificationRepository.insert(account,rootFolder,note.getIdentification().getUid(), ModificationRepository.ModificationType.INS,null, Modification.Descriminator.NOTEBOOK);
         }
-        close();
         return rowId >= 0;
     }
 
     public void update(String account, String rootFolder,Notebook note){
-        open();
         ContentValues values = new ContentValues();
         values.put(DatabaseHelper.COLUMN_UID, note.getIdentification().getUid());
         values.put(DatabaseHelper.COLUMN_ROOT_FOLDER, rootFolder);
@@ -97,11 +89,11 @@ public class NotebookRepository {
         values.put(DatabaseHelper.COLUMN_DESCRIPTION, note.getDescription());
         values.put(DatabaseHelper.COLUMN_CLASSIFICATION, note.getClassification().toString());
 
-        database.update(DatabaseHelper.TABLE_NOTES,
+        ConnectionManager.getDatabase(context).update(DatabaseHelper.TABLE_NOTES,
                 values,
-                DatabaseHelper.COLUMN_ACCOUNT + " = '" + account+"' AND "+
-                DatabaseHelper.COLUMN_ROOT_FOLDER + " = '" + rootFolder+"' AND "+
-                DatabaseHelper.COLUMN_UID + " = '" + note.getIdentification().getUid()+"' AND ",
+                DatabaseHelper.COLUMN_ACCOUNT + " = '" + account + "' AND " +
+                        DatabaseHelper.COLUMN_ROOT_FOLDER + " = '" + rootFolder + "' AND " +
+                        DatabaseHelper.COLUMN_UID + " = '" + note.getIdentification().getUid() + "' AND ",
                 null);
 
         Modification modification = modificationRepository.getUnique(account,rootFolder,note.getIdentification().getUid());
@@ -109,22 +101,19 @@ public class NotebookRepository {
         if(modification == null){
             modificationRepository.insert(account,rootFolder,note.getIdentification().getUid(), ModificationRepository.ModificationType.UPD,null, Modification.Descriminator.NOTEBOOK);
         }
-        close();
     }
 
     public void delete(String account, String rootFolder,Notebook note) {
-        open();
-
-        database.delete(DatabaseHelper.TABLE_NOTES,
-                DatabaseHelper.COLUMN_ACCOUNT + " = '" + account+"' AND "+
-                        DatabaseHelper.COLUMN_ROOT_FOLDER + " = '" + rootFolder+"' AND "+
-                        DatabaseHelper.COLUMN_UID_NOTEBOOK + " = '" + note.getIdentification().getUid()+"' ",
+        ConnectionManager.getDatabase(context).delete(DatabaseHelper.TABLE_NOTES,
+                DatabaseHelper.COLUMN_ACCOUNT + " = '" + account + "' AND " +
+                        DatabaseHelper.COLUMN_ROOT_FOLDER + " = '" + rootFolder + "' AND " +
+                        DatabaseHelper.COLUMN_UID_NOTEBOOK + " = '" + note.getIdentification().getUid() + "' ",
                 null);
 
-        database.delete(DatabaseHelper.TABLE_NOTES,
-                DatabaseHelper.COLUMN_ACCOUNT + " = '" + account+"' AND "+
-                DatabaseHelper.COLUMN_ROOT_FOLDER + " = '" + rootFolder+"' AND "+
-                DatabaseHelper.COLUMN_UID + " = '" + note.getIdentification().getUid()+"' ",
+        ConnectionManager.getDatabase(context).delete(DatabaseHelper.TABLE_NOTES,
+                DatabaseHelper.COLUMN_ACCOUNT + " = '" + account + "' AND " +
+                        DatabaseHelper.COLUMN_ROOT_FOLDER + " = '" + rootFolder + "' AND " +
+                        DatabaseHelper.COLUMN_UID + " = '" + note.getIdentification().getUid() + "' ",
                 null);
 
         Modification modification = modificationRepository.getUnique(account,rootFolder,note.getIdentification().getUid());
@@ -132,17 +121,15 @@ public class NotebookRepository {
         if(modification == null){
             modificationRepository.insert(account,rootFolder,note.getIdentification().getUid(), ModificationRepository.ModificationType.DEL,note.getSummary(), Modification.Descriminator.NOTEBOOK);
         }
-        close();
     }
 
     public Notebook getByUID(String account, String rootFolder,String uid) {
-        openReadonly();
-        Cursor cursor = database.query(DatabaseHelper.TABLE_NOTES,
+        Cursor cursor = ConnectionManager.getDatabase(context).query(DatabaseHelper.TABLE_NOTES,
                 allColumns,
-                DatabaseHelper.COLUMN_ACCOUNT + " = '" + account+"' AND "+
-                        DatabaseHelper.COLUMN_ROOT_FOLDER + " = '" + rootFolder+"' AND "+
-                        DatabaseHelper.COLUMN_UID + " = '" + uid+"' AND "+
-                        DatabaseHelper.COLUMN_DISCRIMINATOR+" = '"+DatabaseHelper.DESCRIMINATOR_NOTEBOOK+"' ",
+                DatabaseHelper.COLUMN_ACCOUNT + " = '" + account + "' AND " +
+                        DatabaseHelper.COLUMN_ROOT_FOLDER + " = '" + rootFolder + "' AND " +
+                        DatabaseHelper.COLUMN_UID + " = '" + uid + "' AND " +
+                        DatabaseHelper.COLUMN_DISCRIMINATOR + " = '" + DatabaseHelper.DESCRIMINATOR_NOTEBOOK + "' ",
                 null,
                 null,
                 null,
@@ -150,22 +137,20 @@ public class NotebookRepository {
 
         Notebook note = null;
         if (cursor.moveToNext()) {
-            note = cursorToNote(account,rootFolder,cursor);
+            note = cursorToNotebook(account, rootFolder, cursor);
         }
         cursor.close();
-        close();
         return note;
     }
 
     public Notebook getBySummary(String account, String rootFolder, String name) {
-        openReadonly();
 
-        Cursor cursor = database.query(DatabaseHelper.TABLE_NOTES,
+        Cursor cursor = ConnectionManager.getDatabase(context).query(DatabaseHelper.TABLE_NOTES,
                 allColumns,
-                DatabaseHelper.COLUMN_ACCOUNT + " = '" + account+"' AND "+
-                DatabaseHelper.COLUMN_ROOT_FOLDER + " = '" + rootFolder+"' AND "+
-                DatabaseHelper.COLUMN_SUMMARY + " = '" + name+"' AND "+
-                DatabaseHelper.COLUMN_DISCRIMINATOR+" = '"+DatabaseHelper.DESCRIMINATOR_NOTEBOOK+"' ",
+                DatabaseHelper.COLUMN_ACCOUNT + " = '" + account + "' AND " +
+                        DatabaseHelper.COLUMN_ROOT_FOLDER + " = '" + rootFolder + "' AND " +
+                        DatabaseHelper.COLUMN_SUMMARY + " = '" + name + "' AND " +
+                        DatabaseHelper.COLUMN_DISCRIMINATOR + " = '" + DatabaseHelper.DESCRIMINATOR_NOTEBOOK + "' ",
                 null,
                 null,
                 null,
@@ -173,37 +158,52 @@ public class NotebookRepository {
 
         Notebook nb = null;
         if (cursor.moveToNext()) {
-            nb = cursorToNote(account,rootFolder,cursor);
+            nb = cursorToNotebook(account, rootFolder, cursor);
+        }else{
+            cursor.close();
+            //try with 'Other User' added
+            String withOther = "Other Users/"+name;
+            cursor = ConnectionManager.getDatabase(context).query(DatabaseHelper.TABLE_NOTES,
+                    allColumns,
+                    DatabaseHelper.COLUMN_ACCOUNT + " = '" + account + "' AND " +
+                            DatabaseHelper.COLUMN_ROOT_FOLDER + " = '" + rootFolder + "' AND " +
+                            DatabaseHelper.COLUMN_SUMMARY + " = '" + withOther + "' AND " +
+                            DatabaseHelper.COLUMN_DISCRIMINATOR + " = '" + DatabaseHelper.DESCRIMINATOR_NOTEBOOK + "' ",
+                    null,
+                    null,
+                    null,
+                    null);
+
+            if (cursor.moveToNext()) {
+                nb = cursorToNotebook(account, rootFolder, cursor);
+            }
         }
         cursor.close();
-        close();
         return nb;
     }
 
     public List<Notebook> getAll(String account, String rootFolder) {
-        openReadonly();
         List<Notebook> notes = new ArrayList<Notebook>();
 
-        Cursor cursor = database.query(DatabaseHelper.TABLE_NOTES,
+        Cursor cursor = ConnectionManager.getDatabase(context).query(DatabaseHelper.TABLE_NOTES,
                 allColumns,
-                DatabaseHelper.COLUMN_ACCOUNT + " = '" + account+"' AND "+
-                DatabaseHelper.COLUMN_ROOT_FOLDER + " = '" + rootFolder+"' AND "+
-                DatabaseHelper.COLUMN_DISCRIMINATOR+" = '"+DatabaseHelper.DESCRIMINATOR_NOTEBOOK+"' ",
+                DatabaseHelper.COLUMN_ACCOUNT + " = '" + account + "' AND " +
+                        DatabaseHelper.COLUMN_ROOT_FOLDER + " = '" + rootFolder + "' AND " +
+                        DatabaseHelper.COLUMN_DISCRIMINATOR + " = '" + DatabaseHelper.DESCRIMINATOR_NOTEBOOK + "' ",
                 null,
                 null,
                 null,
                 null);
 
         while (cursor.moveToNext()) {
-            Notebook note = cursorToNote(account,rootFolder,cursor);
+            Notebook note = cursorToNotebook(account, rootFolder, cursor);
             notes.add(note);
         }
         cursor.close();
-        close();
         return notes;
     }
 
-    private Notebook cursorToNote(String account, String rootFolder,Cursor cursor) {
+    private Notebook cursorToNotebook(String account, String rootFolder,Cursor cursor) {
         String uid = cursor.getString(3);
         String productId = cursor.getString(4);
         Long creationDate = cursor.getLong(5);
@@ -211,13 +211,30 @@ public class NotebookRepository {
         String summary = cursor.getString(7);
         String description = cursor.getString(8);
         String classification = cursor.getString(9);
+        boolean shared = Boolean.parseBoolean(cursor.getString(11));
+        boolean creation = Boolean.parseBoolean(cursor.getString(12));
+        boolean modification = Boolean.parseBoolean(cursor.getString(13));
 
         AuditInformation audit = new AuditInformation(new Timestamp(creationDate),new Timestamp(modificationDate));
         Identification ident = new Identification(uid,productId);
 
-        Notebook note = new Notebook(ident,audit, Note.Classification.valueOf(classification),summary);
-        note.setDescription(description);
+        Notebook notebook;
+        if(shared){
+            SharedNotebook nb = new SharedNotebook(ident,audit, Note.Classification.valueOf(classification),summary);
+            nb.setNoteCreationAllowed(creation);
+            nb.setNoteModificationAllowed(modification);
+            if(nb.isGlobalShared()){
+                nb.setShortName(summary);
+            }else{
+                //Removing of 'Other Users' saves space
+                nb.setShortName(summary.substring(summary.indexOf('/')+1));
+            }
+            notebook = nb;
+        }else{
+            notebook = new Notebook(ident,audit, Note.Classification.valueOf(classification),summary);
+        }
+        notebook.setDescription(description);
 
-        return note;
+        return notebook;
     }
 }

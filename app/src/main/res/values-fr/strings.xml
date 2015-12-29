@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Kolab Notes</string>
+
+    <string name="sticky_note_name">Kolab Sticky-Note</string>
+
+    <string name="drawer_open">Menu ouvert</string>
+    <string name="drawer_close">Menu fermé</string>
+
+    <string name="action_settings">Réglages</string>
+
+    <string name="ok">Ok</string>
+    <string name="cancel">Annuler</string>
+
+    <string name="yes">Oui</string>
+    <string name="no">Non</string>
+    <string name="no_selection">Pas de sélection</string>
+
+    <string name="classification">Classification</string>
+    <string name="creationDate">Création</string>
+    <string name="modificationDate">Dernière modification</string>
+    <string name="tags">Tags:</string>
+    <string name="notags">Pas de tags</string>
+    <string name="radio_public">Publique</string>
+    <string name="radio_confidential">Confidentielle</string>
+    <string name="radio_private">Privée</string>
+
+    <string name="activity_detail_title">Détails d\'activité</string>
+
+    <string name="drawer_item_tags">Tags</string>
+    <string name="drawer_item_notebooks">Carnets de notes</string>
+    <string name="drawer_item_allnotes">Notes du compte sélectionné</string>
+    <string name="widget_allnotes">Tout de ce compte</string>
+    <string name="drawer_item_allaccount_notes">Notes de tous les comptes</string>
+    <string name="drawer_account_local">Compte local</string>
+
+
+    <string name="dialog_nointernet">Pas de connexion à Internet !</string>
+    <string name="dialog_uploading">Exemple de progression&#8230;</string>
+    <string name="dialog_processinganduploading">Affichage d\'un exemple de progression. Veuillez être patient ! (Ceci ne fait rien d\'autre que stopper l\'pplication pendant 100ms)</string>
+    <string name="title_activity_phone">Activité du téléphone</string>
+
+    <string name="hello_world">Hello world !</string>
+
+    <string name="label">Kolab Notes</string>
+
+    <string name="signup_title">Créer un nouveau compte</string>
+    <string name="signup_ok">Nouveau compte créé</string>
+    <string name="login_label">Se connecter</string>
+    <string name="summary_text">Texte grand</string>
+    <string name="text_summary">Résumé</string>
+    <string name="description_text">Texte de description</string>
+    <string name="description_hint">Description</string>
+    <string name="text_description">Texte moyen</string>
+
+    <string name="dialog_input_text_hint">Résumé</string>
+    <string name="dialog_input_text_search_hint">Recherché des notes avec résumé</string>
+    <string name="dialog_input_text_notebook">Nouveau carnet de notes</string>
+    <string name="dialog_input_text_search">Rechercher dans cette note</string>
+    <string name="dialog_delete_note">Supprimer cette note</string>
+    <string name="dialog_cancel_warning">Annuler l\'avertissement</string>
+    <string name="dialog_delete_nb_warning">Supprimer ce carnet de notes</string>
+    <string name="dialog_question_delete_nb">Ce carnet (et toutes les notes qu\'il contient) va être supprimé, êtes vous certain de le vouloir ?</string>
+    <string name="dialog_input_text_tag">Nouveau tag</string>
+    <string name="dialog_change_classification">Modifier la classification</string>
+    <string name="dialog_change_tags">Modifier les tags</string>
+    <string name="no_nb_selected">Pas de carnet sélectionné</string>
+    <string name="add">Ajouter</string>
+    <string name="title_edit_tag">Modifier le tag</string>
+    <string name="dialog_question_delete">Êtes-vous sûr de vouloir supprimer cette note ?</string>
+    <string name="dialog_question_cancel">Êtes-vous sûr de vouloir annuler tous les changements ?</string>
+    <string name="account_name">Nom du compte</string>
+    <string name="imap_root_folder">Dossier racine IMAP (par défaut : Notes)</string>
+    <string name="imap_server_url">imap.monserveur.com</string>
+    <string name="port_number">Numéro du port (par défaut : 993)</string>
+
+    <string name="error_generic">Une erreur est survenue</string>
+    <string name="error_duplicate_account">Impossible de créer ce compte (un compte avec ce nom existe-t-il déjà ?)</string>
+    <string name="enable_ssl">SSL activée</string>
+    <string name="title_add_account">Ajouter un compte</string>
+    <string name="local_account_change">Compte local ne peut pas être changé</string>
+    <string name="title_update_account">changement compte</string>
+    <string name="appwidget_text">EXEMPLE</string>
+    <string name="configure">Configurer</string>
+    <string name="add_widget">Ajouter un widget</string>
+    <string name="title_colorpicker">Choisir une couleur</string>
+    <string name="button_add">button_add</string>
+    <string name="kolab_enabled">Extensions Kolab</string>
+    <string name="sync_intervall">Intervalle de synchronisation (par défaut : 24)</string>
+    <string name="note_not_found">Note non trouvée !</string>
+    <string name="create_or_select_text">Sélectionner ou créer une note</string>
+    <string name="select_or_create_hint">Sélectionner ou créer une icône de note</string>
+    <string name="note_deleted">Note supprimée</string>
+    <string name="note_saved">Note enregistrée</string>
+    <string name="sync_failed">Synchronisation échouée</string>
+    <string name="title_delete_notebook">Supprimer le carnet de notes</string>
+    <string name="send_to">Partager cette note avec...</string>
+    <string name="empty_note">La note est vide</string>
+    <string name="sort_with_heading">Tri :</string>
+    <string name="radio_desc">Descendant</string>
+    <string name="radio_asc">Ascendant</string>
+    <string name="title_dialog_sorting">Modifier le tri</string>
+    <string name="color">Couleur</string>
+    <string name="account_choose_title">Choosir un compte</string>
+    <string name="select_button">Sélectionner</string>
+    <string name="extended_options" >Plus d\'options</string>
+
+
+    <string name="day">jour</string>
+    <string name="hour">heure</string>
+    <string name="minute">minute</string>
+    <string name="title_metainformation">Métainformation</string>
+    <string name="productID">ID de produit</string>
+    <string name="uid">UID</string>
+    <string name="title_characteristics">Caractéristiques</string>
+    <string name="title_choose_tag_color">Choisissez la couleur tag</string>
+    <string name="no_tag_selected">Aucune balise sélectionnée</string>
+    <string name="remove">Supprimer</string>
+    <string name="shared_folders">Blocs-notes partagés</string>
+    <string name="changed_content_shared_folder">Changement de bloc-notes partagé</string>
+    <string name="note_changed">Remarque ont été changés</string>
+    <string name="in_notebook">dans le cahier</string>
+    <string name="note_created">Nouvelle note</string>
+    <string name="dialog_input_link">Fixez lien</string>
+    <string name="no_folder_permission">Aucune autorisation pour le dossier</string>
+    <string name="pref_characteristics">Voir les balises</string>
+    <string name="pref_metainformation">Voir metainformations</string>
+    <string name="pref_desc_metainformation">Afficher la date de création et date de dernière modification</string>
+    <string name="pref_column">colonne de tri</string>
+    <string name="pref_direction">sens du tri</string>
+    <string name="pref_show_sync_notifications">Afficher notifications de synchronisation</string>
+    <string name="pref_show_sync_notifications_summary">Notifications Si les notes dans les dossiers partagés sont modifiés</string>
+    <string name="pref_header_data_sync">Syncronisation</string>
+    <string name="pref_header_general">Généralement</string>
+    <string name="pref_header_notifications">Notifications</string>
+    <string name="pref_title_sync_conflict">Les conflits de synchronisation de manutention</string>
+    <string name="pref_title_system_sync_settings">Paramètres de synchronisation du système</string>
+    <string name="no_write_permissions">Aucune autorisation d\'écriture dans le cahier sélectionné</string>
+    <string name="no_change_permissions">Pas de modifier les autorisations dans le cahier sélectionné</string>
+    <string name="no_create_permissions">Aucune autorisation de création dans le cahier sélectionné</string>
+
+    <string-array name="pref_sync_conflict_titles">
+        <item>Dernière note modifiée</item>
+        <item>Note Server</item>
+        <item>Note locale</item>
+        <!--<item>Ask which</item>-->
+    </string-array>
+</resources>

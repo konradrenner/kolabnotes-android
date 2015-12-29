@@ -1,0 +1,10 @@
+<resources>
+    <string name="title_activity_settings">Réglages</string>
+    <string name="title_create_notebook">Nouveau carnet de notes</string>
+    <string name="title_create_tag">Nouveau tag</string>
+    <string name="title_dialog_search">Rechercher une note</string>
+    <string name="title_ok">OK</string>
+    <string name="title_share">Partager</string>
+    <string name="title_delete">Supprimer</string>
+    <string name="title_change_classification">Modifier la classification</string>
+</resources>

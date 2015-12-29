@@ -1,0 +1,36 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <SwitchPreference
+        android:key="pref_characteristics"
+        android:title="@string/pref_characteristics"
+        android:defaultValue="true" />
+
+    <SwitchPreference
+        android:key="pref_metainformation"
+        android:title="@string/pref_metainformation"
+        android:summary="@string/pref_desc_metainformation"
+        android:defaultValue="true" />
+
+    <PreferenceCategory android:key="sorting_category" android:title="Sorting" >
+
+        <ListPreference
+            android:key="pref_column"
+            android:title="@string/pref_column"
+            android:defaultValue="@string/text_summary"
+            android:entries="@array/sorting_columns"
+            android:entryValues="@array/sorting_columns_values"
+            android:negativeButtonText="@null"
+            android:positiveButtonText="@null" />
+
+        <ListPreference
+            android:key="pref_direction"
+            android:title="@string/pref_direction"
+            android:defaultValue="ASC"
+            android:entries="@array/pref_direction_titles"
+            android:entryValues="@array/pref_direction_values"
+            android:negativeButtonText="@null"
+            android:positiveButtonText="@null" />
+
+    </PreferenceCategory>
+
+</PreferenceScreen>

@@ -20,7 +20,7 @@
     <string name="classification">Klassifizierung</string>
     <string name="creationDate">Erstellt</string>
     <string name="modificationDate">Letzte Änderung</string>
-    <string name="tags">Kategorien</string>
+    <string name="tags">Kategorien:</string>
     <string name="notags">Keine Kategorien</string>
     <string name="radio_public">Öffentlich</string>
     <string name="radio_confidential">Vertraulich</string>
@@ -58,13 +58,15 @@
     <string name="dialog_question_cancel">Alle Änderungen werden verworfen, sind Sie sicher?</string>
     <string name="account_name">Name des Konto</string>
     <string name="imap_root_folder">IMAP Wurzelordner (Standard ist Notes)</string>
-    <string name="imap_server_url">IMAP Server-URL (ohne prefix)</string>
+    <string name="imap_server_url">imap.meinserver.com</string>
     <string name="port_number">Port-Nummer (Standard ist 993)</string>
 
     <string name="error_generic">Ein Fehler ist aufgetreten</string>
     <string name="error_duplicate_account">Kann Konto nicht erstellen (existiert bereits eines mit gleichem Namen?)</string>
     <string name="enable_ssl">SSL aktiviert</string>
     <string name="title_add_account">Konto hinzufügen</string>
+    <string name="title_update_account">Konto ändern</string>
+    <string name="local_account_change">Lokales Konto kann nicht geändert werden</string>
     <string name="configure">Konfigurieren</string>
     <string name="add_widget">Widget hinzufügen</string>
     <string name="title_colorpicker">Farbauswahl</string>
@@ -82,20 +84,6 @@
     <string name="error_invalid_email">EMail ist ungültig</string>
     <string name="hello_world">Hallo Welt!</string>
     <string name="error_invalid_password">Passwort ist zu kurz</string>
-    <string name="pref_default_display_name">John Smith</string>
-    <string name="pref_description_social_recommendations">Vorschlag</string>
-    <string name="pref_header_data_sync">Data sync</string>
-    <string name="pref_header_general">Allgemein</string>
-    <string name="pref_title_add_friends_to_messages">Freude hinzufügen</string>
-    <string name="pref_ringtone_silent">Ruhe</string>
-    <string name="pref_header_notifications">Benachrichtigungen</string>
-    <string name="pref_title_display_name">Anzeigename</string>
-    <string name="pref_title_new_message_notifications">Neue Nachricht</string>
-    <string name="pref_title_ringtone">Klingelton</string>
-    <string name="pref_title_social_recommendations">Aktiviere soziale Empfehlungen</string>
-    <string name="pref_title_sync_frequency">Sync Häufigkeit</string>
-    <string name="pref_title_system_sync_settings">System sync Einstellung</string>
-    <string name="pref_title_vibrate">Vibrieren</string>
     <string name="prompt_email">Email</string>
     <string name="prompt_password">Passwort</string>
     <string name="summary_text">Großer Text</string>
@@ -111,7 +99,7 @@
     <string name="title_ok">OK</string>
     <string name="title_share">Teilen</string>
     <string name="kolab_enabled">Kolaberweiterungen</string>
-    <string name="sync_intervall">Sync-Intervall in Stunden (Standard 24)</string>
+    <string name="sync_intervall">Sync-Intervall (Standard 24)</string>
     <string name="note_not_found">Notiz nicht gefunden!</string>
     <string name="create_or_select_text">Erstellen oder wählen Sie eine Notiz aus</string>
     <string name="select_or_create_hint">select or create note icon</string>
@@ -129,4 +117,47 @@
     <string name="radio_asc">Aufsteigend</string>
     <string name="title_dialog_sorting">Ändere Sortierung</string>
     <string name="color">Farbe</string>
+    <string name="account_choose_title">Kontoauswahl</string>
+    <string name="select_button">Übernehmen</string>
+    <string name="extended_options" >Mehr Optionen</string>
+
+    <string name="day">Tag(e)</string>
+    <string name="hour">Stunde(n)</string>
+    <string name="minute">Minute(n)</string>
+    <string name="title_metainformation">Metainformationen</string>
+    <string name="productID">Produkt ID</string>
+    <string name="uid">UID</string>
+    <string name="title_characteristics">Eigenschaften</string>
+    <string name="title_choose_tag_color">Kategoriefarbe wählen</string>
+    <string name="no_tag_selected">Keine Kategorie ausgewählt</string>
+    <string name="remove">Entfernen</string>
+    <string name="shared_folders">Geteilte Notizbücher</string>
+    <string name="changed_content_shared_folder">Änderung in geteilten Notizbuch</string>
+    <string name="note_changed">Notiz wurde geändert</string>
+    <string name="in_notebook">in Notizbuch</string>
+    <string name="note_created">Neue Notiz</string>
+    <string name="dialog_input_link">Verlinkung zuweisen</string>
+    <string name="no_folder_permission">Zugriff auf Notizbuch abgelehnt</string>
+    <string name="pref_characteristics">Kategorien anzeigen</string>
+    <string name="pref_metainformation">Metainformationen anzeigen</string>
+    <string name="pref_desc_metainformation">Erstellungs- und Bearbeitungsdatum anzeigen</string>
+    <string name="pref_column">Feld für Sortierung</string>
+    <string name="pref_direction">Richtung der Sortierung</string>
+    <string name="pref_show_sync_notifications">Benachrichtigungen für Sync</string>
+    <string name="pref_show_sync_notifications_summary">Benachrichtigungen wenn Notizen in geteilten Notizbüchern geändert wurden</string>
+    <string name="pref_header_general">Allgemein</string>
+    <string name="pref_header_notifications">Benachrichtigungen</string>
+    <string name="pref_header_data_sync">Synchronisation</string>
+    <string name="pref_title_sync_conflict">Sync-Konfliktbehandlung</string>
+    <string name="pref_title_system_sync_settings">System Sync-Einstellungen</string>
+    <string name="no_write_permissions">Keine Schreibrechte im gewählten Notizbuch</string>
+    <string name="no_change_permissions">Keine Änderungsrechte im gewählten Notizbuch</string>
+    <string name="no_create_permissions">Keine Erstellungsrecht im gewählten Notizbuch</string>
+
+    <string-array name="pref_sync_conflict_titles">
+        <item>Zuletzt geänderte Notiz</item>
+        <item>Notiz vom Server</item>
+        <item>Lokale Notiz</item>
+        <!--<item>Ask which</item>-->
+    </string-array>
 </resources>

@@ -21,10 +21,19 @@
         android:fillViewport="false"
         android:layout_weight="0.53">
         <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="vertical" android:paddingTop="5dp">
 
             <LinearLayout android:id="@+id/email_login_form" android:layout_width="match_parent"
                 android:layout_height="fill_parent" android:orientation="vertical">
+
+                <Spinner
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="8dp"
+                    android:id="@+id/spinner_accountType"
+                    android:layout_gravity="center_horizontal"
+                    android:spinnerMode="dropdown"
+                    style="@style/Widget.AppCompat.Spinner.DropDown" />
 
                 <EditText
                     android:layout_width="match_parent"
@@ -46,18 +55,31 @@
                     android:inputType="textUri"
                     android:hint="@string/imap_server_url" />
 
-                <EditText
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="number"
+                <AutoCompleteTextView android:id="@+id/email" android:layout_width="match_parent"
+                    android:layout_height="wrap_content" android:hint="@string/prompt_email"
+                    android:inputType="textEmailAddress" android:maxLines="1"
                     android:textColor="@android:color/black"
                     android:textColorHint="@android:color/darker_gray"
-                    android:ems="10"
-                    android:id="@+id/port_number"
-                    android:layout_gravity="center_horizontal"
-                    android:editable="true"
-                    android:enabled="true"
-                    android:hint="@string/port_number" />
+                    android:singleLine="true" />
+
+                <EditText android:id="@+id/accountPassword" android:layout_width="match_parent"
+                    android:layout_height="wrap_content" android:hint="@string/prompt_password"
+                    android:textColor="@android:color/black"
+                    android:textColorHint="@android:color/darker_gray"
+                    android:imeOptions="actionNone" android:inputType="textPassword"
+                    android:maxLines="1" android:singleLine="true" />
+
+                <Switch
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/extended_options"
+                    android:id="@+id/enable_more_config"
+                    android:textColor="@android:color/black"
+                    android:checked="false"
+                    android:textSize="17sp"
+                    android:paddingTop="8dp"
+                    android:paddingBottom="5dp"
+                    android:clickable="true" />
 
                 <EditText
                     android:layout_width="match_parent"
@@ -72,31 +94,43 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="number"
-                    android:numeric="integer"
                     android:textColor="@android:color/black"
                     android:textColorHint="@android:color/darker_gray"
                     android:ems="10"
-                    android:id="@+id/sync_intervall"
+                    android:id="@+id/port_number"
                     android:layout_gravity="center_horizontal"
                     android:editable="true"
                     android:enabled="true"
-                    android:hint="@string/sync_intervall" />
+                    android:hint="@string/port_number" />
 
-                <AutoCompleteTextView android:id="@+id/email" android:layout_width="match_parent"
-                    android:layout_height="wrap_content" android:hint="@string/prompt_email"
-                    android:inputType="textEmailAddress" android:maxLines="1"
-                    android:textColor="@android:color/black"
-                    android:textColorHint="@android:color/darker_gray"
-                    android:singleLine="true" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
 
-                <EditText android:id="@+id/accountPassword" android:layout_width="match_parent"
-                    android:layout_height="wrap_content" android:hint="@string/prompt_password"
-                    android:imeActionId="@+id/login"
-                    android:imeActionLabel="@string/action_sign_in"
-                    android:textColor="@android:color/black"
-                    android:textColorHint="@android:color/darker_gray"
-                    android:imeOptions="actionUnspecified" android:inputType="textPassword"
-                    android:maxLines="1" android:singleLine="true" />
+                    <EditText
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:inputType="number"
+                        android:numeric="integer"
+                        android:textColor="@android:color/black"
+                        android:textColorHint="@android:color/darker_gray"
+                        android:ems="10"
+                        android:id="@+id/sync_intervall"
+                        android:layout_gravity="center_horizontal"
+                        android:editable="true"
+                        android:enabled="true"
+                        android:hint="@string/sync_intervall" />
+
+                    <Spinner
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/spinner_intervall"
+                        android:layout_gravity="center_horizontal"
+                        android:spinnerMode="dropdown"
+                        style="@style/Widget.AppCompat.Light.DropDownItem.Spinner" />
+
+                </LinearLayout>
 
                 <CheckBox
                     android:layout_width="wrap_content"
@@ -119,6 +153,18 @@
                     android:paddingTop="5dp"
                     android:paddingBottom="5dp"
                     android:clickable="true" />
+
+                <Switch
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/shared_folders"
+                    android:id="@+id/enable_shared_folders"
+                    android:textColor="@android:color/black"
+                    android:checked="true"
+                    android:paddingTop="5dp"
+                    android:paddingBottom="5dp"
+                    android:clickable="true" />
+
 
                 <Button android:id="@+id/submit"
                     android:layout_width="match_parent" android:layout_height="wrap_content"

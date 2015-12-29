@@ -19,6 +19,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String COLUMN_ID = "_id";
     public static final String COLUMN_COLOR = "color";
     public static final String COLUMN_UID = "uid";
+    public static final String COLUMN_TAG_UID = "uidtag";
     public static final String COLUMN_UID_NOTEBOOK = "uid_notebook";
     public static final String COLUMN_DISCRIMINATOR = "discriminator";
     public static final String COLUMN_PRODUCTID = "productId";
@@ -27,12 +28,18 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String COLUMN_CLASSIFICATION = "classification";
     public static final String COLUMN_SUMMARY = "summary";
     public static final String COLUMN_DESCRIPTION = "description";
+    public static final String COLUMN_SHARED = "shared";
+    public static final String COLUMN_MODIFICATION_ALLOWED = "mod_allowed";
+    public static final String COLUMN_CREATION_ALLOWED = "create_allowed";
 
     public static final String DESCRIMINATOR_NOTEBOOK = "NOTEBOOK";
     public static final String DESCRIMINATOR_NOTE = "NOTE";
 
-    public static final String TABLE_TAGS = "tags";
+    public static final String TABLE_TAGS = "newtags";
     public static final String COLUMN_TAGNAME = "tagname";
+    public static final String COLUMN_PRIORITY = "priority";
+
+    public static final String TABLE_OLD_TAGS = "tags";
 
     public static final String TABLE_NOTE_TAGS = "notes_tags";
     public static final String COLUMN_IDNOTE = "id_note";
@@ -42,7 +49,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String COLUMN_MODIFICATIONTYPE = "modificationType";
 
     private static final String DATABASE_NAME = "kolabnotes.db";
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 5;
 
     // Database creation sql statement
     private static final String CREATE_NOTES = "create table "
@@ -59,12 +66,24 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + COLUMN_UID_NOTEBOOK + " text, "
             + COLUMN_COLOR + " text, "
             + COLUMN_SUMMARY + " text not null, "
+            + COLUMN_SHARED + " text, " //false or true
+            + COLUMN_MODIFICATION_ALLOWED + " text, " //false or true
+            + COLUMN_CREATION_ALLOWED + " text, " //false or true
             + COLUMN_DESCRIPTION + " text);";
 
     private static final String CREATE_TAGS = "create table "
             + TABLE_TAGS +
             "(" + COLUMN_ID+ " integer primary key autoincrement, "
-            + COLUMN_TAGNAME + " text not null unique );";
+            + COLUMN_ACCOUNT + " text not null, "
+            + COLUMN_ROOT_FOLDER + " text not null, "
+            + COLUMN_UID + " text not null unique, "
+            + COLUMN_TAG_UID + " text not null, "
+            + COLUMN_PRODUCTID + " text not null, "
+            + COLUMN_CREATIONDATE + " integer, "
+            + COLUMN_MODIFICATIONDATE + " integer, " //milliseconds
+            + COLUMN_COLOR + " text, "
+            + COLUMN_PRIORITY + " integer, "
+            + COLUMN_TAGNAME + " text not null );";
 
     private static final String CREATE_TAGS_NOTES = "create table "
             + TABLE_NOTE_TAGS +
@@ -97,7 +116,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + COLUMN_ROOT_FOLDER + " )" +
             "VALUES ('local','Notes');";
 
-
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
@@ -114,15 +132,21 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        Log.w(DatabaseHelper.class.getName(),
-                "Upgrading database from version " + oldVersion + " to "
-                        + newVersion + ", which will destroy all old data");
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_MODIFICATION);
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_NOTE_TAGS);
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_TAGS);
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_NOTES);
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_ACTIVEACCOUNT);
-        onCreate(db);
+        Log.w(DatabaseHelper.class.getName(), "Upgrading database from version " + oldVersion + " to version "+ newVersion);
+        if(oldVersion == 2){
+            db.execSQL("ALTER TABLE "+TABLE_TAGS+" ADD COLUMN "+COLUMN_TAG_UID+" text ");
+        }else if(oldVersion < 2){
+            db.execSQL(CREATE_TAGS);
+        }
+
+        if(oldVersion < 4){
+            db.execSQL("ALTER TABLE "+TABLE_NOTES+" ADD COLUMN "+COLUMN_SHARED+" text ");
+        }
+
+        if(oldVersion < 5){
+            db.execSQL("ALTER TABLE "+TABLE_NOTES+" ADD COLUMN "+COLUMN_MODIFICATION_ALLOWED+" text ");
+            db.execSQL("ALTER TABLE "+TABLE_NOTES+" ADD COLUMN "+COLUMN_CREATION_ALLOWED+" text ");
+        }
     }
 
 }

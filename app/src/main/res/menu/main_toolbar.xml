@@ -12,6 +12,11 @@
         android:icon="@drawable/ic_action_collection_new"
         android:title="@string/title_create_notebook" />
 
+    <item android:id="@+id/choose_tag_color_menu"
+        app:showAsAction="ifRoom"
+        android:icon="@drawable/ic_label_color"
+        android:title="@string/title_choose_tag_color" />
+
     <item android:id="@id/delete_notebook_menu"
         app:showAsAction="ifRoom"
         android:icon="@drawable/ic_action_collection_remove"
@@ -22,13 +27,8 @@
         android:icon="@drawable/ic_action_search"
         android:title="@string/title_dialog_search" />
 
-    <item android:id="@id/create_sort_menu"
+    <item android:id="@+id/settings_menu"
         app:showAsAction="ifRoom"
-        android:icon="@drawable/ic_action_sort_by_size"
-        android:title="@string/title_dialog_sorting" />
-
-    <item android:id="@id/create_account_menu"
-        app:showAsAction="ifRoom"
-        android:icon="@drawable/ic_action_add_person"
-        android:title="@string/title_add_account" />
+        android:icon="@drawable/ic_action_settings"
+        android:title="@string/title_activity_settings" />
 </menu>

@@ -28,6 +28,7 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.kore.kolab.notes.AuditInformation;
@@ -35,9 +36,11 @@ import org.kore.kolab.notes.Colors;
 import org.kore.kolab.notes.Identification;
 import org.kore.kolab.notes.Note;
 import org.kore.kolab.notes.Notebook;
+import org.kore.kolab.notes.SharedNotebook;
 import org.kore.kolab.notes.Tag;
 import org.kore.kolabnotes.android.R;
 import org.kore.kolabnotes.android.Utils;
+import org.kore.kolabnotes.android.content.AccountIdentifier;
 import org.kore.kolabnotes.android.content.ActiveAccount;
 import org.kore.kolabnotes.android.content.ActiveAccountRepository;
 import org.kore.kolabnotes.android.content.NoteRepository;
@@ -48,13 +51,13 @@ import org.kore.kolabnotes.android.content.TagRepository;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.sql.Timestamp;
+import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
@@ -87,7 +90,7 @@ public class DetailFragment extends Fragment{
 
     private Set<String> selectedTags = new LinkedHashSet<>();
 
-    private List<String> allTags = new ArrayList<>();
+    private Map<String,Tag> allTags = new HashMap<>();
 
     //Given notebook is set, if a notebook uid was in the start intent,
     //intialNotebook ist the notebook-UID which is selected after setSpinnerSelection was called
@@ -153,6 +156,7 @@ public class DetailFragment extends Fragment{
 
         editor = (RichEditor)activity.findViewById(R.id.detail_description);
         editor.setBackgroundColor(getResources().getColor(R.color.background_material_light));
+        editor.setEditorHeight(300);
         editor.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View view, boolean b) {
@@ -175,8 +179,6 @@ public class DetailFragment extends Fragment{
                 DetailFragment.this.onBackPressed();
             }
         });
-
-        allTags.addAll(tagRepository.getAll());
 
         Intent startIntent = activity.getIntent();
         String uid = startUid;
@@ -220,9 +222,16 @@ public class DetailFragment extends Fragment{
 
         toolbar.setTitle(Utils.getNameOfActiveAccount(activity, activeAccount.getAccount(), activeAccount.getRootFolder()));
 
-        initSpinner();
-
         if(uid != null) {
+
+            //if a note was selected from the "all notes" overview
+            final AccountIdentifier accountFromNote = noteRepository.getAccountFromNote(uid);
+            if(!activeAccount.getAccount().equals(accountFromNote.getAccount()) || !activeAccount.getRootFolder().equals(accountFromNote.getRootFolder())){
+                activeAccount = activeAccountRepository.switchAccount(accountFromNote.getAccount(),accountFromNote.getRootFolder());
+            }
+
+            initSpinner();
+
             note = noteRepository.getByUID(activeAccount.getAccount(), activeAccount.getRootFolder(), uid);
 
             //Maybe the note got deleted (sync happend after a click on a note was done) => Issues 34 on GitHub
@@ -245,22 +254,33 @@ public class DetailFragment extends Fragment{
                 }
 
                 selectedColor = note.getColor();
-                if (selectedColor != null) {
-                    toolbar.setBackgroundColor(Color.parseColor(selectedColor.getHexcode()));
-                }else{
-                    toolbar.setBackgroundColor(getResources().getColor(R.color.theme_default_primary));
-                }
 
                 if(notebook == null){
                     notebook = noteRepository.getUIDofNotebook(activeAccount.getAccount(), activeAccount.getRootFolder(), uid);
                 }
             }
         }else{
+            initSpinner();
             isNewNote = true;
         }
 
+        allTags.putAll(tagRepository.getAllAsMap(activeAccount.getAccount(), activeAccount.getRootFolder()));
         setNotebook(activeAccount, notebook, startNotebook != null);
         intialNotebookName = getNotebookSpinnerSelectionName();
+    }
+
+
+
+    void setToolbarColor(){
+        boolean lightText = true;
+        if (selectedColor != null) {
+            toolbar.setBackgroundColor(Color.parseColor(selectedColor.getHexcode()));
+            lightText = Utils.useLightTextColor(activity, selectedColor);
+        }else{
+            toolbar.setBackgroundColor(getResources().getColor(R.color.theme_default_primary));
+        }
+
+        Utils.setToolbarTextAndIconColor(activity, toolbar, lightText);
     }
 
     void setHtml(String text){
@@ -305,7 +325,25 @@ public class DetailFragment extends Fragment{
             //GitHub Issue 37
             Notebook notebook = notebookRepository.getByUID(activeAccount.getAccount(), activeAccount.getRootFolder(), uid);
             if(notebook != null) {
-                String notebookSummary = notebook.getSummary();
+
+                String summary = notebook.getSummary();
+
+                if(notebook.isShared()){
+                    SharedNotebook shared = (SharedNotebook)notebook;
+                    summary = shared.getShortName();
+
+                    if(!shared.isNoteCreationAllowed() && !shared.isNoteModificationAllowed()){
+                        Toast.makeText(activity, R.string.no_write_permissions, Toast.LENGTH_LONG).show();
+                    }else if(shared.isNoteCreationAllowed() && !shared.isNoteModificationAllowed()){
+                        if(note != null) {
+                            Toast.makeText(activity, R.string.no_change_permissions, Toast.LENGTH_LONG).show();
+                        }
+                    }else if(!shared.isNoteCreationAllowed() && shared.isNoteModificationAllowed()){
+                        Toast.makeText(activity, R.string.no_create_permissions, Toast.LENGTH_LONG).show();
+                    }
+                }
+
+                String notebookSummary = summary;
                 setSpinnerSelection(notebookSummary);
                 if(setGivenNotebook){
                     givenNotebook = notebookSummary;
@@ -316,7 +354,7 @@ public class DetailFragment extends Fragment{
             }
         }
     }
-    
+
     void initEditor(){
         editor.setOnTextChangeListener(new RichEditor.OnTextChangeListener() {
             @Override
@@ -428,10 +466,15 @@ public class DetailFragment extends Fragment{
 
             @Override
             public void onClick(View v) {
-                AmbilWarnaDialog dialog = new AmbilWarnaDialog(activity, Color.BLACK, new AmbilWarnaDialog.OnAmbilWarnaListener() {
+                AmbilWarnaDialog dialog = new AmbilWarnaDialog(activity, Color.BLACK, false, new AmbilWarnaDialog.OnAmbilWarnaListener() {
                     @Override
                     public void onOk(AmbilWarnaDialog dialog, int color) {
                         editor.setTextColor(color);
+                    }
+
+                    @Override
+                    public void onRemove(AmbilWarnaDialog dialog) {
+                        // do nothing
                     }
 
                     @Override
@@ -446,10 +489,15 @@ public class DetailFragment extends Fragment{
         activity.findViewById(R.id.action_bg_color).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                AmbilWarnaDialog dialog = new AmbilWarnaDialog(activity, Color.WHITE, new AmbilWarnaDialog.OnAmbilWarnaListener() {
+                AmbilWarnaDialog dialog = new AmbilWarnaDialog(activity, Color.WHITE, false, new AmbilWarnaDialog.OnAmbilWarnaListener() {
                     @Override
                     public void onOk(AmbilWarnaDialog dialog, int color) {
                         editor.setTextBackgroundColor(color == Color.WHITE ? Color.TRANSPARENT : color);
+                    }
+
+                    @Override
+                    public void onRemove(AmbilWarnaDialog dialog) {
+                        // do nothing
                     }
 
                     @Override
@@ -516,12 +564,48 @@ public class DetailFragment extends Fragment{
             }
         });
 
-        /*activity.findViewById(R.id.action_insert_link).setOnClickListener(new View.OnClickListener() {
+        activity.findViewById(R.id.action_insert_link).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                editor.insertLink("https://github.com/wasabeef", "wasabeef");
+                AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+
+                builder.setTitle(R.string.dialog_input_link);
+
+                LayoutInflater inflater = activity.getLayoutInflater();
+                final View view = inflater.inflate(R.layout.dialog_link_input, null);
+
+                builder.setView(view);
+
+                builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        TextView text = (TextView) view.findViewById(R.id.dialog_text_input_field);
+
+                        CharSequence input = text.getText();
+                        if(input == null || input.toString().trim().length() == 0){
+                            Toast.makeText(activity,R.string.error_field_required,Toast.LENGTH_SHORT).show();
+                        }else {
+                            editor.insertLink(input.toString(), input.toString());
+                        }
+                    }
+                });
+                builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        //nothing
+                    }
+                });
+
+                builder.show();
             }
-        });*/
+        });
+
+        activity.findViewById(R.id.action_insert_checkbox).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                editor.insertTodo();
+            }
+        });
     }
 
     @Override
@@ -593,6 +677,8 @@ public class DetailFragment extends Fragment{
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.detail_toolbar, menu);
+
+        setToolbarColor();
     }
 
     String setShareIntentSubject(Intent shareIntent){
@@ -643,11 +729,14 @@ public class DetailFragment extends Fragment{
             case R.id.edit_tag_menu:
                 editTags();
                 break;
-            case R.id.change_classification:
-                editClassification();
-                break;
+            //case R.id.change_classification: issue 85
+            //    editClassification();
+            //    break;
             case R.id.colorpicker:
                 chooseColor();
+                break;
+            case R.id.metainformation:
+                showMetainformation();
                 break;
             case R.id.share:
                 Intent shareIntent = new Intent();
@@ -663,11 +752,17 @@ public class DetailFragment extends Fragment{
 
         final int initialColor = selectedColor == null ? Color.WHITE : Color.parseColor(selectedColor.getHexcode());
 
-        AmbilWarnaDialog dialog = new AmbilWarnaDialog(activity, initialColor, new AmbilWarnaDialog.OnAmbilWarnaListener() {
+        AmbilWarnaDialog dialog = new AmbilWarnaDialog(activity, initialColor, true, new AmbilWarnaDialog.OnAmbilWarnaListener() {
             @Override
             public void onOk(AmbilWarnaDialog dialog, int color) {
                 selectedColor = Colors.getColor(String.format("#%06X", (0xFFFFFF & color)));
-                toolbar.setBackgroundColor(color);
+                setToolbarColor();
+            }
+
+            @Override
+            public void onRemove(AmbilWarnaDialog dialog) {
+                selectedColor = null;
+                setToolbarColor();
             }
 
             @Override
@@ -676,6 +771,39 @@ public class DetailFragment extends Fragment{
             }
         });
         dialog.show();
+    }
+
+    void showMetainformation(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+
+        builder.setTitle(R.string.title_metainformation);
+
+        LayoutInflater inflater = activity.getLayoutInflater();
+        View view = inflater.inflate(R.layout.dialog_metainformation, null);
+
+        builder.setView(view);
+
+        builder.setNeutralButton(R.string.ok, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                //just close dialog
+            }
+        });
+
+        final DateFormat dateFormat = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.DEFAULT);
+
+        final Timestamp now = new Timestamp(System.currentTimeMillis());
+        final String productID = note == null ? "kolabnotes-android" : note.getIdentification().getProductId();
+        final String uid = note == null ? "" : note.getIdentification().getUid();
+        final Timestamp createdAt = note == null ? now : note.getAuditInformation().getCreationDate();
+        final Timestamp modification = note == null ? now : note.getAuditInformation().getLastModificationDate();
+
+        ((TextView) view.findViewById(R.id.createdDate)).setText(dateFormat.format(createdAt));
+        ((TextView) view.findViewById(R.id.modificationDate)).setText(dateFormat.format(modification));
+        ((TextView) view.findViewById(R.id.productID)).setText(productID);
+        ((TextView) view.findViewById(R.id.UID)).setText(uid);
+
+        builder.show();
     }
 
     void editClassification(){
@@ -745,7 +873,12 @@ public class DetailFragment extends Fragment{
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         builder.setTitle(R.string.dialog_change_tags);
 
-        final String[] tagArr = allTags.toArray(new String[allTags.size()]);
+        final Set<String> tagNames = allTags.keySet();
+
+        final String[] tagArr = tagNames.toArray(new String[tagNames.size()]);
+
+        Arrays.sort(tagArr);
+
         final boolean[] selectionArr = new boolean[tagArr.length];
 
         final ArrayList<Integer> selectedItems=new ArrayList<Integer> ();
@@ -813,7 +946,7 @@ public class DetailFragment extends Fragment{
 
         builder.setView(view);
 
-        builder.setPositiveButton(R.string.ok,new CreateNotebookButtonListener((EditText)view.findViewById(R.id.dialog_text_input_field)));
+        builder.setPositiveButton(R.string.ok, new CreateNotebookButtonListener((EditText) view.findViewById(R.id.dialog_text_input_field)));
         builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -894,6 +1027,13 @@ public class DetailFragment extends Fragment{
 
                 Notebook book = notebookRepository.getBySummary(activeAccountRepository.getActiveAccount().getAccount(), activeAccountRepository.getActiveAccount().getRootFolder(), notebookName);
 
+                if(book.isShared()){
+                    if(!((SharedNotebook)book).isNoteCreationAllowed()){
+                        Toast.makeText(activity, R.string.no_create_permissions, Toast.LENGTH_LONG).show();
+                        return;
+                    }
+                }
+
                 noteRepository.insert(activeAccountRepository.getActiveAccount().getAccount(), activeAccountRepository.getActiveAccount().getRootFolder(), note, book.getIdentification().getUid());
                 noteTagRepository.delete(activeAccountRepository.getActiveAccount().getAccount(), activeAccountRepository.getActiveAccount().getRootFolder(), uuid);
                 for (String tag : selectedTags) {
@@ -909,6 +1049,8 @@ public class DetailFragment extends Fragment{
 
                 Notebook book = notebookRepository.getBySummary(activeAccountRepository.getActiveAccount().getAccount(), activeAccountRepository.getActiveAccount().getRootFolder(), notebookName);
 
+                if (checkModificationPermissions(book)) return;
+
                 noteRepository.update(activeAccountRepository.getActiveAccount().getAccount(), activeAccountRepository.getActiveAccount().getRootFolder(), note, book.getIdentification().getUid());
 
                 noteTagRepository.delete(activeAccountRepository.getActiveAccount().getAccount(), activeAccountRepository.getActiveAccount().getRootFolder(), uuid);
@@ -917,8 +1059,15 @@ public class DetailFragment extends Fragment{
                 }
 
                 String selectedNotebookName = Utils.getSelectedNotebookName(activity);
-                if(selectedNotebookName != null && !selectedNotebookName.equals(book.getSummary())){
-                    Utils.setSelectedNotebookName(activity,book.getSummary());
+
+                String corrSumm = book.getSummary();
+
+                if(book.isShared()){
+                    corrSumm = ((SharedNotebook)book).getShortName();
+                }
+
+                if(selectedNotebookName != null && !selectedNotebookName.equals(corrSumm)){
+                    Utils.setSelectedNotebookName(activity,corrSumm);
                 }
             }
 
@@ -932,6 +1081,34 @@ public class DetailFragment extends Fragment{
 
             ((OnFragmentCallback) activity).fragmentFinished(returnIntent, OnFragmentCallback.ResultCode.SAVED);
         }
+    }
+
+    private boolean checkModificationPermissions(Notebook book) {
+        String oldNBUid = noteRepository.getUIDofNotebook(activeAccountRepository.getActiveAccount().getAccount(), activeAccountRepository.getActiveAccount().getRootFolder(),note.getIdentification().getUid());
+
+        if(book.isShared() || (oldNBUid != null && !oldNBUid.equals(book.getIdentification().getUid()))){
+            if(!oldNBUid.equals(book.getIdentification().getUid())){
+                //notebook got changed, so one needs the modification rights in the old an creation right in the new book
+                Notebook oldOne = notebookRepository.getByUID(activeAccountRepository.getActiveAccount().getAccount(), activeAccountRepository.getActiveAccount().getRootFolder(), oldNBUid);
+                if(oldOne.isShared()){
+                    if(!((SharedNotebook)oldOne).isNoteModificationAllowed()){
+                        Toast.makeText(activity, R.string.no_change_permissions, Toast.LENGTH_LONG).show();
+                        return true;
+                    }
+                }
+
+                if(!((SharedNotebook)book).isNoteCreationAllowed()){
+                    Toast.makeText(activity, R.string.no_create_permissions, Toast.LENGTH_LONG).show();
+                    return true;
+                }
+            }else {
+                if(!((SharedNotebook)book).isNoteModificationAllowed()){
+                    Toast.makeText(activity, R.string.no_change_permissions, Toast.LENGTH_LONG).show();
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     /**
@@ -955,7 +1132,7 @@ public class DetailFragment extends Fragment{
 
             String altContent = html.substring(startOfAltContent,endOfAlt);
 
-            repaired.replace(withoutTag,endOfImage,base64Images.get(altContent));
+            repaired.replace(withoutTag, endOfImage,base64Images.get(altContent));
 
             start = endOfAlt;
         }
@@ -994,6 +1171,15 @@ public class DetailFragment extends Fragment{
 
     void deleteNote(){
         if(note != null){
+            Notebook book = notebookRepository.getByUID(activeAccountRepository.getActiveAccount().getAccount(), activeAccountRepository.getActiveAccount().getRootFolder(), noteRepository.getUIDofNotebook(activeAccountRepository.getActiveAccount().getAccount(), activeAccountRepository.getActiveAccount().getRootFolder(), note.getIdentification().getUid()));
+
+            if(book.isShared()){
+                if(!((SharedNotebook)book).isNoteModificationAllowed()){
+                    Toast.makeText(activity, R.string.no_change_permissions, Toast.LENGTH_LONG).show();
+                    return;
+                }
+            }
+
             AlertDialog.Builder builder = new AlertDialog.Builder(activity);
 
             builder.setTitle(R.string.dialog_delete_note);
@@ -1021,15 +1207,28 @@ public class DetailFragment extends Fragment{
         }
     }
 
-    void initSpinner(){
+    public void resetSpinner(){
+        Spinner spinner = initSpinner();
+        spinner.setSelection(0);
+    }
+
+    Spinner initSpinner(){
         Spinner spinner = (Spinner) activity.findViewById(R.id.spinner_notebook);
 
-        List<Notebook> notebooks = notebookRepository.getAll(  activeAccountRepository.getActiveAccount().getAccount(),  activeAccountRepository.getActiveAccount().getRootFolder());
+        final ActiveAccount activeAccount = activeAccountRepository.getActiveAccount();
+
+        List<Notebook> notebooks = notebookRepository.getAll(activeAccount.getAccount(), activeAccount.getRootFolder());
 
         String[] notebookArr = new String[notebooks.size()];
 
         for(int i=0; i<notebooks.size();i++){
-            notebookArr[i] = notebooks.get(i).getSummary();
+            String summary = notebooks.get(i).getSummary();
+
+            if(notebooks.get(i).isShared()){
+                summary = ((SharedNotebook)notebooks.get(i)).getShortName();
+            }
+
+            notebookArr[i] = summary;
         }
 
         Arrays.sort(notebookArr);
@@ -1037,6 +1236,8 @@ public class DetailFragment extends Fragment{
         ArrayAdapter<CharSequence> adapter = new ArrayAdapter<CharSequence>(activity,R.layout.notebook_spinner_item,notebookArr);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
+
+        return spinner;
     }
 
     @Override
@@ -1090,7 +1291,7 @@ public class DetailFragment extends Fragment{
             Tag[] tags = new Tag[selectedTags.size()];
             int i = 0;
             for (String tag : selectedTags) {
-                tags[i++] = new Tag(tag);
+                tags[i++] = allTags.get(tag);
             }
 
             newNote.addCategories(tags);

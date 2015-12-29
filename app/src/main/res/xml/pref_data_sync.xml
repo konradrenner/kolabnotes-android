@@ -1,0 +1,22 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <ListPreference
+        android:key="sync_conflict"
+        android:title="@string/pref_title_sync_conflict"
+        android:entries="@array/pref_sync_conflict_titles"
+        android:entryValues="@array/pref_sync_conflict"
+        android:defaultValue="LATEST"
+        android:negativeButtonText="@null"
+        android:positiveButtonText="@null" />
+
+    <Preference android:title="@string/title_update_account">
+        <intent android:action="org.kore.kolabnotes.android.security.AuthenticatorActivity">
+            <extra android:name="changeAccount" android:value="true" />
+        </intent>
+    </Preference>
+
+    <Preference android:title="@string/pref_title_system_sync_settings">
+        <intent android:action="android.settings.SYNC_SETTINGS" />
+    </Preference>
+
+</PreferenceScreen>

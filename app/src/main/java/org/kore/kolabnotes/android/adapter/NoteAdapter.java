@@ -2,13 +2,15 @@ package org.kore.kolabnotes.android.adapter;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import org.kore.kolab.notes.Note;
@@ -18,6 +20,7 @@ import org.kore.kolabnotes.android.R;
 import org.kore.kolabnotes.android.Utils;
 
 import java.text.DateFormat;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -28,12 +31,8 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.ViewHolder> {
     private Context context;
     private NoteSelectedListener listener;
     private DateFormat dateFormatter;
-    private static final int CYAN = 210;
-    private static final int RED = 0;
-    private static final int RED_ORANGE = 20;
-    private static final int HUE = 0;
-    private static final int SATURATION = 1;
-    private static final int BRIGHTNESS = 2;
+
+    private List<ViewHolder> views;
 
     public NoteAdapter(List<Note> notes, int rowLayout, Context context, NoteSelectedListener listener) {
         this.notes = notes;
@@ -41,6 +40,7 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.ViewHolder> {
         this.context = context;
         this.listener = listener;
         this.dateFormatter = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
+        views = new ArrayList<>(notes.size());
     }
 
 
@@ -68,6 +68,31 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.ViewHolder> {
         return new ViewHolder(v);
     }
 
+
+    public void setMetainformationVisible(boolean value){
+        for(ViewHolder holder : this.views){
+            if(value){
+                holder.showMetainformation();
+            }else{
+                holder.hideMetainformation();
+            }
+        }
+
+        notifyDataSetChanged();
+    }
+
+    public void setCharacteristicsVisible(boolean value){
+        for(ViewHolder holder : this.views){
+            if(value){
+                holder.showCharacteristics();
+            }else{
+                holder.hideCharacteristics();
+            }
+        }
+
+        notifyDataSetChanged();
+    }
+
     @Override
     public void onBindViewHolder(final ViewHolder viewHolder, int i) {
         final Note note = notes.get(i);
@@ -75,15 +100,56 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.ViewHolder> {
         viewHolder.classification.setText(context.getResources().getString(R.string.classification)+": "+note.getClassification());
         viewHolder.createdDate.setText(context.getResources().getString(R.string.creationDate)+": "+ dateFormatter.format(note.getAuditInformation().getCreationDate()));
         viewHolder.modificationDate.setText(context.getResources().getString(R.string.modificationDate)+": "+dateFormatter.format(note.getAuditInformation().getLastModificationDate()));
-        StringBuilder tags = new StringBuilder();
-        for(Tag tag : note.getCategories()){
-            tags.append(tag.getName());
-            tags.append(", ");
-        }
-        if(tags.length() > 0) {
-            viewHolder.categories.setText(context.getResources().getString(R.string.tags)+": "+tags.substring(0, tags.length() - 2));
+        viewHolder.categories.removeAllViews();
+
+        boolean useLightColor = Utils.useLightTextColor(context, note.getColor());
+
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        params.setMargins(12, 0, 0, 0);
+
+        if(note.getCategories().isEmpty()){
+            TextView textView = new TextView(context);
+            textView.setText(context.getResources().getString(R.string.notags));
+            textView.setTextColor(useLightColor ? Color.WHITE : Color.BLACK);
+            viewHolder.categories.addView(textView);
         }else{
-            viewHolder.categories.setText(context.getResources().getString(R.string.notags));
+            TextView textView = new TextView(context);
+            textView.setText(context.getResources().getString(R.string.tags));
+            textView.setTextColor(useLightColor ? Color.WHITE : Color.BLACK);
+            viewHolder.categories.addView(textView);
+
+            ArrayList<Tag> sorted = new ArrayList<>(note.getCategories());
+
+            Collections.sort(sorted);
+
+            for(Tag tag : sorted){
+                if(tag.getColor() == null){
+                    TextView tagTextView = new TextView(context);
+                    tagTextView.setText(tag.getName());
+                    tagTextView.setTextColor(useLightColor ? Color.WHITE : Color.BLACK);
+                    final Drawable drawable = context.getResources().getDrawable(R.drawable.color_background_with_dashedborder).mutate();
+
+                    int backgroundColor = note.getColor() == null ? Color.WHITE : Color.parseColor(note.getColor().getHexcode());
+
+                    drawable.setColorFilter(backgroundColor, PorterDuff.Mode.MULTIPLY);
+                    tagTextView.setBackground(drawable);
+                    tagTextView.setLayoutParams(params);
+
+                    viewHolder.categories.addView(tagTextView);
+                }else{
+                    boolean useLight = Utils.useLightTextColor(context, tag.getColor());
+
+                    TextView tagTextView = new TextView(context);
+                    tagTextView.setText(tag.getName());
+                    tagTextView.setTextColor(useLight ? Color.WHITE : Color.BLACK);
+                    final Drawable drawable = context.getResources().getDrawable(R.drawable.color_background_with_border).mutate();
+                    drawable.setColorFilter(Color.parseColor(tag.getColor().getHexcode()), PorterDuff.Mode.MULTIPLY);
+                    tagTextView.setBackground(drawable);
+                    tagTextView.setLayoutParams(params);
+
+                    viewHolder.categories.addView(tagTextView);
+                }
+            }
         }
 
         if(note != null && note.getColor() != null){
@@ -95,27 +161,20 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.ViewHolder> {
             viewHolder.categories.setBackgroundColor(Color.parseColor(note.getColor().getHexcode()));
 
             /*
-            * Text color depending on background color.
-            */
-            float[] HSV = new float[3];
-            Color.colorToHSV(Color.parseColor(note.getColor().getHexcode()), HSV);
-
-            /*
+            * Text color depending on background color:
             * If spectrum from cyan to red and saturation greater than or equal to 0.5 - text is white.
             * If spectrum is not included in these borders or brightness greater than or equal to 0.8 - text is black.
             */
-            if (((HSV[HUE] >= CYAN || (HSV[HUE] >= RED && HSV[HUE] <= RED_ORANGE)) && HSV[SATURATION] >= 0.5) || HSV[BRIGHTNESS] <= 0.8) {
+            if (useLightColor) {
                 viewHolder.name.setTextColor(Color.WHITE);
                 viewHolder.classification.setTextColor(Color.WHITE);
                 viewHolder.createdDate.setTextColor(Color.WHITE);
                 viewHolder.modificationDate.setTextColor(Color.WHITE);
-                viewHolder.categories.setTextColor(Color.WHITE);
             } else {
                 viewHolder.name.setTextColor(Color.BLACK);
                 viewHolder.classification.setTextColor(Color.GRAY);
                 viewHolder.createdDate.setTextColor(Color.GRAY);
                 viewHolder.modificationDate.setTextColor(Color.GRAY);
-                viewHolder.categories.setTextColor(Color.BLACK);
             }
 
         }else{
@@ -130,11 +189,22 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.ViewHolder> {
             viewHolder.classification.setTextColor(Color.GRAY);
             viewHolder.createdDate.setTextColor(Color.GRAY);
             viewHolder.modificationDate.setTextColor(Color.GRAY);
-            viewHolder.categories.setTextColor(Color.BLACK);
         }
         Utils.setElevation(viewHolder.cardView,5);
 
         viewHolder.itemView.setOnClickListener(new ClickListener(i));
+
+        if(Utils.getShowMetainformation(context)){
+            viewHolder.showMetainformation();
+        }else{
+            viewHolder.hideMetainformation();
+        }
+
+        if(Utils.getShowCharacteristics(context)){
+            viewHolder.showCharacteristics();
+        }else{
+            viewHolder.hideCharacteristics();
+        }
     }
 
     class ClickListener implements View.OnClickListener{
@@ -169,7 +239,7 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.ViewHolder> {
         TextView classification;
         TextView createdDate;
         TextView modificationDate;
-        TextView categories;
+        LinearLayout categories;
         CardView cardView;
 
         public ViewHolder(View itemView) {
@@ -178,8 +248,29 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.ViewHolder> {
             classification = (TextView) itemView.findViewById(R.id.classification);
             createdDate = (TextView) itemView.findViewById(R.id.createdDate);
             modificationDate = (TextView) itemView.findViewById(R.id.modificationDate);
-            categories = (TextView) itemView.findViewById(R.id.categories);
+            categories = (LinearLayout) itemView.findViewById(R.id.categories);
             cardView = (CardView)itemView;
+        }
+
+        void hideMetainformation(){
+            createdDate.setVisibility(View.GONE);
+            modificationDate.setVisibility(View.GONE);
+        }
+
+        void showMetainformation(){
+            createdDate.setVisibility(View.VISIBLE);
+            modificationDate.setVisibility(View.VISIBLE);
+        }
+
+        void hideCharacteristics(){
+            classification.setVisibility(View.GONE);
+            categories.setVisibility(View.GONE);
+        }
+
+        void showCharacteristics(){
+            //issue #85
+            classification.setVisibility(View.GONE);
+            categories.setVisibility(View.VISIBLE);
         }
     }
 

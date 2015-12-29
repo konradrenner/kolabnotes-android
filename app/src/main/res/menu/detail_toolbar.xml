@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item android:id="@id/delete_menu"
-        app:showAsAction="ifRoom"
+        app:showAsAction="always"
         android:icon="@drawable/ic_action_discard"
         android:title="@string/title_delete" />
 
@@ -11,16 +11,21 @@
         app:showAsAction="ifRoom"
         android:icon="@drawable/ic_action_labels_white"
         android:title="@string/title_edit_tag" />
-
+<!--issue 85
     <item android:id="@id/change_classification"
         app:showAsAction="ifRoom"
         android:icon="@drawable/ic_action_not_secure"
-        android:title="@string/title_change_classification" />
+        android:title="@string/title_change_classification" /> -->
 
     <item android:id="@+id/colorpicker"
         app:showAsAction="ifRoom"
         android:icon="@drawable/ic_action_choose_color"
         android:title="@string/title_colorpicker"/>
+
+    <item android:id="@+id/metainformation"
+        app:showAsAction="ifRoom"
+        android:icon="@drawable/ic_info_white_48dp"
+        android:title="@string/title_metainformation"/>
 
     <item android:id="@+id/share"
         app:showAsAction="ifRoom"

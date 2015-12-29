@@ -207,14 +207,23 @@
                     android:background="@null"
                     android:contentDescription="@null"
                     android:src="@drawable/insert_image"/>
-                <!--
+
                 <ImageButton
                     android:id="@+id/action_insert_link"
                     android:layout_width="48dp"
                     android:layout_height="48dp"
                     android:background="@null"
                     android:contentDescription="@null"
-                    android:src="@drawable/insert_link"/> -->
+                    android:src="@drawable/insert_link"/>
+
+                <ImageButton
+                    android:id="@+id/action_insert_checkbox"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:background="@null"
+                    android:contentDescription="@null"
+                    android:src="@drawable/ic_check_box_white_24dp"
+                    />
             </LinearLayout>
         </HorizontalScrollView>
 

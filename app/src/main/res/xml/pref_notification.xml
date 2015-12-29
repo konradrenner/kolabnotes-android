@@ -1,0 +1,9 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <SwitchPreference
+        android:key="pref_show_sync_notifications"
+        android:title="@string/pref_show_sync_notifications"
+        android:summary="@string/pref_show_sync_notifications_summary"
+        android:defaultValue="true" />
+
+</PreferenceScreen>
