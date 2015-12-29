@@ -128,9 +128,9 @@ public class ListWidgetConfigureActivity extends Activity {
 
             // When the button is clicked, store the string locally
             if(selectedAccount == null){
-                saveListWidgetPref(context, mAppWidgetId, "local", selectedNotebook, selectedTag, new NoteSorting(selectedColumn,selectedDirection));
+                saveListWidgetPref(context, mAppWidgetId, "local", selectedNotebook, selectedTag, new NoteSorting(Utils.SortingColumns.findValue(selectedColumn),selectedDirection));
             }else{
-                saveListWidgetPref(context, mAppWidgetId, mAccountManager.getUserData(selectedAccount, AuthenticatorActivity.KEY_ACCOUNT_NAME), selectedNotebook, selectedTag, new NoteSorting(selectedColumn,selectedDirection));
+                saveListWidgetPref(context, mAppWidgetId, mAccountManager.getUserData(selectedAccount, AuthenticatorActivity.KEY_ACCOUNT_NAME), selectedNotebook, selectedTag, new NoteSorting(Utils.SortingColumns.findValue(selectedColumn),selectedDirection));
             }
 
             // It is the responsibility of the configuration activity to update the app widget
@@ -178,7 +178,7 @@ public class ListWidgetConfigureActivity extends Activity {
         if(TextUtils.isEmpty(direction) || TextUtils.isEmpty(column)){
             return new NoteSorting();
         }
-        return new NoteSorting(column, NoteSorting.Direction.valueOf(direction));
+        return new NoteSorting(Utils.SortingColumns.findValue(column), NoteSorting.Direction.valueOf(direction));
     }
 
     static void deleteListWidgetPref(Context context, int appWidgetId) {
