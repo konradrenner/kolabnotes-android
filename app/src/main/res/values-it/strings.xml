@@ -163,4 +163,5 @@
         <item>Nota locale</item>
         <!--<item>Ask which</item>-->
     </string-array>
+    <string name="pref_sorting_category">Ordinamento</string>
 </resources>

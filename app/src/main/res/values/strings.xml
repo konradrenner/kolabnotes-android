@@ -162,4 +162,5 @@
     <string name="no_write_permissions">No write permissions in selected notebook</string>
     <string name="no_change_permissions">No edit permissions in selected notebook</string>
     <string name="no_create_permissions">No creation permission in selected notebook</string>
+    <string name="pref_sorting_category">Sorting</string>
 </resources>

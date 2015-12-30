@@ -13,7 +13,7 @@
     <string name="cancel">Отменить</string>
     <string name="classification">Группа</string>
     <string name="color">Цвет</string>
-    <string name="local_account_change">Местное счет не может быть изменен</string>
+    <string name="local_account_change">Локальный аккаунт не может быть изменен</string>
     <string name="configure">Настроить</string>
     <string name="create_or_select_text">Выбрать или создать заметку</string>
     <string name="creationDate">Создана</string>
@@ -43,7 +43,7 @@
     <string name="drawer_item_tags">Метки</string>
     <string name="drawer_open">Меню открыто</string>
     <string name="empty_note">Заметка пуста</string>
-    <string name="enable_ssl">SSL включено</string>
+    <string name="enable_ssl">SSL включен</string>
     <string name="error_connection">Во время соединения произошла ошибка</string>
     <string name="error_duplicate_account">Не удалось создать аккаунт (аккаунт с таким именем уже существует?)</string>
     <string name="error_field_required">Это поле обязательно для заполнения</string>
@@ -74,7 +74,7 @@
     <string name="radio_desc">По убыванию</string>
     <string name="radio_private">Частная</string>
     <string name="radio_public">Публичная</string>
-    <string name="select_or_create_hint">выбрать или создать значок заметки</string>
+    <string name="select_or_create_hint">Выбрать или создать значок заметки</string>
     <string name="send_to">Поделится заметкой с...</string>
     <string name="signup_ok">Новый аккаунт создан</string>
     <string name="signup_title">Создать новый аккаунт</string>
@@ -105,46 +105,47 @@
     <string name="widget_allnotes">Все заметки аккаунта</string>
     <string name="yes">Да</string>
     <string name="account_choose_title">Выберите учетную запись</string>
-    <string name="select_button">выбрать</string>
+    <string name="select_button">Выбрать</string>
     <string name="extended_options" >Другие варианты</string>
 
-    <string name="day">день</string>
-    <string name="hour">час</string>
-    <string name="minute">минут</string>
-    <string name="title_metainformation">метаинформации</string>
-    <string name="productID">Код товара</string>
+    <string name="day">День</string>
+    <string name="hour">Час</string>
+    <string name="minute">Минут</string>
+    <string name="title_metainformation">Метаинформация</string>
+    <string name="productID">ID продукта</string>
     <string name="uid">UID</string>
-    <string name="title_characteristics">характеристика</string>
+    <string name="title_characteristics">Свойства</string>
     <string name="title_choose_tag_color">Выберите цвет тегов</string>
-    <string name="no_tag_selected">Нет тегов выбран</string>
+    <string name="no_tag_selected">Нет выбранных меток</string>
     <string name="remove">Удалить</string>
-    <string name="shared_folders">Общие записные книжки</string>
-    <string name="changed_content_shared_folder">Изменение общей записной книжке</string>
-    <string name="note_changed">Примечание были изменены</string>
-    <string name="in_notebook">в записной книжке</string>
+    <string name="shared_folders">Общие блокноты</string>
+    <string name="changed_content_shared_folder">Измененить общий блокнот</string>
+    <string name="note_changed">Заметка изменена</string>
+    <string name="in_notebook">в блокноте</string>
     <string name="note_created">Новая заметка</string>
     <string name="dialog_input_link">Прикрепите ссылку</string>
-    <string name="no_folder_permission">Нет доступа для папки</string>
+    <string name="no_folder_permission">Нет доступа к блокноту</string>
     <string name="pref_characteristics">Показать метки</string>
-    <string name="pref_metainformation">Показать metainformations</string>
-    <string name="pref_desc_metainformation">Дата Показывать создание и дата последнего изменения</string>
-    <string name="pref_column">Сортировка столбца</string>
-    <string name="pref_direction">направление сортировки</string>
+    <string name="pref_metainformation">Показать метаинформацию</string>
+    <string name="pref_desc_metainformation">Показать дату создания и последнего изменения</string>
+    <string name="pref_column">Сортировать</string>
+    <string name="pref_direction">Сортировать по</string>
     <string name="pref_show_sync_notifications">Показать уведомления синхронизации</string>
-    <string name="pref_show_sync_notifications_summary">Уведомления если ноты в общих папках изменяются</string>
-    <string name="pref_header_data_sync">Syncronisation</string>
-    <string name="pref_header_general">как правило</string>
+    <string name="pref_show_sync_notifications_summary">Показать уведомление, если заметки были изменены в общих блокнотах</string>
+    <string name="pref_header_data_sync">Синхронизация</string>
+    <string name="pref_header_general">Общее</string>
     <string name="pref_header_notifications">Уведомления</string>
-    <string name="pref_title_sync_conflict">Синхронизация конфликты обработки</string>
+    <string name="pref_title_sync_conflict">Синхронизация конфликтов обработки</string>
     <string name="pref_title_system_sync_settings">Настройки синхронизации системы</string>
-    <string name="no_write_permissions">Нет права на запись в выбранный ноутбук</string>
-    <string name="no_change_permissions">Нет редактировать разрешения в выбранной записной книжке</string>
-    <string name="no_create_permissions">Нет доступа создание в выбранном ноутбуке</string>
+    <string name="no_write_permissions">Нет прав на запись в выбранном блокноте</string>
+    <string name="no_change_permissions">Нет прав редактировать в выбранном блокноте</string>
+    <string name="no_create_permissions">Нет прав для создания в выбранном блокноте</string>
 
     <string-array name="pref_sync_conflict_titles">
-        <item>Последнее изменение примечание</item>
-        <item>примечание Сервер</item>
-        <item>Местное примечание</item>
+        <item>Последняя измененная заметка</item>
+        <item>Заметка с сервера</item>
+        <item>Локальная заметка</item>
         <!--<item>Ask which</item>-->
     </string-array>
+    <string name="pref_sorting_category">Сортировка</string>
 </resources>

@@ -160,4 +160,5 @@
         <item>Lokale Notiz</item>
         <!--<item>Ask which</item>-->
     </string-array>
+    <string name="pref_sorting_category">Sortierung</string>
 </resources>
