@@ -11,7 +11,7 @@
         android:summary="@string/pref_desc_metainformation"
         android:defaultValue="true" />
 
-    <PreferenceCategory android:key="sorting_category" android:title="Sorting" >
+    <PreferenceCategory android:key="sorting_category" android:title="@string/pref_sorting_category" >
 
         <ListPreference
             android:key="pref_column"
