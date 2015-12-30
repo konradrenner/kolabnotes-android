@@ -1,5 +1,7 @@
 package org.kore.kolabnotes.android.content;
 
+import org.kore.kolabnotes.android.Utils;
+
 /**
  * Created by koni on 20.07.15.
  */
@@ -11,13 +13,13 @@ public final class NoteSorting {
     private final Direction direction;
     private final String columnName;
 
-    public NoteSorting(String columnName, Direction direction) {
+    public NoteSorting(Utils.SortingColumns columnName, Direction direction) {
         this.direction = direction;
-        this.columnName = columnName;
+        this.columnName = columnName.name();
     }
 
     public NoteSorting(){
-        this(DatabaseHelper.COLUMN_MODIFICATIONDATE,Direction.DESC);
+        this(Utils.SortingColumns.lastModificationDate,Direction.DESC);
     }
 
     public Direction getDirection() {

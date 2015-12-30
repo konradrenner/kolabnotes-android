@@ -287,7 +287,7 @@ public class Utils {
             return new NoteSorting();
         }
 
-        return new NoteSorting(column.toLowerCase(), NoteSorting.Direction.valueOf(direction));
+        return new NoteSorting(SortingColumns.findValue(column.toLowerCase()), NoteSorting.Direction.valueOf(direction));
     }
 
     public static boolean getReloadDataAfterDetail(Context context){

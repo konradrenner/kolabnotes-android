@@ -16,6 +16,7 @@ import android.widget.Toast;
 
 import org.kore.kolab.notes.Note;
 import org.kore.kolabnotes.android.R;
+import org.kore.kolabnotes.android.Utils;
 import org.kore.kolabnotes.android.adapter.NoteListAdapater;
 import org.kore.kolabnotes.android.content.DatabaseHelper;
 import org.kore.kolabnotes.android.content.NoteRepository;
@@ -203,7 +204,7 @@ public class StickyNoteWidgetConfigureActivity extends Activity {
             email = mAccountManager.getUserData(selectedAccount,AuthenticatorActivity.KEY_EMAIL);
         }
 
-        List<Note> notes = new ArrayList<>(noteRepository.getAll(email, rootFolder, new NoteSorting(DatabaseHelper.COLUMN_SUMMARY, NoteSorting.Direction.ASC)));
+        List<Note> notes = new ArrayList<>(noteRepository.getAll(email, rootFolder, new NoteSorting(Utils.SortingColumns.summary, NoteSorting.Direction.ASC)));
 
         Collections.sort(notes);
 
