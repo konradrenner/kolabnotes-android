@@ -152,7 +152,7 @@
     <string name="pref_title_system_sync_settings">System Sync-Einstellungen</string>
     <string name="no_write_permissions">Keine Schreibrechte im gewählten Notizbuch</string>
     <string name="no_change_permissions">Keine Änderungsrechte im gewählten Notizbuch</string>
-    <string name="no_create_permissions">Keine Erstellungsrecht im gewählten Notizbuch</string>
+    <string name="no_create_permissions">Kein Erstellungsrecht im gewählten Notizbuch</string>
 
     <string-array name="pref_sync_conflict_titles">
         <item>Zuletzt geänderte Notiz</item>
