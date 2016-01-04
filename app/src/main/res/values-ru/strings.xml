@@ -32,7 +32,7 @@
     <string name="dialog_nointernet">Нет соединения с Интернетом!</string>
     <string name="dialog_processinganduploading">Показан образец прогресса. Пожалуйста, будьте терпеливы! (Оно ничего не делает. Просто ждёт 100 мс / приложение)</string>
     <string name="dialog_question_cancel">Все изменения будут потеряны, Вы уверены?</string>
-    <string name="dialog_question_delete">Вы действительно хотите удалить эту заметку?</string>
+    <string name="dialog_question_delete">Вы действительно хотите удалить заметку?</string>
     <string name="dialog_question_delete_nb">Блокнот и все его заметки будут удалены, Вы уверены?</string>
     <string name="dialog_uploading">Пример прогресса&#8230;</string>
     <string name="drawer_account_local">Локальный аккаунт</string>
@@ -115,7 +115,7 @@
     <string name="productID">ID продукта</string>
     <string name="uid">UID</string>
     <string name="title_characteristics">Свойства</string>
-    <string name="title_choose_tag_color">Выберите цвет тегов</string>
+    <string name="title_choose_tag_color">Выбрать цвет тега</string>
     <string name="no_tag_selected">Нет выбранных меток</string>
     <string name="remove">Удалить</string>
     <string name="shared_folders">Общие блокноты</string>
@@ -148,4 +148,6 @@
         <!--<item>Ask which</item>-->
     </string-array>
     <string name="pref_sorting_category">Сортировка</string>
+    <string name="dialog_delete_notes">Удалить заметки</string>
+    <string name="dialog_question_delete_notes">Вы действительно хотите удалить выбранные заметки?</string>
 </resources>

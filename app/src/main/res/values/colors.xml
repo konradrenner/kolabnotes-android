@@ -7,6 +7,9 @@
     <color name="theme_accent">#e67e22</color>
     <color name="theme_window_background">#ECECEC</color>
     <color name="theme_window_settings">#727272</color>
+    <color name="theme_actionmode">#757575</color>
+    <color name="theme_actionmode_dark">#616161</color>
+    <color name="theme_selected_notes">#e0e0e0</color>
 
     <!-- general text colors -->
     <color name="text">#212121</color>
