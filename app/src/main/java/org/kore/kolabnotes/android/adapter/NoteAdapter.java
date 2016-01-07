@@ -20,6 +20,7 @@ import org.kore.kolabnotes.android.NoteSortingComparator;
 import org.kore.kolabnotes.android.R;
 import org.kore.kolabnotes.android.Utils;
 
+import java.lang.reflect.Array;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -30,18 +31,16 @@ public class NoteAdapter extends SelectableAdapter<NoteAdapter.ViewHolder> {
     private List<Note> notes;
     private int rowLayout;
     private Context context;
-//    private NoteSelectedListener listener;
     private ViewHolder.ClickListener clickListener;
     private DateFormat dateFormatter;
     private int COLOR_SELECTED_NOTE;
 
     private List<ViewHolder> views;
 
-    public NoteAdapter(List<Note> notes, int rowLayout, Context context, /*NoteSelectedListener listener,*/ ViewHolder.ClickListener clickListener) {
+    public NoteAdapter(List<Note> notes, int rowLayout, Context context, ViewHolder.ClickListener clickListener) {
         this.notes = notes;
         this.rowLayout = rowLayout;
         this.context = context;
-//        this.listener = listener;
         this.clickListener = clickListener;
         this.dateFormatter = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
         views = new ArrayList<>(notes.size());
@@ -306,6 +305,9 @@ public class NoteAdapter extends SelectableAdapter<NoteAdapter.ViewHolder> {
                     RecyclerView recyclerView = (RecyclerView)parent;
                     for(int i=0; i < recyclerView.getChildCount(); i++){
                         Utils.setElevation(recyclerView.getChildAt(i),5);
+                        if(i == getAdapterPosition()){
+                            Utils.setElevation(recyclerView.getChildAt(i),30);
+                        }
                     }
                 }
                 listener.onItemClicked(getAdapterPosition(), notes.get(getAdapterPosition()));
@@ -315,6 +317,14 @@ public class NoteAdapter extends SelectableAdapter<NoteAdapter.ViewHolder> {
         @Override
         public boolean onLongClick(View v) {
             if (listener != null) {
+                ViewParent parent = v.getParent();
+                if(parent instanceof RecyclerView){
+                    RecyclerView recyclerView = (RecyclerView)parent;
+                    for(int i=0; i < recyclerView.getChildCount(); i++){
+                        Utils.setElevation(recyclerView.getChildAt(i),5);
+                    }
+                }
+
                 return listener.onItemLongClicked(getAdapterPosition(), notes.get(getAdapterPosition()));
             }
             return false;

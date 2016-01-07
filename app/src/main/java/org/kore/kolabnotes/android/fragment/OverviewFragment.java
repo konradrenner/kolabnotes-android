@@ -15,6 +15,7 @@ import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
@@ -230,7 +231,7 @@ public class OverviewFragment extends Fragment implements /*NoteAdapter.NoteSele
         //mRecyclerView.setItemAnimator(new CustomItemAnimator());
         //mRecyclerView.setItemAnimator(new ReboundItemAnimator());
 
-        mAdapter = new NoteAdapter(new ArrayList<Note>(), R.layout.row_note_overview, activity, /*this,*/ this);
+        mAdapter = new NoteAdapter(new ArrayList<Note>(), R.layout.row_note_overview, activity, this);
         mRecyclerView.setAdapter(mAdapter);
 
         mSwipeRefreshLayout = (SwipeRefreshLayout) getActivity().findViewById(R.id.swipe_container);
@@ -282,6 +283,9 @@ public class OverviewFragment extends Fragment implements /*NoteAdapter.NoteSele
     public boolean onItemLongClicked(int position, Note note) {
         if (mActionMode == null) {
             mActionMode = activity.startActionMode(mActionModeCallback);
+
+            //display blank fragment, because the shown display is not representative for all selected notes
+            displayBlankFragment();
         }
         toggleSelection(position);
         mSelectedNotes.put(position, note.getIdentification().getUid());
@@ -395,7 +399,7 @@ public class OverviewFragment extends Fragment implements /*NoteAdapter.NoteSele
             mActionMode = null;
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 activity.getWindow().setStatusBarColor(ContextCompat.getColor(getContext(), R.color.theme_default_primary_dark));
-                activity.getWindow().setNavigationBarColor(ContextCompat.getColor(getContext(), R.color.theme_default_primary));
+                activity.getWindow().setNavigationBarColor(ContextCompat.getColor(getContext(), R.color.md_black_1000));
             }
             isInActionMode = false;
         }
@@ -455,15 +459,8 @@ public class OverviewFragment extends Fragment implements /*NoteAdapter.NoteSele
                         final Note note = notesRepository.getByUID(account, rootFolder, uid);
 
                         if (note != null) {
-                            Notebook book = notebookRepository.getByUID(account, rootFolder,
-                                    notesRepository.getUIDofNotebook(account, rootFolder, uid));
-
-                            if (book.isShared()) {
-                                if (!((SharedNotebook) book).isNoteModificationAllowed()) {
-                                    Toast.makeText(activity, R.string.no_change_permissions, Toast.LENGTH_LONG).show();
-                                    continue;
-                                }
-                            }
+                            Notebook book = checkModificationPermissionInCurrentBook(account, rootFolder, uid);
+                            if (book == null) continue;
                             notesRepository.delete(account, rootFolder, note);
                         }
                     }
@@ -607,9 +604,12 @@ public class OverviewFragment extends Fragment implements /*NoteAdapter.NoteSele
             final Note note = notesRepository.getByUID(account, rootFolder, uid);
 
             if (note != null) {
+
+                Notebook book = checkModificationPermissionInCurrentBook(account, rootFolder, uid);
+                if (book == null) continue;
+
                 note.setColor(color);
-                Notebook book = notebookRepository.getByUID(account, rootFolder, notesRepository
-                                .getUIDofNotebook(account, rootFolder, uid));
+
                 notesRepository.update(account, rootFolder, note, book.getIdentification().getUid());
                 updateModificationDate(note, account, rootFolder);
             }
@@ -620,10 +620,25 @@ public class OverviewFragment extends Fragment implements /*NoteAdapter.NoteSele
         mSelectedNotes.clear();
     }
 
+    @Nullable
+    private Notebook checkModificationPermissionInCurrentBook(String account, String rootFolder, String uid) {
+        Notebook book = notebookRepository.getByUID(account, rootFolder, notesRepository
+                .getUIDofNotebook(account, rootFolder, uid));
+
+        if (book.isShared()) {
+            if (!((SharedNotebook) book).isNoteModificationAllowed()) {
+                Toast.makeText(activity, R.string.no_change_permissions, Toast.LENGTH_LONG).show();
+                return null;
+            }
+        }
+        return book;
+    }
+
     void moveNotes(final List<Integer> items) {
         if (items != null) {
-            final String account = activeAccountRepository.getActiveAccount().getAccount();
-            final String rootFolder = activeAccountRepository.getActiveAccount().getRootFolder();
+            final ActiveAccount activeAccount = activeAccountRepository.getActiveAccount();
+            final String account = activeAccount.getAccount();
+            final String rootFolder = activeAccount.getRootFolder();
 
             final int[] position = {-1};
             AlertDialog.Builder builder = new AlertDialog.Builder(activity);
@@ -652,8 +667,14 @@ public class OverviewFragment extends Fragment implements /*NoteAdapter.NoteSele
                             final String uid = mSelectedNotes.get(position);
                             final Note note = notesRepository.getByUID(account, rootFolder, uid);
                             if (note != null) {
+
+                                if(Utils.checkNotebookPermissions(activity,activeAccount,note,book)){
+                                    Toast.makeText(activity, R.string.no_change_permissions, Toast.LENGTH_LONG).show();
+                                    continue;
+                                }
+
                                 notesRepository.update(account, rootFolder, note, book.getIdentification().getUid());
-                            updateModificationDate(note, account, rootFolder);
+                                updateModificationDate(note, account, rootFolder);
                             }
                         }
                         mSwipeRefreshLayout.setRefreshing(true);
@@ -717,52 +738,6 @@ public class OverviewFragment extends Fragment implements /*NoteAdapter.NoteSele
             ft.commit();
         }
     }
-
-//    @Override
-//    public void onSelect(final Note note,final boolean sameSelection) {
-//        if(tabletMode){
-//            Fragment fragment = getFragmentManager().findFragmentById(R.id.details_fragment);
-//            if(fragment instanceof  DetailFragment){
-//                DetailFragment detail = (DetailFragment)fragment;
-//                boolean changes = detail.checkDifferences();
-//
-//                if(changes) {
-//                    AlertDialog.Builder builder = new AlertDialog.Builder(activity);
-//
-//                    builder.setTitle(R.string.dialog_cancel_warning);
-//                    builder.setMessage(R.string.dialog_question_cancel);
-//                    builder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
-//                        @Override
-//                        public void onClick(DialogInterface dialog, int which) {
-//                            setDetailFragment(note,sameSelection);
-//                        }
-//                    });
-//                    builder.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
-//                        @Override
-//                        public void onClick(DialogInterface dialog, int which) {
-//                            //nothing
-//                        }
-//                    });
-//                    builder.show();
-//                }else{
-//                    setDetailFragment(note,sameSelection);
-//                }
-//            }else{
-//                setDetailFragment(note,sameSelection);
-//            }
-//        }else {
-//            Intent i = new Intent(activity, DetailActivity.class);
-//            i.putExtra(Utils.NOTE_UID, note.getIdentification().getUid());
-//
-//            String selectedNotebookName = Utils.getSelectedNotebookName(activity);
-//            if (selectedNotebookName != null) {
-//                ActiveAccount activeAccount = activeAccountRepository.getActiveAccount();
-//                i.putExtra(Utils.NOTEBOOK_UID, notebookRepository.getBySummary(activeAccount.getAccount(), activeAccount.getRootFolder(), selectedNotebookName).getIdentification().getUid());
-//            }
-//
-//            startActivityForResult(i, DETAIL_ACTIVITY_RESULT_CODE);
-//        }
-//    }
 
     public void preventBlankDisplaying(){
         this.preventBlankDisplaying = true;
@@ -1320,7 +1295,7 @@ public class OverviewFragment extends Fragment implements /*NoteAdapter.NoteSele
         orderDrawerItems(tags, mDrawer);
 
         if(mAdapter == null){
-            mAdapter = new NoteAdapter(new ArrayList<Note>(), R.layout.row_note_overview, activity, /*this,*/ this);
+            mAdapter = new NoteAdapter(new ArrayList<Note>(), R.layout.row_note_overview, activity, this);
         }
 
         mAdapter.clearNotes();

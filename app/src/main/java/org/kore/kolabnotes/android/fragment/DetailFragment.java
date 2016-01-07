@@ -1084,31 +1084,7 @@ public class DetailFragment extends Fragment{
     }
 
     private boolean checkModificationPermissions(Notebook book) {
-        String oldNBUid = noteRepository.getUIDofNotebook(activeAccountRepository.getActiveAccount().getAccount(), activeAccountRepository.getActiveAccount().getRootFolder(),note.getIdentification().getUid());
-
-        if(book.isShared() || (oldNBUid != null && !oldNBUid.equals(book.getIdentification().getUid()))){
-            if(!oldNBUid.equals(book.getIdentification().getUid())){
-                //notebook got changed, so one needs the modification rights in the old an creation right in the new book
-                Notebook oldOne = notebookRepository.getByUID(activeAccountRepository.getActiveAccount().getAccount(), activeAccountRepository.getActiveAccount().getRootFolder(), oldNBUid);
-                if(oldOne.isShared()){
-                    if(!((SharedNotebook)oldOne).isNoteModificationAllowed()){
-                        Toast.makeText(activity, R.string.no_change_permissions, Toast.LENGTH_LONG).show();
-                        return true;
-                    }
-                }
-
-                if(!((SharedNotebook)book).isNoteCreationAllowed()){
-                    Toast.makeText(activity, R.string.no_create_permissions, Toast.LENGTH_LONG).show();
-                    return true;
-                }
-            }else {
-                if(!((SharedNotebook)book).isNoteModificationAllowed()){
-                    Toast.makeText(activity, R.string.no_change_permissions, Toast.LENGTH_LONG).show();
-                    return true;
-                }
-            }
-        }
-        return false;
+        return Utils.checkNotebookPermissions(activity,activeAccountRepository.getActiveAccount(),note,book);
     }
 
     /**
@@ -1284,7 +1260,10 @@ public class DetailFragment extends Fragment{
         boolean differences = false;
         if(summary != null && spinner != null){
 
-            Note newNote = new Note(note.getIdentification(), note.getAuditInformation(), selectedClassification == null ? Note.Classification.PUBLIC : selectedClassification, summary.getText().toString());
+            Note newNote = new Note(note.getIdentification(), note.getAuditInformation(),
+                    selectedClassification == null ? Note.Classification.PUBLIC : selectedClassification,
+                    summary.getText() == null ? null : summary.getText().toString());
+
             newNote.setDescription(repairImages(getDescriptionFromView()));
             newNote.setColor(selectedColor);
 
