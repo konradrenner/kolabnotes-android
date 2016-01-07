@@ -464,8 +464,6 @@ public class OverviewFragment extends Fragment implements /*NoteAdapter.NoteSele
                             notesRepository.delete(account, rootFolder, note);
                         }
                     }
-                    mSwipeRefreshLayout.setRefreshing(true);
-                    refresh();
                     mSelectedNotes.clear();
                     if (tabletMode) {
                         displayBlankFragment();
@@ -554,8 +552,6 @@ public class OverviewFragment extends Fragment implements /*NoteAdapter.NoteSele
                                     updateModificationDate(note, account, rootFolder);
                                 }
                             }
-                            mSwipeRefreshLayout.setRefreshing(true);
-                            refresh();
                             mSelectedNotes.clear();
                         }
                     })
@@ -615,8 +611,6 @@ public class OverviewFragment extends Fragment implements /*NoteAdapter.NoteSele
             }
 
         }
-        mSwipeRefreshLayout.setRefreshing(true);
-        refresh();
         mSelectedNotes.clear();
     }
 
@@ -677,8 +671,6 @@ public class OverviewFragment extends Fragment implements /*NoteAdapter.NoteSele
                                 updateModificationDate(note, account, rootFolder);
                             }
                         }
-                        mSwipeRefreshLayout.setRefreshing(true);
-                        refresh();
                         mSelectedNotes.clear();
                     }
                 }
