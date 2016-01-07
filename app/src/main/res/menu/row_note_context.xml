@@ -11,4 +11,8 @@
     <item android:id="@+id/colorpicker_context"
         android:icon="@drawable/ic_action_choose_color"
         android:title="@string/title_colorpicker"/>
+    
+    <item android:id="@+id/move_context"
+        android:icon="@drawable/ic_book_white_48dp"
+        android:title="@string/move_note"/>
 </menu>

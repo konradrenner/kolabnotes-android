@@ -166,4 +166,5 @@
     <string name="pref_sorting_category">Ordinamento</string>
     <string name="dialog_delete_notes">Cancella Note</string>
     <string name="dialog_question_delete_notes">Sei sicuro di voler cancellare le note selezionate?</string>
+    <string name="move_note">Movimento</string>
 </resources>
