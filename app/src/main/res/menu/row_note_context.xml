@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/delete_menu_context"
+        android:icon="@drawable/ic_action_discard"
+        android:title="@string/title_delete" />
+
+    <item android:id="@+id/edit_tag_menu_context"
+        android:icon="@drawable/ic_action_labels_white"
+        android:title="@string/title_edit_tag" />
+
+    <item android:id="@+id/colorpicker_context"
+        android:icon="@drawable/ic_action_choose_color"
+        android:title="@string/title_colorpicker"/>
+</menu>

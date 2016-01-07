@@ -59,6 +59,7 @@
     <string name="dialog_input_text_notebook">New Notebook</string>
     <string name="dialog_input_text_search">Search Note</string>
     <string name="dialog_delete_note">Delete Note</string>
+    <string name="dialog_delete_notes">Delete Notes</string>
     <string name="dialog_cancel_warning">Cancel Warning</string>
     <string name="dialog_delete_nb_warning">Delete notebook</string>
     <string name="dialog_question_delete_nb">The notebook and all its notes will be deleted, are you sure?</string>
@@ -70,6 +71,7 @@
     <string name="add">add</string>
     <string name="title_edit_tag">Edit Tags</string>
     <string name="dialog_question_delete">Do you really want to delete this note?</string>
+    <string name="dialog_question_delete_notes">Do you really want to delete selected notes?</string>
     <string name="dialog_question_cancel">All changes will be discarded, are you sure?</string>
     <string name="account_name">Account name</string>
     <string name="imap_root_folder">IMAP root folder (default is Notes)</string>

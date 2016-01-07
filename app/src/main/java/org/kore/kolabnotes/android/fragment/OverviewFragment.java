@@ -13,12 +13,15 @@ import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.ActionMode;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -28,9 +31,6 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
-import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.mikepenz.materialdrawer.Drawer;
@@ -60,7 +60,6 @@ import org.kore.kolabnotes.android.adapter.NoteAdapter;
 import org.kore.kolabnotes.android.content.ActiveAccount;
 import org.kore.kolabnotes.android.content.ActiveAccountRepository;
 import org.kore.kolabnotes.android.content.NoteRepository;
-import org.kore.kolabnotes.android.content.NoteSorting;
 import org.kore.kolabnotes.android.content.NoteTagRepository;
 import org.kore.kolabnotes.android.content.NotebookRepository;
 import org.kore.kolabnotes.android.content.TagRepository;
@@ -69,8 +68,11 @@ import org.kore.kolabnotes.android.setting.SettingsActivity;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -81,9 +83,12 @@ import yuku.ambilwarna.AmbilWarnaDialog;
 /**
  * Fragment which displays the notes overview and implements the logic for the overview
  */
-public class OverviewFragment extends Fragment implements NoteAdapter.NoteSelectedListener{
+public class OverviewFragment extends Fragment implements /*NoteAdapter.NoteSelectedListener,*/ NoteAdapter.ViewHolder.ClickListener{
 
     public static final int DETAIL_ACTIVITY_RESULT_CODE = 1;
+    private static final String TAG_ACTION_MODE = "ActionMode";
+    private static final String TAG_SELECTED_NOTES = "SelectedNotes";
+    private static final String TAG_SELECTABLE_ADAPTER = "SelectableAdapter";
 
     private final DrawerItemClickedListener drawerItemClickedListener = new DrawerItemClickedListener();
 
@@ -92,6 +97,11 @@ public class OverviewFragment extends Fragment implements NoteAdapter.NoteSelect
     private ImageButton mFabButton;
     private RecyclerView mRecyclerView;
     private SwipeRefreshLayout mSwipeRefreshLayout;
+
+    private ActionMode mActionMode;
+    private ActionModeCallback mActionModeCallback = new ActionModeCallback();
+    private boolean isInActionMode = false;
+    private HashMap<Integer, Note> mSelectedNotes = new HashMap<Integer, Note>();
 
     private AccountManager mAccountManager;
 
@@ -218,7 +228,7 @@ public class OverviewFragment extends Fragment implements NoteAdapter.NoteSelect
         //mRecyclerView.setItemAnimator(new CustomItemAnimator());
         //mRecyclerView.setItemAnimator(new ReboundItemAnimator());
 
-        mAdapter = new NoteAdapter(new ArrayList<Note>(), R.layout.row_note_overview, activity, this);
+        mAdapter = new NoteAdapter(new ArrayList<Note>(), R.layout.row_note_overview, activity, /*this,*/ this);
         mRecyclerView.setAdapter(mAdapter);
 
         mSwipeRefreshLayout = (SwipeRefreshLayout) getActivity().findViewById(R.id.swipe_container);
@@ -227,51 +237,388 @@ public class OverviewFragment extends Fragment implements NoteAdapter.NoteSelect
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                ActiveAccount activeAccount = activeAccountRepository.getActiveAccount();
-                if(!"local".equalsIgnoreCase(activeAccount.getAccount())) {
-                    Account[] accounts = mAccountManager.getAccountsByType(AuthenticatorActivity.ARG_ACCOUNT_TYPE);
-                    Account selectedAccount = null;
-
-                    for (Account acc : accounts) {
-                        String email = mAccountManager.getUserData(acc, AuthenticatorActivity.KEY_EMAIL);
-                        if (activeAccount.getAccount().equalsIgnoreCase(email)) {
-                            selectedAccount = acc;
-                            break;
-                        }
-                    }
-
-                    if(selectedAccount == null){
-                        return;
-                    }
-
-                    Bundle settingsBundle = new Bundle();
-                    settingsBundle.putBoolean(
-                            ContentResolver.SYNC_EXTRAS_MANUAL, true);
-                    settingsBundle.putBoolean(
-                            ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
-
-                    ContentResolver.requestSync(selectedAccount,MainActivity.AUTHORITY, settingsBundle);
-                }else{
-                    getActivity().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            reloadData();
-
-                            mSwipeRefreshLayout.setRefreshing(false);
-                        }
-                    });
-                }
+                refresh();
             }
         });
 
         new InitializeApplicationsTask().execute();
 
         if (savedInstanceState != null) {
-            //nothing at the moment
+            if (savedInstanceState != null && savedInstanceState.getBoolean(TAG_ACTION_MODE, false)){
+                mSelectedNotes = (HashMap<Integer, Note>)savedInstanceState.getSerializable(TAG_SELECTED_NOTES);
+                mActionMode = activity.startActionMode(mActionModeCallback);
+                mAdapter.setSelectedItems(savedInstanceState.getIntegerArrayList(TAG_SELECTABLE_ADAPTER));
+                mActionMode.setTitle(String.valueOf(mAdapter.getSelectedItemCount()));
+            }
         }
 
         //show progress
         mRecyclerView.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putIntegerArrayList(TAG_SELECTABLE_ADAPTER, mAdapter.getSelectedItems());
+        outState.putSerializable(TAG_SELECTED_NOTES, mSelectedNotes);
+        outState.putBoolean(TAG_ACTION_MODE, isInActionMode);
+
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    public void onItemClicked(int position, Note note) {
+        if (mActionMode == null) {
+            boolean same = false;
+            select(note, same);
+        } else {
+            toggleSelection(position);
+            mSelectedNotes.put(position, note);
+        }
+    }
+
+    @Override
+    public boolean onItemLongClicked(int position, Note note) {
+        if (mActionMode == null) {
+            mActionMode = activity.startActionMode(mActionModeCallback);
+        }
+        toggleSelection(position);
+        mSelectedNotes.put(position, note);
+
+        return true;
+    }
+
+    private void toggleSelection(int position) {
+        mAdapter.toggleSelection(position);
+        int count = mAdapter.getSelectedItemCount();
+
+        if (count == 0) {
+            mActionMode.finish();
+        } else {
+            mActionMode.setTitle(String.valueOf(count));
+            mActionMode.invalidate();
+        }
+    }
+
+    public void select(final Note note,final boolean sameSelection) {
+        if(tabletMode){
+            Fragment fragment = getFragmentManager().findFragmentById(R.id.details_fragment);
+            if(fragment instanceof  DetailFragment){
+                DetailFragment detail = (DetailFragment)fragment;
+                boolean changes = detail.checkDifferences();
+
+                if(changes) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+
+                    builder.setTitle(R.string.dialog_cancel_warning);
+                    builder.setMessage(R.string.dialog_question_cancel);
+                    builder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            setDetailFragment(note, sameSelection);
+                        }
+                    });
+                    builder.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            //nothing
+                        }
+                    });
+                    builder.show();
+                }else{
+                    setDetailFragment(note,sameSelection);
+                }
+            }else{
+                setDetailFragment(note,sameSelection);
+            }
+        }else {
+            Intent i = new Intent(activity, DetailActivity.class);
+            i.putExtra(Utils.NOTE_UID, note.getIdentification().getUid());
+
+            String selectedNotebookName = Utils.getSelectedNotebookName(activity);
+            if (selectedNotebookName != null) {
+                ActiveAccount activeAccount = activeAccountRepository.getActiveAccount();
+                i.putExtra(Utils.NOTEBOOK_UID, notebookRepository.getBySummary(activeAccount.getAccount(), activeAccount.getRootFolder(), selectedNotebookName).getIdentification().getUid());
+            }
+
+            startActivityForResult(i, DETAIL_ACTIVITY_RESULT_CODE);
+        }
+    }
+
+    private class ActionModeCallback implements ActionMode.Callback {
+        @SuppressWarnings("unused")
+        private final String TAG = ActionModeCallback.class.getSimpleName();
+
+        @Override
+        public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+            mode.getMenuInflater().inflate(R.menu.row_note_context, menu);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                activity.getWindow().setStatusBarColor(ContextCompat.getColor(getContext(), R.color.theme_actionmode_dark));
+                activity.getWindow().setNavigationBarColor(ContextCompat.getColor(getContext(), R.color.theme_actionmode));
+            }
+            isInActionMode = true;
+            return true;
+        }
+
+        @Override
+        public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+            return false;
+        }
+
+        @Override
+        public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+            List<Integer> items = mAdapter.getSelectedItems();
+            switch (item.getItemId()) {
+                case R.id.delete_menu_context:
+                    deleteNotes(items);
+                    mode.finish();
+                    break;
+                case R.id.edit_tag_menu_context:
+                    editTags(items);
+                    mode.finish();
+                    break;
+                case R.id.colorpicker_context:
+                    chooseColor(items);
+                    mode.finish();
+                    break;
+            }
+            return true;
+        }
+
+        @Override
+        public void onDestroyActionMode(ActionMode mode) {
+            mAdapter.clearSelection();
+            mActionMode = null;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                activity.getWindow().setStatusBarColor(ContextCompat.getColor(getContext(), R.color.theme_default_primary_dark));
+                activity.getWindow().setNavigationBarColor(ContextCompat.getColor(getContext(), R.color.theme_default_primary));
+            }
+            isInActionMode = false;
+        }
+    }
+
+    void refresh() {
+        ActiveAccount activeAccount = activeAccountRepository.getActiveAccount();
+        if(!"local".equalsIgnoreCase(activeAccount.getAccount())) {
+            Account[] accounts = mAccountManager.getAccountsByType(AuthenticatorActivity.ARG_ACCOUNT_TYPE);
+            Account selectedAccount = null;
+
+            for (Account acc : accounts) {
+                String email = mAccountManager.getUserData(acc, AuthenticatorActivity.KEY_EMAIL);
+                if (activeAccount.getAccount().equalsIgnoreCase(email)) {
+                    selectedAccount = acc;
+                    break;
+                }
+            }
+
+            if(selectedAccount == null){
+                return;
+            }
+
+            Bundle settingsBundle = new Bundle();
+            settingsBundle.putBoolean(
+                    ContentResolver.SYNC_EXTRAS_MANUAL, true);
+            settingsBundle.putBoolean(
+                    ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
+
+            ContentResolver.requestSync(selectedAccount,MainActivity.AUTHORITY, settingsBundle);
+        }else{
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    reloadData();
+
+                    mSwipeRefreshLayout.setRefreshing(false);
+                }
+            });
+        }
+    }
+
+    void deleteNotes(final List<Integer> items) {
+        if (items != null) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+
+            builder.setTitle(R.string.dialog_delete_notes);
+            builder.setMessage(R.string.dialog_question_delete_notes);
+            builder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    for (int position : items) {
+                        final Note note = mSelectedNotes.get(position);
+
+                        if (note != null) {
+                            Notebook book = notebookRepository.getByUID(activeAccountRepository.getActiveAccount().getAccount(),
+                                    activeAccountRepository.getActiveAccount().getRootFolder(), notesRepository
+                                            .getUIDofNotebook(activeAccountRepository.getActiveAccount().getAccount(),
+                                                    activeAccountRepository.getActiveAccount().getRootFolder(), note.getIdentification().getUid()));
+
+                            if (book.isShared()) {
+                                if (!((SharedNotebook) book).isNoteModificationAllowed()) {
+                                    Toast.makeText(activity, R.string.no_change_permissions, Toast.LENGTH_LONG).show();
+                                    continue;
+                                }
+                            }
+                            notesRepository.delete(activeAccountRepository.getActiveAccount().getAccount(), activeAccountRepository.getActiveAccount().getRootFolder(), note);
+                        }
+                    }
+                    mSwipeRefreshLayout.setRefreshing(true);
+                    refresh();
+                    mSelectedNotes.clear();
+                    if (tabletMode) {
+                        displayBlankFragment();
+                    }
+                }
+            });
+
+            builder.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    //nothing
+                }
+            });
+            builder.show();
+        }
+    }
+
+    void editTags(final List<Integer> items) {
+        if (items != null) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+            builder.setTitle(R.string.dialog_change_tags);
+
+            ActiveAccount activeAccount = activeAccountRepository.getActiveAccount();
+
+            Map<String,Tag> allTags = new HashMap<>();
+            allTags.putAll(tagRepository.getAllAsMap(activeAccount.getAccount(), activeAccount.getRootFolder()));
+            final Set<String> tagNames = allTags.keySet();
+            final String[] tagArr = tagNames.toArray(new String[tagNames.size()]);
+
+            Arrays.sort(tagArr);
+
+            final boolean[] selectionArr = new boolean[tagArr.length];
+            final Map<Integer, Integer> selectedItems = new HashMap<Integer, Integer>();
+            final Set<String> selectedTags = new LinkedHashSet<>();
+
+            for (int position : items) {
+                final Note note = mSelectedNotes.get(position);
+
+                if (note != null) {
+                    for (Tag tag : note.getCategories()) {
+                        selectedTags.add(tag.getName());
+                    }
+
+                    for(int i = 0; i < tagArr.length; i++){
+                        if(selectedTags.contains(tagArr[i])){
+                            selectionArr[i] = true;
+                            selectedItems.put(i, i);
+                        }
+                    }
+                }
+            }
+            builder.setMultiChoiceItems(tagArr, selectionArr,
+                    new DialogInterface.OnMultiChoiceClickListener() {
+
+                        @Override
+                        public void onClick(DialogInterface dialog, int indexSelected,
+                                            boolean isChecked) {
+                            if (isChecked) {
+                                // If the user checked the item, add it to the selected items
+                                selectedItems.put(indexSelected, indexSelected);
+                            } else if (selectedItems.containsKey(indexSelected)) {
+                                // Else, if the item is already in the array, remove it
+                                selectedItems.remove(indexSelected);
+                            }
+                        }
+                    })
+                    .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int id) {
+                            selectedTags.clear();
+                            for (Map.Entry<Integer, Integer> item : selectedItems.entrySet()) {
+                                selectedTags.add(tagArr[item.getKey()]);
+                            }
+
+                            NoteTagRepository noteTagRepository = new NoteTagRepository(activity);
+                            for (int position : items) {
+                                final Note note = mSelectedNotes.get(position);
+                                if (note != null) {
+                                    final String uuid = note.getIdentification().getUid();
+                                    noteTagRepository.delete(activeAccountRepository.getActiveAccount().getAccount(),
+                                            activeAccountRepository.getActiveAccount().getRootFolder(), uuid);
+                                    for (String tag : selectedTags) {
+                                        noteTagRepository.insert(activeAccountRepository.getActiveAccount().getAccount(),
+                                                activeAccountRepository.getActiveAccount().getRootFolder(), uuid, tag);
+                                    }
+                                    updateModificationDate(note);
+                                }
+                            }
+                            mSwipeRefreshLayout.setRefreshing(true);
+                            refresh();
+                            mSelectedNotes.clear();
+                        }
+                    })
+                    .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int id) {
+                            // nothing
+
+                        }
+                    });
+
+            builder.show();
+        }
+    }
+
+    void chooseColor(final List<Integer> items) {
+        final int initialColor = Color.WHITE;
+
+        AmbilWarnaDialog dialog = new AmbilWarnaDialog(activity, initialColor, true, new AmbilWarnaDialog.OnAmbilWarnaListener() {
+            @Override
+            public void onOk(AmbilWarnaDialog dialog, int color) {
+                setColor(items, Colors.getColor(String.format("#%06X", (0xFFFFFF & color))));
+            }
+
+            @Override
+            public void onRemove(AmbilWarnaDialog dialog) {
+                setColor(items, null);
+            }
+
+            @Override
+            public void onCancel(AmbilWarnaDialog dialog) {
+                // do nothing
+            }
+        });
+        dialog.show();
+    }
+
+    void setColor(final List<Integer> items, org.kore.kolab.notes.Color color) {
+        for (int position : items) {
+            final Note note = mSelectedNotes.get(position);
+
+            if (note != null) {
+                note.setColor(color);
+                Notebook book = notebookRepository.getByUID(activeAccountRepository.getActiveAccount().getAccount(),
+                        activeAccountRepository.getActiveAccount().getRootFolder(), notesRepository
+                                .getUIDofNotebook(activeAccountRepository.getActiveAccount().getAccount(),
+                                        activeAccountRepository.getActiveAccount().getRootFolder(), note.getIdentification().getUid()));
+                notesRepository.update(activeAccountRepository.getActiveAccount().getAccount(),
+                        activeAccountRepository.getActiveAccount().getRootFolder(), note, book.getIdentification().getUid());
+                updateModificationDate(note);
+            }
+
+        }
+        mSwipeRefreshLayout.setRefreshing(true);
+        refresh();
+        mSelectedNotes.clear();
+    }
+
+    void updateModificationDate(Note note) {
+        note.getAuditInformation().setLastModificationDate(System.currentTimeMillis());
+
+        Notebook book = notebookRepository.getByUID(activeAccountRepository.getActiveAccount().getAccount(),
+                activeAccountRepository.getActiveAccount().getRootFolder(), notesRepository
+                        .getUIDofNotebook(activeAccountRepository.getActiveAccount().getAccount(),
+                                activeAccountRepository.getActiveAccount().getRootFolder(), note.getIdentification().getUid()));
+        notesRepository.update(activeAccountRepository.getActiveAccount().getAccount(),
+                activeAccountRepository.getActiveAccount().getRootFolder(), note, book.getIdentification().getUid());
     }
 
     public void openDrawer(){
@@ -312,51 +659,51 @@ public class OverviewFragment extends Fragment implements NoteAdapter.NoteSelect
         }
     }
 
-    @Override
-    public void onSelect(final Note note,final boolean sameSelection) {
-        if(tabletMode){
-            Fragment fragment = getFragmentManager().findFragmentById(R.id.details_fragment);
-            if(fragment instanceof  DetailFragment){
-                DetailFragment detail = (DetailFragment)fragment;
-                boolean changes = detail.checkDifferences();
-
-                if(changes) {
-                    AlertDialog.Builder builder = new AlertDialog.Builder(activity);
-
-                    builder.setTitle(R.string.dialog_cancel_warning);
-                    builder.setMessage(R.string.dialog_question_cancel);
-                    builder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            setDetailFragment(note,sameSelection);
-                        }
-                    });
-                    builder.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            //nothing
-                        }
-                    });
-                    builder.show();
-                }else{
-                    setDetailFragment(note,sameSelection);
-                }
-            }else{
-                setDetailFragment(note,sameSelection);
-            }
-        }else {
-            Intent i = new Intent(activity, DetailActivity.class);
-            i.putExtra(Utils.NOTE_UID, note.getIdentification().getUid());
-
-            String selectedNotebookName = Utils.getSelectedNotebookName(activity);
-            if (selectedNotebookName != null) {
-                ActiveAccount activeAccount = activeAccountRepository.getActiveAccount();
-                i.putExtra(Utils.NOTEBOOK_UID, notebookRepository.getBySummary(activeAccount.getAccount(), activeAccount.getRootFolder(), selectedNotebookName).getIdentification().getUid());
-            }
-
-            startActivityForResult(i, DETAIL_ACTIVITY_RESULT_CODE);
-        }
-    }
+//    @Override
+//    public void onSelect(final Note note,final boolean sameSelection) {
+//        if(tabletMode){
+//            Fragment fragment = getFragmentManager().findFragmentById(R.id.details_fragment);
+//            if(fragment instanceof  DetailFragment){
+//                DetailFragment detail = (DetailFragment)fragment;
+//                boolean changes = detail.checkDifferences();
+//
+//                if(changes) {
+//                    AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+//
+//                    builder.setTitle(R.string.dialog_cancel_warning);
+//                    builder.setMessage(R.string.dialog_question_cancel);
+//                    builder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+//                        @Override
+//                        public void onClick(DialogInterface dialog, int which) {
+//                            setDetailFragment(note,sameSelection);
+//                        }
+//                    });
+//                    builder.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
+//                        @Override
+//                        public void onClick(DialogInterface dialog, int which) {
+//                            //nothing
+//                        }
+//                    });
+//                    builder.show();
+//                }else{
+//                    setDetailFragment(note,sameSelection);
+//                }
+//            }else{
+//                setDetailFragment(note,sameSelection);
+//            }
+//        }else {
+//            Intent i = new Intent(activity, DetailActivity.class);
+//            i.putExtra(Utils.NOTE_UID, note.getIdentification().getUid());
+//
+//            String selectedNotebookName = Utils.getSelectedNotebookName(activity);
+//            if (selectedNotebookName != null) {
+//                ActiveAccount activeAccount = activeAccountRepository.getActiveAccount();
+//                i.putExtra(Utils.NOTEBOOK_UID, notebookRepository.getBySummary(activeAccount.getAccount(), activeAccount.getRootFolder(), selectedNotebookName).getIdentification().getUid());
+//            }
+//
+//            startActivityForResult(i, DETAIL_ACTIVITY_RESULT_CODE);
+//        }
+//    }
 
     public void preventBlankDisplaying(){
         this.preventBlankDisplaying = true;
@@ -751,12 +1098,6 @@ public class OverviewFragment extends Fragment implements NoteAdapter.NoteSelect
         return mDrawer;
     }
 
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-    }
-
-
     private class DrawerItemClickedListener implements Drawer.OnDrawerItemClickListener{
 
         @Override
@@ -920,7 +1261,7 @@ public class OverviewFragment extends Fragment implements NoteAdapter.NoteSelect
         orderDrawerItems(tags, mDrawer);
 
         if(mAdapter == null){
-            mAdapter = new NoteAdapter(new ArrayList<Note>(), R.layout.row_note_overview, activity,this);
+            mAdapter = new NoteAdapter(new ArrayList<Note>(), R.layout.row_note_overview, activity, /*this,*/ this);
         }
 
         mAdapter.clearNotes();
