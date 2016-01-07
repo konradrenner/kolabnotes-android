@@ -149,4 +149,5 @@
     <string name="pref_sorting_category">Délissage</string>
     <string name="dialog_delete_notes">Supprimer les notes</string>
     <string name="dialog_question_delete_notes"> Êtes-vous sûr de vouloir supprimer les notes sélectionnées?</string>
+    <string name="move_note"> Déplacer</string>
 </resources>

@@ -29,8 +29,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ListAdapter;
+import android.widget.Spinner;
+import android.widget.SpinnerAdapter;
 import android.widget.Toast;
 
 import com.mikepenz.materialdrawer.Drawer;
@@ -66,6 +70,7 @@ import org.kore.kolabnotes.android.content.TagRepository;
 import org.kore.kolabnotes.android.security.AuthenticatorActivity;
 import org.kore.kolabnotes.android.setting.SettingsActivity;
 
+import java.lang.reflect.Array;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -101,7 +106,7 @@ public class OverviewFragment extends Fragment implements /*NoteAdapter.NoteSele
     private ActionMode mActionMode;
     private ActionModeCallback mActionModeCallback = new ActionModeCallback();
     private boolean isInActionMode = false;
-    private HashMap<Integer, Note> mSelectedNotes = new HashMap<Integer, Note>();
+    private HashMap<Integer, String> mSelectedNotes = new HashMap<Integer, String>();
 
     private AccountManager mAccountManager;
 
@@ -245,7 +250,7 @@ public class OverviewFragment extends Fragment implements /*NoteAdapter.NoteSele
 
         if (savedInstanceState != null) {
             if (savedInstanceState != null && savedInstanceState.getBoolean(TAG_ACTION_MODE, false)){
-                mSelectedNotes = (HashMap<Integer, Note>)savedInstanceState.getSerializable(TAG_SELECTED_NOTES);
+                mSelectedNotes = (HashMap<Integer, String>)savedInstanceState.getSerializable(TAG_SELECTED_NOTES);
                 mActionMode = activity.startActionMode(mActionModeCallback);
                 mAdapter.setSelectedItems(savedInstanceState.getIntegerArrayList(TAG_SELECTABLE_ADAPTER));
                 mActionMode.setTitle(String.valueOf(mAdapter.getSelectedItemCount()));
@@ -272,7 +277,7 @@ public class OverviewFragment extends Fragment implements /*NoteAdapter.NoteSele
             select(note, same);
         } else {
             toggleSelection(position);
-            mSelectedNotes.put(position, note);
+            mSelectedNotes.put(position, note.getIdentification().getUid());
         }
     }
 
@@ -282,7 +287,7 @@ public class OverviewFragment extends Fragment implements /*NoteAdapter.NoteSele
             mActionMode = activity.startActionMode(mActionModeCallback);
         }
         toggleSelection(position);
-        mSelectedNotes.put(position, note);
+        mSelectedNotes.put(position, note.getIdentification().getUid());
 
         return true;
     }
@@ -380,6 +385,9 @@ public class OverviewFragment extends Fragment implements /*NoteAdapter.NoteSele
                     chooseColor(items);
                     mode.finish();
                     break;
+                case R.id.move_context:
+                    moveNotes(items);
+                    mode.finish();
             }
             return true;
         }
@@ -435,6 +443,9 @@ public class OverviewFragment extends Fragment implements /*NoteAdapter.NoteSele
 
     void deleteNotes(final List<Integer> items) {
         if (items != null) {
+            final String account = activeAccountRepository.getActiveAccount().getAccount();
+            final String rootFolder = activeAccountRepository.getActiveAccount().getRootFolder();
+
             AlertDialog.Builder builder = new AlertDialog.Builder(activity);
 
             builder.setTitle(R.string.dialog_delete_notes);
@@ -443,13 +454,12 @@ public class OverviewFragment extends Fragment implements /*NoteAdapter.NoteSele
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     for (int position : items) {
-                        final Note note = mSelectedNotes.get(position);
+                        final String uid = mSelectedNotes.get(position);
+                        final Note note = notesRepository.getByUID(account, rootFolder, uid);
 
                         if (note != null) {
-                            Notebook book = notebookRepository.getByUID(activeAccountRepository.getActiveAccount().getAccount(),
-                                    activeAccountRepository.getActiveAccount().getRootFolder(), notesRepository
-                                            .getUIDofNotebook(activeAccountRepository.getActiveAccount().getAccount(),
-                                                    activeAccountRepository.getActiveAccount().getRootFolder(), note.getIdentification().getUid()));
+                            Notebook book = notebookRepository.getByUID(account, rootFolder,
+                                    notesRepository.getUIDofNotebook(account, rootFolder, uid));
 
                             if (book.isShared()) {
                                 if (!((SharedNotebook) book).isNoteModificationAllowed()) {
@@ -457,7 +467,7 @@ public class OverviewFragment extends Fragment implements /*NoteAdapter.NoteSele
                                     continue;
                                 }
                             }
-                            notesRepository.delete(activeAccountRepository.getActiveAccount().getAccount(), activeAccountRepository.getActiveAccount().getRootFolder(), note);
+                            notesRepository.delete(account, rootFolder, note);
                         }
                     }
                     mSwipeRefreshLayout.setRefreshing(true);
@@ -481,13 +491,14 @@ public class OverviewFragment extends Fragment implements /*NoteAdapter.NoteSele
 
     void editTags(final List<Integer> items) {
         if (items != null) {
+            final String account = activeAccountRepository.getActiveAccount().getAccount();
+            final String rootFolder = activeAccountRepository.getActiveAccount().getRootFolder();
+
             AlertDialog.Builder builder = new AlertDialog.Builder(activity);
             builder.setTitle(R.string.dialog_change_tags);
 
-            ActiveAccount activeAccount = activeAccountRepository.getActiveAccount();
-
             Map<String,Tag> allTags = new HashMap<>();
-            allTags.putAll(tagRepository.getAllAsMap(activeAccount.getAccount(), activeAccount.getRootFolder()));
+            allTags.putAll(tagRepository.getAllAsMap(account, rootFolder));
             final Set<String> tagNames = allTags.keySet();
             final String[] tagArr = tagNames.toArray(new String[tagNames.size()]);
 
@@ -498,7 +509,8 @@ public class OverviewFragment extends Fragment implements /*NoteAdapter.NoteSele
             final Set<String> selectedTags = new LinkedHashSet<>();
 
             for (int position : items) {
-                final Note note = mSelectedNotes.get(position);
+                final String uid = mSelectedNotes.get(position);
+                final Note note = notesRepository.getByUID(account, rootFolder, uid);
 
                 if (note != null) {
                     for (Tag tag : note.getCategories()) {
@@ -538,16 +550,14 @@ public class OverviewFragment extends Fragment implements /*NoteAdapter.NoteSele
 
                             NoteTagRepository noteTagRepository = new NoteTagRepository(activity);
                             for (int position : items) {
-                                final Note note = mSelectedNotes.get(position);
+                                final String uid = mSelectedNotes.get(position);
+                                final Note note = notesRepository.getByUID(account, rootFolder, uid);
                                 if (note != null) {
-                                    final String uuid = note.getIdentification().getUid();
-                                    noteTagRepository.delete(activeAccountRepository.getActiveAccount().getAccount(),
-                                            activeAccountRepository.getActiveAccount().getRootFolder(), uuid);
+                                    noteTagRepository.delete(account, rootFolder, uid);
                                     for (String tag : selectedTags) {
-                                        noteTagRepository.insert(activeAccountRepository.getActiveAccount().getAccount(),
-                                                activeAccountRepository.getActiveAccount().getRootFolder(), uuid, tag);
+                                        noteTagRepository.insert(account, rootFolder, uid, tag);
                                     }
-                                    updateModificationDate(note);
+                                    updateModificationDate(note, account, rootFolder);
                                 }
                             }
                             mSwipeRefreshLayout.setRefreshing(true);
@@ -568,40 +578,43 @@ public class OverviewFragment extends Fragment implements /*NoteAdapter.NoteSele
     }
 
     void chooseColor(final List<Integer> items) {
-        final int initialColor = Color.WHITE;
+        if (items != null) {
+            final int initialColor = Color.WHITE;
 
-        AmbilWarnaDialog dialog = new AmbilWarnaDialog(activity, initialColor, true, new AmbilWarnaDialog.OnAmbilWarnaListener() {
-            @Override
-            public void onOk(AmbilWarnaDialog dialog, int color) {
-                setColor(items, Colors.getColor(String.format("#%06X", (0xFFFFFF & color))));
-            }
+            AmbilWarnaDialog dialog = new AmbilWarnaDialog(activity, initialColor, true, new AmbilWarnaDialog.OnAmbilWarnaListener() {
+                @Override
+                public void onOk(AmbilWarnaDialog dialog, int color) {
+                    setColor(items, Colors.getColor(String.format("#%06X", (0xFFFFFF & color))));
+                }
 
-            @Override
-            public void onRemove(AmbilWarnaDialog dialog) {
-                setColor(items, null);
-            }
+                @Override
+                public void onRemove(AmbilWarnaDialog dialog) {
+                    setColor(items, null);
+                }
 
-            @Override
-            public void onCancel(AmbilWarnaDialog dialog) {
-                // do nothing
-            }
-        });
-        dialog.show();
+                @Override
+                public void onCancel(AmbilWarnaDialog dialog) {
+                    // do nothing
+                }
+            });
+            dialog.show();
+        }
     }
 
     void setColor(final List<Integer> items, org.kore.kolab.notes.Color color) {
         for (int position : items) {
-            final Note note = mSelectedNotes.get(position);
+            final String account = activeAccountRepository.getActiveAccount().getAccount();
+            final String rootFolder = activeAccountRepository.getActiveAccount().getRootFolder();
+
+            final String uid = mSelectedNotes.get(position);
+            final Note note = notesRepository.getByUID(account, rootFolder, uid);
 
             if (note != null) {
                 note.setColor(color);
-                Notebook book = notebookRepository.getByUID(activeAccountRepository.getActiveAccount().getAccount(),
-                        activeAccountRepository.getActiveAccount().getRootFolder(), notesRepository
-                                .getUIDofNotebook(activeAccountRepository.getActiveAccount().getAccount(),
-                                        activeAccountRepository.getActiveAccount().getRootFolder(), note.getIdentification().getUid()));
-                notesRepository.update(activeAccountRepository.getActiveAccount().getAccount(),
-                        activeAccountRepository.getActiveAccount().getRootFolder(), note, book.getIdentification().getUid());
-                updateModificationDate(note);
+                Notebook book = notebookRepository.getByUID(account, rootFolder, notesRepository
+                                .getUIDofNotebook(account, rootFolder, uid));
+                notesRepository.update(account, rootFolder, note, book.getIdentification().getUid());
+                updateModificationDate(note, account, rootFolder);
             }
 
         }
@@ -610,15 +623,64 @@ public class OverviewFragment extends Fragment implements /*NoteAdapter.NoteSele
         mSelectedNotes.clear();
     }
 
-    void updateModificationDate(Note note) {
+    void moveNotes(final List<Integer> items) {
+        if (items != null) {
+            final String account = activeAccountRepository.getActiveAccount().getAccount();
+            final String rootFolder = activeAccountRepository.getActiveAccount().getRootFolder();
+
+            final int[] position = {-1};
+            AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+            builder.setTitle(R.string.move_note);
+
+            List<Notebook> books = notebookRepository.getAll(account, rootFolder);
+            String[] booksSummary = new String[books.size()];
+            for (int i = 0; i < books.size(); i++) {
+                booksSummary[i] = books.get(i).getSummary();
+            }
+
+            final ArrayAdapter<String> adapter = new ArrayAdapter<String>(activity, android.R.layout.simple_list_item_single_choice, booksSummary);
+
+            builder.setSingleChoiceItems(adapter, -1, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    position[0] = which;
+                }
+            }).setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    if (position[0] != -1) {
+                        String notebookName = adapter.getItem(position[0]);
+                        Notebook book = notebookRepository.getBySummary(account, rootFolder, notebookName);
+                        for (Integer position : items) {
+                            final String uid = mSelectedNotes.get(position);
+                            final Note note = notesRepository.getByUID(account, rootFolder, uid);
+                            if (note != null) {
+                                notesRepository.update(account, rootFolder, note, book.getIdentification().getUid());
+                            updateModificationDate(note, account, rootFolder);
+                            }
+                        }
+                        mSwipeRefreshLayout.setRefreshing(true);
+                        refresh();
+                        mSelectedNotes.clear();
+                    }
+                }
+            }).setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                /* Nothing */
+                }
+            });
+
+            builder.show();
+        }
+    }
+
+    void updateModificationDate(Note note, final String account, final String rootFolder) {
         note.getAuditInformation().setLastModificationDate(System.currentTimeMillis());
 
-        Notebook book = notebookRepository.getByUID(activeAccountRepository.getActiveAccount().getAccount(),
-                activeAccountRepository.getActiveAccount().getRootFolder(), notesRepository
-                        .getUIDofNotebook(activeAccountRepository.getActiveAccount().getAccount(),
-                                activeAccountRepository.getActiveAccount().getRootFolder(), note.getIdentification().getUid()));
-        notesRepository.update(activeAccountRepository.getActiveAccount().getAccount(),
-                activeAccountRepository.getActiveAccount().getRootFolder(), note, book.getIdentification().getUid());
+        Notebook book = notebookRepository.getByUID(account, rootFolder, notesRepository
+                        .getUIDofNotebook(account, rootFolder, note.getIdentification().getUid()));
+        notesRepository.update(account, rootFolder, note, book.getIdentification().getUid());
     }
 
     public void openDrawer(){

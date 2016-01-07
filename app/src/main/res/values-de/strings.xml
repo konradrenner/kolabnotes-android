@@ -163,4 +163,5 @@
     <string name="pref_sorting_category">Sortierung</string>
     <string name="dialog_delete_notes">Lösche Notizen</string>
     <string name="dialog_question_delete_notes">Wollen Sie die ausgewählte Notizen wirklich löschen?</string>
+    <string name="move_note"> Bewegung</string>
 </resources>
