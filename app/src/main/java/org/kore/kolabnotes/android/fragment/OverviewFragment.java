@@ -465,6 +465,9 @@ public class OverviewFragment extends Fragment implements /*NoteAdapter.NoteSele
                         }
                     }
                     mSelectedNotes.clear();
+                    Utils.setSelectedTagName(activity,null);
+                    Utils.setSelectedNotebookName(activity, null);
+                    reloadData();
                     if (tabletMode) {
                         displayBlankFragment();
                     }
@@ -553,6 +556,9 @@ public class OverviewFragment extends Fragment implements /*NoteAdapter.NoteSele
                                 }
                             }
                             mSelectedNotes.clear();
+                            Utils.setSelectedTagName(activity,null);
+                            Utils.setSelectedNotebookName(activity, null);
+                            reloadData();
                         }
                     })
                     .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
@@ -612,6 +618,9 @@ public class OverviewFragment extends Fragment implements /*NoteAdapter.NoteSele
 
         }
         mSelectedNotes.clear();
+        Utils.setSelectedTagName(activity, null);
+        Utils.setSelectedNotebookName(activity,null);
+        reloadData();
     }
 
     @Nullable
@@ -672,6 +681,9 @@ public class OverviewFragment extends Fragment implements /*NoteAdapter.NoteSele
                             }
                         }
                         mSelectedNotes.clear();
+                        Utils.setSelectedTagName(activity,null);
+                        Utils.setSelectedNotebookName(activity, null);
+                        reloadData();
                     }
                 }
             }).setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
