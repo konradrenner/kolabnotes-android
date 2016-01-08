@@ -7,6 +7,7 @@ import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
@@ -348,6 +349,13 @@ public class OverviewFragment extends Fragment implements /*NoteAdapter.NoteSele
 
             startActivityForResult(i, DETAIL_ACTIVITY_RESULT_CODE);
         }
+    }
+
+    public Context getContext(){
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
+            return super.getContext();
+        }
+        return activity;
     }
 
     private class ActionModeCallback implements ActionMode.Callback {
