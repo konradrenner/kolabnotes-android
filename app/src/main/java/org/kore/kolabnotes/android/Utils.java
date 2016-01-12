@@ -30,12 +30,18 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import org.kore.kolab.notes.Color;
 import org.kore.kolab.notes.Note;
+import org.kore.kolab.notes.Notebook;
+import org.kore.kolab.notes.SharedNotebook;
 import org.kore.kolab.notes.Tag;
 import org.kore.kolabnotes.android.content.AccountIdentifier;
+import org.kore.kolabnotes.android.content.ActiveAccount;
+import org.kore.kolabnotes.android.content.NoteRepository;
 import org.kore.kolabnotes.android.content.NoteSorting;
+import org.kore.kolabnotes.android.content.NotebookRepository;
 import org.kore.kolabnotes.android.security.AuthenticatorActivity;
 import org.kore.kolabnotes.android.widget.ListWidget;
 import org.kore.kolabnotes.android.widget.StickyNoteWidget;
@@ -291,7 +297,7 @@ public class Utils {
     }
 
     public static boolean getReloadDataAfterDetail(Context context){
-        SharedPreferences sharedPref = context.getSharedPreferences("org.kore.kolabnotes.android.pref",Context.MODE_PRIVATE);
+        SharedPreferences sharedPref = context.getSharedPreferences("org.kore.kolabnotes.android.pref", Context.MODE_PRIVATE);
         return sharedPref.getBoolean(Utils.RELOAD_DATA_AFTER_DETAIL,false);
     }
 
@@ -353,6 +359,34 @@ public class Utils {
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
             view.setElevation(elevation);
         }
+    }
+
+    public static boolean checkNotebookPermissions(final Context context, final ActiveAccount activeAccount, final Note noteToChange, final Notebook newNotebook){
+        String oldNBUid = new NoteRepository(context).getUIDofNotebook(activeAccount.getAccount(), activeAccount.getRootFolder(),noteToChange.getIdentification().getUid());
+
+        if(newNotebook.isShared() || (oldNBUid != null && !oldNBUid.equals(newNotebook.getIdentification().getUid()))){
+            if(!oldNBUid.equals(newNotebook.getIdentification().getUid())){
+                //notenewNotebook got changed, so one needs the modification rights in the old an creation right in the new book
+                Notebook oldOne = new NotebookRepository(context).getByUID(activeAccount.getAccount(), activeAccount.getRootFolder(), oldNBUid);
+                if(oldOne.isShared()){
+                    if(!((SharedNotebook)oldOne).isNoteModificationAllowed()){
+                        Toast.makeText(context, R.string.no_change_permissions, Toast.LENGTH_LONG).show();
+                        return true;
+                    }
+                }
+
+                if(newNotebook.isShared() && !((SharedNotebook)newNotebook).isNoteCreationAllowed()){
+                    Toast.makeText(context, R.string.no_create_permissions, Toast.LENGTH_LONG).show();
+                    return true;
+                }
+            }else {
+                if(!((SharedNotebook)newNotebook).isNoteModificationAllowed()){
+                    Toast.makeText(context, R.string.no_change_permissions, Toast.LENGTH_LONG).show();
+                    return true;
+                }
+            }
+        }
+        return false;
     }
     
     public static final String getNameOfActiveAccount(Context context, String pemail, String prootFolder){

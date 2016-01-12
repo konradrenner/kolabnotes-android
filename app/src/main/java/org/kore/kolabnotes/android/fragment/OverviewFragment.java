@@ -622,6 +622,10 @@ public class OverviewFragment extends Fragment implements /*NoteAdapter.NoteSele
             final Note note = notesRepository.getByUID(account, rootFolder, uid);
 
             if (note != null) {
+<<<<<<< HEAD
+=======
+
+>>>>>>> f0efdf5b53dc338830800d367b71558e90ffc09f
                 Notebook book = checkModificationPermissionInCurrentBook(account, rootFolder, uid);
                 if (book == null) continue;
 
@@ -685,6 +689,10 @@ public class OverviewFragment extends Fragment implements /*NoteAdapter.NoteSele
                             final String uid = mSelectedNotes.get(position);
                             final Note note = notesRepository.getByUID(account, rootFolder, uid);
                             if (note != null) {
+<<<<<<< HEAD
+=======
+
+>>>>>>> f0efdf5b53dc338830800d367b71558e90ffc09f
                                 if(Utils.checkNotebookPermissions(activity,activeAccount,note,book)){
                                     Toast.makeText(activity, R.string.no_change_permissions, Toast.LENGTH_LONG).show();
                                     continue;
