@@ -151,4 +151,17 @@
     <string name="dialog_delete_notes">Удалить заметки</string>
     <string name="dialog_question_delete_notes">Вы действительно хотите удалить выбранные заметки?</string>
     <string name="move_note">Переместить</string>
+
+    <!-- Tags editor -->
+    <string name="title_activity_tag_list">Метки</string>
+    <string name="tag_creationDate">Создана</string>
+    <string name="tag_modificationDate">Последнее изменение</string>
+    <string name="dialog_delete_tags">Удалить метки</string>
+    <string name="dialog_question_delete_tags">Вы действительно хотите удалить выбранные метки?\n\nПредупреждение: удаление метки может влиять на другие объекты групповой работы.</string>
+    <string name="dialog_change_tag_warning">Предупреждение: изменение метки может влиять на другие объекты групповой работы.</string>
+
+    <!--Empty list-->
+    <string name="no_tags">Нет меток</string>
+    <string name="no_notes">Нет заметок</string>
+
 </resources>

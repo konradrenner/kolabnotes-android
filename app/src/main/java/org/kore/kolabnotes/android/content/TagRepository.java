@@ -143,6 +143,14 @@ public class TagRepository {
                 null);
     }
 
+    public void delete(String account, String rootFolder, Tag tag) {
+        ConnectionManager.getDatabase(context).delete(DatabaseHelper.TABLE_TAGS,
+                DatabaseHelper.COLUMN_ACCOUNT + " = '" + account + "' AND " +
+                        DatabaseHelper.COLUMN_ROOT_FOLDER + " = '" + rootFolder + "' AND " +
+                        DatabaseHelper.COLUMN_TAG_UID + " = '" + tag.getIdentification().getUid() + "' ",
+                null);
+    }
+
     public boolean existsTagNameFor(String account, String rootFolder, String tagName){
         boolean ret = existsTagNameForAccount(account,rootFolder,tagName);
         return ret;

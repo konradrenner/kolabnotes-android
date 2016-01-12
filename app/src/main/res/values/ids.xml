@@ -19,4 +19,5 @@
     <item name="create_account_menu" type="id">create_account_menu</item>
     <item name="list_note_row_summary" type="id">list_note_row_summary</item>
     <item name="delete_notebook_menu" type="id">delete_notebook_menu</item>
+    <item name="tag_list" type="id">tag_list</item>
 </resources>
