@@ -276,21 +276,12 @@ public class NoteAdapter extends SelectableAdapter<NoteAdapter.ViewHolder> {
         public void onClick(View v) {
             if (listener != null) {
                 ViewParent parent = v.getParent();
-<<<<<<< HEAD
                 if(parent instanceof RecyclerView) {
                     RecyclerView recyclerView = (RecyclerView) parent;
                     for (int i = 0; i < recyclerView.getChildCount(); i++) {
                         Utils.setElevation(recyclerView.getChildAt(i), 5);
                         if (i == getAdapterPosition()) {
                             Utils.setElevation(recyclerView.getChildAt(i), 30);
-=======
-                if(parent instanceof RecyclerView){
-                    RecyclerView recyclerView = (RecyclerView)parent;
-                    for(int i=0; i < recyclerView.getChildCount(); i++){
-                        Utils.setElevation(recyclerView.getChildAt(i),5);
-                        if(i == getAdapterPosition()){
-                            Utils.setElevation(recyclerView.getChildAt(i),30);
->>>>>>> f0efdf5b53dc338830800d367b71558e90ffc09f
                         }
                     }
                 }
