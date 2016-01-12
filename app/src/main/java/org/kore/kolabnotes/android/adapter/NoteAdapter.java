@@ -140,12 +140,11 @@ public class NoteAdapter extends SelectableAdapter<NoteAdapter.ViewHolder> {
                     tagTextView.setText(tag.getName());
                     int backgroundColor;
                     if (isSelected) {
-                        tagTextView.setTextColor(Color.BLACK);
                         backgroundColor = COLOR_SELECTED_NOTE;
                     } else {
-                        tagTextView.setTextColor(useLightColor ? Color.WHITE : Color.BLACK);
                         backgroundColor = note.getColor() == null ? Color.WHITE : Color.parseColor(note.getColor().getHexcode());
                     }
+                    tagTextView.setTextColor(useLightColor ? Color.WHITE : Color.BLACK);
                     final Drawable drawable = context.getResources().getDrawable(R.drawable.color_background_with_dashedborder).mutate();
 
                     drawable.setColorFilter(backgroundColor, PorterDuff.Mode.MULTIPLY);
@@ -158,11 +157,7 @@ public class NoteAdapter extends SelectableAdapter<NoteAdapter.ViewHolder> {
 
                     TextView tagTextView = new TextView(context);
                     tagTextView.setText(tag.getName());
-                    if (isSelected) {
-                        tagTextView.setTextColor(Color.BLACK);
-                    } else {
-                        tagTextView.setTextColor(useLight ? Color.WHITE : Color.BLACK);
-                    }
+                    tagTextView.setTextColor(useLight ? Color.WHITE : Color.BLACK);
                     final Drawable drawable = context.getResources().getDrawable(R.drawable.color_background_with_border).mutate();
                     drawable.setColorFilter(Color.parseColor(tag.getColor().getHexcode()), PorterDuff.Mode.MULTIPLY);
                     tagTextView.setBackground(drawable);
@@ -228,8 +223,6 @@ public class NoteAdapter extends SelectableAdapter<NoteAdapter.ViewHolder> {
         }
         Utils.setElevation(viewHolder.cardView, 5);
 
-//        viewHolder.itemView.setOnClickListener(new ClickListener(i));
-
         if(Utils.getShowMetainformation(context)){
             viewHolder.showMetainformation();
         }else{
@@ -243,31 +236,13 @@ public class NoteAdapter extends SelectableAdapter<NoteAdapter.ViewHolder> {
         }
     }
 
-//    class ClickListener implements View.OnClickListener{
-//        public int index;
-//
-//        public ClickListener(int index) {
-//            this.index = index;
-//        }
-//
-//        @Override
-//        public void onClick(View v) {
-//            boolean same = false;
-//            ViewParent parent = v.getParent();
-//            if(parent instanceof RecyclerView){
-//                RecyclerView recyclerView = (RecyclerView)parent;
-//                for(int i=0; i < recyclerView.getChildCount(); i++){
-//                    Utils.setElevation(recyclerView.getChildAt(i),5);
-//                }
-//            }
-//            Utils.setElevation(v,30);
-//            listener.onSelect(notes.get(index), same);
-//        }
-//    }
-
     @Override
     public int getItemCount() {
         return notes == null ? 0 : notes.size();
+    }
+
+    public boolean isEmpty() {
+        return notes.isEmpty() ? true : false;
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener{
@@ -356,8 +331,4 @@ public class NoteAdapter extends SelectableAdapter<NoteAdapter.ViewHolder> {
             categories.setVisibility(View.VISIBLE);
         }
     }
-
-//    public interface NoteSelectedListener{
-//        void onSelect(Note note, boolean sameSelection);
-//    }
 }

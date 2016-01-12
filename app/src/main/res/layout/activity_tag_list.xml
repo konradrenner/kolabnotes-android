@@ -1,0 +1,47 @@
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/activity_tag_list"
+    android:layout_height="match_parent"
+    android:layout_width="match_parent">
+
+    <RelativeLayout
+        android:gravity="center"
+        android:fitsSystemWindows="true"
+        android:background="?attr/colorPrimary"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar_tag_list"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:minHeight="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            android:elevation="4dp"
+            android:transitionName="actionBarTagList"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/toolbar_tag_list"
+            android:orientation="horizontal"
+            android:background="@color/md_white_1000">
+
+            <fragment
+                class="org.kore.kolabnotes.android.fragment.TagListFragment"
+                android:id="@+id/tag_list_fragment"
+                android:layout_weight="1"
+                android:layout_width="0px"
+                android:layout_height="match_parent"
+                />
+
+            <!--<FrameLayout-->
+                <!--android:id="@+id/tag_list_fragment"-->
+                <!--android:layout_weight="1"-->
+                <!--android:layout_width="0px"-->
+                <!--android:layout_height="match_parent"-->
+                <!--android:background="@color/md_white_1000"/>-->
+
+        </LinearLayout>
+    </RelativeLayout>
+</FrameLayout>
