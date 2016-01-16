@@ -130,7 +130,7 @@ public class TagListFragment extends Fragment implements TagAdapter.ViewHolder.C
             LayoutInflater inflater = activity.getLayoutInflater();
             View view = inflater.inflate(R.layout.dialog_text_input, null);
             AlertDialog newTagDialog = updateTagDialog(view, new UpdateTagButtonListener(
-                    (EditText)view.findViewById(R.id.dialog_text_input_field), tag.getIdentification().getUid()));
+                    (EditText) view.findViewById(R.id.dialog_text_input_field), tag.getIdentification().getUid()));
             newTagDialog.show();
         } else {
             toggleSelection(position);
@@ -384,6 +384,7 @@ public class TagListFragment extends Fragment implements TagAdapter.ViewHolder.C
 
             String value = textField.getText().toString();
             tag.setName(value);
+            tag.getAuditInformation().setLastModificationDate(System.currentTimeMillis());
 
             tagRepository.update(account, rootFolder, tag);
             reloadData();

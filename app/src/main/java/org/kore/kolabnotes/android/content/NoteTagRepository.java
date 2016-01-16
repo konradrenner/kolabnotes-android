@@ -78,12 +78,12 @@ public class NoteTagRepository {
     }
 
     public void updateTagID(String account, String rootFolder,String oldTagName, String newTagName){
-        ConnectionManager.getDatabase(context).rawQuery("UPDATE " + DatabaseHelper.TABLE_NOTE_TAGS +
-                        " SET "+DatabaseHelper.COLUMN_IDTAG+" = '"+newTagName+"' " +
-                        " WHERE "+DatabaseHelper.COLUMN_ACCOUNT+" = ?1 " +
-                        " AND "+DatabaseHelper.COLUMN_ROOT_FOLDER+" = ?2 " +
-                        " AND "+DatabaseHelper.COLUMN_IDTAG+" = ?3 ",
-                new String[]{account,rootFolder,oldTagName});
+        ConnectionManager.getDatabase(context).execSQL("UPDATE " + DatabaseHelper.TABLE_NOTE_TAGS +
+                        " SET " + DatabaseHelper.COLUMN_IDTAG + " = '" + newTagName + "' " +
+                        " WHERE " + DatabaseHelper.COLUMN_ACCOUNT + " = ?1 " +
+                        " AND " + DatabaseHelper.COLUMN_ROOT_FOLDER + " = ?2 " +
+                        " AND " + DatabaseHelper.COLUMN_IDTAG + " = ?3 ",
+                new String[]{account, rootFolder, oldTagName});
     }
 
     public void delete(String account, String rootFolder, String uidNote, String tagname) {
