@@ -124,6 +124,8 @@ public class TagRepository {
     }
 
     public void update(String account, String rootFolder,Tag tag){
+        Tag oldTag = getTagWithUID(account, rootFolder, tag.getIdentification().getUid());
+
         ContentValues values = new ContentValues();
         values.put(DatabaseHelper.COLUMN_ACCOUNT,account);
         values.put(DatabaseHelper.COLUMN_ROOT_FOLDER,rootFolder);
@@ -141,6 +143,8 @@ public class TagRepository {
                         DatabaseHelper.COLUMN_ROOT_FOLDER + " = '" + rootFolder + "' AND " +
                         DatabaseHelper.COLUMN_TAG_UID + " = '" + tag.getIdentification().getUid() + "' ",
                 null);
+
+        new NoteTagRepository(context).updateTagID(account,rootFolder,oldTag.getName(),tag.getName());
     }
 
     public void delete(String account, String rootFolder, Tag tag) {
@@ -149,6 +153,14 @@ public class TagRepository {
                         DatabaseHelper.COLUMN_ROOT_FOLDER + " = '" + rootFolder + "' AND " +
                         DatabaseHelper.COLUMN_TAG_UID + " = '" + tag.getIdentification().getUid() + "' ",
                 null);
+        new NoteTagRepository(context).deleteWithTagName(account, rootFolder, tag.getName());
+
+        ModificationRepository modificationRepository = new ModificationRepository(context);
+        Modification modification = modificationRepository.getUnique(account,rootFolder,tag.getIdentification().getUid());
+
+        if(modification == null){
+            modificationRepository.insert(account,rootFolder,tag.getIdentification().getUid(), ModificationRepository.ModificationType.DEL,tag.getName(), Modification.Descriminator.TAG);
+        }
     }
 
     public boolean existsTagNameFor(String account, String rootFolder, String tagName){

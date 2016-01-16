@@ -164,4 +164,13 @@
     <string name="dialog_delete_notes">Lösche Notizen</string>
     <string name="dialog_question_delete_notes">Wollen Sie die ausgewählte Notizen wirklich löschen?</string>
     <string name="move_note">Verschieben</string>
+    <string name="dialog_delete_tags">Lösche Kategorien</string>
+    <string name="dialog_change_tag_warning">Achtung: Eine Änderung kann auch andere Groupware-Objekte betreffen</string>
+    <string name="dialog_question_delete_tags">Wollen Sie die ausgewählte Kategorie wirklich löschen?\n\nWarnung: Das kann Auswirkungen auf andere Groupware-Objekte haben</string>
+    <string name="no_notes">Keine Notizen vorhanden</string>
+    <string name="no_tags">Keine Kategorien vorhanden</string>
+    <string name="tag_creationDate">Erstellt am</string>
+    <string name="tag_modificationDate">Letze Änderung</string>
+    <string name="title_activity_tag_list">Kategorien</string>
+    <string name="dialog_input_update_tag_text">Ändere Kategoriename</string>
 </resources>

@@ -129,7 +129,7 @@ public class TagListFragment extends Fragment implements TagAdapter.ViewHolder.C
         if (mActionMode == null) {
             LayoutInflater inflater = activity.getLayoutInflater();
             View view = inflater.inflate(R.layout.dialog_text_input, null);
-            AlertDialog newTagDialog = tagDialog(view, new UpdateTagButtonListener(
+            AlertDialog newTagDialog = updateTagDialog(view, new UpdateTagButtonListener(
                     (EditText)view.findViewById(R.id.dialog_text_input_field), tag.getIdentification().getUid()));
             newTagDialog.show();
         } else {
@@ -297,18 +297,33 @@ public class TagListFragment extends Fragment implements TagAdapter.ViewHolder.C
         public void onClick(View v) {
             LayoutInflater inflater = activity.getLayoutInflater();
             View view = inflater.inflate(R.layout.dialog_text_input, null);
-            AlertDialog newTagDialog = tagDialog(view, new CreateTagButtonListener((EditText)view.findViewById(R.id.dialog_text_input_field)));
+            AlertDialog newTagDialog = createTagDialog(view, new CreateTagButtonListener((EditText)view.findViewById(R.id.dialog_text_input_field)));
             newTagDialog.show();
         }
     }
 
-    private AlertDialog tagDialog(View view, DialogInterface.OnClickListener listener){
+    private AlertDialog createTagDialog(View view, DialogInterface.OnClickListener listener){
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
 
         builder.setTitle(R.string.dialog_input_text_tag);
-        if (listener instanceof UpdateTagButtonListener) {
-            builder.setMessage(R.string.dialog_change_tag_warning);
-        }
+
+        builder.setView(view);
+
+        builder.setPositiveButton(R.string.ok, listener);
+        builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                /* Nothing */
+            }
+        });
+        return builder.create();
+    }
+
+    private AlertDialog updateTagDialog(View view, DialogInterface.OnClickListener listener){
+        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+
+        builder.setTitle(R.string.dialog_input_update_tag_text);
+        builder.setMessage(R.string.dialog_change_tag_warning);
 
         builder.setView(view);
 

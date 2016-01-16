@@ -167,4 +167,13 @@
     <string name="dialog_delete_notes">Cancella Note</string>
     <string name="dialog_question_delete_notes">Sei sicuro di voler cancellare le note selezionate?</string>
     <string name="move_note">Movimento</string>
+    <string name="dialog_change_tag_warning">Attenzione: la modifica di un tag forse interesserà altri oggetti groupware</string>
+    <string name="dialog_delete_tags">Elimina tag</string>
+    <string name="dialog_question_delete_tags">Vuoi davvero eliminare tag selezionati\n\nAttenzione : l\'eliminazione di un tag forse interesserà altri oggetti groupware</string>
+    <string name="no_notes">Nessuna nota</string>
+    <string name="no_tags"> Nessun tag</string>
+    <string name="tag_creationDate">Creato</string>
+    <string name="tag_modificationDate">Modificato l\'ultima volta</string>
+    <string name="title_activity_tag_list">Tag</string>
+    <string name="dialog_input_update_tag_text">Cambia tagname</string>
 </resources>

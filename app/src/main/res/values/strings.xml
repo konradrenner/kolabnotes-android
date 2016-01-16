@@ -174,10 +174,11 @@
     <string name="tag_modificationDate">Last modified</string>
     <string name="dialog_delete_tags">Delete Tags</string>
     <string name="dialog_question_delete_tags">Do you really want to delete selected tags?\n\nWarning: deleting a tag will maybe affect other groupware objects.</string>
-    <string name="dialog_change_tag_warning">Warning: changing a tag will maybe affect other groupware objects.</string>
+    <string name="dialog_change_tag_warning">Warning: changing a tag will maybe affect other groupware objects</string>
 
     <!--Empty list-->
     <string name="no_tags">No tags</string>
     <string name="no_notes">No notes</string>
+    <string name="dialog_input_update_tag_text">Change tagname</string>
 
 </resources>

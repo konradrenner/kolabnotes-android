@@ -150,4 +150,13 @@
     <string name="dialog_delete_notes">Supprimer les notes</string>
     <string name="dialog_question_delete_notes"> Êtes-vous sûr de vouloir supprimer les notes sélectionnées?</string>
     <string name="move_note">Déplacer</string>
+    <string name="dialog_change_tag_warning"> Attention: la modification d\'un tag sera peut-être affecter d\'autres objets de groupware</string>
+    <string name="dialog_delete_tags">Delete Tags</string>
+    <string name="dialog_question_delete_tags">Voulez-vous vraiment supprimer les balises sélectionnés\n\nAttention : la suppression d\'un tag sera peut-être affecter d\'autres objets de groupware</string>
+    <string name="no_notes">Pas de notes</string>
+    <string name="no_tags"> Pas de tags</string>
+    <string name="tag_creationDate">Créé</string>
+    <string name="tag_modificationDate">Dernière mise à jour</string>
+    <string name="title_activity_tag_list">Mots clés</string>
+    <string name="dialog_input_update_tag_text">Changement tagname</string>
 </resources>

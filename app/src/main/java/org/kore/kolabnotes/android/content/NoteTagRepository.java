@@ -77,11 +77,28 @@ public class NoteTagRepository {
         ConnectionManager.getDatabase(context).insert(DatabaseHelper.TABLE_NOTE_TAGS, null, values);
     }
 
+    public void updateTagID(String account, String rootFolder,String oldTagName, String newTagName){
+        ConnectionManager.getDatabase(context).rawQuery("UPDATE " + DatabaseHelper.TABLE_NOTE_TAGS +
+                        " SET "+DatabaseHelper.COLUMN_IDTAG+" = '"+newTagName+"' " +
+                        " WHERE "+DatabaseHelper.COLUMN_ACCOUNT+" = ?1 " +
+                        " AND "+DatabaseHelper.COLUMN_ROOT_FOLDER+" = ?2 " +
+                        " AND "+DatabaseHelper.COLUMN_IDTAG+" = ?3 ",
+                new String[]{account,rootFolder,oldTagName});
+    }
+
     public void delete(String account, String rootFolder, String uidNote, String tagname) {
         ConnectionManager.getDatabase(context).delete(DatabaseHelper.TABLE_NOTE_TAGS,
                 DatabaseHelper.COLUMN_ACCOUNT + " = '" + account + "' AND " +
                         DatabaseHelper.COLUMN_ROOT_FOLDER + " = '" + rootFolder + "' AND " +
                         DatabaseHelper.COLUMN_IDNOTE + " = '" + uidNote + "' AND " +
+                        DatabaseHelper.COLUMN_IDTAG + " = '" + tagname + "' ",
+                null);
+    }
+
+    public void deleteWithTagName(String account, String rootFolder, String tagname) {
+        ConnectionManager.getDatabase(context).delete(DatabaseHelper.TABLE_NOTE_TAGS,
+                DatabaseHelper.COLUMN_ACCOUNT + " = '" + account + "' AND " +
+                        DatabaseHelper.COLUMN_ROOT_FOLDER + " = '" + rootFolder + "' AND " +
                         DatabaseHelper.COLUMN_IDTAG + " = '" + tagname + "' ",
                 null);
     }
