@@ -83,6 +83,11 @@ public class TagListFragment extends Fragment implements TagAdapter.ViewHolder.C
         super.onActivityCreated(savedInstanceState);
 
         toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar_tag_list);
+
+        if(activity == null){
+            activity = (AppCompatActivity)getActivity();
+        }
+
         activity.setSupportActionBar(toolbar);
         if(activity.getSupportActionBar() != null) {
             activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
