@@ -88,6 +88,13 @@ public class TagListFragment extends Fragment implements TagAdapter.ViewHolder.C
             activity = (AppCompatActivity)getActivity();
         }
 
+        if(tagRepository == null){
+            this.tagRepository = new TagRepository(activity);
+        }
+        if(activeAccountRepository == null){
+            this.activeAccountRepository = new ActiveAccountRepository(activity);
+        }
+
         activity.setSupportActionBar(toolbar);
         if(activity.getSupportActionBar() != null) {
             activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
