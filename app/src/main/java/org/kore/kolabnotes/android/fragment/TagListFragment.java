@@ -74,8 +74,8 @@ public class TagListFragment extends Fragment implements TagAdapter.ViewHolder.C
         if (context instanceof AppCompatActivity) {
             this.activity = (AppCompatActivity)context;
         }
-        this.tagRepository = new TagRepository(this.activity);
-        this.activeAccountRepository = new ActiveAccountRepository(this.activity);
+        this.tagRepository = new TagRepository(context);
+        this.activeAccountRepository = new ActiveAccountRepository(context);
     }
 
     @Override
