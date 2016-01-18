@@ -181,6 +181,13 @@ public class TagListFragment extends Fragment implements TagAdapter.ViewHolder.C
         chooseColor(item);
     }
 
+    public Context getContext(){
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
+            return super.getContext();
+        }
+        return activity;
+    }
+
     private class ActionModeCallback implements ActionMode.Callback {
         @SuppressWarnings("unused")
         private final String TAG = ActionModeCallback.class.getSimpleName();
