@@ -6,25 +6,26 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
+import android.app.SearchManager;
+import android.content.ComponentName;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.res.Resources;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.ActionMode;
@@ -64,6 +65,7 @@ import org.kore.kolabnotes.android.ColorCircleDrawable;
 import org.kore.kolabnotes.android.DetailActivity;
 import org.kore.kolabnotes.android.MainActivity;
 import org.kore.kolabnotes.android.R;
+import org.kore.kolabnotes.android.SearchableActivity;
 import org.kore.kolabnotes.android.TagListActivity;
 import org.kore.kolabnotes.android.Utils;
 import org.kore.kolabnotes.android.adapter.NoteAdapter;
@@ -76,7 +78,6 @@ import org.kore.kolabnotes.android.content.TagRepository;
 import org.kore.kolabnotes.android.security.AuthenticatorActivity;
 import org.kore.kolabnotes.android.setting.SettingsActivity;
 
-import java.lang.reflect.Array;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -953,6 +954,18 @@ public class OverviewFragment extends Fragment implements /*NoteAdapter.NoteSele
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu,inflater);
         inflater.inflate(R.menu.main_toolbar, menu);
+
+        // Associate searchable configuration with the SearchView
+        SearchManager searchManager =
+            (SearchManager) activity.getSystemService(Context.SEARCH_SERVICE);
+        SearchView searchView = (SearchView) MenuItemCompat.getActionView(menu.findItem(R.id
+            .action_search));
+
+        // Set component name is necessary here because the searchable activity is different
+        // from the current activity
+        ComponentName componentName = new ComponentName(getContext(), SearchableActivity
+            .class);
+        searchView.setSearchableInfo(searchManager.getSearchableInfo(componentName));
     }
 
     @Override

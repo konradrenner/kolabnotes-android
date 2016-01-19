@@ -1,151 +1,167 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="org.kore.kolabnotes.android" >
+    package="org.kore.kolabnotes.android">
 
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.AUTHENTICATE_ACCOUNTS" />
-    <uses-permission android:name="android.permission.READ_SYNC_SETTINGS" />
-    <uses-permission android:name="android.permission.READ_SYNC_STATS" />
-    <uses-permission android:name="android.permission.WRITE_SYNC_SETTINGS" />
-    <uses-permission android:name="android.permission.USE_CREDENTIALS" /> <!-- To retrieve the account name (email) as part of sign-in: -->
-    <uses-permission android:name="android.permission.GET_ACCOUNTS" /> <!-- To auto-complete the email text field in the login form with the user's emails -->
-    <uses-permission android:name="android.permission.READ_PROFILE" />
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.AUTHENTICATE_ACCOUNTS"/>
+    <uses-permission android:name="android.permission.READ_SYNC_SETTINGS"/>
+    <uses-permission android:name="android.permission.READ_SYNC_STATS"/>
+    <uses-permission android:name="android.permission.WRITE_SYNC_SETTINGS"/>
+    <uses-permission android:name="android.permission.USE_CREDENTIALS"/> <!-- To retrieve the account name (email) as part of sign-in: -->
+    <uses-permission android:name="android.permission.GET_ACCOUNTS"/> <!-- To auto-complete the email text field in the login form with the user's emails -->
+    <uses-permission android:name="android.permission.READ_PROFILE"/>
 
     <supports-screens
         android:largeScreens="true"
-        android:xlargeScreens="true" />
+        android:xlargeScreens="true"/>
 
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_kjots"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme" >
+        android:theme="@style/AppTheme">
+
         <activity
+            android:label="@string/app_name"
             android:name=".MainActivity"
-            android:label="@string/app_name"
-            android:windowSoftInputMode="adjustResize|stateAlwaysHidden" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+            android:windowSoftInputMode="adjustResize|stateAlwaysHidden">
 
-                <category android:name="android.intent.category.LAUNCHER" />
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+
+                <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
         <activity
+            android:label="@string/app_name"
             android:name=".DetailActivity"
+            android:windowSoftInputMode="adjustResize|stateHidden">
+            <intent-filter>
+                <action android:name="android.intent.action.SEND"/>
+
+                <category android:name="android.intent.category.DEFAULT"/>
+
+                <data android:mimeType="text/plain"/>
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.SEND"/>
+
+                <category android:name="android.intent.category.DEFAULT"/>
+
+                <data android:mimeType="text/html"/>
+            </intent-filter>
+        </activity>
+        <activity
             android:label="@string/app_name"
-            android:windowSoftInputMode="adjustResize|stateHidden" >
+            android:name=".TagListActivity">
             <intent-filter>
-                <action android:name="android.intent.action.SEND" />
+                <action android:name="android.intent.action.SEND"/>
 
-                <category android:name="android.intent.category.DEFAULT" />
-
-                <data android:mimeType="text/plain" />
-            </intent-filter>
-            <intent-filter>
-                <action android:name="android.intent.action.SEND" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-
-                <data android:mimeType="text/html" />
+                <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
         <activity
-            android:name=".TagListActivity"
-            android:label="@string/app_name" >
-            <intent-filter>
-                <action android:name="android.intent.action.SEND" />
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-        </activity>
-        <activity
-            android:name=".security.AuthenticatorActivity"
             android:label="@string/login_label"
+            android:name=".security.AuthenticatorActivity"
             android:windowSoftInputMode="adjustPan|stateHidden">
             <intent-filter>
-                <action android:name="org.kore.kolabnotes.android.security.AuthenticatorActivity" />
-                <category android:name="android.intent.category.DEFAULT" />
+                <action android:name="org.kore.kolabnotes.android.security.AuthenticatorActivity"/>
+
+                <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
 
         <provider
-            android:name=".content.KolabNotesContentProvider"
             android:authorities="kore.kolabnotes"
             android:enabled="true"
-            android:exported="true" >
+            android:exported="true"
+            android:name=".content.KolabNotesContentProvider">
         </provider>
 
         <service
-            android:name=".async.KolabSyncService"
             android:exported="true"
-            android:process=":sync" >
+            android:name=".async.KolabSyncService"
+            android:process=":sync">
             <intent-filter>
-                <action android:name="android.content.SyncAdapter" />
+                <action android:name="android.content.SyncAdapter"/>
             </intent-filter>
 
             <meta-data
                 android:name="android.content.SyncAdapter"
-                android:resource="@xml/syncadapter" />
+                android:resource="@xml/syncadapter"/>
         </service>
-        <service android:name=".security.AccountAuthenticatorService" >
+        <service android:name=".security.AccountAuthenticatorService">
             <intent-filter>
-                <action android:name="android.accounts.AccountAuthenticator" />
+                <action android:name="android.accounts.AccountAuthenticator"/>
             </intent-filter>
 
             <meta-data
                 android:name="android.accounts.AccountAuthenticator"
-                android:resource="@xml/authenticator" />
+                android:resource="@xml/authenticator"/>
         </service>
         <service
             android:name=".widget.ListWidgetService"
-            android:permission="android.permission.BIND_REMOTEVIEWS" />
+            android:permission="android.permission.BIND_REMOTEVIEWS"/>
 
         <receiver
-            android:name=".widget.ListWidget"
             android:icon="@mipmap/ic_kjots"
-            android:label="@string/app_name" >
+            android:label="@string/app_name"
+            android:name=".widget.ListWidget">
             <intent-filter>
-                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
             </intent-filter>
 
             <meta-data
                 android:name="android.appwidget.provider"
-                android:resource="@xml/list_widget_info" />
+                android:resource="@xml/list_widget_info"/>
         </receiver>
 
         <activity
-            android:name=".widget.ListWidgetConfigureActivity"
             android:icon="@mipmap/ic_kjots"
-            android:label="@string/app_name" >
+            android:label="@string/app_name"
+            android:name=".widget.ListWidgetConfigureActivity">
             <intent-filter>
-                <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
+                <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE"/>
             </intent-filter>
         </activity>
 
         <receiver
-            android:name=".widget.StickyNoteWidget"
             android:icon="@mipmap/ic_kjots"
-            android:label="@string/sticky_note_name" >
+            android:label="@string/sticky_note_name"
+            android:name=".widget.StickyNoteWidget">
             <intent-filter>
-                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
             </intent-filter>
 
             <meta-data
                 android:name="android.appwidget.provider"
-                android:resource="@xml/sticky_note_widget_info" />
+                android:resource="@xml/sticky_note_widget_info"/>
         </receiver>
 
         <activity
-            android:name=".widget.StickyNoteWidgetConfigureActivity"
             android:icon="@mipmap/ic_kjots"
-            android:label="@string/sticky_note_name" >
+            android:label="@string/sticky_note_name"
+            android:name=".widget.StickyNoteWidgetConfigureActivity">
             <intent-filter>
-                <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
+                <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE"/>
             </intent-filter>
         </activity>
         <activity
-            android:name=".setting.SettingsActivity"
             android:label="@string/title_activity_settings"
+            android:name=".setting.SettingsActivity"
             android:theme="@style/SettingsTheme">
+        </activity>
+
+        <!--SearchableActivity to handle the search result query-->
+        <activity
+            android:name=".SearchableActivity"
+            android:launchMode="singleTop">
+            <intent-filter>
+                <action android:name="android.intent.action.SEARCH" />
+            </intent-filter>
+            <meta-data android:name="android.app.searchable"
+                android:resource="@xml/searchable"/>
+
         </activity>
     </application>
 
