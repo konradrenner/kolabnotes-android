@@ -22,13 +22,8 @@
     <item android:id="@+id/action_search"
         app:showAsAction="ifRoom|collapseActionView"
         android:icon="@drawable/ic_action_search"
-        android:title="Action Search"
+        android:title="@string/title_dialog_search"
         app:actionViewClass="android.support.v7.widget.SearchView"/>
-
-    <item android:id="@id/create_search_menu"
-        app:showAsAction="ifRoom"
-        android:icon="@drawable/ic_action_search"
-        android:title="@string/title_dialog_search" />
 
     <item android:id="@+id/settings_menu"
         app:showAsAction="ifRoom"

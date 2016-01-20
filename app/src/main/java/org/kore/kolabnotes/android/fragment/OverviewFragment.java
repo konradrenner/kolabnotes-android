@@ -6,8 +6,6 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
-import android.app.SearchManager;
-import android.content.ComponentName;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -22,7 +20,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.ActionBar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
@@ -65,7 +62,6 @@ import org.kore.kolabnotes.android.ColorCircleDrawable;
 import org.kore.kolabnotes.android.DetailActivity;
 import org.kore.kolabnotes.android.MainActivity;
 import org.kore.kolabnotes.android.R;
-import org.kore.kolabnotes.android.SearchableActivity;
 import org.kore.kolabnotes.android.TagListActivity;
 import org.kore.kolabnotes.android.Utils;
 import org.kore.kolabnotes.android.adapter.NoteAdapter;
@@ -955,17 +951,51 @@ public class OverviewFragment extends Fragment implements /*NoteAdapter.NoteSele
         super.onCreateOptionsMenu(menu,inflater);
         inflater.inflate(R.menu.main_toolbar, menu);
 
-        // Associate searchable configuration with the SearchView
-        SearchManager searchManager =
-            (SearchManager) activity.getSystemService(Context.SEARCH_SERVICE);
+        // Create the search view
         SearchView searchView = (SearchView) MenuItemCompat.getActionView(menu.findItem(R.id
             .action_search));
+        setUpSearchView(searchView);
+    }
 
-        // Set component name is necessary here because the searchable activity is different
-        // from the current activity
-        ComponentName componentName = new ComponentName(getContext(), SearchableActivity
-            .class);
-        searchView.setSearchableInfo(searchManager.getSearchableInfo(componentName));
+    /**
+     * Set up the search view with OnQueryTextListener()
+     *
+     * @param searchView the search view which need to be set up
+     */
+    private void setUpSearchView(SearchView searchView) {
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                searchNotes(query);
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                // Apply the filter when the text is changing
+                searchNotes(newText);
+                return true;
+            }
+        });
+    }
+
+    /**
+     * This function searchs all the note that fit the query, at the moment, the query only apply
+     * for the note summary, but it can be expanded to filter more. The notes from all notebooks
+     * which matched the query will be update to the view for the user.
+     *
+     * @param query input query to apply for the search
+     */
+    private void searchNotes(String query) {
+        ActiveAccount activeAccount = activeAccountRepository.getActiveAccount();
+        List<Note> notes = notesRepository.getFromNotebookWithSummary(activeAccount
+                .getAccount(),
+            activeAccount.getRootFolder(),null,query,Utils.getNoteSorting(activity));
+        displayBlankFragment();
+
+        // Update the search view with the result notes
+        mAdapter.clearNotes();
+        mAdapter.addNotes(notes);
     }
 
     @Override
@@ -996,10 +1026,6 @@ public class OverviewFragment extends Fragment implements /*NoteAdapter.NoteSele
             case R.id.tag_list:
                 Intent i = new Intent(activity, TagListActivity.class);
                 startActivityForResult(i, TAG_LIST_ACTIVITY_RESULT_CODE);
-                break;
-            case R.id.create_search_menu:
-                AlertDialog newSearchDialog = createSearchDialog();
-                newSearchDialog.show();
                 break;
            case R.id.settings_menu:
                 Intent settingsIntent = new Intent(activity,SettingsActivity.class);
@@ -1037,27 +1063,6 @@ public class OverviewFragment extends Fragment implements /*NoteAdapter.NoteSele
             }
         });
         builder.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                //nothing
-            }
-        });
-        return builder.create();
-    }
-
-
-    private AlertDialog createSearchDialog(){
-        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
-
-        builder.setTitle(R.string.dialog_input_text_search);
-
-        LayoutInflater inflater = activity.getLayoutInflater();
-        View view = inflater.inflate(R.layout.dialog_search_note, null);
-
-        builder.setView(view);
-
-        builder.setPositiveButton(R.string.ok, new SearchNoteButtonListener((EditText) view.findViewById(R.id.dialog_search_input_field)));
-        builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 //nothing
@@ -1610,5 +1615,13 @@ public class OverviewFragment extends Fragment implements /*NoteAdapter.NoteSele
         drawer.getDrawerItems().add(new DividerDrawerItem());
         drawer.getDrawerItems().add(new PrimaryDrawerItem().withName(getResources().getString(R.string.drawer_item_tags)).withTag("HEADING_TAG").withEnabled(false).withDisabledTextColor(getResources().getColor(R.color.material_drawer_secondary_text)).withIcon(R.drawable.ic_action_labels));
 
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == 0) {
+            Log.v("ducanh", resultCode + "");
+        }
     }
 }
