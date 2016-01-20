@@ -344,4 +344,38 @@ public class NoteRepository {
         }
         return note;
     }
+
+    /**
+     * Search notes matched the input keyword
+     *
+     * @param account       the current active account
+     * @param rootFolder    the root folder
+     * @param keyWord       keyword used to find the notes
+     * @param noteSorting   rule how to sort the results
+     * @return              Return the list of notes matched with the keywords
+     */
+    public List<Note> searchNotes(String account, String rootFolder, String keyWord,
+        NoteSorting noteSorting) {
+        List<Note> notes = new ArrayList<Note>();
+
+        StringBuilder query = new StringBuilder(DatabaseHelper.COLUMN_ACCOUNT + " = '" + account+"' AND ");
+        query.append(DatabaseHelper.COLUMN_ROOT_FOLDER + " = '" + rootFolder+"' AND ");
+        query.append(DatabaseHelper.COLUMN_DISCRIMINATOR+" = '"+DatabaseHelper.DESCRIMINATOR_NOTE+"' AND ");
+        query.append(" "+DatabaseHelper.COLUMN_SUMMARY+" like '%"+keyWord.trim()+"%' COLLATE NOCASE ");
+
+        Cursor cursor = ConnectionManager.getDatabase(context).query(DatabaseHelper.TABLE_NOTES,
+            allColumns,
+            query.toString(),
+            null,
+            null,
+            null,
+            noteSorting.getColumnName() + " " + noteSorting.getDirection());
+
+        while (cursor.moveToNext()) {
+            Note note = cursorToNoteWithoutDescription(account,rootFolder,cursor);
+            notes.add(note);
+        }
+        cursor.close();
+        return notes;
+    }
 }

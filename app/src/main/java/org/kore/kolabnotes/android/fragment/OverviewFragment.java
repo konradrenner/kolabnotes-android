@@ -980,17 +980,17 @@ public class OverviewFragment extends Fragment implements /*NoteAdapter.NoteSele
     }
 
     /**
-     * This function searchs all the note that fit the query, at the moment, the query only apply
-     * for the note summary, but it can be expanded to filter more. The notes from all notebooks
-     * which matched the query will be update to the view for the user.
+     * This function searches all the note that fit the key word, at the moment, the query only
+     * apply for the note summary, but it can be expanded to filter more. The notes from all
+     * notebooks which matched the query will be update to the view for the user.
      *
-     * @param query input query to apply for the search
+     * @param keyWord input keyword to apply for the search
      */
-    private void searchNotes(String query) {
+    private void searchNotes(String keyWord) {
         ActiveAccount activeAccount = activeAccountRepository.getActiveAccount();
-        List<Note> notes = notesRepository.getFromNotebookWithSummary(activeAccount
+        List<Note> notes = notesRepository.searchNotes(activeAccount
                 .getAccount(),
-            activeAccount.getRootFolder(),null,query,Utils.getNoteSorting(activity));
+            activeAccount.getRootFolder(), keyWord, Utils.getNoteSorting(activity));
         displayBlankFragment();
 
         // Update the search view with the result notes
