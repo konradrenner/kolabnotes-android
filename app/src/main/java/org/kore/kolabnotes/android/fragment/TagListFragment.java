@@ -392,7 +392,9 @@ public class TagListFragment extends Fragment implements TagAdapter.ViewHolder.C
             this.rootFolder = activeAccountRepository.getActiveAccount().getRootFolder();
             this.textField = textField;
             this.tag = tagRepository.getTagWithUID(account, rootFolder, uid);
-            textField.setText(tag.getName());
+            if(textField != null && tag != null){
+                textField.setText(tag.getName());
+            }
         }
 
         @Override
