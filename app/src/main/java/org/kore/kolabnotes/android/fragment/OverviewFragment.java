@@ -981,6 +981,7 @@ public class OverviewFragment extends Fragment implements /*NoteAdapter.NoteSele
                 return true;
             }
         });
+        searchView.setQueryHint(getString(R.string.dialog_input_text_search_hint));
     }
 
     /**
