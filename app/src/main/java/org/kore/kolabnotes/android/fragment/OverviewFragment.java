@@ -30,6 +30,7 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -107,6 +108,7 @@ public class OverviewFragment extends Fragment implements /*NoteAdapter.NoteSele
     private RecyclerView mRecyclerView;
     private TextView mEmptyView;
     private SwipeRefreshLayout mSwipeRefreshLayout;
+    private SearchView mSearchView;
 
     private ActionMode mActionMode;
     private ActionModeCallback mActionModeCallback = new ActionModeCallback();
@@ -952,9 +954,9 @@ public class OverviewFragment extends Fragment implements /*NoteAdapter.NoteSele
         inflater.inflate(R.menu.main_toolbar, menu);
 
         // Create the search view
-        SearchView searchView = (SearchView) MenuItemCompat.getActionView(menu.findItem(R.id
+        mSearchView = (SearchView) MenuItemCompat.getActionView(menu.findItem(R.id
             .action_search));
-        setUpSearchView(searchView);
+        setUpSearchView(mSearchView);
     }
 
     /**
@@ -962,11 +964,13 @@ public class OverviewFragment extends Fragment implements /*NoteAdapter.NoteSele
      *
      * @param searchView the search view which need to be set up
      */
-    private void setUpSearchView(SearchView searchView) {
+    private void setUpSearchView(final SearchView searchView) {
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
                 searchNotes(query);
+                // Submit the search will hide the keyboard
+                searchView.clearFocus();
                 return true;
             }
 
