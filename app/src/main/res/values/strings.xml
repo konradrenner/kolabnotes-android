@@ -55,7 +55,7 @@
     <string name="text_description">Medium Text</string>
 
     <string name="dialog_input_text_hint">Summary</string>
-    <string name="dialog_input_text_search_hint">Search notes with summary</string>
+    <string name="dialog_input_text_search_hint">Note summary</string>
     <string name="dialog_input_text_notebook">New Notebook</string>
     <string name="dialog_input_text_search">Search Note</string>
     <string name="dialog_delete_note">Delete Note</string>
@@ -106,7 +106,7 @@
     <string name="color">Color</string>
     <string name="account_choose_title">Choose an account</string>
     <string name="select_button">Select</string>
-    <string name="extended_options" >More options</string>
+    <string name="extended_options">More options</string>
 
     <string name="day">Day</string>
     <string name="hour">Hour</string>

@@ -10,21 +10,19 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.res.Resources;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.ActionMode;
@@ -32,6 +30,7 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -76,7 +75,6 @@ import org.kore.kolabnotes.android.content.TagRepository;
 import org.kore.kolabnotes.android.security.AuthenticatorActivity;
 import org.kore.kolabnotes.android.setting.SettingsActivity;
 
-import java.lang.reflect.Array;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -110,6 +108,7 @@ public class OverviewFragment extends Fragment implements /*NoteAdapter.NoteSele
     private RecyclerView mRecyclerView;
     private TextView mEmptyView;
     private SwipeRefreshLayout mSwipeRefreshLayout;
+    private SearchView mSearchView;
 
     private ActionMode mActionMode;
     private ActionModeCallback mActionModeCallback = new ActionModeCallback();
@@ -953,6 +952,55 @@ public class OverviewFragment extends Fragment implements /*NoteAdapter.NoteSele
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu,inflater);
         inflater.inflate(R.menu.main_toolbar, menu);
+
+        // Create the search view
+        mSearchView = (SearchView) MenuItemCompat.getActionView(menu.findItem(R.id
+            .action_search));
+        setUpSearchView(mSearchView);
+    }
+
+    /**
+     * Set up the search view with OnQueryTextListener()
+     *
+     * @param searchView the search view which need to be set up
+     */
+    private void setUpSearchView(final SearchView searchView) {
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                searchNotes(query);
+                // Submit the search will hide the keyboard
+                searchView.clearFocus();
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                // Apply the filter when the text is changing
+                searchNotes(newText);
+                return true;
+            }
+        });
+        searchView.setQueryHint(getString(R.string.dialog_input_text_search_hint));
+    }
+
+    /**
+     * This function searches all the note that fit the key word, at the moment, the query only
+     * apply for the note summary, but it can be expanded to filter more. The notes from all
+     * notebooks which matched the query will be update to the view for the user.
+     *
+     * @param keyWord input keyword to apply for the search
+     */
+    private void searchNotes(String keyWord) {
+        ActiveAccount activeAccount = activeAccountRepository.getActiveAccount();
+        List<Note> notes = notesRepository.searchNotes(activeAccount
+                .getAccount(),
+            activeAccount.getRootFolder(), keyWord, Utils.getNoteSorting(activity));
+        displayBlankFragment();
+
+        // Update the search view with the result notes
+        mAdapter.clearNotes();
+        mAdapter.addNotes(notes);
     }
 
     @Override
@@ -983,10 +1031,6 @@ public class OverviewFragment extends Fragment implements /*NoteAdapter.NoteSele
             case R.id.tag_list:
                 Intent i = new Intent(activity, TagListActivity.class);
                 startActivityForResult(i, TAG_LIST_ACTIVITY_RESULT_CODE);
-                break;
-            case R.id.create_search_menu:
-                AlertDialog newSearchDialog = createSearchDialog();
-                newSearchDialog.show();
                 break;
            case R.id.settings_menu:
                 Intent settingsIntent = new Intent(activity,SettingsActivity.class);
@@ -1024,27 +1068,6 @@ public class OverviewFragment extends Fragment implements /*NoteAdapter.NoteSele
             }
         });
         builder.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                //nothing
-            }
-        });
-        return builder.create();
-    }
-
-
-    private AlertDialog createSearchDialog(){
-        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
-
-        builder.setTitle(R.string.dialog_input_text_search);
-
-        LayoutInflater inflater = activity.getLayoutInflater();
-        View view = inflater.inflate(R.layout.dialog_search_note, null);
-
-        builder.setView(view);
-
-        builder.setPositiveButton(R.string.ok, new SearchNoteButtonListener((EditText) view.findViewById(R.id.dialog_search_input_field)));
-        builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 //nothing
@@ -1597,5 +1620,13 @@ public class OverviewFragment extends Fragment implements /*NoteAdapter.NoteSele
         drawer.getDrawerItems().add(new DividerDrawerItem());
         drawer.getDrawerItems().add(new PrimaryDrawerItem().withName(getResources().getString(R.string.drawer_item_tags)).withTag("HEADING_TAG").withEnabled(false).withDisabledTextColor(getResources().getColor(R.color.material_drawer_secondary_text)).withIcon(R.drawable.ic_action_labels));
 
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == 0) {
+            Log.v("ducanh", resultCode + "");
+        }
     }
 }
