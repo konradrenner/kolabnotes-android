@@ -30,7 +30,6 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -99,6 +98,7 @@ public class OverviewFragment extends Fragment implements /*NoteAdapter.NoteSele
     private static final String TAG_ACTION_MODE = "ActionMode";
     private static final String TAG_SELECTED_NOTES = "SelectedNotes";
     private static final String TAG_SELECTABLE_ADAPTER = "SelectableAdapter";
+    private static final String KEY_SEARCH_QUERY = "KEY_SEARCH_QUERY";
 
     private final DrawerItemClickedListener drawerItemClickedListener = new DrawerItemClickedListener();
 
@@ -109,6 +109,7 @@ public class OverviewFragment extends Fragment implements /*NoteAdapter.NoteSele
     private TextView mEmptyView;
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private SearchView mSearchView;
+    private String mSearchKeyWord;
 
     private ActionMode mActionMode;
     private ActionModeCallback mActionModeCallback = new ActionModeCallback();
@@ -133,6 +134,7 @@ public class OverviewFragment extends Fragment implements /*NoteAdapter.NoteSele
     private boolean preventBlankDisplaying;
 
     private MainActivity activity;
+
 
     @Override
     public View onCreateView(LayoutInflater inflater,
@@ -309,7 +311,6 @@ public class OverviewFragment extends Fragment implements /*NoteAdapter.NoteSele
         outState.putIntegerArrayList(TAG_SELECTABLE_ADAPTER, mAdapter.getSelectedItems());
         outState.putSerializable(TAG_SELECTED_NOTES, mSelectedNotes);
         outState.putBoolean(TAG_ACTION_MODE, isInActionMode);
-
         super.onSaveInstanceState(outState);
     }
 
@@ -763,6 +764,17 @@ public class OverviewFragment extends Fragment implements /*NoteAdapter.NoteSele
     @Override
     public void onResume(){
         super.onResume();
+
+        // Resume the search view with the last keyword
+        if(mSearchView != null) {
+            mSearchView.post(new Runnable() {
+                @Override
+                public void run() {
+                    mSearchView.setQuery(mSearchKeyWord, true);
+                }
+            });
+        }
+
         toolbar.setNavigationIcon(R.drawable.drawer_icon);
         toolbar.setBackgroundColor(getResources().getColor(R.color.theme_default_primary));
         Utils.setToolbarTextAndIconColor(activity, toolbar,true);
@@ -996,11 +1008,13 @@ public class OverviewFragment extends Fragment implements /*NoteAdapter.NoteSele
         List<Note> notes = notesRepository.searchNotes(activeAccount
                 .getAccount(),
             activeAccount.getRootFolder(), keyWord, Utils.getNoteSorting(activity));
-        displayBlankFragment();
 
         // Update the search view with the result notes
         mAdapter.clearNotes();
         mAdapter.addNotes(notes);
+
+        // Save the last keyword for restoring
+        mSearchKeyWord = keyWord;
     }
 
     @Override
@@ -1620,13 +1634,5 @@ public class OverviewFragment extends Fragment implements /*NoteAdapter.NoteSele
         drawer.getDrawerItems().add(new DividerDrawerItem());
         drawer.getDrawerItems().add(new PrimaryDrawerItem().withName(getResources().getString(R.string.drawer_item_tags)).withTag("HEADING_TAG").withEnabled(false).withDisabledTextColor(getResources().getColor(R.color.material_drawer_secondary_text)).withIcon(R.drawable.ic_action_labels));
 
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == 0) {
-            Log.v("ducanh", resultCode + "");
-        }
     }
 }
