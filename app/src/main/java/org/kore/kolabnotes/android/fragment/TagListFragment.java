@@ -74,8 +74,8 @@ public class TagListFragment extends Fragment implements TagAdapter.ViewHolder.C
         if (context instanceof AppCompatActivity) {
             this.activity = (AppCompatActivity)context;
         }
-        this.tagRepository = new TagRepository(this.activity);
-        this.activeAccountRepository = new ActiveAccountRepository(this.activity);
+        this.tagRepository = new TagRepository(context);
+        this.activeAccountRepository = new ActiveAccountRepository(context);
     }
 
     @Override
@@ -83,6 +83,18 @@ public class TagListFragment extends Fragment implements TagAdapter.ViewHolder.C
         super.onActivityCreated(savedInstanceState);
 
         toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar_tag_list);
+
+        if(activity == null){
+            activity = (AppCompatActivity)getActivity();
+        }
+
+        if(tagRepository == null){
+            this.tagRepository = new TagRepository(activity);
+        }
+        if(activeAccountRepository == null){
+            this.activeAccountRepository = new ActiveAccountRepository(activity);
+        }
+
         activity.setSupportActionBar(toolbar);
         if(activity.getSupportActionBar() != null) {
             activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -129,8 +141,8 @@ public class TagListFragment extends Fragment implements TagAdapter.ViewHolder.C
         if (mActionMode == null) {
             LayoutInflater inflater = activity.getLayoutInflater();
             View view = inflater.inflate(R.layout.dialog_text_input, null);
-            AlertDialog newTagDialog = tagDialog(view, new UpdateTagButtonListener(
-                    (EditText)view.findViewById(R.id.dialog_text_input_field), tag.getIdentification().getUid()));
+            AlertDialog newTagDialog = updateTagDialog(view, new UpdateTagButtonListener(
+                    (EditText) view.findViewById(R.id.dialog_text_input_field), tag.getIdentification().getUid()));
             newTagDialog.show();
         } else {
             toggleSelection(position);
@@ -167,6 +179,13 @@ public class TagListFragment extends Fragment implements TagAdapter.ViewHolder.C
         List<Integer> item = new ArrayList<Integer>(0);
         item.add(position);
         chooseColor(item);
+    }
+
+    public Context getContext(){
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
+            return super.getContext();
+        }
+        return activity;
     }
 
     private class ActionModeCallback implements ActionMode.Callback {
@@ -297,18 +316,33 @@ public class TagListFragment extends Fragment implements TagAdapter.ViewHolder.C
         public void onClick(View v) {
             LayoutInflater inflater = activity.getLayoutInflater();
             View view = inflater.inflate(R.layout.dialog_text_input, null);
-            AlertDialog newTagDialog = tagDialog(view, new CreateTagButtonListener((EditText)view.findViewById(R.id.dialog_text_input_field)));
+            AlertDialog newTagDialog = createTagDialog(view, new CreateTagButtonListener((EditText)view.findViewById(R.id.dialog_text_input_field)));
             newTagDialog.show();
         }
     }
 
-    private AlertDialog tagDialog(View view, DialogInterface.OnClickListener listener){
+    private AlertDialog createTagDialog(View view, DialogInterface.OnClickListener listener){
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
 
         builder.setTitle(R.string.dialog_input_text_tag);
-        if (listener instanceof UpdateTagButtonListener) {
-            builder.setMessage(R.string.dialog_change_tag_warning);
-        }
+
+        builder.setView(view);
+
+        builder.setPositiveButton(R.string.ok, listener);
+        builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                /* Nothing */
+            }
+        });
+        return builder.create();
+    }
+
+    private AlertDialog updateTagDialog(View view, DialogInterface.OnClickListener listener){
+        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+
+        builder.setTitle(R.string.dialog_input_update_tag_text);
+        builder.setMessage(R.string.dialog_change_tag_warning);
 
         builder.setView(view);
 
@@ -358,7 +392,9 @@ public class TagListFragment extends Fragment implements TagAdapter.ViewHolder.C
             this.rootFolder = activeAccountRepository.getActiveAccount().getRootFolder();
             this.textField = textField;
             this.tag = tagRepository.getTagWithUID(account, rootFolder, uid);
-            textField.setText(tag.getName());
+            if(textField != null && tag != null){
+                textField.setText(tag.getName());
+            }
         }
 
         @Override
@@ -369,6 +405,7 @@ public class TagListFragment extends Fragment implements TagAdapter.ViewHolder.C
 
             String value = textField.getText().toString();
             tag.setName(value);
+            tag.getAuditInformation().setLastModificationDate(System.currentTimeMillis());
 
             tagRepository.update(account, rootFolder, tag);
             reloadData();

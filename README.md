@@ -34,3 +34,4 @@ Translations (help is highly desired!):
  * Russian (thanks Yaroslav Pronin!)
  * French (thanks kekh!)
  * Italian (thanks to Daniele Gobbetti!)
+ * Vietnamese (thanks Anh Doung!)

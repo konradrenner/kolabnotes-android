@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Kolab Ghi Chú</string>
+
+    <string name="sticky_note_name">Kolab Ghi Chú Kèm</string>
+
+    <string name="drawer_open">Mở Bảng Danh Mục</string>
+    <string name="drawer_close">Đóng Bảng Danh Mục</string>
+
+    <string name="action_settings">Tuỳ Chọn</string>
+
+    <string name="ok">Đồng Ý</string>
+    <string name="cancel">Từ Chối</string>
+
+    <string name="yes">Có</string>
+    <string name="no">Không</string>
+    <string name="no_selection">Không có lựa chọn nào</string>
+
+    <string name="classification">Sự sắp xếp</string>
+    <string name="creationDate">Được tạo</string>
+    <string name="modificationDate">Lần cuối sửa chữa</string>
+    <string name="tags">Tags:</string>
+    <string name="notags">Không có Tags</string>
+    <string name="radio_public">Công cộng</string>
+    <string name="radio_confidential">Bí mật</string>
+    <string name="radio_private">Cá nhân</string>
+
+    <string name="activity_detail_title">Chi tiết</string>
+
+    <string name="drawer_item_tags">Tags</string>
+    <string name="drawer_item_notebooks">Sổ ghi chú</string>
+    <string name="drawer_item_allnotes">Ghi chú từ tài khoản được lựa chọn</string>
+    <string name="widget_allnotes">Tất cả từ tài khoản này</string>
+    <string name="drawer_item_allaccount_notes">Ghi chú từ tất cả các tài khoản</string>
+    <string name="drawer_account_local">Tài khoản nội bộ</string>
+
+
+    <string name="dialog_nointernet">Không có kết nối internet</string>
+    <string name="dialog_uploading">Progress Sample&#8230;</string>
+    <string name="dialog_processinganduploading">Showing a sample progress. Please be patient! (This does nothing. Just waiting 100ms / application)</string>
+    <string name="title_activity_phone">PhoneActivity</string>
+
+    <string name="hello_world">Hello world!</string>
+
+    <string name="label">Kolab Ghi Chú</string>
+
+    <string name="signup_title">Tạo tài khoản mới</string>
+    <string name="signup_ok">Tài khoản mới đã được tạo</string>
+    <string name="login_label">Đăng Nhập</string>
+    <string name="summary_text">Chữ To</string>
+    <string name="text_summary">Tổng kết</string>
+    <string name="description_text">Chữ Vừa</string>
+    <string name="description_hint">Mô tả</string>
+    <string name="text_description">Chữ Vừa</string>
+
+    <string name="dialog_input_text_hint">Tổng kết</string>
+    <string name="dialog_input_text_search_hint">Kiếm Ghi Chú</string>
+    <string name="dialog_input_text_notebook">Sổ ghi chú mới</string>
+    <string name="dialog_input_text_search">Kiếm Ghi Chú</string>
+    <string name="dialog_delete_note">Xoá ghi chú</string>
+    <string name="dialog_delete_notes">Xoá các ghi chú</string>
+    <string name="dialog_cancel_warning">Từ chối cảnh báo</string>
+    <string name="dialog_delete_nb_warning">Xoá quyển sổ ghi chú</string>
+    <string name="dialog_question_delete_nb">Quyến sổ này và toàn bộ ghi chú sẽ bị xoá, bạn có chắc không?</string>
+    <string name="dialog_input_text_tag">Tag Mới</string>
+    <string name="dialog_change_classification">Thay đổi sự sắp xếp </string>
+    <string name="dialog_change_tags">Chỉnh Sửa Tags</string>
+    <string name="no_nb_selected">Không có sổ ghi chú nào được chọn</string>
+    <string name="local_account_change">Tài khoản nội bộ không thể bị thay đổi</string>
+    <string name="add">thêm </string>
+    <string name="title_edit_tag">Chỉnh Sửa Tags</string>
+    <string name="dialog_question_delete">Bạn có thật sự muốn xoá ghi chú này ?</string>
+    <string name="dialog_question_delete_notes">Bạn có thật sự muốn xoá các ghi chú được chọn ?</string>
+    <string name="dialog_question_cancel">Tất cả thay đổi sẽ bị bỏ, bạn có chắc không ?</string>
+    <string name="account_name">Tên tài khoản</string>
+    <string name="imap_root_folder">IMAP root folder (default is Notes)</string>
+    <string name="imap_server_url">imap.myserver.com</string>
+    <string name="port_number">Port number (default is 993)</string>
+
+    <string name="error_generic">Có lỗi trong quá trình xử lý</string>
+    <string name="error_duplicate_account">Không thể tạo tài khoản (đã có tài khoản trùng tên ?)</string>
+    <string name="enable_ssl">SSL enabled</string>
+    <string name="title_add_account">Thêm tài khoản</string>
+    <string name="title_update_account">Đổi tài khoản</string>
+    <string name="appwidget_text">Ví dụ</string>
+    <string name="configure">Chỉnh</string>
+    <string name="add_widget">Thêm widget</string>
+    <string name="title_colorpicker">Chọn màu</string>
+    <string name="button_add">button_add</string>
+    <string name="kolab_enabled">Kolab extensions</string>
+    <string name="sync_intervall">Sync intervall (default 24)</string>
+    <string name="note_not_found">Không kiếm thấy ghi chú!</string>
+    <string name="create_or_select_text">Chọn hoặc tạo một ghi chú</string>
+    <string name="select_or_create_hint">Chọn hoặc tạo ghi chú</string>
+    <string name="note_deleted">Ghi chú đã được xoá</string>
+    <string name="note_saved">Đã lưu ghi chú</string>
+    <string name="sync_failed">Synchronisation failed</string>
+    <string name="title_delete_notebook">Xoá quyển sổ ghi chú</string>
+    <string name="send_to">Chia sẻ ghi chú với ...</string>
+    <string name="empty_note">Ghi chú không có nội dung</string>
+    <string name="sort_with_heading">Sắp xếp theo:</string>
+    <string name="radio_desc">Giảm dần</string>
+    <string name="radio_asc">Tăng dần</string>
+    <string name="title_dialog_sorting">Thay đổi sắp xếp</string>
+    <string name="color">Màu</string>
+    <string name="account_choose_title">Chọn một tài khoản</string>
+    <string name="select_button">Select</string>
+    <string name="extended_options">More options</string>
+
+    <string name="day">Ngày</string>
+    <string name="hour">Giờ</string>
+    <string name="minute">Phút</string>
+    <string name="title_metainformation">Metainformation</string>
+    <string name="productID">Product ID</string>
+    <string name="uid">UID</string>
+    <string name="title_characteristics">Tính chất</string>
+    <string name="title_choose_tag_color">Chọn màu cho tags</string>
+    <string name="no_tag_selected">Không có tag được chọn</string>
+    <string name="remove">Xoá</string>
+    <string name="shared_folders">Chia sẻ những quyển sổ ghi chú</string>
+    <string name="changed_content_shared_folder">Thay đổi ở quyển sổ chung</string>
+    <string name="note_changed">Ghi chú đã thay đổi</string>
+    <string name="in_notebook">trong ghi chú</string>
+    <string name="note_created">Ghi chú mới</string>
+    <string name="dialog_input_link">Đính kèm đường dẫn</string>
+    <string name="no_folder_permission">Không có quyền cho thư mục</string>
+    <string name="title_activity_settings">Tuỳ chọn</string>
+
+    <string name="move_note">Dời chỗ</string>
+
+    <!-- Strings related to Settings -->
+    <!-- General settings -->
+    <string name="pref_header_general">Nhìn chung</string>
+    <string-array name="pref_direction_titles">
+        <item>@string/radio_asc</item>
+        <item>@string/radio_desc</item>
+    </string-array>
+    <string-array name="pref_direction_values">
+        <item>ASC</item>
+        <item>DESC</item>
+    </string-array>
+
+    <!-- Settings for Data & Sync -->
+    <string name="pref_header_data_sync">Data &amp; sync</string>
+
+    <string name="pref_title_sync_conflict">Sync conflicts handling</string>
+    <string-array name="pref_sync_conflict_titles">
+        <item>Last modified note</item>
+        <item>Server note</item>
+        <item>Local note</item>
+        <!--<item>Ask which</item>-->
+    </string-array>
+
+    <string name="pref_title_system_sync_settings">System sync settings</string>
+
+    <!-- Settings for Notifications -->
+    <string name="pref_header_notifications">Thông báo</string>
+    <string name="pref_characteristics">Hiện tags</string>
+    <string name="pref_metainformation">Hiện metainformations</string>
+    <string name="pref_desc_metainformation">Hiện ngày</string>
+    <string name="pref_column">Cột</string>
+    <string name="pref_direction">Hướng</string>
+    <string name="pref_show_sync_notifications">Show sync notifications</string>
+    <string name="pref_show_sync_notifications_summary">Show notifications if notes in shared folders are changed</string>
+    <string name="no_write_permissions">Không có quyền ghi</string>
+    <string name="no_change_permissions">Không có quyền thay đổi</string>
+    <string name="no_create_permissions">Không có quyền tạo</string>
+    <string name="pref_sorting_category">Sắp xếp</string>
+
+    <!-- Tags editor -->
+    <string name="title_activity_tag_list">Tags</string>
+    <string name="tag_creationDate">Được tạo</string>
+    <string name="tag_modificationDate">Lần thay đổi gần nhất</string>
+    <string name="dialog_delete_tags">Xoá Tags</string>
+    <string name="dialog_question_delete_tags">Bạn có thật sự muốn xoá tags được chọn\n\nWarning: Xoá tags sẻ ảnh hưởng cả hệ thống tag.</string>
+    <string name="dialog_change_tag_warning">Cảnh báo: thay đổi một tag sẻ ảnh hưởng cả hệ thống tag</string>
+
+    <!--Empty list-->
+    <string name="no_tags">Không có tags</string>
+    <string name="no_notes">Không có ghi chú</string>
+    <string name="dialog_input_update_tag_text">Thay đổi tên tag</string>
+    <string name="action_sign_in">Đăng nhập </string>
+    <string name="title_activity_kolab_login">Đăng nhập </string>
+
+</resources>

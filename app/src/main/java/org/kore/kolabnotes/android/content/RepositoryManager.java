@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.support.v7.app.NotificationCompat;
 import android.util.Log;
 
+import org.kore.kolab.notes.Identification;
 import org.kore.kolab.notes.Note;
 import org.kore.kolab.notes.Notebook;
 import org.kore.kolab.notes.NotesRepository;
@@ -19,6 +20,7 @@ import org.kore.kolabnotes.android.DetailActivity;
 import org.kore.kolabnotes.android.R;
 import org.kore.kolabnotes.android.Utils;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
@@ -247,6 +249,26 @@ public class RepositoryManager {
         //Update the tags
         final List<Tag> allModifiedAfter = tagRepository.getAllModifiedAfter(email, rootFolder, lastSync);
         remoteTags.applyLocalChanges(allModifiedAfter.toArray(new Tag[allModifiedAfter.size()]));
+
+        List<Modification> deletedTags = modificationRepository.getDeletions(email, rootFolder, Modification.Descriminator.TAG);
+        List<Identification> toDeleteUIDs = new ArrayList<>();
+        for(Modification deletion : deletedTags){
+            //in case of tags, is in the uidNotebook the tagname
+            RemoteTags.TagDetails remoteTag = remoteTags.getTag(deletion.getUidNotebook());
+
+            if(remoteTag != null){
+                if(withLatest){
+                    if(deletion.getModificationDate().after(remoteTag.getAuditInformation().getLastModificationDate())){
+                        Log.d("localIntoRepository", "Deleting tag:" + remoteTag);
+                    }
+                    toDeleteUIDs.add(remoteTag.getIdentification());
+                }else if(withLocal){
+                    Log.d("localIntoRepository", "Deleting tag:" + remoteTag);
+                    toDeleteUIDs.add(remoteTag.getIdentification());
+                }
+            }
+        }
+        remoteTags.deleteTags(toDeleteUIDs.toArray(new Identification[toDeleteUIDs.size()]));
     }
 
     private void updateRemoteNote(RemoteTags remoteTags, Note note, Note remoteNote) {

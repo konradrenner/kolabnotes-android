@@ -163,5 +163,6 @@
     <!--Empty list-->
     <string name="no_tags">Нет меток</string>
     <string name="no_notes">Нет заметок</string>
+    <string name="dialog_input_update_tag_text">Изменить тэг</string>
 
 </resources>

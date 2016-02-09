@@ -20,8 +20,8 @@
     <string name="classification">Classification</string>
     <string name="creationDate">Création</string>
     <string name="modificationDate">Dernière modification</string>
-    <string name="tags">Tags:</string>
-    <string name="notags">Pas de tags</string>
+    <string name="tags">Tags :</string>
+    <string name="notags">Aucun tag</string>
     <string name="radio_public">Publique</string>
     <string name="radio_confidential">Confidentielle</string>
     <string name="radio_private">Privée</string>
@@ -38,7 +38,7 @@
 
     <string name="dialog_nointernet">Pas de connexion à Internet !</string>
     <string name="dialog_uploading">Exemple de progression&#8230;</string>
-    <string name="dialog_processinganduploading">Affichage d\'un exemple de progression. Veuillez être patient ! (Ceci ne fait rien d\'autre que stopper l\'pplication pendant 100ms)</string>
+    <string name="dialog_processinganduploading">Affichage d\'un exemple de progression. Veuillez être patient ! (Ceci ne fait rien d\'autre que stopper l\'application pendant 100ms)</string>
     <string name="title_activity_phone">Activité du téléphone</string>
 
     <string name="hello_world">Hello world !</string>
@@ -54,20 +54,20 @@
     <string name="description_hint">Description</string>
     <string name="text_description">Texte moyen</string>
 
-    <string name="dialog_input_text_hint">Résumé</string>
-    <string name="dialog_input_text_search_hint">Recherché des notes avec résumé</string>
+    <string name="dialog_input_text_hint">Texte de cette note</string>
+    <string name="dialog_input_text_search_hint">Rechercher des notes</string>
     <string name="dialog_input_text_notebook">Nouveau carnet de notes</string>
     <string name="dialog_input_text_search">Rechercher dans cette note</string>
     <string name="dialog_delete_note">Supprimer cette note</string>
-    <string name="dialog_cancel_warning">Annuler l\'avertissement</string>
+    <string name="dialog_cancel_warning">Avertissement</string>
     <string name="dialog_delete_nb_warning">Supprimer ce carnet de notes</string>
     <string name="dialog_question_delete_nb">Ce carnet (et toutes les notes qu\'il contient) va être supprimé, êtes vous certain de le vouloir ?</string>
     <string name="dialog_input_text_tag">Nouveau tag</string>
     <string name="dialog_change_classification">Modifier la classification</string>
     <string name="dialog_change_tags">Modifier les tags</string>
-    <string name="no_nb_selected">Pas de carnet sélectionné</string>
+    <string name="no_nb_selected">Aucun carnet sélectionné</string>
     <string name="add">Ajouter</string>
-    <string name="title_edit_tag">Modifier le tag</string>
+    <string name="title_edit_tag">Modifier les tags</string>
     <string name="dialog_question_delete">Êtes-vous sûr de vouloir supprimer cette note ?</string>
     <string name="dialog_question_cancel">Êtes-vous sûr de vouloir annuler tous les changements ?</string>
     <string name="account_name">Nom du compte</string>
@@ -79,13 +79,13 @@
     <string name="error_duplicate_account">Impossible de créer ce compte (un compte avec ce nom existe-t-il déjà ?)</string>
     <string name="enable_ssl">SSL activée</string>
     <string name="title_add_account">Ajouter un compte</string>
-    <string name="local_account_change">Compte local ne peut pas être changé</string>
-    <string name="title_update_account">changement compte</string>
+    <string name="local_account_change">Le compte local ne peut pas être changé</string>
+    <string name="title_update_account">Mise à jour du compte</string>
     <string name="appwidget_text">EXEMPLE</string>
     <string name="configure">Configurer</string>
     <string name="add_widget">Ajouter un widget</string>
     <string name="title_colorpicker">Choisir une couleur</string>
-    <string name="button_add">button_add</string>
+    <string name="button_add">Ajouter</string>
     <string name="kolab_enabled">Extensions Kolab</string>
     <string name="sync_intervall">Intervalle de synchronisation (par défaut : 24)</string>
     <string name="note_not_found">Note non trouvée !</string>
@@ -102,7 +102,7 @@
     <string name="radio_asc">Ascendant</string>
     <string name="title_dialog_sorting">Modifier le tri</string>
     <string name="color">Couleur</string>
-    <string name="account_choose_title">Choosir un compte</string>
+    <string name="account_choose_title">Choisir un compte</string>
     <string name="select_button">Sélectionner</string>
     <string name="extended_options" >Plus d\'options</string>
 
@@ -110,11 +110,11 @@
     <string name="day">jour</string>
     <string name="hour">heure</string>
     <string name="minute">minute</string>
-    <string name="title_metainformation">Métainformation</string>
+    <string name="title_metainformation">Méta-informations</string>
     <string name="productID">ID de produit</string>
     <string name="uid">UID</string>
     <string name="title_characteristics">Caractéristiques</string>
-    <string name="title_choose_tag_color">Choisissez la couleur tag</string>
+    <string name="title_choose_tag_color">Choisissez la couleur du tag</string>
     <string name="no_tag_selected">Aucune balise sélectionnée</string>
     <string name="remove">Supprimer</string>
     <string name="shared_folders">Blocs-notes partagés</string>
@@ -124,30 +124,39 @@
     <string name="note_created">Nouvelle note</string>
     <string name="dialog_input_link">Fixez lien</string>
     <string name="no_folder_permission">Aucune autorisation pour le dossier</string>
-    <string name="pref_characteristics">Voir les balises</string>
-    <string name="pref_metainformation">Voir metainformations</string>
-    <string name="pref_desc_metainformation">Afficher la date de création et date de dernière modification</string>
-    <string name="pref_column">colonne de tri</string>
-    <string name="pref_direction">sens du tri</string>
-    <string name="pref_show_sync_notifications">Afficher notifications de synchronisation</string>
-    <string name="pref_show_sync_notifications_summary">Notifications Si les notes dans les dossiers partagés sont modifiés</string>
-    <string name="pref_header_data_sync">Syncronisation</string>
-    <string name="pref_header_general">Généralement</string>
+    <string name="pref_characteristics">Voir les tags</string>
+    <string name="pref_metainformation">Voir les méta-informations</string>
+    <string name="pref_desc_metainformation">Afficher les dates de création et de dernière modification</string>
+    <string name="pref_column">Trier sur</string>
+    <string name="pref_direction">Trier dans le sens</string>
+    <string name="pref_show_sync_notifications">Afficher les notifications de synchronisation</string>
+    <string name="pref_show_sync_notifications_summary">Notifier si modification des notes dans les dossiers partagés</string>
+    <string name="pref_header_data_sync">Synchronisation</string>
+    <string name="pref_header_general">Général</string>
     <string name="pref_header_notifications">Notifications</string>
-    <string name="pref_title_sync_conflict">Les conflits de synchronisation de manutention</string>
+    <string name="pref_title_sync_conflict">Gestion des conflits de synchronisation</string>
     <string name="pref_title_system_sync_settings">Paramètres de synchronisation du système</string>
-    <string name="no_write_permissions">Aucune autorisation d\'écriture dans le cahier sélectionné</string>
-    <string name="no_change_permissions">Pas de modifier les autorisations dans le cahier sélectionné</string>
-    <string name="no_create_permissions">Aucune autorisation de création dans le cahier sélectionné</string>
+    <string name="no_write_permissions">Aucune autorisation d\'écriture dans le carnet sélectionné</string>
+    <string name="no_change_permissions">Aucune autorisation de modification dans le carnet sélectionné</string>
+    <string name="no_create_permissions">Aucune autorisation de création dans le carnet sélectionné</string>
 
     <string-array name="pref_sync_conflict_titles">
-        <item>Dernière note modifiée</item>
-        <item>Note Server</item>
-        <item>Note locale</item>
+        <item>Garder la dernière note modifiée</item>
+        <item>Garder la note du serveur</item>
+        <item>Garder la note locale</item>
         <!--<item>Ask which</item>-->
     </string-array>
-    <string name="pref_sorting_category">Délissage</string>
+    <string name="pref_sorting_category">Paramètres de tri</string>
     <string name="dialog_delete_notes">Supprimer les notes</string>
-    <string name="dialog_question_delete_notes"> Êtes-vous sûr de vouloir supprimer les notes sélectionnées?</string>
+    <string name="dialog_question_delete_notes">Êtes-vous sûr de vouloir supprimer les notes sélectionnées ?</string>
     <string name="move_note">Déplacer</string>
+    <string name="dialog_change_tag_warning">Attention : la modification d\'un tag peut affecter d\'autres objets du groupware</string>
+    <string name="dialog_delete_tags">Supprimer des tags</string>
+    <string name="dialog_question_delete_tags">Voulez-vous vraiment supprimer les tags sélectionnés ?\n\nAttention : la modification d\'un tag peut affecter d\'autres objets du groupware</string>
+    <string name="no_notes">Aucune note</string>
+    <string name="no_tags">Aucun tag</string>
+    <string name="tag_creationDate">Créé le</string>
+    <string name="tag_modificationDate">Mise à jour le</string>
+    <string name="title_activity_tag_list">Tags</string>
+    <string name="dialog_input_update_tag_text">Renommer le tag</string>
 </resources>
