@@ -476,41 +476,6 @@ public class OverviewFragment extends Fragment implements /*NoteAdapter.NoteSele
             final String account = activeAccountRepository.getActiveAccount().getAccount();
             final String rootFolder = activeAccountRepository.getActiveAccount().getRootFolder();
 
-//            AlertDialog.Builder builder = new AlertDialog.Builder(activity);
-//
-//            builder.setTitle(R.string.dialog_delete_notes);
-//            builder.setMessage(R.string.dialog_question_delete_notes);
-//            builder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
-//                @Override
-//                public void onClick(DialogInterface dialog, int which) {
-//                    for (int position : items) {
-//                        final String uid = mSelectedNotes.get(position);
-//                        final Note note = notesRepository.getByUID(account, rootFolder, uid);
-//
-//                        if (note != null) {
-//                            Notebook book = checkModificationPermissionInCurrentBook(account, rootFolder, uid);
-//                            if (book == null) continue;
-//                            notesRepository.delete(account, rootFolder, note);
-//                        }
-//                    }
-//                    mSelectedNotes.clear();
-//                    Utils.setSelectedTagName(activity,null);
-//                    Utils.setSelectedNotebookName(activity, null);
-//                    reloadData();
-//                    if (tabletMode) {
-//                        displayBlankFragment();
-//                    }
-//                }
-//            });
-//
-//            builder.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
-//                @Override
-//                public void onClick(DialogInterface dialog, int which) {
-//                    //nothing
-//                }
-//            });
-//            builder.show();
-
             final ArrayList<Note> notes = new ArrayList<Note>();
             for (int position : items) {
                 final String uid = mSelectedNotes.get(position);
