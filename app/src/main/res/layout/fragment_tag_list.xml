@@ -1,4 +1,4 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/tag_list_fragment"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent">
@@ -17,7 +17,7 @@
         android:gravity="center"
         android:visibility="gone"
         android:text="@string/no_tags" />
-    <ImageButton
+    <android.support.design.widget.FloatingActionButton
         android:id="@+id/addTagButton"
         android:transitionName="fab"
         android:layout_width="@dimen/fab_size"
@@ -35,4 +35,4 @@
         android:contentDescription="@string/add"
         android:src="@drawable/ic_action_new" />
 
-</FrameLayout>
+</android.support.design.widget.CoordinatorLayout>

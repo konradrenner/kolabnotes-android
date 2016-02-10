@@ -140,6 +140,8 @@
     <string name="no_write_permissions">Нет прав на запись в выбранном блокноте</string>
     <string name="no_change_permissions">Нет прав редактировать в выбранном блокноте</string>
     <string name="no_create_permissions">Нет прав для создания в выбранном блокноте</string>
+    <string name="snackbar_delete_message">Удалено</string>
+    <string name="snackbar_undo_delete">Отменить</string>
 
     <string-array name="pref_sync_conflict_titles">
         <item>Последняя измененная заметка</item>
@@ -159,10 +161,10 @@
     <string name="dialog_delete_tags">Удалить метки</string>
     <string name="dialog_question_delete_tags">Вы действительно хотите удалить выбранные метки?\n\nПредупреждение: удаление метки может влиять на другие объекты групповой работы.</string>
     <string name="dialog_change_tag_warning">Предупреждение: изменение метки может влиять на другие объекты групповой работы.</string>
+    <string name="dialog_input_update_tag_text">Изменить метку</string>
 
     <!--Empty list-->
     <string name="no_tags">Нет меток</string>
     <string name="no_notes">Нет заметок</string>
-    <string name="dialog_input_update_tag_text">Изменить тэг</string>
 
 </resources>
