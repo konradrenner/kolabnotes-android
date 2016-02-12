@@ -126,6 +126,8 @@
     <string name="dialog_input_link">Attach link</string>
     <string name="no_folder_permission">No permission for folder</string>
     <string name="title_activity_settings">Settings</string>
+    <string name="snackbar_delete_message">Deleted</string>
+    <string name="snackbar_undo_delete">Undo</string>
 
     <string name="move_note">Move</string>
 
@@ -175,10 +177,10 @@
     <string name="dialog_delete_tags">Delete Tags</string>
     <string name="dialog_question_delete_tags">Do you really want to delete selected tags?\n\nWarning: deleting a tag will maybe affect other groupware objects.</string>
     <string name="dialog_change_tag_warning">Warning: changing a tag will maybe affect other groupware objects</string>
+    <string name="dialog_input_update_tag_text">Change tagname</string>
 
     <!--Empty list-->
     <string name="no_tags">No tags</string>
     <string name="no_notes">No notes</string>
-    <string name="dialog_input_update_tag_text">Change tagname</string>
 
 </resources>

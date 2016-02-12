@@ -8,6 +8,8 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -21,7 +23,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.TextView;
 
 import org.kore.kolab.notes.Colors;
@@ -42,6 +43,11 @@ import yuku.ambilwarna.AmbilWarnaDialog;
 /**
  * Created by yaroslav on 09.01.16.
  */
+
+/**
+ * Fragment which displays, edits and deletes tags
+ */
+
 public class TagListFragment extends Fragment implements TagAdapter.ViewHolder.ClickListener{
 
     private static final String TAG_ACTION_MODE = "ActionMode";
@@ -52,7 +58,8 @@ public class TagListFragment extends Fragment implements TagAdapter.ViewHolder.C
     private Toolbar toolbar;
     private RecyclerView mRecyclerView;
     private TextView mEmptyView;
-    private ImageButton mAddTagButton;
+    private FloatingActionButton mAddTagButton;
+    private Snackbar mSnackbarDelete;
 
     private TagRepository tagRepository;
     private ActiveAccountRepository activeAccountRepository;
@@ -101,7 +108,7 @@ public class TagListFragment extends Fragment implements TagAdapter.ViewHolder.C
         }
         setHasOptionsMenu(true);
 
-        mAddTagButton = (ImageButton) getActivity().findViewById(R.id.addTagButton);
+        mAddTagButton = (FloatingActionButton) getActivity().findViewById(R.id.addTagButton);
         mAddTagButton.setOnClickListener(new CreateButtonListener());
 
         mRecyclerView = (RecyclerView) activity.findViewById(R.id.listTag);
@@ -124,6 +131,15 @@ public class TagListFragment extends Fragment implements TagAdapter.ViewHolder.C
                 mAdapter.setSelectedItems(savedInstanceState.getIntegerArrayList(TAG_SELECTABLE_ADAPTER));
                 mActionMode.setTitle(String.valueOf(mAdapter.getSelectedItemCount()));
             }
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        if (mSnackbarDelete != null) {
+            mSnackbarDelete.dismiss();
         }
     }
 
@@ -282,32 +298,49 @@ public class TagListFragment extends Fragment implements TagAdapter.ViewHolder.C
             final String account = activeAccountRepository.getActiveAccount().getAccount();
             final String rootFolder = activeAccountRepository.getActiveAccount().getRootFolder();
 
-            AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+            final ArrayList<Tag> tags = new ArrayList<Tag>();
+            for (int position : items) {
+                final String uid = mSelectedTags.get(position);
+                final Tag tag = tagRepository.getTagWithUID(account, rootFolder, uid);
+                tags.add(tag);
+            }
+            mAdapter.deleteTags(tags);
+            setListState();
+            mSelectedTags.clear();
 
-            builder.setTitle(R.string.dialog_delete_tags);
-            builder.setMessage(R.string.dialog_question_delete_tags);
-            builder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+            if (mSnackbarDelete != null) {
+                mSnackbarDelete.dismiss();
+            }
+
+            mSnackbarDelete = Snackbar.make(activity.findViewById(R.id.tag_list_fragment), R.string.snackbar_delete_message, Snackbar.LENGTH_LONG)
+                    .setCallback(new Snackbar.Callback() {
                 @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    for (int position : items) {
-                        final String uid = mSelectedTags.get(position);
-                        final Tag tag = tagRepository.getTagWithUID(account, rootFolder, uid);
-                        if (tag != null) {
-                            tagRepository.delete(account, rootFolder, tag);
-                        }
+                public void onDismissed(Snackbar snackbar, int event) {
+                    switch(event) {
+                        /* If undo button pressed */
+                        case Snackbar.Callback.DISMISS_EVENT_ACTION:
+                            mAdapter.clearTags();
+                            mAdapter.addTags(tagRepository.getAll(account, rootFolder));
+                            setListState();
+                            break;
+                        default:
+                            for (Tag tag : tags) {
+                                if (tag != null) {
+                                    tagRepository.delete(account, rootFolder, tag);
+                                }
+                            }
+                            reloadData();
+                            break;
                     }
-                    mSelectedTags.clear();
-                    reloadData();
                 }
-            });
-
-            builder.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
+                    }).setAction(R.string.snackbar_undo_delete, new View.OnClickListener() {
                 @Override
-                public void onClick(DialogInterface dialog, int which) {
+                public void onClick(View v) {
                     /* Nothing */
                 }
             });
-            builder.show();
+
+            mSnackbarDelete.show();
         }
     }
 

@@ -91,6 +91,11 @@ public class TagAdapter extends SelectableAdapter<TagAdapter.ViewHolder>{
         }
     }
 
+    public void deleteTags(List<Tag> tags) {
+        this.tags.removeAll(tags);
+        this.notifyDataSetChanged();
+    }
+
     public void addTags(List<Tag> tags) {
         this.tags.addAll(tags);
         Collections.sort(this.tags);

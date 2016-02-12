@@ -17,6 +17,8 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -68,6 +70,7 @@ import org.kore.kolabnotes.android.adapter.NoteAdapter;
 import org.kore.kolabnotes.android.content.ActiveAccount;
 import org.kore.kolabnotes.android.content.ActiveAccountRepository;
 import org.kore.kolabnotes.android.content.NoteRepository;
+import org.kore.kolabnotes.android.content.NoteSorting;
 import org.kore.kolabnotes.android.content.NoteTagRepository;
 import org.kore.kolabnotes.android.content.NotebookRepository;
 import org.kore.kolabnotes.android.content.TagRepository;
@@ -104,12 +107,13 @@ public class OverviewFragment extends Fragment implements /*NoteAdapter.NoteSele
 
 
     private NoteAdapter mAdapter;
-    private ImageButton mFabButton;
+    private FloatingActionButton mFabButton;
     private RecyclerView mRecyclerView;
     private TextView mEmptyView;
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private SearchView mSearchView;
     private String mSearchKeyWord;
+    private Snackbar mSnackbarDelete;
 
     private ActionMode mActionMode;
     private ActionModeCallback mActionModeCallback = new ActionModeCallback();
@@ -232,7 +236,7 @@ public class OverviewFragment extends Fragment implements /*NoteAdapter.NoteSele
         mAccountManager = AccountManager.get(activity);
 
         // Fab Button
-        mFabButton = (ImageButton) getActivity().findViewById(R.id.fab_button);
+        mFabButton = (FloatingActionButton) getActivity().findViewById(R.id.fab_button);
         //mFabButton.setImageDrawable(new IconicsDrawable(this, FontAwesome.Icon.faw_upload).color(Color.WHITE).actionBarSize());
         Utils.configureFab(mFabButton);
         mFabButton.setOnClickListener(new CreateButtonListener());
@@ -304,6 +308,15 @@ public class OverviewFragment extends Fragment implements /*NoteAdapter.NoteSele
         mRecyclerView.setVisibility(View.GONE);
 
         setListState();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        if (mSnackbarDelete != null) {
+            mSnackbarDelete.dismiss();
+        }
     }
 
     @Override
@@ -463,40 +476,57 @@ public class OverviewFragment extends Fragment implements /*NoteAdapter.NoteSele
             final String account = activeAccountRepository.getActiveAccount().getAccount();
             final String rootFolder = activeAccountRepository.getActiveAccount().getRootFolder();
 
-            AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+            final ArrayList<Note> notes = new ArrayList<Note>();
+            for (int position : items) {
+                final String uid = mSelectedNotes.get(position);
+                final Note note = notesRepository.getByUID(account, rootFolder, uid);
+                notes.add(note);
+            }
+            mAdapter.deleteNotes(notes);
+            setListState();
+            mSelectedNotes.clear();
 
-            builder.setTitle(R.string.dialog_delete_notes);
-            builder.setMessage(R.string.dialog_question_delete_notes);
-            builder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    for (int position : items) {
-                        final String uid = mSelectedNotes.get(position);
-                        final Note note = notesRepository.getByUID(account, rootFolder, uid);
+            if (mSnackbarDelete != null) {
+                mSnackbarDelete.dismiss();
+            }
 
-                        if (note != null) {
-                            Notebook book = checkModificationPermissionInCurrentBook(account, rootFolder, uid);
-                            if (book == null) continue;
-                            notesRepository.delete(account, rootFolder, note);
+            mSnackbarDelete = Snackbar.make(activity.findViewById(R.id.coordinator_overview), R.string.snackbar_delete_message, Snackbar.LENGTH_LONG)
+                    .setCallback(new Snackbar.Callback() {
+                        @Override
+                        public void onDismissed(Snackbar snackbar, int event) {
+                            switch(event) {
+                        /* If undo button pressed */
+                                case Snackbar.Callback.DISMISS_EVENT_ACTION:
+                                    mAdapter.clearNotes();
+                                    mAdapter.addNotes(notesRepository.getAll(account, rootFolder, Utils.getNoteSorting(getActivity())));
+                                    setListState();
+                                    break;
+                                default:
+                                    for (Note note : notes) {
+                                        if (note != null) {
+                                            Notebook book = checkModificationPermissionInCurrentBook(account, rootFolder,
+                                                    note.getIdentification().getUid());
+                                            if (book == null) continue;
+                                            notesRepository.delete(account, rootFolder, note);
+                                        }
+                                    }
+                                    reloadData();
+                                    Utils.setSelectedTagName(activity,null);
+                                    Utils.setSelectedNotebookName(activity, null);
+                                    if (tabletMode) {
+                                        displayBlankFragment();
+                                    }
+                                    break;
+                            }
                         }
-                    }
-                    mSelectedNotes.clear();
-                    Utils.setSelectedTagName(activity,null);
-                    Utils.setSelectedNotebookName(activity, null);
-                    reloadData();
-                    if (tabletMode) {
-                        displayBlankFragment();
-                    }
-                }
-            });
+                    }).setAction(R.string.snackbar_undo_delete, new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                    /* Nothing */
+                        }
+                    });
 
-            builder.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    //nothing
-                }
-            });
-            builder.show();
+            mSnackbarDelete.show();
         }
     }
 

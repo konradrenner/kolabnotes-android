@@ -58,6 +58,11 @@ public class NoteAdapter extends SelectableAdapter<NoteAdapter.ViewHolder> {
         }
     }
 
+    public void deleteNotes(List<Note> notes) {
+        this.notes.removeAll(notes);
+        this.notifyDataSetChanged();
+    }
+
     public void addNotes(List<Note> notes) {
         this.notes.addAll(notes);
         Collections.sort(this.notes, new NoteSortingComparator(Utils.getNoteSorting(context)));
