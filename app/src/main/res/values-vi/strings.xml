@@ -182,5 +182,6 @@
     <string name="dialog_input_update_tag_text">Thay đổi tên tag</string>
     <string name="action_sign_in">Đăng nhập </string>
     <string name="title_activity_kolab_login">Đăng nhập </string>
-
+    <string name="snackbar_delete_message">Đã bị xóa</string>
+    <string name="snackbar_undo_delete">Hủy bỏ</string>
 </resources>

@@ -159,4 +159,6 @@
     <string name="tag_modificationDate">Mise à jour le</string>
     <string name="title_activity_tag_list">Tags</string>
     <string name="dialog_input_update_tag_text">Renommer le tag</string>
+    <string name="snackbar_delete_message">Supprimé</string>
+    <string name="snackbar_undo_delete">Annuler</string>
 </resources>
