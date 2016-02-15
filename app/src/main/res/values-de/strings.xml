@@ -173,4 +173,6 @@
     <string name="tag_modificationDate">Letze Änderung</string>
     <string name="title_activity_tag_list">Kategorien</string>
     <string name="dialog_input_update_tag_text">Ändere Kategoriename</string>
+    <string name="snackbar_delete_message">Gelöscht</string>
+    <string name="snackbar_undo_delete">Rückgängig</string>
 </resources>

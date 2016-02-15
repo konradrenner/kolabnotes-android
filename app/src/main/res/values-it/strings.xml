@@ -176,4 +176,6 @@
     <string name="tag_modificationDate">Modificato l\'ultima volta</string>
     <string name="title_activity_tag_list">Tag</string>
     <string name="dialog_input_update_tag_text">Cambia tagname</string>
+    <string name="snackbar_delete_message">Eliminata</string>
+    <string name="snackbar_undo_delete">Disfare</string>
 </resources>
