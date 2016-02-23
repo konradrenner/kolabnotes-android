@@ -74,6 +74,8 @@ public class DetailFragment extends Fragment{
 
     private final static String HTMLEND = "</body></html>";
 
+    private static final String EDITOR = "editor";
+
     private NotebookRepository notebookRepository;
     private NoteRepository noteRepository;
     private NoteTagRepository noteTagRepository;
@@ -267,9 +269,13 @@ public class DetailFragment extends Fragment{
         allTags.putAll(tagRepository.getAllAsMap(activeAccount.getAccount(), activeAccount.getRootFolder()));
         setNotebook(activeAccount, notebook, startNotebook != null);
         intialNotebookName = getNotebookSpinnerSelectionName();
+
+        if (savedInstanceState != null) {
+            /* Restoring saved data into editor */
+            String descriptionValue = initImageMap(savedInstanceState.getString(EDITOR));
+            setHtml(descriptionValue);
+        }
     }
-
-
 
     void setToolbarColor(){
         boolean lightText = true;
@@ -1084,7 +1090,7 @@ public class DetailFragment extends Fragment{
     }
 
     private boolean checkModificationPermissions(Notebook book) {
-        return Utils.checkNotebookPermissions(activity,activeAccountRepository.getActiveAccount(),note,book);
+        return Utils.checkNotebookPermissions(activity, activeAccountRepository.getActiveAccount(), note, book);
     }
 
     /**
@@ -1108,9 +1114,9 @@ public class DetailFragment extends Fragment{
 
             String altContent = html.substring(startOfAltContent,endOfAlt);
 
-            repaired.replace(withoutTag, endOfImage,base64Images.get(altContent));
-
             start = endOfAlt;
+
+            repaired.replace(withoutTag, endOfImage,base64Images.get(altContent));
         }
         return repaired.toString();
     }
@@ -1219,7 +1225,10 @@ public class DetailFragment extends Fragment{
     @Override
     public void onSaveInstanceState(Bundle outState) {
         //outState.putParcelable("appInfo", appInfo.getComponentName());
-        super.onSaveInstanceState(outState);
+        String descriptionValue = repairImages(getDescriptionFromView());
+        if (descriptionValue != null) {
+            outState.putString(EDITOR, descriptionValue);
+        }
     }
 
     public void onBackPressed() {
