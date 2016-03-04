@@ -166,5 +166,13 @@
     <!--Empty list-->
     <string name="no_tags">Нет меток</string>
     <string name="no_notes">Нет заметок</string>
+    <string name="title_activity_export">Экспорт ноутбуков</string>
+    <string name="title_activity_import"> Импорт ноутбуков</string>
+    <string name="exporting"> Экспорт</string>
+    <string name="export_canceled"> экспорт ноутбук отменен</string>
+    <string name="exported"> Ноутбук экспортируется</string>
+    <string name="importing"> Импорт</string>
+    <string name="import_canceled">Импорт отменен</string>
+    <string name="imported"> Ноутбук импортируется</string>
 
 </resources>

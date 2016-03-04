@@ -184,4 +184,12 @@
     <string name="title_activity_kolab_login">Đăng nhập </string>
     <string name="snackbar_delete_message">Đã bị xóa</string>
     <string name="snackbar_undo_delete">Hủy bỏ</string>
+    <string name="title_activity_export"> Máy tính xách tay xuất khẩu</string>
+    <string name="title_activity_import"> Máy tính xách tay nhập khẩu</string>
+    <string name="exporting"> xuất khẩu</string>
+    <string name="export_canceled"> xuất khẩu máy tính xách tay bị hủy bỏ</string>
+    <string name="exported"> Máy tính xách tay xuất khẩu</string>
+    <string name="importing"> nhập khẩu</string>
+    <string name="import_canceled">nhập hủy</string>
+    <string name="imported"> Máy tính xách tay nhập khẩu</string>
 </resources>

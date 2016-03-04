@@ -34,7 +34,7 @@ dependencies {
     compile('com.mikepenz:materialdrawer:3.1.2@aar') {
         transitive = true
     }
-    compile 'com.github.konradrenner:kolabnotes-java:2.2.1'
+    compile 'com.github.konradrenner:kolabnotes-java:3.0.1'
     compile 'jp.wasabeef:richeditor-android:1.0.0'
 
     //Android support libraries

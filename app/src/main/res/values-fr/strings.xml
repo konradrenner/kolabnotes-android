@@ -161,4 +161,12 @@
     <string name="dialog_input_update_tag_text">Renommer le tag</string>
     <string name="snackbar_delete_message">Supprimé</string>
     <string name="snackbar_undo_delete">Annuler</string>
+    <string name="title_activity_export"> Notebook Export</string>
+    <string name="title_activity_import"> Importer Notebook</string>
+    <string name="exporting"> Exportation</string>
+    <string name="export_canceled"> Notebook exportation annulé</string>
+    <string name="exported">Notebook exporté</string>
+    <string name="importing"> Importation</string>
+    <string name="import_canceled">Importation annulée</string>
+    <string name="imported"> Notebook importés</string>
 </resources>
