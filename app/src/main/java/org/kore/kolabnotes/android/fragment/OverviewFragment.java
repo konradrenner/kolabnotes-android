@@ -1132,7 +1132,13 @@ public class OverviewFragment extends Fragment implements /*NoteAdapter.NoteSele
 
             ActiveAccount activeAccount = activeAccountRepository.getActiveAccount();
 
-            String notebookName = path.substring(path.lastIndexOf("/")+1,path.length()-4);
+            String notebookName;
+            if(path.endsWith(".zip") || path.endsWith(".ZIP")) {
+                notebookName = path.substring(path.lastIndexOf("/") + 1, path.length() - 4);
+            }else{
+                notebookName = path.substring(path.lastIndexOf("/") + 1);
+            }
+
 
             new ExportNotebook(getActivity(),new File(path)).execute(activeAccount.getAccount(), activeAccount.getRootFolder(), notebookName);
         }
@@ -1149,10 +1155,10 @@ public class OverviewFragment extends Fragment implements /*NoteAdapter.NoteSele
 
         @Override
         protected String doInBackground(String... params) {
-
-            LocalNotesRepository repo = new LocalNotesRepository(new KolabNotesParserV3(), "tmp");
-
             try {
+                LocalNotesRepository repo = new LocalNotesRepository(new KolabNotesParserV3(), "tmp");
+
+
                 Notebook notebook = repo.importNotebook(new File(params[2]));
 
                 Notebook bySummary = notebookRepository.getBySummary(params[0], params[1], notebook.getSummary());
@@ -1170,7 +1176,7 @@ public class OverviewFragment extends Fragment implements /*NoteAdapter.NoteSele
                 }
 
                 return notebook.getSummary();
-            } catch (IOException e) {
+            } catch (Exception e) {
                 cancel(false);
                 return e.getMessage();
             }
@@ -1254,23 +1260,24 @@ public class OverviewFragment extends Fragment implements /*NoteAdapter.NoteSele
 
         @Override
         protected String doInBackground(String... params) {
-            Notebook notebook = notebookRepository.getBySummary(params[0], params[1], params[2]);
-            List<Note> fromNotebook = notesRepository.getFromNotebook(params[0], params[1], notebook.getIdentification().getUid(), new NoteSorting());
-
-            for(Note note : fromNotebook){
-                notebook.addNote(note);
-            }
-
-            LocalNotesRepository repository = new LocalNotesRepository(new KolabNotesParserV3(), "tmp");
-
-            File kolabNotes = pathToZIP;
-
-            boolean downloadDirectoryExists = kolabNotes.exists();
-            if(!downloadDirectoryExists){
-                kolabNotes = context.getFilesDir();
-            }
-
             try {
+                Notebook notebook = notebookRepository.getBySummary(params[0], params[1], params[2]);
+                List<Note> fromNotebook = notesRepository.getFromNotebook(params[0], params[1], notebook.getIdentification().getUid(), new NoteSorting());
+
+                for(Note note : fromNotebook){
+                    notebook.addNote(note);
+                }
+
+                LocalNotesRepository repository = new LocalNotesRepository(new KolabNotesParserV3(), "tmp");
+
+                File kolabNotes = pathToZIP;
+
+                boolean downloadDirectoryExists = kolabNotes.exists();
+                if(!downloadDirectoryExists){
+                    kolabNotes = context.getFilesDir();
+                }
+
+
                 File file = repository.exportNotebook(notebook, kolabNotes);
 
                 Intent intent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
@@ -1278,7 +1285,7 @@ public class OverviewFragment extends Fragment implements /*NoteAdapter.NoteSele
                 context.sendBroadcast(intent);
 
                 return file.toString();
-            } catch (IOException e) {
+            } catch (Exception e) {
                 cancel(false);
                 return e.getMessage();
             }
