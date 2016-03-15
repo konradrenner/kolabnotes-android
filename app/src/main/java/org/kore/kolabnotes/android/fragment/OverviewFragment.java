@@ -1178,7 +1178,7 @@ public class OverviewFragment extends Fragment implements /*NoteAdapter.NoteSele
                 return notebook.getSummary();
             } catch (Exception e) {
                 cancel(false);
-                return e.getMessage();
+                return params[0] +"/" + params[1] +"/"+ params[2] +"/"+e.getMessage();
             }
         }
 
@@ -1287,7 +1287,7 @@ public class OverviewFragment extends Fragment implements /*NoteAdapter.NoteSele
                 return file.toString();
             } catch (Exception e) {
                 cancel(false);
-                return e.getMessage();
+                return params[0] +"/" + params[1] +"/"+ params[2] +"/"+  e.getMessage();
             }
         }
 
