@@ -271,6 +271,7 @@
         </FrameLayout>
 
         <jp.wasabeef.richeditor.RichEditor
+            android:visibility="gone"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:layout_marginLeft="4dp"
@@ -284,6 +285,21 @@
             android:hint="@string/description_hint"
             android:editable="true"
             />
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/detail_description_plain"
+            android:visibility="gone"
+            android:gravity="top"
+            android:inputType="textMultiLine|textWebEditText"
+            android:autoText="false"
+            android:textColor="@color/primary_text_default_material_light"
+            android:textColorHint="@color/secondary_text_default_material_light"
+            android:hint="@string/description_hint"
+            android:editable="true"
+            android:bufferType="spannable"
+            android:enabled="true" />
 
     </LinearLayout>
 </FrameLayout>

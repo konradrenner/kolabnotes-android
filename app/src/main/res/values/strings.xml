@@ -192,5 +192,7 @@
     <string name="importing">Importing</string>
     <string name="import_canceled">Notebook import canceled</string>
     <string name="imported">Notebook imported</string>
+    <string name="pref_richeditor">Enable Richtexteditor</string>
+    <string name="pref_desc_richeditor">Enables the Richtexteditor for formatted notes</string>
 
 </resources>

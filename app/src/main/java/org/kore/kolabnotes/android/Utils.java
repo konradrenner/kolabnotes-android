@@ -233,6 +233,16 @@ public class Utils {
 
     }
 
+    public static boolean getUseRicheditor(Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        if(prefs == null){
+            Log.d("getUseRicheditor","PreferenceManager prefs are null");
+            return true;
+        }
+        return prefs.getBoolean("pref_richeditor", true);
+
+    }
+
     public static boolean getShowSyncNotifications(Context context) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         if(prefs == null){

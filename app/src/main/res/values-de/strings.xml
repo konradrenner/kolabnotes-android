@@ -183,4 +183,6 @@
     <string name="importing">Importiere</string>
     <string name="import_canceled">Import abgebrochen</string>
     <string name="imported">Noitizbuch importiert</string>
+    <string name="pref_richeditor">Richtexteditor aktivieren</string>
+    <string name="pref_desc_richeditor">Aktiviert den Richtexteditor zum Erstellen von formattierten Notizen</string>
 </resources>
