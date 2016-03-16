@@ -556,6 +556,18 @@ public class DetailFragment extends Fragment{
                 editor.setBlockquote();
             }
         });
+        activity.findViewById(R.id.action_bullets).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                editor.setBullets();
+            }
+        });
+        activity.findViewById(R.id.action_numbers).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                editor.setNumbers();
+            }
+        });
 
         activity.findViewById(R.id.action_insert_image).setOnClickListener(new View.OnClickListener() {
             @Override

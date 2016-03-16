@@ -88,6 +88,22 @@
                     android:src="@drawable/underline"/>
 
                 <ImageButton
+                    android:id="@+id/action_bullets"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:background="@null"
+                    android:contentDescription="@null"
+                    android:src="@drawable/ic_format_list_bulleted_white_24dp"/>
+
+                <ImageButton
+                    android:id="@+id/action_numbers"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:background="@null"
+                    android:contentDescription="@null"
+                    android:src="@drawable/ic_format_list_numbered_white_24dp"/>
+
+                <ImageButton
                     android:id="@+id/action_heading1"
                     android:layout_width="48dp"
                     android:layout_height="48dp"
