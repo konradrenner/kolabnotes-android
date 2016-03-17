@@ -37,4 +37,9 @@
         app:showAsAction="always"
         android:icon="@drawable/ic_action_accept"
         android:title="@string/title_ok" />
+
+    <item android:id="@+id/print"
+        app:showAsAction="ifRoom"
+        android:icon="@drawable/ic_print_white_48dp"
+        android:title="@string/print"/>
 </menu>

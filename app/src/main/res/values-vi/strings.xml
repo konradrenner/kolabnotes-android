@@ -194,4 +194,5 @@
     <string name="imported"> Máy tính xách tay nhập khẩu</string>
     <string name="pref_richeditor"> Kích hoạt tính năng RichTextEditor</string>
     <string name="pref_desc_richeditor">Cho phép các RichTextEditor cho các ghi chú được định dạng</string>
+    <string name="print">In</string>
 </resources>
