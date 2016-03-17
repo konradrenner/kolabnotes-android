@@ -83,8 +83,6 @@ public class DetailFragment extends Fragment{
 
     private static final String EDITOR = "editor";
 
-    private static final String TAG_PRINT = "print";
-
     private NotebookRepository notebookRepository;
     private NoteRepository noteRepository;
     private NoteTagRepository noteTagRepository;
