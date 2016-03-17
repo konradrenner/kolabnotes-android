@@ -83,6 +83,8 @@ public class DetailFragment extends Fragment{
 
     private static final String EDITOR = "editor";
 
+    private static final String TAG_PRINT = "print";
+
     private NotebookRepository notebookRepository;
     private NoteRepository noteRepository;
     private NoteTagRepository noteTagRepository;
@@ -112,8 +114,6 @@ public class DetailFragment extends Fragment{
     private String startNotebook;
 
     private RichEditor editor;
-
-    private android.printservice.PrintJob mPrintJobs;
 
     private EditText editText;
     
@@ -754,7 +754,7 @@ public class DetailFragment extends Fragment{
         if(!TextUtils.isEmpty(descriptionValue)) {
             startActivity(Intent.createChooser(shareIntent, getResources().getText(R.string.send_to)));
         }else{
-            Toast.makeText(activity,R.string.empty_note,Toast.LENGTH_LONG).show();
+            Toast.makeText(activity, R.string.empty_note, Toast.LENGTH_LONG).show();
         }
         return false;
     }
