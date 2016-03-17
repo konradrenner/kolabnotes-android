@@ -178,4 +178,14 @@
     <string name="dialog_input_update_tag_text">Cambia tagname</string>
     <string name="snackbar_delete_message">Eliminata</string>
     <string name="snackbar_undo_delete">Disfare</string>
+    <string name="title_activity_export"> Notebook Export</string>
+    <string name="title_activity_import"> Importa Notebook</string>
+    <string name="exporting"> Esportazione</string>
+    <string name="exported">Notebook esportato</string>
+    <string name="export_canceled"> Notebook esportazione annullato</string>
+    <string name="importing"> Importazione</string>
+    <string name="import_canceled"> Import cancellato</string>
+    <string name="imported">Notebook importati</string>
+    <string name="pref_richeditor"> Abilita RichTextEditor</string>
+    <string name="pref_desc_richeditor"> Attiva la RichTextEditor per le note formattati</string>
 </resources>

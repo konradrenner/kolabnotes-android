@@ -6,6 +6,8 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
+import android.app.Notification;
+import android.app.NotificationManager;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -13,15 +15,18 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.NotificationCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
@@ -60,6 +65,8 @@ import org.kore.kolab.notes.Note;
 import org.kore.kolab.notes.Notebook;
 import org.kore.kolab.notes.SharedNotebook;
 import org.kore.kolab.notes.Tag;
+import org.kore.kolab.notes.local.LocalNotesRepository;
+import org.kore.kolab.notes.v3.KolabNotesParserV3;
 import org.kore.kolabnotes.android.ColorCircleDrawable;
 import org.kore.kolabnotes.android.DetailActivity;
 import org.kore.kolabnotes.android.MainActivity;
@@ -77,6 +84,8 @@ import org.kore.kolabnotes.android.content.TagRepository;
 import org.kore.kolabnotes.android.security.AuthenticatorActivity;
 import org.kore.kolabnotes.android.setting.SettingsActivity;
 
+import java.io.File;
+import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -86,6 +95,7 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
 
@@ -1080,11 +1090,235 @@ public class OverviewFragment extends Fragment implements /*NoteAdapter.NoteSele
                 Intent settingsIntent = new Intent(activity,SettingsActivity.class);
                 startActivity(settingsIntent);
                 break;
+            case R.id.import_menu:
+                importNotebook();
+                break;
+            case R.id.export_menu:
+                exportNotebooks();
+                break;
             default:
                 activity.dispatchMenuEvent(item);
                 break;
         }
         return true;
+    }
+
+    private void importNotebook(){
+        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+
+        intent.setType("application/zip");
+
+        startActivityForResult(intent, Utils.READ_REQUEST_CODE);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode,
+                                 Intent resultData) {
+
+        if (requestCode == Utils.READ_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+            if (resultData != null) {
+                Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.importing), Toast.LENGTH_SHORT).show();
+                Uri uri = resultData.getData();
+                String path = uri.getPath();
+
+                ActiveAccount activeAccount = activeAccountRepository.getActiveAccount();
+                new ImportNotebook(getActivity()).execute(activeAccount.getAccount(),activeAccount.getRootFolder(),path);
+            }
+        }else if(requestCode == Utils.WRITE_REQUEST_CODE && resultCode == Activity.RESULT_OK){
+            Uri uri = resultData.getData();
+            String path = uri.getPath();
+
+            ActiveAccount activeAccount = activeAccountRepository.getActiveAccount();
+
+            String notebookName;
+            if(path.endsWith(".zip") || path.endsWith(".ZIP")) {
+                notebookName = path.substring(path.lastIndexOf("/") + 1, path.length() - 4);
+            }else{
+                notebookName = path.substring(path.lastIndexOf("/") + 1);
+            }
+
+
+            new ExportNotebook(getActivity(),new File(path)).execute(activeAccount.getAccount(), activeAccount.getRootFolder(), notebookName);
+        }
+    }
+
+    class ImportNotebook extends AsyncTask<String, Void, String>{
+
+        private final Context context;
+
+        ImportNotebook(Context context){
+            this.context = context;
+        }
+
+
+        @Override
+        protected String doInBackground(String... params) {
+            try {
+                LocalNotesRepository repo = new LocalNotesRepository(new KolabNotesParserV3(), "tmp");
+
+
+                Notebook notebook = repo.importNotebook(new File(params[2]));
+
+                Notebook bySummary = notebookRepository.getBySummary(params[0], params[1], notebook.getSummary());
+                if(bySummary == null){
+                    notebookRepository.insert(params[0],params[1], notebook);
+                    bySummary = notebook;
+                }
+
+                for(Note note : notebook.getNotes()){
+                    Note byUID = notesRepository.getByUID(params[0], params[1], note.getIdentification().getUid());
+
+                    if(byUID == null){
+                        notesRepository.insert(params[0],params[1],note, bySummary.getIdentification().getUid());
+                    }
+                }
+
+                return notebook.getSummary();
+            } catch (Exception e) {
+                cancel(false);
+                return params[0] +"/" + params[1] +"/"+ params[2] +"/"+e.getMessage();
+            }
+        }
+
+        @Override
+        protected void onCancelled(String s) {
+            super.onCancelled(s);
+            NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+
+            final Notification notification = new NotificationCompat.Builder(context)
+                    .setSmallIcon(R.drawable.ic_kjots)
+                    .setContentTitle(context.getResources().getString(R.string.import_canceled))
+                    .setStyle(new NotificationCompat.BigTextStyle().bigText(s))
+                    .setAutoCancel(true).build();
+
+            notificationManager.notify(0, notification);
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+
+            NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+
+            final Notification notification = new NotificationCompat.Builder(context)
+                    .setSmallIcon(R.drawable.ic_kjots)
+                    .setContentTitle(context.getResources().getString(R.string.imported))
+                    .setStyle(new NotificationCompat.BigTextStyle().bigText(s))
+                    .setAutoCancel(true).build();
+
+            notificationManager.notify(0, notification);
+        }
+    }
+
+    private void exportNotebooks(){
+
+        Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.exporting), Toast.LENGTH_SHORT).show();
+        int selection = mDrawer.getCurrentSelection();
+        final IDrawerItem drawerItem = mDrawer.getDrawerItems().get(selection);
+        String tag = drawerItem.getTag() == null || drawerItem.getTag().toString().trim().length() == 0 ? null : drawerItem.getTag().toString();
+        ActiveAccount activeAccount = activeAccountRepository.getActiveAccount();
+        if(tag == null || !tag.equals("NOTEBOOK")){
+            List<Notebook> all = notebookRepository.getAll(activeAccount.getAccount(), activeAccount.getRootFolder());
+
+            for(Notebook book : all){
+
+                Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
+
+                intent.addCategory(Intent.CATEGORY_OPENABLE);
+
+                intent.setType("application/zip");
+                intent.putExtra(Intent.EXTRA_TITLE, book.getSummary());
+                startActivityForResult(intent, Utils.WRITE_REQUEST_CODE);
+            }
+        }else{
+            BaseDrawerItem base = (BaseDrawerItem)drawerItem;
+
+            Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
+
+            intent.addCategory(Intent.CATEGORY_OPENABLE);
+
+            intent.setType("application/zip");
+            intent.putExtra(Intent.EXTRA_TITLE, base.getName()+".zip");
+            startActivityForResult(intent, Utils.WRITE_REQUEST_CODE);
+        }
+    }
+
+    class ExportNotebook extends AsyncTask<String, Void, String>{
+
+        private final Context context;
+        private final File pathToZIP;
+        private final Random random;
+
+        ExportNotebook(Context context, File pathToZIP){
+            this.context = context;
+            this.pathToZIP = pathToZIP;
+            random = new Random();
+        }
+
+
+        @Override
+        protected String doInBackground(String... params) {
+            try {
+                Notebook notebook = notebookRepository.getBySummary(params[0], params[1], params[2]);
+                List<Note> fromNotebook = notesRepository.getFromNotebook(params[0], params[1], notebook.getIdentification().getUid(), new NoteSorting());
+
+                for(Note note : fromNotebook){
+                    notebook.addNote(note);
+                }
+
+                LocalNotesRepository repository = new LocalNotesRepository(new KolabNotesParserV3(), "tmp");
+
+                File kolabNotes = pathToZIP;
+
+                boolean downloadDirectoryExists = kolabNotes.exists();
+                if(!downloadDirectoryExists){
+                    kolabNotes = context.getFilesDir();
+                }
+
+
+                File file = repository.exportNotebook(notebook, kolabNotes);
+
+                Intent intent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+                intent.setData(Uri.fromFile(file));
+                context.sendBroadcast(intent);
+
+                return file.toString();
+            } catch (Exception e) {
+                cancel(false);
+                return params[0] +"/" + params[1] +"/"+ params[2] +"/"+  e.getMessage();
+            }
+        }
+
+        @Override
+        protected void onCancelled(String s) {
+            super.onCancelled(s);
+            NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+
+            final Notification notification = new NotificationCompat.Builder(context)
+                    .setSmallIcon(R.drawable.ic_kjots)
+                    .setContentTitle(context.getResources().getString(R.string.export_canceled))
+                    .setStyle(new NotificationCompat.BigTextStyle().bigText(s))
+                    .setAutoCancel(true).build();
+
+            notificationManager.notify(random.nextInt(), notification);
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+
+            NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+
+            final Notification notification = new NotificationCompat.Builder(context)
+                    .setSmallIcon(R.drawable.ic_kjots)
+                    .setContentTitle(context.getResources().getString(R.string.exported))
+                    .setStyle(new NotificationCompat.BigTextStyle().bigText(s))
+                    .setAutoCancel(true).build();
+
+            notificationManager.notify(random.nextInt(), notification);
+        }
     }
 
     private AlertDialog deleteNotebookDialog(){

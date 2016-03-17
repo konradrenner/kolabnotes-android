@@ -175,4 +175,14 @@
     <string name="dialog_input_update_tag_text">Ändere Kategoriename</string>
     <string name="snackbar_delete_message">Gelöscht</string>
     <string name="snackbar_undo_delete">Rückgängig</string>
+    <string name="title_activity_export">Notizbuchexport</string>
+    <string name="title_activity_import">Notizbuchimport</string>
+    <string name="exporting">Exportiere</string>
+    <string name="export_canceled">Notizbuchexportierung abgebrochen</string>
+    <string name="exported">Notizbuch exportiert</string>
+    <string name="importing">Importiere</string>
+    <string name="import_canceled">Import abgebrochen</string>
+    <string name="imported">Noitizbuch importiert</string>
+    <string name="pref_richeditor">Richtexteditor aktivieren</string>
+    <string name="pref_desc_richeditor">Aktiviert den Richtexteditor zum Erstellen von formattierten Notizen</string>
 </resources>

@@ -183,4 +183,16 @@
     <string name="no_tags">No tags</string>
     <string name="no_notes">No notes</string>
 
+    <!--Import/export notebook-->
+    <string name="title_activity_export">Export notebook</string>
+    <string name="title_activity_import">Import notebook</string>
+    <string name="exporting">Exporting</string>
+    <string name="export_canceled">Notebook export canceled</string>
+    <string name="exported">Notebook exported</string>
+    <string name="importing">Importing</string>
+    <string name="import_canceled">Notebook import canceled</string>
+    <string name="imported">Notebook imported</string>
+    <string name="pref_richeditor">Enable Richtexteditor</string>
+    <string name="pref_desc_richeditor">Enables the Richtexteditor for formatted notes</string>
+
 </resources>

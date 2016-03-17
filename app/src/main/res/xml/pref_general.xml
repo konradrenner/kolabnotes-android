@@ -11,6 +11,12 @@
         android:summary="@string/pref_desc_metainformation"
         android:defaultValue="true" />
 
+    <SwitchPreference
+        android:key="pref_richeditor"
+        android:title="@string/pref_richeditor"
+        android:summary="@string/pref_desc_richeditor"
+        android:defaultValue="true" />
+
     <PreferenceCategory android:key="sorting_category" android:title="@string/pref_sorting_category" >
 
         <ListPreference

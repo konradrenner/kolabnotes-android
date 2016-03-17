@@ -167,4 +167,16 @@
     <string name="no_tags">Нет меток</string>
     <string name="no_notes">Нет заметок</string>
 
+    <!--Import/export notebook-->
+    <string name="title_activity_export">Экспорт блокнота</string>
+    <string name="title_activity_import">Импорт блокнота</string>
+    <string name="exporting">Экспорт</string>
+    <string name="export_canceled">Экспорт блокнота отменён</string>
+    <string name="exported">Блокнот экспортирован</string>
+    <string name="importing">Импорт</string>
+    <string name="import_canceled">Импорт блокнота отменён</string>
+    <string name="imported">Блокнот импортирован</string>
+    <string name="pref_richeditor"> Включить RichTextEditor</string>
+    <string name="pref_desc_richeditor"> Включает RichTextEditor для отформатированных нот</string>
+
 </resources>

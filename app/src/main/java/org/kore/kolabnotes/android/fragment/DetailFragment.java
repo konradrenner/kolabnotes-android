@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
+import android.text.Spanned;
 import android.text.TextUtils;
 import android.util.Base64;
 import android.util.Log;
@@ -74,6 +75,8 @@ public class DetailFragment extends Fragment{
 
     private final static String HTMLEND = "</body></html>";
 
+    private static final String EDITOR = "editor";
+
     private NotebookRepository notebookRepository;
     private NoteRepository noteRepository;
     private NoteTagRepository noteTagRepository;
@@ -103,6 +106,8 @@ public class DetailFragment extends Fragment{
     private String startNotebook;
 
     private RichEditor editor;
+
+    private EditText editText;
     
     private AppCompatActivity activity;
 
@@ -154,23 +159,31 @@ public class DetailFragment extends Fragment{
 
         setHasOptionsMenu(true);
 
-        editor = (RichEditor)activity.findViewById(R.id.detail_description);
-        editor.setBackgroundColor(getResources().getColor(R.color.background_material_light));
-        editor.setEditorHeight(300);
-        editor.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View view, boolean b) {
-                final View bar = activity.findViewById(R.id.editor_bar);
-                final int visibility = bar.getVisibility();
-                if(visibility == View.GONE){
-                    bar.setVisibility(View.VISIBLE);
-                }else{
-                    bar.setVisibility(View.GONE
-                    );
+        boolean useRicheditor = Utils.getUseRicheditor(activity);
+
+        if(useRicheditor) {
+            editor = (RichEditor) activity.findViewById(R.id.detail_description);
+            editor.setVisibility(View.VISIBLE);
+            editor.setBackgroundColor(getResources().getColor(R.color.background_material_light));
+            editor.setEditorHeight(300);
+            editor.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                @Override
+                public void onFocusChange(View view, boolean b) {
+                    final View bar = activity.findViewById(R.id.editor_bar);
+                    final int visibility = bar.getVisibility();
+                    if (visibility == View.GONE) {
+                        bar.setVisibility(View.VISIBLE);
+                    } else {
+                        bar.setVisibility(View.GONE
+                        );
+                    }
                 }
-            }
-        });
-        initEditor();
+            });
+            initEditor();
+        }else{
+            editText = (EditText) activity.findViewById(R.id.detail_description_plain);
+            editText.setVisibility(View.VISIBLE);
+        }
 
         // Handle Back Navigation :D
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
@@ -267,9 +280,13 @@ public class DetailFragment extends Fragment{
         allTags.putAll(tagRepository.getAllAsMap(activeAccount.getAccount(), activeAccount.getRootFolder()));
         setNotebook(activeAccount, notebook, startNotebook != null);
         intialNotebookName = getNotebookSpinnerSelectionName();
+
+        if (savedInstanceState != null) {
+            /* Restoring saved data into editor */
+            String descriptionValue = initImageMap(savedInstanceState.getString(EDITOR));
+            setHtml(descriptionValue);
+        }
     }
-
-
 
     void setToolbarColor(){
         boolean lightText = true;
@@ -285,7 +302,12 @@ public class DetailFragment extends Fragment{
 
     void setHtml(String text){
         final String stripped = stripBody(text);
-        editor.setHtml(stripped);
+        if(editor != null){
+            editor.setHtml(stripped);
+        }else{
+            Spanned fromHtml = Html.fromHtml(stripped);
+            editText.setText(fromHtml, TextView.BufferType.SPANNABLE);
+        }
     }
 
     String stripBody(String html){
@@ -548,6 +570,18 @@ public class DetailFragment extends Fragment{
             @Override
             public void onClick(View v) {
                 editor.setBlockquote();
+            }
+        });
+        activity.findViewById(R.id.action_bullets).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                editor.setBullets();
+            }
+        });
+        activity.findViewById(R.id.action_numbers).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                editor.setNumbers();
             }
         });
 
@@ -929,11 +963,18 @@ public class DetailFragment extends Fragment{
     }
 
     String getDescriptionFromView(){
-        final String html = editor.getHtml();
-        if(TextUtils.isEmpty(html)){
-            return null;
+        if(editor != null){
+            final String html = editor.getHtml();
+            if(TextUtils.isEmpty(html)){
+                return null;
+            }
+            return html;
         }
-        return html;
+
+        StringBuilder sb = new StringBuilder(HTMLSTART);
+        sb.append(Html.toHtml(editText.getText()));
+        sb.append(HTMLEND);
+        return sb.toString();
     }
 
     private AlertDialog createNotebookDialog(){
@@ -1084,7 +1125,7 @@ public class DetailFragment extends Fragment{
     }
 
     private boolean checkModificationPermissions(Notebook book) {
-        return Utils.checkNotebookPermissions(activity,activeAccountRepository.getActiveAccount(),note,book);
+        return Utils.checkNotebookPermissions(activity, activeAccountRepository.getActiveAccount(), note, book);
     }
 
     /**
@@ -1108,9 +1149,9 @@ public class DetailFragment extends Fragment{
 
             String altContent = html.substring(startOfAltContent,endOfAlt);
 
-            repaired.replace(withoutTag, endOfImage,base64Images.get(altContent));
-
             start = endOfAlt;
+
+            repaired.replace(withoutTag, endOfImage,base64Images.get(altContent));
         }
         return repaired.toString();
     }
@@ -1219,7 +1260,10 @@ public class DetailFragment extends Fragment{
     @Override
     public void onSaveInstanceState(Bundle outState) {
         //outState.putParcelable("appInfo", appInfo.getComponentName());
-        super.onSaveInstanceState(outState);
+        String descriptionValue = repairImages(getDescriptionFromView());
+        if (descriptionValue != null) {
+            outState.putString(EDITOR, descriptionValue);
+        }
     }
 
     public void onBackPressed() {

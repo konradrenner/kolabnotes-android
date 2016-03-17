@@ -193,6 +193,7 @@ public class Utils {
     public static final String SELECTED_TAG_NAME = "selectedNotebookTag";
     public static final String RELOAD_DATA_AFTER_DETAIL = "reloadDataAfterDetail";
     public static final int READ_REQUEST_CODE = 42;
+    public static final int WRITE_REQUEST_CODE = 43;
     /*
     public static void configureWindowEnterExitTransition(Window w) {
         Explode ex = new Explode();
@@ -229,6 +230,16 @@ public class Utils {
             return true;
         }
         return prefs.getBoolean("pref_metainformation", true);
+
+    }
+
+    public static boolean getUseRicheditor(Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        if(prefs == null){
+            Log.d("getUseRicheditor","PreferenceManager prefs are null");
+            return true;
+        }
+        return prefs.getBoolean("pref_richeditor", true);
 
     }
 
