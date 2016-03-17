@@ -3,13 +3,19 @@ package org.kore.kolabnotes.android.fragment;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Fragment;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.print.PrintAttributes;
+import android.print.PrintDocumentAdapter;
+import android.print.PrintJob;
+import android.print.PrintManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
@@ -164,7 +170,7 @@ public class DetailFragment extends Fragment{
         if(useRicheditor) {
             editor = (RichEditor) activity.findViewById(R.id.detail_description);
             editor.setVisibility(View.VISIBLE);
-            editor.setBackgroundColor(getResources().getColor(R.color.background_material_light));
+            editor.setBackgroundColor(Color.TRANSPARENT);
             editor.setEditorHeight(300);
             editor.setOnFocusChangeListener(new View.OnFocusChangeListener() {
                 @Override
@@ -746,9 +752,18 @@ public class DetailFragment extends Fragment{
         if(!TextUtils.isEmpty(descriptionValue)) {
             startActivity(Intent.createChooser(shareIntent, getResources().getText(R.string.send_to)));
         }else{
-            Toast.makeText(activity,R.string.empty_note,Toast.LENGTH_LONG).show();
+            Toast.makeText(activity, R.string.empty_note, Toast.LENGTH_LONG).show();
         }
         return false;
+    }
+
+    @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        super.onPrepareOptionsMenu(menu);
+
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
+            menu.findItem(R.id.print).setVisible(false);
+        }
     }
 
     @Override
@@ -777,6 +792,9 @@ public class DetailFragment extends Fragment{
                 shareIntent.setAction(Intent.ACTION_SEND);
                 shareIntent.setType("text/html");
                 shareNote(shareIntent);
+                break;
+            case R.id.print:
+                printNote();
                 break;
         }
         return true;
@@ -1327,12 +1345,19 @@ public class DetailFragment extends Fragment{
         return  differences;
     }
 
+    private void printNote() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            PrintManager printManager = (PrintManager) activity.getSystemService(Context.PRINT_SERVICE);
+            String jobName = getString(R.string.app_name) + " Document";
+            PrintDocumentAdapter printAdapter = editor.createPrintDocumentAdapter();
+            PrintJob printJob = printManager.print(jobName, printAdapter, new PrintAttributes.Builder().build());
+        }
+    }
+
     private void goBack(){
         Intent returnIntent = new Intent();
         returnIntent.putExtra("selectedNotebookName",givenNotebook);
 
         ((OnFragmentCallback)activity).fragmentFinished(returnIntent, OnFragmentCallback.ResultCode.BACK);
     }
-
-
 }
