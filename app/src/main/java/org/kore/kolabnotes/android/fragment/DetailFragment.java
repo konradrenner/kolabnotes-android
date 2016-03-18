@@ -292,6 +292,10 @@ public class DetailFragment extends Fragment{
             String descriptionValue = initImageMap(savedInstanceState.getString(EDITOR));
             setHtml(descriptionValue);
         }
+
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
+            activity.findViewById(R.id.action_insert_image).setVisibility(View.GONE);
+        }
     }
 
     void setToolbarColor(){
