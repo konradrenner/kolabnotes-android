@@ -22,6 +22,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.ParcelFileDescriptor;
 import android.provider.OpenableColumns;
+import android.renderscript.ScriptGroup;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -89,6 +90,7 @@ import org.kore.kolabnotes.android.setting.SettingsActivity;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -1127,12 +1129,43 @@ public class OverviewFragment extends Fragment implements /*NoteAdapter.NoteSele
 
         if (requestCode == Utils.READ_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             if (resultData != null) {
-                Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.importing), Toast.LENGTH_SHORT).show();
-                Uri uri = resultData.getData();
-                String path = uri.getPath();
 
-                ActiveAccount activeAccount = activeAccountRepository.getActiveAccount();
-                new ImportNotebook(getActivity()).execute(activeAccount.getAccount(),activeAccount.getRootFolder(),path);
+                try{
+                    Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.importing), Toast.LENGTH_SHORT).show();
+                    Uri uri = resultData.getData();
+                    String path = uri.getPath();
+
+                    ActiveAccount activeAccount = activeAccountRepository.getActiveAccount();
+
+                    Cursor cursor = getActivity().getContentResolver().query(uri, null, null, null, null, null);
+
+                    String notebookName;
+
+                    if (cursor != null && cursor.moveToFirst()) {
+                        notebookName = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
+
+                        notebookName = withouFileEnding(notebookName);
+                    } else {
+
+                        notebookName = withouFileEnding(path.substring(path.lastIndexOf("/") + 1));
+                    }
+
+                    InputStream inputStream = getActivity().getContentResolver().openInputStream(uri);
+
+                    new ImportNotebook(getActivity(),inputStream).execute(activeAccount.getAccount(),activeAccount.getRootFolder(),notebookName);
+
+                }catch (FileNotFoundException e){
+                    Log.e("result", e.getMessage(), e);
+                    NotificationManager notificationManager = (NotificationManager) getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
+
+                    final Notification notification = new NotificationCompat.Builder(getActivity())
+                            .setSmallIcon(R.drawable.ic_kjots)
+                            .setContentTitle(getActivity().getResources().getString(R.string.export_canceled))
+                            .setStyle(new NotificationCompat.BigTextStyle().bigText(e.getMessage()))
+                            .setAutoCancel(true).build();
+
+                    notificationManager.notify(Utils.WRITE_REQUEST_CODE, notification);
+                }
             }
         }else if(requestCode == Utils.WRITE_REQUEST_CODE && resultCode == Activity.RESULT_OK){
             try {
@@ -1187,9 +1220,11 @@ public class OverviewFragment extends Fragment implements /*NoteAdapter.NoteSele
     class ImportNotebook extends AsyncTask<String, Void, String>{
 
         private final Context context;
+        private final InputStream pathToZip;
 
-        ImportNotebook(Context context){
+        ImportNotebook(Context context, InputStream zip){
             this.context = context;
+            this.pathToZip = zip;
         }
 
 
@@ -1200,7 +1235,7 @@ public class OverviewFragment extends Fragment implements /*NoteAdapter.NoteSele
                 LocalNotesRepository repo = new LocalNotesRepository(new KolabNotesParserV3(), "tmp");
 
 
-                Notebook notebook = repo.importNotebook(new File(params[2]));
+                Notebook notebook = repo.importNotebook(params[2],new KolabNotesParserV3(), pathToZip);
 
                 Notebook bySummary = notebookRepository.getBySummary(params[0], params[1], notebook.getSummary());
                 if(bySummary == null){
