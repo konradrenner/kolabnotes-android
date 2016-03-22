@@ -20,6 +20,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.ParcelFileDescriptor;
 import android.provider.OpenableColumns;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -86,6 +87,9 @@ import org.kore.kolabnotes.android.security.AuthenticatorActivity;
 import org.kore.kolabnotes.android.setting.SettingsActivity;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -1131,26 +1135,41 @@ public class OverviewFragment extends Fragment implements /*NoteAdapter.NoteSele
                 new ImportNotebook(getActivity()).execute(activeAccount.getAccount(),activeAccount.getRootFolder(),path);
             }
         }else if(requestCode == Utils.WRITE_REQUEST_CODE && resultCode == Activity.RESULT_OK){
-            Uri uri = resultData.getData();
-            String path = uri.getPath();
+            try {
+                Uri uri = resultData.getData();
+                String path = uri.getPath();
 
-            ActiveAccount activeAccount = activeAccountRepository.getActiveAccount();
+                ActiveAccount activeAccount = activeAccountRepository.getActiveAccount();
 
-            Cursor cursor = getActivity().getContentResolver().query(uri,null, null, null, null, null);
+                Cursor cursor = getActivity().getContentResolver().query(uri, null, null, null, null, null);
 
-            String notebookName;
+                String notebookName;
 
-            if(cursor != null && cursor.moveToFirst()){
-                notebookName = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
+                if (cursor != null && cursor.moveToFirst()) {
+                    notebookName = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
 
-                notebookName = withouFileEnding(notebookName);
-            }else {
+                    notebookName = withouFileEnding(notebookName);
+                } else {
 
-                notebookName = withouFileEnding(path.substring(path.lastIndexOf("/") + 1));
+                    notebookName = withouFileEnding(path.substring(path.lastIndexOf("/") + 1));
+                }
+
+                ParcelFileDescriptor pfd = getActivity().getContentResolver().openFileDescriptor(uri, "w");
+                FileOutputStream fileOutputStream = new FileOutputStream(pfd.getFileDescriptor());
+
+                new ExportNotebook(getActivity(), uri, fileOutputStream).execute(activeAccount.getAccount(), activeAccount.getRootFolder(), notebookName);
+            }catch (FileNotFoundException e){
+                Log.e("result", e.getMessage(), e);
+                NotificationManager notificationManager = (NotificationManager) getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
+
+                final Notification notification = new NotificationCompat.Builder(getActivity())
+                        .setSmallIcon(R.drawable.ic_kjots)
+                        .setContentTitle(getActivity().getResources().getString(R.string.export_canceled))
+                        .setStyle(new NotificationCompat.BigTextStyle().bigText(e.getMessage()))
+                        .setAutoCancel(true).build();
+
+                notificationManager.notify(Utils.WRITE_REQUEST_CODE, notification);
             }
-
-
-            new ExportNotebook(getActivity(),new File(path)).execute(activeAccount.getAccount(), activeAccount.getRootFolder(), notebookName);
         }
     }
 
@@ -1177,6 +1196,7 @@ public class OverviewFragment extends Fragment implements /*NoteAdapter.NoteSele
         @Override
         protected String doInBackground(String... params) {
             try {
+                Log.d("import", Arrays.toString(params));
                 LocalNotesRepository repo = new LocalNotesRepository(new KolabNotesParserV3(), "tmp");
 
 
@@ -1198,6 +1218,7 @@ public class OverviewFragment extends Fragment implements /*NoteAdapter.NoteSele
 
                 return notebook.getSummary();
             } catch (Exception e) {
+                Log.e("import", e.getMessage(),e);
                 cancel(false);
                 return params[0] +"/" + params[1] +"/"+ params[2] +"/"+e.getMessage();
             }
@@ -1269,19 +1290,22 @@ public class OverviewFragment extends Fragment implements /*NoteAdapter.NoteSele
     class ExportNotebook extends AsyncTask<String, Void, String>{
 
         private final Context context;
-        private final File pathToZIP;
+        private final OutputStream pathToZIP;
+        private final Uri fileUri;
         private final Random random;
 
-        ExportNotebook(Context context, File pathToZIP){
+        ExportNotebook(Context context, Uri fileUri, OutputStream pathToZIP){
             this.context = context;
             this.pathToZIP = pathToZIP;
             random = new Random();
+            this.fileUri = fileUri;
         }
 
 
         @Override
         protected String doInBackground(String... params) {
             try {
+                Log.d("export", Arrays.toString(params));
                 Notebook notebook = notebookRepository.getBySummary(params[0], params[1], params[2]);
                 List<Note> fromNotebook = notesRepository.getFromNotebook(params[0], params[1], notebook.getIdentification().getUid(), new NoteSorting());
 
@@ -1291,22 +1315,16 @@ public class OverviewFragment extends Fragment implements /*NoteAdapter.NoteSele
 
                 LocalNotesRepository repository = new LocalNotesRepository(new KolabNotesParserV3(), "tmp");
 
-                File kolabNotes = pathToZIP;
 
-                boolean downloadDirectoryExists = kolabNotes.exists();
-                if(!downloadDirectoryExists){
-                    kolabNotes = context.getFilesDir();
-                }
-
-
-                File file = repository.exportNotebook(notebook, kolabNotes);
+                repository.exportNotebook(notebook, new KolabNotesParserV3(), pathToZIP);
 
                 Intent intent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-                intent.setData(Uri.fromFile(file));
+                intent.setData(fileUri);
                 context.sendBroadcast(intent);
 
-                return file.toString();
+                return fileUri.toString();
             } catch (Exception e) {
+                Log.e("export",e.getMessage(),e);
                 cancel(false);
                 return params[0] +"/" + params[1] +"/"+ params[2] +"/"+  e.getMessage();
             }
