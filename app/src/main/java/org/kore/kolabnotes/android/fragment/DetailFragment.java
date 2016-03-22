@@ -287,7 +287,7 @@ public class DetailFragment extends Fragment{
         setNotebook(activeAccount, notebook, startNotebook != null);
         intialNotebookName = getNotebookSpinnerSelectionName();
 
-        if (savedInstanceState != null) {
+        if (savedInstanceState != null && savedInstanceState.getString(EDITOR) != null) {
             /* Restoring saved data into editor */
             String descriptionValue = initImageMap(savedInstanceState.getString(EDITOR));
             setHtml(descriptionValue);
