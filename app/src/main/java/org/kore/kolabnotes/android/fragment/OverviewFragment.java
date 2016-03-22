@@ -12,6 +12,7 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
@@ -19,6 +20,8 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.OpenableColumns;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -1057,6 +1060,10 @@ public class OverviewFragment extends Fragment implements /*NoteAdapter.NoteSele
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
         super.onPrepareOptionsMenu(menu);
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
+            menu.findItem(R.id.export_menu).setVisible(false);
+            menu.findItem(R.id.import_menu).setVisible(false);
+        }
     }
 
     @Override
@@ -1129,16 +1136,33 @@ public class OverviewFragment extends Fragment implements /*NoteAdapter.NoteSele
 
             ActiveAccount activeAccount = activeAccountRepository.getActiveAccount();
 
+            Cursor cursor = getActivity().getContentResolver().query(uri,null, null, null, null, null);
+
             String notebookName;
-            if(path.endsWith(".zip") || path.endsWith(".ZIP")) {
-                notebookName = path.substring(path.lastIndexOf("/") + 1, path.length() - 4);
-            }else{
-                notebookName = path.substring(path.lastIndexOf("/") + 1);
+
+            if(cursor != null && cursor.moveToFirst()){
+                notebookName = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
+
+                notebookName = withouFileEnding(notebookName);
+            }else {
+
+                notebookName = withouFileEnding(path.substring(path.lastIndexOf("/") + 1));
             }
 
 
             new ExportNotebook(getActivity(),new File(path)).execute(activeAccount.getAccount(), activeAccount.getRootFolder(), notebookName);
         }
+    }
+
+    @NonNull
+    private String withouFileEnding(String notebookName) {
+        //if there already existed a file with that name
+        if(notebookName.lastIndexOf('(') > 0){
+            notebookName = notebookName.substring(0, notebookName.lastIndexOf('('));
+        }else if (notebookName.endsWith(".zip") || notebookName.endsWith(".ZIP")) {
+            notebookName = notebookName.substring(0, notebookName.length() - 4);
+        }
+        return notebookName;
     }
 
     class ImportNotebook extends AsyncTask<String, Void, String>{

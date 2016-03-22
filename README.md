@@ -27,6 +27,8 @@ Already implemented features (help is highly desired!):
  * Local notes thanks to a local account
  * Tablet interface
  * Support for Richtext and inline images
+ * Import/Export of notebooks
+ * Printing of notes
 
 Translations (help is highly desired!):
  * English
