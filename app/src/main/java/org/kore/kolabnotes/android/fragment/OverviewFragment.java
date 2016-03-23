@@ -1286,6 +1286,8 @@ public class OverviewFragment extends Fragment implements /*NoteAdapter.NoteSele
                     .setAutoCancel(true).build();
 
             notificationManager.notify(0, notification);
+
+            reloadData();
         }
     }
 
@@ -1392,6 +1394,7 @@ public class OverviewFragment extends Fragment implements /*NoteAdapter.NoteSele
                     .setAutoCancel(true).build();
 
             notificationManager.notify(random.nextInt(), notification);
+            reloadData();
         }
     }
 

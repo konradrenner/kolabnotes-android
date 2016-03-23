@@ -21,6 +21,7 @@ import android.support.v7.widget.Toolbar;
 import android.text.Html;
 import android.text.Spanned;
 import android.text.TextUtils;
+import android.text.method.LinkMovementMethod;
 import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -189,6 +190,7 @@ public class DetailFragment extends Fragment{
         }else{
             editText = (EditText) activity.findViewById(R.id.detail_description_plain);
             editText.setVisibility(View.VISIBLE);
+            editText.setMovementMethod(LinkMovementMethod.getInstance());
         }
 
         // Handle Back Navigation :D
