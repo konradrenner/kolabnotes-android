@@ -298,6 +298,8 @@
             android:textColorHint="@color/secondary_text_default_material_light"
             android:hint="@string/description_hint"
             android:editable="true"
+            android:autoLink="all"
+            android:linksClickable="true"
             android:bufferType="spannable"
             android:enabled="true" />
 
