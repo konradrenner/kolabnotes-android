@@ -180,4 +180,13 @@
     <string name="pref_richeditor"> Включить RichTextEditor</string>
     <string name="pref_desc_richeditor"> Включает RichTextEditor для отформатированных нот</string>
 
+    <!-- Drawing editor -->
+    <string name="draweditor_title">Рисование</string>
+    <string name="draweditor_menu_undo">Отменить</string>
+    <string name="draweditor_menu_redo">Повторить</string>
+    <string name="draweditor_menu_clear">Очистить холст</string>
+    <string name="draweditor_menu_ok">ОК</string>
+    <string name="draweditor_title_line_weight">Размер кисти</string>
+    <string name="draweditor_saving_toast">Сохранение</string>
+
 </resources>

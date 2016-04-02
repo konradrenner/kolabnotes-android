@@ -69,7 +69,7 @@ public class Line extends Path implements Serializable {
     }
 
     public void touchMove(float x, float y) {
-        float dx = Math.abs(mLastX = x);
+        float dx = Math.abs(mLastX - x);
         float dy = Math.abs(mLastY - y);
 
         if (dx >= TOUCH_TOLERANCE || dy >= TOUCH_TOLERANCE) {
