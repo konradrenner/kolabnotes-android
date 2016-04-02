@@ -27,39 +27,47 @@
                     android:id="@+id/action_undo"
                     android:layout_width="48dp"
                     android:layout_height="48dp"
-                    android:background="@null"
+                    android:background="@drawable/tool_selector"
                     android:contentDescription="@null"
-                    android:src="@drawable/undo"/>
+                    android:src="@drawable/ic_undo_white_24dp"/>
 
                 <ImageButton
                     android:id="@+id/action_redo"
                     android:layout_width="48dp"
                     android:layout_height="48dp"
-                    android:background="@null"
+                    android:background="@drawable/tool_selector"
                     android:contentDescription="@null"
-                    android:src="@drawable/redo"/>
+                    android:src="@drawable/ic_redo_white_24dp"/>
+
+                <ImageButton
+                    android:id="@+id/action_draweditor"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:background="@drawable/tool_selector"
+                    android:contentDescription="@null"
+                    android:src="@drawable/ic_gesture_white_24dp"/>
 
                 <ImageButton
                     android:id="@+id/action_bold"
                     android:layout_width="48dp"
                     android:layout_height="48dp"
-                    android:background="@null"
+                    android:background="@drawable/tool_selector"
                     android:contentDescription="@null"
-                    android:src="@drawable/bold"/>
+                    android:src="@drawable/ic_format_bold_white_24dp"/>
 
                 <ImageButton
                     android:id="@+id/action_italic"
                     android:layout_width="48dp"
                     android:layout_height="48dp"
-                    android:background="@null"
+                    android:background="@drawable/tool_selector"
                     android:contentDescription="@null"
-                    android:src="@drawable/italic"/>
+                    android:src="@drawable/ic_format_italic_white_24dp"/>
 
                 <ImageButton
                     android:id="@+id/action_subscript"
                     android:layout_width="48dp"
                     android:layout_height="48dp"
-                    android:background="@null"
+                    android:background="@drawable/tool_selector"
                     android:contentDescription="@null"
                     android:src="@drawable/subscript"/>
 
@@ -67,7 +75,7 @@
                     android:id="@+id/action_superscript"
                     android:layout_width="48dp"
                     android:layout_height="48dp"
-                    android:background="@null"
+                    android:background="@drawable/tool_selector"
                     android:contentDescription="@null"
                     android:src="@drawable/superscript"/>
 
@@ -75,23 +83,23 @@
                     android:id="@+id/action_strikethrough"
                     android:layout_width="48dp"
                     android:layout_height="48dp"
-                    android:background="@null"
+                    android:background="@drawable/tool_selector"
                     android:contentDescription="@null"
-                    android:src="@drawable/strikethrough"/>
+                    android:src="@drawable/ic_strikethrough_s_white_24dp"/>
 
                 <ImageButton
                     android:id="@+id/action_underline"
                     android:layout_width="48dp"
                     android:layout_height="48dp"
-                    android:background="@null"
+                    android:background="@drawable/tool_selector"
                     android:contentDescription="@null"
-                    android:src="@drawable/underline"/>
+                    android:src="@drawable/ic_format_underlined_white_24dp"/>
 
                 <ImageButton
                     android:id="@+id/action_bullets"
                     android:layout_width="48dp"
                     android:layout_height="48dp"
-                    android:background="@null"
+                    android:background="@drawable/tool_selector"
                     android:contentDescription="@null"
                     android:src="@drawable/ic_format_list_bulleted_white_24dp"/>
 
@@ -107,7 +115,7 @@
                     android:id="@+id/action_heading1"
                     android:layout_width="48dp"
                     android:layout_height="48dp"
-                    android:background="@null"
+                    android:background="@drawable/tool_selector"
                     android:contentDescription="@null"
                     android:src="@drawable/h1"/>
 
@@ -115,7 +123,7 @@
                     android:id="@+id/action_heading2"
                     android:layout_width="48dp"
                     android:layout_height="48dp"
-                    android:background="@null"
+                    android:background="@drawable/tool_selector"
                     android:contentDescription="@null"
                     android:src="@drawable/h2"/>
 
@@ -123,7 +131,7 @@
                     android:id="@+id/action_heading3"
                     android:layout_width="48dp"
                     android:layout_height="48dp"
-                    android:background="@null"
+                    android:background="@drawable/tool_selector"
                     android:contentDescription="@null"
                     android:src="@drawable/h3"/>
 
@@ -131,7 +139,7 @@
                     android:id="@+id/action_heading4"
                     android:layout_width="48dp"
                     android:layout_height="48dp"
-                    android:background="@null"
+                    android:background="@drawable/tool_selector"
                     android:contentDescription="@null"
                     android:src="@drawable/h4"/>
 
@@ -139,7 +147,7 @@
                     android:id="@+id/action_heading5"
                     android:layout_width="48dp"
                     android:layout_height="48dp"
-                    android:background="@null"
+                    android:background="@drawable/tool_selector"
                     android:contentDescription="@null"
                     android:src="@drawable/h5"/>
 
@@ -147,7 +155,7 @@
                     android:id="@+id/action_heading6"
                     android:layout_width="48dp"
                     android:layout_height="48dp"
-                    android:background="@null"
+                    android:background="@drawable/tool_selector"
                     android:contentDescription="@null"
                     android:src="@drawable/h6"/>
 
@@ -155,7 +163,7 @@
                     android:id="@+id/action_txt_color"
                     android:layout_width="48dp"
                     android:layout_height="48dp"
-                    android:background="@null"
+                    android:background="@drawable/tool_selector"
                     android:contentDescription="@null"
                     android:src="@drawable/txt_color"/>
 
@@ -163,7 +171,7 @@
                     android:id="@+id/action_bg_color"
                     android:layout_width="48dp"
                     android:layout_height="48dp"
-                    android:background="@null"
+                    android:background="@drawable/tool_selector"
                     android:contentDescription="@null"
                     android:src="@drawable/bg_color"/>
 
@@ -172,71 +180,71 @@
                     android:id="@+id/action_indent"
                     android:layout_width="48dp"
                     android:layout_height="48dp"
-                    android:background="@null"
+                    android:background="@drawable/tool_selector"
                     android:contentDescription="@null"
-                    android:src="@drawable/indent"/>
+                    android:src="@drawable/ic_format_indent_increase_white_24dp"/>
 
                 <ImageButton
                     android:id="@+id/action_outdent"
                     android:layout_width="48dp"
                     android:layout_height="48dp"
-                    android:background="@null"
+                    android:background="@drawable/tool_selector"
                     android:contentDescription="@null"
-                    android:src="@drawable/outdent"/>
+                    android:src="@drawable/ic_format_indent_decrease_white_24dp"/>
 
                 <ImageButton
                     android:id="@+id/action_align_left"
                     android:layout_width="48dp"
                     android:layout_height="48dp"
-                    android:background="@null"
+                    android:background="@drawable/tool_selector"
                     android:contentDescription="@null"
-                    android:src="@drawable/justify_left"/>
+                    android:src="@drawable/ic_format_align_left_white_24dp"/>
 
                 <ImageButton
                     android:id="@+id/action_align_center"
                     android:layout_width="48dp"
                     android:layout_height="48dp"
-                    android:background="@null"
+                    android:background="@drawable/tool_selector"
                     android:contentDescription="@null"
-                    android:src="@drawable/justify_center"/>
+                    android:src="@drawable/ic_format_align_center_white_24dp"/>
 
                 <ImageButton
                     android:id="@+id/action_align_right"
                     android:layout_width="48dp"
                     android:layout_height="48dp"
-                    android:background="@null"
+                    android:background="@drawable/tool_selector"
                     android:contentDescription="@null"
-                    android:src="@drawable/justify_right"/>
+                    android:src="@drawable/ic_format_align_right_white_24dp"/>
 
                 <ImageButton
                     android:id="@+id/action_blockquote"
                     android:layout_width="48dp"
                     android:layout_height="48dp"
-                    android:background="@null"
+                    android:background="@drawable/tool_selector"
                     android:contentDescription="@null"
-                    android:src="@drawable/blockquote"/>
+                    android:src="@drawable/ic_format_quote_white_24dp"/>
 
                 <ImageButton
                     android:id="@+id/action_insert_image"
                     android:layout_width="48dp"
                     android:layout_height="48dp"
-                    android:background="@null"
+                    android:background="@drawable/tool_selector"
                     android:contentDescription="@null"
-                    android:src="@drawable/insert_image"/>
+                    android:src="@drawable/ic_insert_photo_white_24dp"/>
 
                 <ImageButton
                     android:id="@+id/action_insert_link"
                     android:layout_width="48dp"
                     android:layout_height="48dp"
-                    android:background="@null"
+                    android:background="@drawable/tool_selector"
                     android:contentDescription="@null"
-                    android:src="@drawable/insert_link"/>
+                    android:src="@drawable/ic_insert_link_white_24dp"/>
 
                 <ImageButton
                     android:id="@+id/action_insert_checkbox"
                     android:layout_width="48dp"
                     android:layout_height="48dp"
-                    android:background="@null"
+                    android:background="@drawable/tool_selector"
                     android:contentDescription="@null"
                     android:src="@drawable/ic_check_box_white_24dp"
                     />

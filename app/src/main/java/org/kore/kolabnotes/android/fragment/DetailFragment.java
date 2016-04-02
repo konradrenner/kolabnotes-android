@@ -46,6 +46,7 @@ import org.kore.kolab.notes.Note;
 import org.kore.kolab.notes.Notebook;
 import org.kore.kolab.notes.SharedNotebook;
 import org.kore.kolab.notes.Tag;
+import org.kore.kolabnotes.android.DrawEditorActivity;
 import org.kore.kolabnotes.android.R;
 import org.kore.kolabnotes.android.Utils;
 import org.kore.kolabnotes.android.content.AccountIdentifier;
@@ -58,6 +59,7 @@ import org.kore.kolabnotes.android.content.TagRepository;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.security.SecureRandom;
 import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.util.ArrayList;
@@ -75,7 +77,8 @@ import yuku.ambilwarna.AmbilWarnaDialog;
 /**
  * Fragment for displaying and editing the details of a note
  */
-public class DetailFragment extends Fragment{
+public class DetailFragment extends Fragment {
+    public static final int DRAWEDITOR_ACTIVITY_RESULT_CODE = 1;
 
     private final static String HTMLSTART = "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">" +
             "<html><head><meta name=\"kolabnotes-richtext\" content=\"1\" /><meta http-equiv=\"Content-Type\" /></head><body>";
@@ -628,9 +631,9 @@ public class DetailFragment extends Fragment{
                         TextView text = (TextView) view.findViewById(R.id.dialog_text_input_field);
 
                         CharSequence input = text.getText();
-                        if(input == null || input.toString().trim().length() == 0){
-                            Toast.makeText(activity,R.string.error_field_required,Toast.LENGTH_SHORT).show();
-                        }else {
+                        if (input == null || input.toString().trim().length() == 0) {
+                            Toast.makeText(activity, R.string.error_field_required, Toast.LENGTH_SHORT).show();
+                        } else {
                             editor.insertLink(input.toString(), input.toString());
                         }
                     }
@@ -650,6 +653,14 @@ public class DetailFragment extends Fragment{
             @Override
             public void onClick(View v) {
                 editor.insertTodo();
+            }
+        });
+
+        activity.findViewById(R.id.action_draweditor).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(activity, DrawEditorActivity.class);
+                startActivityForResult(i, DRAWEDITOR_ACTIVITY_RESULT_CODE);
             }
         });
     }
@@ -683,6 +694,9 @@ public class DetailFragment extends Fragment{
                     String imageEncoded = prefix + Base64.encodeToString(b, Base64.NO_WRAP);
 
                     String alt = path;
+
+                    /* Set focus, as after rotate focus is lost and it's impossible to insert an image */
+                    editor.focusEditor();
                     editor.insertImage(imageEncoded, alt);
                     putImage(alt,imageEncoded);
 
@@ -691,6 +705,23 @@ public class DetailFragment extends Fragment{
                     }
                 }catch(IOException e){
                     Log.e("onActivityResult",e.toString());
+                }
+            }
+        } else if (requestCode == DRAWEDITOR_ACTIVITY_RESULT_CODE && resultCode == Activity.RESULT_OK) {
+            if (resultData != null) {
+                if (resultData.hasExtra(DrawEditorActivity.TAG_RETURN_BITMAP) &&
+                        resultData.getByteArrayExtra(DrawEditorActivity.TAG_RETURN_BITMAP) != null) {
+                    byte[] image = resultData.getByteArrayExtra(DrawEditorActivity.TAG_RETURN_BITMAP);
+                    String prefix = "data:image/png;base64,";
+                    String imageEncoded = prefix + Base64.encodeToString(image, Base64.NO_WRAP);
+
+                    String alt = UUID.randomUUID().toString();
+
+                    /* Set focus, as after rotate focus is lost and it's impossible to insert an image */
+                    editor.focusEditor();
+                    editor.insertImage(imageEncoded, alt);
+                    editor.getScaleX();
+                    putImage(alt, imageEncoded);
                 }
             }
         }
@@ -1177,6 +1208,7 @@ public class DetailFragment extends Fragment{
 
             repaired.replace(withoutTag, endOfImage,base64Images.get(altContent));
         }
+
         return repaired.toString();
     }
 

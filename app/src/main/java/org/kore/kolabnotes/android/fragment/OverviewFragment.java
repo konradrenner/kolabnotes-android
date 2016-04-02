@@ -22,7 +22,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.ParcelFileDescriptor;
 import android.provider.OpenableColumns;
-import android.renderscript.ScriptGroup;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -87,7 +86,6 @@ import org.kore.kolabnotes.android.content.TagRepository;
 import org.kore.kolabnotes.android.security.AuthenticatorActivity;
 import org.kore.kolabnotes.android.setting.SettingsActivity;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.InputStream;

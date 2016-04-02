@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/draweditor_fragment"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <org.kore.kolabnotes.android.draweditor.DrawingView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/draweditor"
+        android:background="@color/theme_actionmode" />
+
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/theme_default_primary"
+        android:layout_alignParentBottom="true"
+        android:fillViewport="true">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <org.kore.kolabnotes.android.draweditor.ToolButtonGroup
+                android:id="@+id/draweditor_tools"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:checkedButton="@+id/draweditor_pen">
+
+                <org.kore.kolabnotes.android.draweditor.ToolButton
+                    android:id="@+id/draweditor_pen"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:background="@drawable/tool_selector"
+                    android:src="@drawable/ic_mode_edit_white_24dp" />
+
+                <org.kore.kolabnotes.android.draweditor.ToolButton
+                    android:id="@+id/draweditor_marker_pen"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:background="@drawable/tool_selector"
+                    android:src="@drawable/marker_pen" />
+
+                <org.kore.kolabnotes.android.draweditor.ToolButton
+                    android:id="@+id/draweditor_eraser"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:background="@drawable/tool_selector"
+                    android:src="@drawable/eraser" />
+            </org.kore.kolabnotes.android.draweditor.ToolButtonGroup>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="end">
+
+            <LinearLayout
+                android:id="@+id/draweditor_tools_options"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@color/theme_default_primary">
+
+                <ImageButton
+                    android:id="@+id/draweditor_line_weight"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:background="@drawable/tool_selector"
+                    android:contentDescription="@null"
+                    android:src="@drawable/ic_line_weight_white_24dp" />
+
+                <org.kore.kolabnotes.android.draweditor.ToolButton
+                    android:id="@+id/draweditor_scaling"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:background="@drawable/tool_selector"
+                    android:src="@drawable/ic_zoom_in_white_24dp" />
+
+                <ImageButton
+                    android:id="@+id/draweditor_color"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:padding="12dp"
+                    android:background="@drawable/tool_selector"
+                    android:contentDescription="@null" />
+            </LinearLayout>
+            </LinearLayout>
+        </RelativeLayout>
+    </HorizontalScrollView>
+</RelativeLayout>

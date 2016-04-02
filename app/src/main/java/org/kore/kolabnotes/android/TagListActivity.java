@@ -25,11 +25,6 @@ public class TagListActivity extends AppCompatActivity implements OnFragmentCall
             toolbar.setTitle(R.string.title_activity_tag_list);
         }
 
-//        tagListFragment = new TagListFragment();
-//        FragmentTransaction ft = getFragmentManager(). beginTransaction();
-//        ft.add(R.id.tag_list_fragment, tagListFragment);
-//        ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-//        ft.commit();
         tagListFragment = (TagListFragment)getFragmentManager().findFragmentById(R.id.tag_list_fragment);
     }
 

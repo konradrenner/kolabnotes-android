@@ -196,4 +196,13 @@
     <string name="pref_richeditor">Enable Richtexteditor</string>
     <string name="pref_desc_richeditor">Enables the Richtexteditor for formatted notes</string>
 
+    <!-- Draw editor -->
+    <string name="draweditor_title">Drawing</string>
+    <string name="draweditor_menu_undo">Undo</string>
+    <string name="draweditor_menu_redo">Redo</string>
+    <string name="draweditor_menu_clear">Clear canvas</string>
+    <string name="draweditor_menu_ok">OK</string>
+    <string name="draweditor_title_line_weight">Brush size</string>
+    <string name="draweditor_saving_toast">Saving</string>
+
 </resources>
