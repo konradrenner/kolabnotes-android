@@ -14,6 +14,7 @@
         android:icon="@drawable/ic_action_accept"
         android:title="@string/draweditor_menu_ok" />
     <item android:id="@+id/clear_menu"
+        android:icon="@drawable/ic_restore_page_white_36dp"
         app:showAsAction="ifRoom"
         android:title="@string/draweditor_menu_clear" />
 </menu>

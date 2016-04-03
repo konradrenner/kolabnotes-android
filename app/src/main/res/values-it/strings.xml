@@ -189,4 +189,11 @@
     <string name="pref_richeditor"> Abilita RichTextEditor</string>
     <string name="pref_desc_richeditor"> Attiva la RichTextEditor per le note formattati</string>
     <string name="print">Stampa</string>
+    <string name="draweditor_menu_clear">Cancella tela</string>
+    <string name="draweditor_menu_ok">OK</string>
+    <string name="draweditor_title_line_weight"> Dimensione del pennello</string>
+    <string name="draweditor_title">Disegno</string>
+    <string name="draweditor_saving_toast"> Risparmio</string>
+    <string name="draweditor_menu_undo">Disfare</string>
+    <string name="draweditor_menu_redo"> Rifare</string>
 </resources>
