@@ -89,7 +89,7 @@ public class DetailActivity extends AppCompatActivity implements OnFragmentCallb
 
     @Override
     public void onBackPressed() {
-       detailFragment.onBackPressed();
+        detailFragment.onBackPressed();
     }
 
 }
