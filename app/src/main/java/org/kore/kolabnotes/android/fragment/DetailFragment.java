@@ -59,7 +59,6 @@ import org.kore.kolabnotes.android.content.TagRepository;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.security.SecureRandom;
 import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.util.ArrayList;
@@ -1351,7 +1350,26 @@ public class DetailFragment extends Fragment {
             }else{
                 goBack();
             }
-        }else{
+        } else if (editor.getHtml() != null || !TextUtils.isEmpty(
+                ((EditText) activity.findViewById(R.id.detail_summary)).getText().toString())) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+
+            builder.setTitle(R.string.dialog_cancel_warning);
+            builder.setMessage(R.string.dialog_question_cancel);
+            builder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    goBack();
+                }
+            });
+            builder.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    /* Nothing */
+                }
+            });
+            builder.show();
+        } else {
             goBack();
         }
     }

@@ -347,6 +347,30 @@ public class DrawEditorFragment extends Fragment {
     }
 
     public void onBackPressed() {
+        if (mCanvas.getLinesCount() != 0) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+
+            builder.setTitle(R.string.dialog_cancel_warning);
+            builder.setMessage(R.string.dialog_question_cancel);
+            builder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    goBack();
+                }
+            });
+            builder.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    /* Nothing */
+                }
+            });
+            builder.show();
+        } else {
+            goBack();
+        }
+    }
+
+    public void goBack() {
         ((OnFragmentCallback)activity).fragmentFinished(new Intent(), OnFragmentCallback.ResultCode.BACK);
     }
 }
