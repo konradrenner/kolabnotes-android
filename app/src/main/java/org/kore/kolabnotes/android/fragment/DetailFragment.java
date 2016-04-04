@@ -722,6 +722,10 @@ public class DetailFragment extends Fragment {
                     editor.insertImage(imageEncoded, alt);
                     editor.getScaleX();
                     putImage(alt, imageEncoded);
+                    
+                    if (activity instanceof OnFragmentCallback) {
+                        ((OnFragmentCallback) activity).fileSelected();
+                    }
                 }
             }
         }

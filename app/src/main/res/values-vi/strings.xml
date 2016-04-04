@@ -195,4 +195,11 @@
     <string name="pref_richeditor"> Kích hoạt tính năng RichTextEditor</string>
     <string name="pref_desc_richeditor">Cho phép các RichTextEditor cho các ghi chú được định dạng</string>
     <string name="print">In</string>
+    <string name="draweditor_menu_clear"> rõ ràng vải</string>
+    <string name="draweditor_menu_ok"> được</string>
+    <string name="draweditor_menu_redo">Làm lại</string>
+    <string name="draweditor_menu_undo">Hủy bỏ</string>
+    <string name="draweditor_saving_toast">Tiết kiệm</string>
+    <string name="draweditor_title">Bản vẽ</string>
+    <string name="draweditor_title_line_weight">kích thước brush</string>
 </resources>

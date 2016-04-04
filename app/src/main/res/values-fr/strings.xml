@@ -172,4 +172,11 @@
     <string name="pref_richeditor"> Activer RichTextEditor</string>
     <string name="pref_desc_richeditor"> Active le RichTextEditor pour les notes formatées</string>
     <string name="print">Imprimer</string>
+    <string name="draweditor_menu_clear"> Effacer toile</string>
+    <string name="draweditor_menu_ok">OK</string>
+    <string name="draweditor_menu_redo">Refaire</string>
+    <string name="draweditor_menu_undo">Annuler</string>
+    <string name="draweditor_saving_toast">Économie</string>
+    <string name="draweditor_title"> Dessin</string>
+    <string name="draweditor_title_line_weight">Taille de la brosse</string>
 </resources>
