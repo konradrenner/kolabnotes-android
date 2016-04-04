@@ -19,7 +19,7 @@ Already implemented features (help is highly desired!):
  * Support for shared notebooks for sync with Kolab server (thanks to Daniele Gobbetti for providing a test account!)
  * Apply a colour to a note 
  * Apply a colour to a tag
- * Search for notes
+ * Search for notes (thanks Anh Doung!)
  * "Sticky-Note"-Widget for displaying a single note on the homescreen
  * List-Widget for displaying a configurable list of notes on the homescreen
  * Support for multiple accounts
@@ -28,7 +28,8 @@ Already implemented features (help is highly desired!):
  * Tablet interface
  * Support for Richtext and inline images
  * Import/Export of notebooks
- * Printing of notes
+ * Printing of notes (thanks Yaroslav Pronin!)
+ * Handwritten notes / drawing (thanks Yaroslav Pronin!)
 
 Translations (help is highly desired!):
  * English
