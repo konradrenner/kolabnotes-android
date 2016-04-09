@@ -45,11 +45,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String COLUMN_IDNOTE = "id_note";
     public static final String COLUMN_IDTAG = "id_tag";
 
+    public static final String TABLE_ATTACHMENT = "attachment";
+    public static final String COLUMN_IDATTACHMENT = "id_attachment";
+    public static final String COLUMN_FILENAME = "filetype";
+    public static final String COLUMN_MIMETYPE = "mimetype";
+    public static final String COLUMN_FILESIZE = "filesize";
+
     public static final String TABLE_MODIFICATION = "modifications";
     public static final String COLUMN_MODIFICATIONTYPE = "modificationType";
 
     private static final String DATABASE_NAME = "kolabnotes.db";
-    private static final int DATABASE_VERSION = 5;
+    private static final int DATABASE_VERSION = 6;
 
     // Database creation sql statement
     private static final String CREATE_NOTES = "create table "
@@ -93,6 +99,18 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + COLUMN_IDNOTE + " text not null, "
             + COLUMN_IDTAG + " text not null);";
 
+    private static final String CREATE_ATTACHMENT = "create table "
+            + TABLE_ATTACHMENT +
+            "(" + COLUMN_ID+ " integer primary key autoincrement, "
+            + COLUMN_ACCOUNT + " text not null, "
+            + COLUMN_ROOT_FOLDER + " text not null, "
+            + COLUMN_IDNOTE + " text not null, "
+            + COLUMN_IDATTACHMENT + " text not null, "
+            + COLUMN_CREATIONDATE + " integer, "
+            + COLUMN_FILESIZE + " integer not null, "
+            + COLUMN_FILENAME + " text not null, "
+            + COLUMN_MIMETYPE + " text not null);";
+
     private static final String CREATE_MODIFICATION = "create table "
             + TABLE_MODIFICATION +
             "(" + COLUMN_ID+ " integer primary key autoincrement, "
@@ -126,6 +144,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         database.execSQL(CREATE_TAGS);
         database.execSQL(CREATE_MODIFICATION);
         database.execSQL(CREATE_TAGS_NOTES);
+        database.execSQL(CREATE_ATTACHMENT);
         database.execSQL(CREATE_ACTIVEACCOUNT);
         database.execSQL(INIT_ACTIVEACCOUNT);
     }
@@ -146,6 +165,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         if(oldVersion < 5){
             db.execSQL("ALTER TABLE "+TABLE_NOTES+" ADD COLUMN "+COLUMN_MODIFICATION_ALLOWED+" text ");
             db.execSQL("ALTER TABLE "+TABLE_NOTES+" ADD COLUMN "+COLUMN_CREATION_ALLOWED+" text ");
+        }
+        if(oldVersion < 6){
+            db.execSQL(CREATE_ATTACHMENT);
         }
     }
 

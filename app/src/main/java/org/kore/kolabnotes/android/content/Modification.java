@@ -8,7 +8,7 @@ import java.sql.Timestamp;
 public class Modification {
 
     public enum Descriminator{
-        NOTE, NOTEBOOK, TAG;
+        NOTE, NOTEBOOK, TAG, ATTACHMENT;
     }
 
     private String uid;
