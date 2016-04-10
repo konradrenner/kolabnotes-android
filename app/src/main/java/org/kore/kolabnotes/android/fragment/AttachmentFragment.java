@@ -34,7 +34,6 @@ public class AttachmentFragment extends Fragment {
     public AttachmentFragment() {
     }
 
-    // TODO: Customize parameter initialization
     @SuppressWarnings("unused")
     public static AttachmentFragment newInstance(int columnCount) {
         AttachmentFragment fragment = new AttachmentFragment();
