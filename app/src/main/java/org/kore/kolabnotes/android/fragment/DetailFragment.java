@@ -46,6 +46,7 @@ import org.kore.kolab.notes.Note;
 import org.kore.kolab.notes.Notebook;
 import org.kore.kolab.notes.SharedNotebook;
 import org.kore.kolab.notes.Tag;
+import org.kore.kolabnotes.android.AttachmentActivity;
 import org.kore.kolabnotes.android.DrawEditorActivity;
 import org.kore.kolabnotes.android.R;
 import org.kore.kolabnotes.android.Utils;
@@ -78,6 +79,7 @@ import yuku.ambilwarna.AmbilWarnaDialog;
  */
 public class DetailFragment extends Fragment {
     public static final int DRAWEDITOR_ACTIVITY_RESULT_CODE = 1;
+    public static final int ATTACHMENT_ACTIVITY_RESULT_CODE = 2;
 
     private final static String HTMLSTART = "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">" +
             "<html><head><meta name=\"kolabnotes-richtext\" content=\"1\" /><meta http-equiv=\"Content-Type\" /></head><body>";
@@ -803,6 +805,7 @@ public class DetailFragment extends Fragment {
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
             menu.findItem(R.id.print).setVisible(false);
+            menu.findItem(R.id.attachments).setVisible(false);
         }
     }
 
@@ -835,6 +838,9 @@ public class DetailFragment extends Fragment {
                 break;
             case R.id.print:
                 printNote();
+                break;
+            case R.id.attachments:
+                showAttachments();
                 break;
         }
         return true;
@@ -1411,6 +1417,14 @@ public class DetailFragment extends Fragment {
             String jobName = getString(R.string.app_name) + " Document";
             PrintDocumentAdapter printAdapter = editor.createPrintDocumentAdapter();
             PrintJob printJob = printManager.print(jobName, printAdapter, new PrintAttributes.Builder().build());
+        }
+    }
+
+    private void showAttachments() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            Intent intent = new Intent(activity,AttachmentActivity.class);
+            intent.putExtra(Utils.NOTE_UID, startUid);
+            startActivityForResult(intent, ATTACHMENT_ACTIVITY_RESULT_CODE);
         }
     }
 

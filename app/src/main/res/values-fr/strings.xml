@@ -179,4 +179,8 @@
     <string name="draweditor_saving_toast">Économie</string>
     <string name="draweditor_title"> Dessin</string>
     <string name="draweditor_title_line_weight">Taille de la brosse</string>
+    <string name="attachment_add">Add attachment</string>
+    <string name="attachment_none">No attachments</string>
+    <string name="attachment_title">Note attachments</string>
+    <string name="attachments">Attachments</string>
 </resources>

@@ -158,6 +158,22 @@ public class AttachmentRepository {
         return attachments;
     }
 
+    public boolean hasNoteAttachments(String account, String rootFolder, String noteUid) {
+        Cursor cursor = ConnectionManager.getDatabase(context).query(DatabaseHelper.TABLE_TAGS,
+                allColumns,
+                DatabaseHelper.COLUMN_ACCOUNT + " = '" + account + "' AND " +
+                        DatabaseHelper.COLUMN_ROOT_FOLDER + " = '" + rootFolder + "' " +
+                        DatabaseHelper.COLUMN_IDNOTE + " = '" + noteUid + "' ",
+                null,
+                null,
+                null,
+                null);
+
+        boolean ret = cursor.moveToNext();
+        cursor.close();
+        return ret;
+    }
+
     public List<Attachment> getAllCreatedAfter(String account, String rootFolder, Date date) {
         List<Attachment> attachments = new ArrayList<Attachment>();
 

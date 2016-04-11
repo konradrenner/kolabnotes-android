@@ -72,6 +72,15 @@
             </intent-filter>
         </activity>
         <activity
+            android:label="@string/app_name"
+            android:name=".AttachmentActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.SEND"/>
+
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+        </activity>
+        <activity
             android:label="@string/login_label"
             android:name=".security.AuthenticatorActivity"
             android:windowSoftInputMode="adjustPan|stateHidden">

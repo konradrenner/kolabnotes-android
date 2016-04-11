@@ -204,5 +204,9 @@
     <string name="draweditor_menu_ok">OK</string>
     <string name="draweditor_title_line_weight">Brush size</string>
     <string name="draweditor_saving_toast">Saving</string>
+    <string name="attachment_add">Add attachment</string>
+    <string name="attachment_none">No attachments</string>
+    <string name="attachment_title">Note attachments</string>
+    <string name="attachments">Attachments</string>
 
 </resources>

@@ -188,5 +188,9 @@
     <string name="draweditor_menu_ok">ОК</string>
     <string name="draweditor_title_line_weight">Размер кисти</string>
     <string name="draweditor_saving_toast">Сохранение</string>
+    <string name="attachment_add">Add attachment</string>
+    <string name="attachment_none">No attachments</string>
+    <string name="attachment_title">Note attachments</string>
+    <string name="attachments">Attachments</string>
 
 </resources>
