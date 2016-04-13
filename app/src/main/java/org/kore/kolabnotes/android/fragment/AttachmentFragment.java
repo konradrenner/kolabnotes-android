@@ -110,6 +110,7 @@ public class AttachmentFragment extends Fragment {
             ActiveAccount activeAccount = activeAccountRepository.getActiveAccount();
             adapter = new AttachmentRecyclerViewAdapter(attachmentRepository.getAllForNote(activeAccount.getAccount(), activeAccount.getRootFolder(),noteUID,false), activity, mListener);
             recyclerView.setAdapter(adapter);
+            recyclerView.setHasFixedSize(true);
         }
 
         noAttachmentView = (TextView) topView.findViewById(R.id.empty_view_attachment);
