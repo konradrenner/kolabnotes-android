@@ -1,18 +1,25 @@
 package org.kore.kolabnotes.android.content;
 
+import android.app.Notification;
+import android.app.NotificationManager;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Build;
+import android.support.v7.app.NotificationCompat;
 import android.util.Log;
+import android.widget.Toast;
 
 import org.kore.kolab.notes.Attachment;
 import org.kore.kolab.notes.AuditInformation;
 import org.kore.kolab.notes.Colors;
 import org.kore.kolab.notes.Identification;
 import org.kore.kolab.notes.Tag;
+import org.kore.kolabnotes.android.R;
+import org.kore.kolabnotes.android.Utils;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -54,40 +61,65 @@ public class AttachmentRepository {
 
         if(android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
 
-            long rowId = doInsert(account, rootFolder, noteUID, attachment);
+            SQLiteDatabase database = ConnectionManager.getDatabase(context);
+            boolean ret = false;
+            try {
 
-            boolean ret = rowId >= 0;
-            if (ret) {
-                File filesDir = context.getFilesDir();
-                File folder = new File(filesDir, account + File.separator + rootFolder + File.separator + noteUID);
-
-                if (!folder.exists()) {
-                    folder.mkdir();
-                }
-
-                ContentResolver contentResolver = context.getContentResolver();
+                File folder = context.getDir(noteUID, Context.MODE_PRIVATE);
 
                 File file = new File(folder, attachment.getFileName());
+                boolean newFile = file.createNewFile();
+                if(newFile) {
+                    long rowId = doInsert(database, account, rootFolder, noteUID, attachment);
 
-                try(ByteArrayInputStream inputStream = new ByteArrayInputStream(attachment.getData()); OutputStream outputStream = contentResolver.openOutputStream(Uri.fromFile(file))){
-                    int bytes;
-                    byte[] buffer = new byte[1024];
-                    while ((bytes = inputStream.read(buffer)) != -1) {
-                        outputStream.write(buffer, 0, bytes);
+                    ret = rowId >= 0;
+                    if (ret) {
+
+                        try (ByteArrayInputStream inputStream = new ByteArrayInputStream(attachment.getData()); OutputStream outputStream = new FileOutputStream(file)) {
+                            int bytes;
+                            byte[] buffer = new byte[1024];
+                            while ((bytes = inputStream.read(buffer)) != -1) {
+                                outputStream.write(buffer, 0, bytes);
+                            }
+
+                        } catch (FileNotFoundException e) {
+                            Log.e("attachment", "could not find attachement " + file, e);
+
+                            NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+
+                            final Notification notification = new NotificationCompat.Builder(context)
+                                    .setSmallIcon(R.drawable.ic_kjots)
+                                    .setContentTitle(context.getResources().getString(R.string.attachment_creation_failed))
+                                    .setStyle(new NotificationCompat.BigTextStyle().bigText(e.getMessage()))
+                                    .setAutoCancel(true).build();
+
+                            notificationManager.notify(Utils.WRITE_REQUEST_CODE, notification);
+                        } catch (IOException e) {
+                            Log.e("attachment", "problem writing attachment " + file, e);
+
+                            NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+
+                            final Notification notification = new NotificationCompat.Builder(context)
+                                    .setSmallIcon(R.drawable.ic_kjots)
+                                    .setContentTitle(context.getResources().getString(R.string.attachment_creation_failed))
+                                    .setStyle(new NotificationCompat.BigTextStyle().bigText(e.getMessage()))
+                                    .setAutoCancel(true).build();
+
+                            notificationManager.notify(Utils.WRITE_REQUEST_CODE, notification);
+                        }
+                    }else{
+                        Toast.makeText(context, context.getResources().getString(R.string.attachment_already_exist), Toast.LENGTH_SHORT).show();
                     }
-                }catch (FileNotFoundException e){
-                    Log.e("attachment","could not find attachement "+file+" : "+e);
-                    attachment.setData(new byte[0]);
-                } catch (IOException e) {
-                    Log.e("attachment", "problem loading attachment " + file + " : " + e);
                 }
+            } catch (IOException e) {
+                Log.e("attachment", "problem creating file", e);
             }
             return ret;
         }
         return false;
     }
 
-    private long doInsert(String account, String rootFolder, String noteUID, Attachment attachment){
+    private long doInsert(SQLiteDatabase db, String account, String rootFolder, String noteUID, Attachment attachment){
         ContentValues values = new ContentValues();
         values.put(DatabaseHelper.COLUMN_ACCOUNT,account);
         values.put(DatabaseHelper.COLUMN_ROOT_FOLDER,rootFolder);
@@ -98,7 +130,7 @@ public class AttachmentRepository {
         values.put(DatabaseHelper.COLUMN_MIMETYPE, attachment.getMimeType());
         values.put(DatabaseHelper.COLUMN_CREATIONDATE, System.currentTimeMillis());
 
-        return ConnectionManager.getDatabase(context).insert(DatabaseHelper.TABLE_ATTACHMENT, null, values);
+        return db.insert(DatabaseHelper.TABLE_ATTACHMENT, null, values);
     }
 
     public void delete(String account, String rootFolder, String noteUID, Attachment attachment) {
@@ -110,8 +142,8 @@ public class AttachmentRepository {
                 null);
 
 
-        File filesDir = context.getFilesDir();
-        File file = new File(filesDir,account+File.separator+rootFolder+File.separator+noteUID+File.separator+attachment.getFileName());
+        File filesDir = context.getDir(noteUID, Context.MODE_PRIVATE);
+        File file = new File(filesDir,attachment.getFileName());
         if(file.exists()){
             file.delete();
         }
@@ -125,8 +157,7 @@ public class AttachmentRepository {
                 null);
 
 
-        File filesDir = context.getFilesDir();
-        File folder = new File(filesDir,account+File.separator+rootFolder+File.separator+noteUID);
+        File folder = context.getDir(noteUID, Context.MODE_PRIVATE);
         deleteAttachmentsFromFolder(folder);
     }
 
@@ -206,18 +237,6 @@ public class AttachmentRepository {
         return attachments;
     }
 
-    void cleanAccount(String account, String rootFolder){
-        ConnectionManager.getDatabase(context).delete(DatabaseHelper.TABLE_ATTACHMENT,
-                DatabaseHelper.COLUMN_ACCOUNT + " = '" + account + "' AND " +
-                        DatabaseHelper.COLUMN_ROOT_FOLDER + " = '" + rootFolder + "' ",
-                null);
-
-        File filesDir = context.getFilesDir();
-        File directory = new File(filesDir,account+File.separator+rootFolder);
-
-        deleteAttachmentsFromFolder(directory);
-    }
-
     private void deleteAttachmentsFromFolder(File directory) {
         if(directory.exists()){
             String[] children = directory.list();
@@ -242,8 +261,8 @@ public class AttachmentRepository {
         Attachment attachment = new Attachment(id,filename,mimetype);
 
         if(withFile && android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT){
-            File filesDir = context.getFilesDir();
-            File file = new File(filesDir,account+File.separator+rootFolder+File.separator+noteUID+File.separator+filename);
+            File filesDir = context.getDir(noteUID, Context.MODE_PRIVATE);
+            File file = new File(filesDir,filename);
             try(FileInputStream inputStream = new FileInputStream(file); ByteArrayOutputStream outputStream = new ByteArrayOutputStream()){
                 int bytes;
                 byte[] buffer = new byte[1024];
@@ -253,10 +272,10 @@ public class AttachmentRepository {
 
                 attachment.setData(outputStream.toByteArray());
             }catch (FileNotFoundException e){
-                Log.e("attachment","could not find attachement "+file+" : "+e);
+                Log.e("attachment","could not find attachement "+file, e);
                 attachment.setData(new byte[0]);
             } catch (IOException e) {
-                Log.e("attachment", "problem loading attachment " + file + " : " + e);
+                Log.e("attachment", "problem loading attachment " + file, e);
                 attachment.setData(new byte[0]);
             }
         }else{
