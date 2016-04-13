@@ -1,8 +1,10 @@
 package org.kore.kolabnotes.android.content;
 
+import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Build;
 import android.util.Log;
 
@@ -19,6 +21,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
@@ -61,9 +65,11 @@ public class AttachmentRepository {
                     folder.mkdir();
                 }
 
+                ContentResolver contentResolver = context.getContentResolver();
+
                 File file = new File(folder, attachment.getFileName());
 
-                try(ByteArrayInputStream inputStream = new ByteArrayInputStream(attachment.getData()); FileOutputStream outputStream = new FileOutputStream(file)){
+                try(ByteArrayInputStream inputStream = new ByteArrayInputStream(attachment.getData()); OutputStream outputStream = contentResolver.openOutputStream(Uri.fromFile(file))){
                     int bytes;
                     byte[] buffer = new byte[1024];
                     while ((bytes = inputStream.read(buffer)) != -1) {
@@ -96,7 +102,7 @@ public class AttachmentRepository {
     }
 
     public void delete(String account, String rootFolder, String noteUID, Attachment attachment) {
-        ConnectionManager.getDatabase(context).delete(DatabaseHelper.TABLE_TAGS,
+        ConnectionManager.getDatabase(context).delete(DatabaseHelper.TABLE_ATTACHMENT,
                 DatabaseHelper.COLUMN_ACCOUNT + " = '" + account + "' AND " +
                         DatabaseHelper.COLUMN_ROOT_FOLDER + " = '" + rootFolder + "' AND " +
                         DatabaseHelper.COLUMN_IDNOTE + " = '" + noteUID + "' AND " +
@@ -109,18 +115,24 @@ public class AttachmentRepository {
         if(file.exists()){
             file.delete();
         }
+    }
 
-        ModificationRepository modificationRepository = new ModificationRepository(context);
-        Modification modification = modificationRepository.getUnique(account, rootFolder, attachment.getId());
+    public void deleteForNote(String account, String rootFolder, String noteUID) {
+        ConnectionManager.getDatabase(context).delete(DatabaseHelper.TABLE_ATTACHMENT,
+                DatabaseHelper.COLUMN_ACCOUNT + " = '" + account + "' AND " +
+                        DatabaseHelper.COLUMN_ROOT_FOLDER + " = '" + rootFolder + "' AND " +
+                        DatabaseHelper.COLUMN_IDNOTE + " = '" + noteUID + "' ",
+                null);
 
-        if(modification == null){
-            modificationRepository.insert(account,rootFolder,attachment.getId(), ModificationRepository.ModificationType.DEL,attachment.getFileName(), Modification.Descriminator.ATTACHMENT);
-        }
+
+        File filesDir = context.getFilesDir();
+        File folder = new File(filesDir,account+File.separator+rootFolder+File.separator+noteUID);
+        deleteAttachmentsFromFolder(folder);
     }
 
 
     public Attachment getAttachmentWithAttachmentID(String account, String rootFolder, String attachmentid){
-        Cursor cursor = ConnectionManager.getDatabase(context).query(DatabaseHelper.TABLE_TAGS,
+        Cursor cursor = ConnectionManager.getDatabase(context).query(DatabaseHelper.TABLE_ATTACHMENT,
                 allColumns,
                 DatabaseHelper.COLUMN_ACCOUNT + " = '" + account + "' AND " +
                         DatabaseHelper.COLUMN_ROOT_FOLDER + " = '" + rootFolder + "' AND " +
@@ -141,10 +153,10 @@ public class AttachmentRepository {
     public List<Attachment> getAllForNote(String account, String rootFolder, String noteUid, boolean withFile) {
         List<Attachment> attachments = new ArrayList<Attachment>();
 
-        Cursor cursor = ConnectionManager.getDatabase(context).query(DatabaseHelper.TABLE_TAGS,
+        Cursor cursor = ConnectionManager.getDatabase(context).query(DatabaseHelper.TABLE_ATTACHMENT,
                 allColumns,
                 DatabaseHelper.COLUMN_ACCOUNT + " = '" + account + "' AND " +
-                        DatabaseHelper.COLUMN_ROOT_FOLDER + " = '" + rootFolder + "' " +
+                        DatabaseHelper.COLUMN_ROOT_FOLDER + " = '" + rootFolder + "' AND " +
                         DatabaseHelper.COLUMN_IDNOTE + " = '" + noteUid + "' ",
                 null,
                 null,
@@ -159,10 +171,10 @@ public class AttachmentRepository {
     }
 
     public boolean hasNoteAttachments(String account, String rootFolder, String noteUid) {
-        Cursor cursor = ConnectionManager.getDatabase(context).query(DatabaseHelper.TABLE_TAGS,
+        Cursor cursor = ConnectionManager.getDatabase(context).query(DatabaseHelper.TABLE_ATTACHMENT,
                 allColumns,
                 DatabaseHelper.COLUMN_ACCOUNT + " = '" + account + "' AND " +
-                        DatabaseHelper.COLUMN_ROOT_FOLDER + " = '" + rootFolder + "' " +
+                        DatabaseHelper.COLUMN_ROOT_FOLDER + " = '" + rootFolder + "' AND " +
                         DatabaseHelper.COLUMN_IDNOTE + " = '" + noteUid + "' ",
                 null,
                 null,
@@ -177,7 +189,7 @@ public class AttachmentRepository {
     public List<Attachment> getAllCreatedAfter(String account, String rootFolder, Date date) {
         List<Attachment> attachments = new ArrayList<Attachment>();
 
-        Cursor cursor = ConnectionManager.getDatabase(context).query(DatabaseHelper.TABLE_TAGS,
+        Cursor cursor = ConnectionManager.getDatabase(context).query(DatabaseHelper.TABLE_ATTACHMENT,
                 allColumns,
                 DatabaseHelper.COLUMN_ACCOUNT + " = '" + account + "' AND " +
                         DatabaseHelper.COLUMN_ROOT_FOLDER + " = '" + rootFolder + "' AND " +
@@ -203,12 +215,18 @@ public class AttachmentRepository {
         File filesDir = context.getFilesDir();
         File directory = new File(filesDir,account+File.separator+rootFolder);
 
+        deleteAttachmentsFromFolder(directory);
+    }
+
+    private void deleteAttachmentsFromFolder(File directory) {
         if(directory.exists()){
             String[] children = directory.list();
             for (int i = 0; i < children.length; i++)
             {
                 new File(directory, children[i]).delete();
             }
+
+            directory.delete();
         }
     }
 
@@ -239,6 +257,7 @@ public class AttachmentRepository {
                 attachment.setData(new byte[0]);
             } catch (IOException e) {
                 Log.e("attachment", "problem loading attachment " + file + " : " + e);
+                attachment.setData(new byte[0]);
             }
         }else{
             attachment.setData(new byte[filesize]);

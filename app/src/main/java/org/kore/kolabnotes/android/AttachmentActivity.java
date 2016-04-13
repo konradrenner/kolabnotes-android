@@ -31,7 +31,7 @@ public class AttachmentActivity extends AppCompatActivity implements AttachmentF
             toolbar.setTitle(R.string.attachment_title);
         }
 
-        attachmentFragment = (AttachmentFragment) getSupportFragmentManager().findFragmentById(R.id.attachment_fragment);
+        attachmentFragment = (AttachmentFragment) getFragmentManager().findFragmentById(R.id.attachment_fragment);
         attachmentFragment.setNoteUID(uid);
     }
 

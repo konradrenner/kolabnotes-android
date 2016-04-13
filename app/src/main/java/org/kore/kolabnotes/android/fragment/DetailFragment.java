@@ -53,6 +53,7 @@ import org.kore.kolabnotes.android.Utils;
 import org.kore.kolabnotes.android.content.AccountIdentifier;
 import org.kore.kolabnotes.android.content.ActiveAccount;
 import org.kore.kolabnotes.android.content.ActiveAccountRepository;
+import org.kore.kolabnotes.android.content.AttachmentRepository;
 import org.kore.kolabnotes.android.content.NoteRepository;
 import org.kore.kolabnotes.android.content.NoteTagRepository;
 import org.kore.kolabnotes.android.content.NotebookRepository;
@@ -123,6 +124,8 @@ public class DetailFragment extends Fragment {
     private AppCompatActivity activity;
 
     private boolean isDescriptionDirty = false;
+
+    private String uuidForCreation;
 
     //This map contains inline images in its base form, sadly the android webview destroys the correct form
     private Map<String,String> base64Images = new HashMap<>();
@@ -302,6 +305,13 @@ public class DetailFragment extends Fragment {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
             activity.findViewById(R.id.action_insert_image).setVisibility(View.GONE);
         }
+    }
+
+    private String getUUIDForCreation(){
+        if(uuidForCreation == null){
+            uuidForCreation = UUID.randomUUID().toString();
+        }
+        return  uuidForCreation;
     }
 
     void setToolbarColor(){
@@ -1094,6 +1104,7 @@ public class DetailFragment extends Fragment {
         }
     }
 
+
     void saveNote(){
         EditText summary = (EditText) activity.findViewById(R.id.detail_summary);
 
@@ -1121,7 +1132,7 @@ public class DetailFragment extends Fragment {
             }
 
             if (note == null) {
-                final String uuid = UUID.randomUUID().toString();
+                final String uuid = getUUIDForCreation();
                 Identification ident = new Identification(uuid, "kolabnotes-android");
                 Timestamp now = new Timestamp(System.currentTimeMillis());
                 AuditInformation audit = new AuditInformation(now, now);
@@ -1269,7 +1280,10 @@ public class DetailFragment extends Fragment {
             builder.setPositiveButton(R.string.yes,new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    DetailFragment.this.noteRepository.delete(  activeAccountRepository.getActiveAccount().getAccount(), activeAccountRepository.getActiveAccount().getRootFolder(),note);
+                    ActiveAccount activeAccount = activeAccountRepository.getActiveAccount();
+                    DetailFragment.this.noteRepository.delete( activeAccount.getAccount(), activeAccount.getRootFolder(),note);
+
+                    new AttachmentRepository(activity).deleteForNote(activeAccount.getAccount(), activeAccount.getRootFolder(), note.getIdentification().getUid());
 
                     Utils.updateWidgetsForChange(activity.getApplication());
 
@@ -1365,6 +1379,10 @@ public class DetailFragment extends Fragment {
             builder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
+                    if(isNewNote){
+                        final ActiveAccount activeAccount = activeAccountRepository.getActiveAccount();
+                        new AttachmentRepository(activity).deleteForNote(activeAccount.getAccount(), activeAccount.getRootFolder(), getUUIDForCreation());
+                    }
                     goBack();
                 }
             });
@@ -1423,7 +1441,11 @@ public class DetailFragment extends Fragment {
     private void showAttachments() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             Intent intent = new Intent(activity,AttachmentActivity.class);
-            intent.putExtra(Utils.NOTE_UID, startUid);
+            if(isNewNote){
+                intent.putExtra(Utils.NOTE_UID, getUUIDForCreation());
+            }else {
+                intent.putExtra(Utils.NOTE_UID, note.getIdentification().getUid());
+            }
             startActivityForResult(intent, ATTACHMENT_ACTIVITY_RESULT_CODE);
         }
     }
