@@ -57,7 +57,11 @@ public class AttachmentActivity extends AppCompatActivity implements AttachmentF
     }
 
     @Override
-    public void onListFragmentInteraction(Attachment item) {
-        //nothing at the moment
+    public void onListFragmentInteraction(AttachmentFragment.OnListFragmentInteractionListener.Operation operation, Attachment item) {
+        if(Operation.DELETE == operation){
+            attachmentFragment.deleteAttachment(item);
+        }else if(Operation.SELECT == operation){
+            attachmentFragment.shareFile(item);
+        }
     }
 }

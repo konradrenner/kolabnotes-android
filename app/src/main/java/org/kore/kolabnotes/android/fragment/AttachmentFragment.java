@@ -150,6 +150,11 @@ public class AttachmentFragment extends Fragment {
         attachmentRepository = new AttachmentRepository(context);
     }
 
+    public void deleteAttachment(Attachment attachment){
+        ActiveAccount activeAccount = this.activeAccountRepository.getActiveAccount();
+        this.attachmentRepository.delete(activeAccount.getAccount(),activeAccount.getRootFolder(),this.noteUID,attachment);
+    }
+
     @Override
     public void onDetach() {
         super.onDetach();
@@ -234,6 +239,15 @@ public class AttachmentFragment extends Fragment {
         }
     }
 
+    public void shareFile(Attachment attachment){
+        ActiveAccount activeAccount = this.activeAccountRepository.getActiveAccount();
+        Intent shareIntent = new Intent();
+        shareIntent.setAction(Intent.ACTION_SEND);
+        shareIntent.putExtra(Intent.EXTRA_STREAM, this.attachmentRepository.getUriFromAttachment(activeAccount.getAccount(),activeAccount.getRootFolder(), this.noteUID, attachment));
+        shareIntent.setType(attachment.getMimeType());
+        startActivity(Intent.createChooser(shareIntent, getResources().getText(R.string.send_to)));
+    }
+
     /**
      * This interface must be implemented by activities that contain this
      * fragment to allow an interaction in this fragment to be communicated
@@ -245,7 +259,8 @@ public class AttachmentFragment extends Fragment {
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnListFragmentInteractionListener {
-        void onListFragmentInteraction(Attachment item);
+        enum Operation{NEW, DELETE, PREVIEW, SELECT}
+        void onListFragmentInteraction(Operation op, Attachment item);
         void fragmentFinished(Intent resultIntent, OnFragmentCallback.ResultCode code);
     }
 }

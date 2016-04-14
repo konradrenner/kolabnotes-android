@@ -9,6 +9,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Build;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.NotificationCompat;
 import android.util.Log;
 import android.widget.Toast;
@@ -24,6 +25,7 @@ import org.kore.kolabnotes.android.Utils;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileDescriptor;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -159,6 +161,17 @@ public class AttachmentRepository {
 
         File folder = context.getDir(noteUID, Context.MODE_PRIVATE);
         deleteAttachmentsFromFolder(folder);
+    }
+
+    public Uri getUriFromAttachment(String account, String rootFolder, String noteUID, Attachment attachment){
+        File filesDir = context.getDir(noteUID, Context.MODE_PRIVATE);
+        File file = new File(filesDir,attachment.getFileName());
+
+        return FileProvider.getUriForFile(
+                context,
+                "kore.kolabnotes.fileprovider",
+                file);
+
     }
 
 

@@ -1,76 +1,67 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:paddingTop="10dp"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="wrap_content">
 
-    <GridLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/attachment_grid"
-        android:layout_width="wrap_content"
+    <TextView
+        android:id="@+id/filename"
+        android:textSize="16dip"
+        android:textColor="@color/primary_text"
         android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_gravity="left" />
 
-        android:useDefaultMargins="true"
-        android:alignmentMode="alignBounds"
-        android:columnOrderPreserved="false"
-
-        android:columnCount="2"
-        >
+    <LinearLayout
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_below="@+id/filename"
+        android:id="@+id/metainformation_attachment"
+        android:layout_gravity="left"
+        android:orientation="horizontal">
 
         <TextView
-            android:id="@+id/filename"
-            android:textSize="16dip"
+            android:id="@+id/attachment_mimetype"
+            android:textSize="12dip"
+            android:text="MIME-Type: "
             android:textColor="@color/primary_text"
-            android:layout_columnSpan="2"
-            android:layout_gravity="left" />
-
-        <LinearLayout
-            android:layout_height="match_parent"
-            android:layout_width="wrap_content"
             android:layout_gravity="left"
-            android:orientation="horizontal">
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"/>
 
-            <TextView
-                android:id="@+id/attachment_mimetype"
-                android:textSize="12dip"
-                android:text="MIME-Type: "
-                android:textColor="@color/primary_text"
-                android:layout_gravity="left"
-                android:layout_height="wrap_content"
-                android:layout_width="wrap_content"/>
+        <TextView
+            android:id="@+id/mimetype"
+            android:textSize="12dip"
+            android:textColor="@color/primary_text"
+            android:layout_gravity="left"
+            android:paddingRight="8dp"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"/>
 
-            <TextView
-                android:id="@+id/mimetype"
-                android:textSize="12dip"
-                android:textColor="@color/primary_text"
-                android:layout_gravity="left"
-                android:paddingRight="8dp"
-                android:layout_height="wrap_content"
-                android:layout_width="wrap_content"/>
+        <TextView
+            android:id="@+id/attachment_size"
+            android:textSize="12dip"
+            android:text="Bytes: "
+            android:textColor="@color/primary_text"
+            android:layout_gravity="left"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"/>
 
-            <TextView
-                android:id="@+id/attachment_size"
-                android:textSize="12dip"
-                android:text="Bytes: "
-                android:textColor="@color/primary_text"
-                android:layout_gravity="left"
-                android:layout_height="wrap_content"
-                android:layout_width="wrap_content"/>
+        <TextView
+            android:id="@+id/filesize"
+            android:textSize="12dip"
+            android:textColor="@color/primary_text"
+            android:layout_gravity="left"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"/>
 
-            <TextView
-                android:id="@+id/filesize"
-                android:textSize="12dip"
-                android:textColor="@color/primary_text"
-                android:layout_gravity="left"
-                android:layout_height="wrap_content"
-                android:layout_width="wrap_content"/>
-
-        </LinearLayout>
-    </GridLayout>
+    </LinearLayout>
 
     <ImageButton
         android:layout_width="wrap_content"
         android:id="@+id/previewButton"
-        android:src="@drawable/ic_visibility_white_36dp"
+        android:src="@drawable/ic_visibility_black_36dp"
+        android:background="@android:color/transparent"
         android:visibility="invisible"
         android:layout_toLeftOf="@+id/deleteButton"
         android:layout_height="wrap_content" />
@@ -78,7 +69,8 @@
     <ImageButton
         android:layout_width="wrap_content"
         android:id="@+id/deleteButton"
-        android:src="@drawable/ic_action_discard"
+        android:src="@drawable/ic_delete_black_36dp"
+        android:background="@android:color/transparent"
         android:layout_alignParentRight="true"
         android:layout_height="wrap_content" />
 </RelativeLayout>

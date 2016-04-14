@@ -54,10 +54,16 @@ public class AttachmentRecyclerViewAdapter extends RecyclerView.Adapter<Attachme
             @Override
             public void onClick(View v) {
                 if (null != mListener) {
-                    // Notify the active callbacks interface (the activity, if the
-                    // fragment is attached to one) that an item has been selected.
-                    mListener.onListFragmentInteraction(holder.mItem);
+                    mListener.onListFragmentInteraction(AttachmentFragment.OnListFragmentInteractionListener.Operation.SELECT, holder.mItem);
                 }
+            }
+        });
+
+        holder.mDeleteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mListener.onListFragmentInteraction(AttachmentFragment.OnListFragmentInteractionListener.Operation.DELETE, holder.mItem);
+                deleteAttachment(holder.mItem);
             }
         });
 
