@@ -202,11 +202,11 @@
     <string name="draweditor_saving_toast">Tiết kiệm</string>
     <string name="draweditor_title">Bản vẽ</string>
     <string name="draweditor_title_line_weight">kích thước brush</string>
-    <string name="attachment_add">Add attachment</string>
-    <string name="attachment_none">No attachments</string>
-    <string name="attachment_title">Note attachments</string>
-    <string name="attachments">Attachments</string>
-    <string name="attachment_creation_failed">Attachment creation failed</string>
-    <string name="attachment_already_exist">Attachment with given filename already exists</string>
-    <string name="attachment_send_to">Share attachement with...</string>
+    <string name="attachment_add">Thêm bản đính kèm</string>
+    <string name="attachment_none"> không có file đính kèm</string>
+    <string name="attachment_title"> File đính kèm</string>
+    <string name="attachments"> File đính kèm</string>
+    <string name="attachment_creation_failed">tạo tập tin đính kèm không</string>
+    <string name="attachment_already_exist">File đính kèm với tên tập tin được đặt đã tồn tại</string>
+    <string name="attachment_send_to"> Chia sẻ với attachement ...</string>
 </resources>

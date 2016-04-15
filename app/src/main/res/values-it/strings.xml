@@ -196,11 +196,11 @@
     <string name="draweditor_saving_toast"> Risparmio</string>
     <string name="draweditor_menu_undo">Disfare</string>
     <string name="draweditor_menu_redo"> Rifare</string>
-    <string name="attachment_add">Add attachment</string>
-    <string name="attachment_none">No attachments</string>
-    <string name="attachment_title">Note attachments</string>
-    <string name="attachments">Attachments</string>
-    <string name="attachment_creation_failed">Attachment creation failed</string>
-    <string name="attachment_already_exist">Attachment with given filename already exists</string>
-    <string name="attachment_send_to">Share attachement with...</string>
+    <string name="attachment_add"> Aggiungi allegato</string>
+    <string name="attachment_none">Nessun allegato</string>
+    <string name="attachment_title">Allegati</string>
+    <string name="attachments">Allegati</string>
+    <string name="attachment_creation_failed"> Creazione allegato non riuscito</string>
+    <string name="attachment_already_exist">Fissaggio con data filename esiste già</string>
+    <string name="attachment_send_to">Condividi attachement con ...</string>
 </resources>

@@ -179,11 +179,11 @@
     <string name="draweditor_saving_toast">Économie</string>
     <string name="draweditor_title"> Dessin</string>
     <string name="draweditor_title_line_weight">Taille de la brosse</string>
-    <string name="attachment_add">Add attachment</string>
-    <string name="attachment_none">No attachments</string>
-    <string name="attachment_title">Note attachments</string>
-    <string name="attachments">Attachments</string>
-    <string name="attachment_creation_failed">Attachment creation failed</string>
-    <string name="attachment_already_exist">Attachment with given filename already exists</string>
-    <string name="attachment_send_to">Share attachement with...</string>
+    <string name="attachment_add"> Ajouter une pièce jointe</string>
+    <string name="attachment_none">Pas de pièces jointes</string>
+    <string name="attachment_title"> Pièces jointes</string>
+    <string name="attachments"> Pièces jointes</string>
+    <string name="attachment_creation_failed">La création de la pièce jointe a échoué</string>
+    <string name="attachment_already_exist">Pièce jointe avec le nom de fichier existe déjà</string>
+    <string name="attachment_send_to"> Annexe share avec ...</string>
 </resources>

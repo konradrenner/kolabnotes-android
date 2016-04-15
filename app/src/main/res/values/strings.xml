@@ -206,7 +206,7 @@
     <string name="draweditor_saving_toast">Saving</string>
     <string name="attachment_add">Add attachment</string>
     <string name="attachment_none">No attachments</string>
-    <string name="attachment_title">Note attachments</string>
+    <string name="attachment_title">Attachments</string>
     <string name="attachments">Attachments</string>
     <string name="attachment_creation_failed">Attachment creation failed</string>
     <string name="attachment_already_exist">Attachment with given filename already exists</string>

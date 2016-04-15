@@ -188,12 +188,12 @@
     <string name="draweditor_menu_ok">ОК</string>
     <string name="draweditor_title_line_weight">Размер кисти</string>
     <string name="draweditor_saving_toast">Сохранение</string>
-    <string name="attachment_add">Add attachment</string>
-    <string name="attachment_none">No attachments</string>
-    <string name="attachment_title">Note attachments</string>
-    <string name="attachments">Attachments</string>
-    <string name="attachment_creation_failed">Attachment creation failed</string>
-    <string name="attachment_already_exist">Attachment with given filename already exists</string>
-    <string name="attachment_send_to">Share attachement with...</string>
+    <string name="attachment_add"> Добавить приложение</string>
+    <string name="attachment_none"> Нет вложений</string>
+    <string name="attachment_title">Вложения</string>
+    <string name="attachments">Вложения</string>
+    <string name="attachment_creation_failed"> создание Не удалось загрузить приложение</string>
+    <string name="attachment_already_exist"> Приложение с указанным именем уже существует</string>
+    <string name="attachment_send_to">Доля прикрепленного с ...</string>
 
 </resources>

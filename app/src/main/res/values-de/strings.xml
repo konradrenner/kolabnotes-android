@@ -193,11 +193,11 @@
     <string name="draweditor_saving_toast">Speichern</string>
     <string name="draweditor_title">Zeichnen</string>
     <string name="draweditor_title_line_weight">Größe der Stiftspitze</string>
-    <string name="attachment_add">Add attachment</string>
-    <string name="attachment_none">No attachments</string>
-    <string name="attachment_title">Note attachments</string>
-    <string name="attachments">Attachments</string>
-    <string name="attachment_creation_failed">Attachment creation failed</string>
-    <string name="attachment_already_exist">Attachment with given filename already exists</string>
-    <string name="attachment_send_to">Share attachement with...</string>
+    <string name="attachment_add">Anhang hinzufügen</string>
+    <string name="attachment_none">Keine Anhänge</string>
+    <string name="attachment_title">Anhänge</string>
+    <string name="attachments">Anhänge</string>
+    <string name="attachment_creation_failed">Anhang konnte nicht erstellt werden</string>
+    <string name="attachment_already_exist">Anhang mit diesem Dateinamen existiert bereits</string>
+    <string name="attachment_send_to">Anhang teilen mit...</string>
 </resources>
