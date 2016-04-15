@@ -62,8 +62,8 @@ public class AttachmentRecyclerViewAdapter extends RecyclerView.Adapter<Attachme
         holder.mDeleteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mListener.onListFragmentInteraction(AttachmentFragment.OnListFragmentInteractionListener.Operation.DELETE, holder.mItem);
                 deleteAttachment(holder.mItem);
+                mListener.onListFragmentInteraction(AttachmentFragment.OnListFragmentInteractionListener.Operation.DELETE, holder.mItem);
             }
         });
 

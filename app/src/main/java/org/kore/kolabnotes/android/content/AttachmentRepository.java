@@ -67,7 +67,7 @@ public class AttachmentRepository {
             boolean ret = false;
             try {
 
-                File folder = context.getDir(noteUID, Context.MODE_PRIVATE);
+                File folder = Utils.getAttachmentDirForNote(context,account,rootFolder,noteUID);
 
                 File file = new File(folder, attachment.getFileName());
                 boolean newFile = file.createNewFile();
@@ -144,7 +144,7 @@ public class AttachmentRepository {
                 null);
 
 
-        File filesDir = context.getDir(noteUID, Context.MODE_PRIVATE);
+        File filesDir = Utils.getAttachmentDirForNote(context,account,rootFolder,noteUID);
         File file = new File(filesDir,attachment.getFileName());
         if(file.exists()){
             file.delete();
@@ -159,12 +159,22 @@ public class AttachmentRepository {
                 null);
 
 
-        File folder = context.getDir(noteUID, Context.MODE_PRIVATE);
+        File folder = Utils.getAttachmentDirForNote(context,account,rootFolder,noteUID);
+        deleteAttachmentsFromFolder(folder);
+    }
+
+    public void cleanAccount(String account, String rootFolder, String noteUID) {
+        ConnectionManager.getDatabase(context).delete(DatabaseHelper.TABLE_ATTACHMENT,
+                DatabaseHelper.COLUMN_ACCOUNT + " = '" + account + "' AND " +
+                        DatabaseHelper.COLUMN_ROOT_FOLDER + " = '" + rootFolder + "' ",
+                null);
+        
+        File folder = Utils.getAttachmentDirForAccount(context, account, rootFolder);
         deleteAttachmentsFromFolder(folder);
     }
 
     public Uri getUriFromAttachment(String account, String rootFolder, String noteUID, Attachment attachment){
-        File filesDir = context.getDir(noteUID, Context.MODE_PRIVATE);
+        File filesDir = Utils.getAttachmentDirForNote(context,account,rootFolder,noteUID);
         File file = new File(filesDir,attachment.getFileName());
 
         return FileProvider.getUriForFile(
@@ -274,7 +284,7 @@ public class AttachmentRepository {
         Attachment attachment = new Attachment(id,filename,mimetype);
 
         if(withFile && android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT){
-            File filesDir = context.getDir(noteUID, Context.MODE_PRIVATE);
+            File filesDir = Utils.getAttachmentDirForNote(context,account,rootFolder,noteUID);
             File file = new File(filesDir,filename);
             try(FileInputStream inputStream = new FileInputStream(file); ByteArrayOutputStream outputStream = new ByteArrayOutputStream()){
                 int bytes;

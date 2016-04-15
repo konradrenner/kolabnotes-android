@@ -121,11 +121,11 @@ public class AttachmentFragment extends Fragment {
     private void setListState() {
         if (adapter != null) {
             if (adapter.isEmpty()) {
-                recyclerView.setVisibility(View.GONE);
+                recyclerView.setVisibility(View.INVISIBLE);
                 noAttachmentView.setVisibility(View.VISIBLE);
             } else {
                 recyclerView.setVisibility(View.VISIBLE);
-                noAttachmentView.setVisibility(View.GONE);
+                noAttachmentView.setVisibility(View.INVISIBLE);
             }
         }
     }
@@ -153,6 +153,7 @@ public class AttachmentFragment extends Fragment {
     public void deleteAttachment(Attachment attachment){
         ActiveAccount activeAccount = this.activeAccountRepository.getActiveAccount();
         this.attachmentRepository.delete(activeAccount.getAccount(),activeAccount.getRootFolder(),this.noteUID,attachment);
+        setListState();
     }
 
     @Override
@@ -229,7 +230,7 @@ public class AttachmentFragment extends Fragment {
                             adapter.addAttachment(attachment);
                         }
                     });
-
+                    setListState();
                 } catch (FileNotFoundException e) {
                     Log.e("attach", "File not found", e);
                 } catch (IOException e) {
@@ -245,7 +246,7 @@ public class AttachmentFragment extends Fragment {
         shareIntent.setAction(Intent.ACTION_SEND);
         shareIntent.putExtra(Intent.EXTRA_STREAM, this.attachmentRepository.getUriFromAttachment(activeAccount.getAccount(),activeAccount.getRootFolder(), this.noteUID, attachment));
         shareIntent.setType(attachment.getMimeType());
-        startActivity(Intent.createChooser(shareIntent, getResources().getText(R.string.send_to)));
+        startActivity(Intent.createChooser(shareIntent, getResources().getText(R.string.attachment_send_to)));
     }
 
     /**

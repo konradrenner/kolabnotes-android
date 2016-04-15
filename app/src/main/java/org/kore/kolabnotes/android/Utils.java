@@ -46,6 +46,7 @@ import org.kore.kolabnotes.android.security.AuthenticatorActivity;
 import org.kore.kolabnotes.android.widget.ListWidget;
 import org.kore.kolabnotes.android.widget.StickyNoteWidget;
 
+import java.io.File;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 
@@ -202,6 +203,32 @@ public class Utils {
         w.setEnterTransition(ex);
     }
     */
+
+    public static File getAttachmentDirForAccount(Context context, String account, String rootFolder){
+        File filesDir = context.getFilesDir();
+        File attachmentPart = new File(filesDir,"attachments");
+        if(!attachmentPart.exists()){
+            attachmentPart.mkdir();
+        }
+        File accountPart = new File(attachmentPart, account);
+        if(!accountPart.exists()){
+            accountPart.mkdir();
+        }
+        File rootFolderPart = new File(accountPart,rootFolder);
+        if(!rootFolderPart.exists()){
+            rootFolderPart.mkdir();
+        }
+        return rootFolderPart;
+    }
+
+    public static File getAttachmentDirForNote(Context context, String account, String rootFolder, String noteUID){
+        File accountDir = getAttachmentDirForAccount(context, account, rootFolder);
+        File noteDir = new File(accountDir,noteUID);
+        if(!noteDir.exists()){
+            noteDir.mkdir();
+        }
+        return noteDir;
+    }
 
     public static void saveLastSyncTime(Context context,String accountName) {
         SharedPreferences.Editor prefs = context.getSharedPreferences("org.kore.kolabnotes.android.async.KolabSyncAdapter", 0).edit();
