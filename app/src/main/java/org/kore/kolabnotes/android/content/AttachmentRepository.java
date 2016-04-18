@@ -255,7 +255,7 @@ public class AttachmentRepository {
                 DatabaseHelper.COLUMN_ACCOUNT + " = '" + account + "' AND " +
                         DatabaseHelper.COLUMN_ROOT_FOLDER + " = '" + rootFolder + "' AND " +
                         DatabaseHelper.COLUMN_IDNOTE + " = '" + noteUID + "' AND " +
-                        DatabaseHelper.COLUMN_MODIFICATIONDATE + " > " + date.getTime(),
+                        DatabaseHelper.COLUMN_CREATIONDATE + " > " + date.getTime(),
                 null,
                 null,
                 null,
