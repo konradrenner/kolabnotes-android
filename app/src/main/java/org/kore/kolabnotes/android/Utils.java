@@ -305,7 +305,7 @@ public class Utils {
             Log.d("latest","PreferenceManager prefs are null");
             return true;
         }
-        return "SERVER".equalsIgnoreCase(prefs.getString("sync_conflict","LATEST"));
+        return "SERVER".equalsIgnoreCase(prefs.getString("sync_conflict", "LATEST"));
     }
 
     public static boolean clearConflictWithLocal(Context context) {
@@ -340,7 +340,7 @@ public class Utils {
     }
 
     public static void setReloadDataAfterDetail(Context context, boolean value){
-        SharedPreferences sharedPref = context.getSharedPreferences("org.kore.kolabnotes.android.pref",Context.MODE_PRIVATE);
+        SharedPreferences sharedPref = context.getSharedPreferences("org.kore.kolabnotes.android.pref", Context.MODE_PRIVATE);
         if(value){
             sharedPref.edit().putBoolean(Utils.RELOAD_DATA_AFTER_DETAIL,value).commit();
         }else{
@@ -518,11 +518,11 @@ public class Utils {
                 final ArrayList<View> outViews = new ArrayList<View>();
                 decorView.findViewsWithText(outViews, overflowDescription, View.FIND_VIEWS_WITH_CONTENT_DESCRIPTION);
 
-                if(outViews.isEmpty()){
+                if (outViews.isEmpty()) {
                     return;
                 }
 
-                ImageView overflow = (ImageView)outViews.get(0);
+                ImageView overflow = (ImageView) outViews.get(0);
                 overflow.setColorFilter(lightColor ? android.graphics.Color.WHITE : android.graphics.Color.BLACK);
                 decorView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
             }
@@ -571,7 +571,7 @@ public class Utils {
         stickyIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS,stickyIds);
 
         listIntent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
-        listIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS,listIds);
+        listIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, listIds);
 
         context.sendBroadcast(stickyIntent);
         context.sendBroadcast(listIntent);
@@ -625,6 +625,14 @@ public class Utils {
         spinner.setAdapter(adapter);
         spinner.setOnItemSelectedListener(listener);
         spinner.setSelection(select);
+    }
+
+    public static boolean isLocalAccount(String account, String rootFolder){
+        return "local".equals(account) && "Notes".equals(rootFolder);
+    }
+
+    public static boolean isLocalAccount(AccountIdentifier identifier){
+        return isLocalAccount(identifier.getAccount(), identifier.getRootFolder());
     }
 
     public static String getColumnNameOfSelection(int selection){

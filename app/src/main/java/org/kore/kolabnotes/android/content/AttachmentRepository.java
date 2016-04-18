@@ -149,6 +149,13 @@ public class AttachmentRepository {
         if(file.exists()){
             file.delete();
         }
+
+        ModificationRepository modificationRepository = new ModificationRepository(context);
+        Modification modification = modificationRepository.getUnique(account,rootFolder,attachment.getId());
+
+        if(modification == null){
+            modificationRepository.insert(account, rootFolder, attachment.getId(), ModificationRepository.ModificationType.DEL, noteUID, Modification.Descriminator.ATTACHMENT);
+        }
     }
 
     public void deleteForNote(String account, String rootFolder, String noteUID) {
@@ -163,7 +170,7 @@ public class AttachmentRepository {
         deleteAttachmentsFromFolder(folder);
     }
 
-    public void cleanAccount(String account, String rootFolder, String noteUID) {
+    public void cleanAccount(String account, String rootFolder) {
         ConnectionManager.getDatabase(context).delete(DatabaseHelper.TABLE_ATTACHMENT,
                 DatabaseHelper.COLUMN_ACCOUNT + " = '" + account + "' AND " +
                         DatabaseHelper.COLUMN_ROOT_FOLDER + " = '" + rootFolder + "' ",
@@ -240,13 +247,14 @@ public class AttachmentRepository {
         return ret;
     }
 
-    public List<Attachment> getAllCreatedAfter(String account, String rootFolder, Date date) {
+    public List<Attachment> getAllCreatedAfter(String account, String rootFolder, String noteUID, Date date) {
         List<Attachment> attachments = new ArrayList<Attachment>();
 
         Cursor cursor = ConnectionManager.getDatabase(context).query(DatabaseHelper.TABLE_ATTACHMENT,
                 allColumns,
                 DatabaseHelper.COLUMN_ACCOUNT + " = '" + account + "' AND " +
                         DatabaseHelper.COLUMN_ROOT_FOLDER + " = '" + rootFolder + "' AND " +
+                        DatabaseHelper.COLUMN_IDNOTE + " = '" + noteUID + "' AND " +
                         DatabaseHelper.COLUMN_MODIFICATIONDATE + " > " + date.getTime(),
                 null,
                 null,

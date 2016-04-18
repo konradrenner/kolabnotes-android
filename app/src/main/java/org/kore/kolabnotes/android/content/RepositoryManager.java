@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.support.v7.app.NotificationCompat;
 import android.util.Log;
 
+import org.kore.kolab.notes.Attachment;
 import org.kore.kolab.notes.Identification;
 import org.kore.kolab.notes.Note;
 import org.kore.kolab.notes.Notebook;
@@ -42,6 +43,7 @@ public class RepositoryManager {
     private final NoteRepository noteRepository;
     private final NotebookRepository notebookRepository;
     private final ModificationRepository modificationRepository;
+    private final AttachmentRepository attachmentRepository;
     private final Date lastSync;
     private final Context context;
     private final Set<String> localChangedNotes;
@@ -54,6 +56,7 @@ public class RepositoryManager {
         this.noteRepository = new NoteRepository(context);
         this.notebookRepository = new NotebookRepository(context);
         this.modificationRepository = new ModificationRepository(context);
+        this.attachmentRepository = new AttachmentRepository(context);
         this.repo = repo;
         this.lastSync = new Date(lastSync.getTime());
         this.context = context;
@@ -78,6 +81,9 @@ public class RepositoryManager {
 
             for(Note note : book.getNotes()){
                 noteRepository.insert(email,rootFolder,note,book.getIdentification().getUid());
+                for(Attachment attachment : note.getAttachments()){
+                    attachmentRepository.insert(email,rootFolder,note.getIdentification().getUid(),attachment);
+                }
 
                 //inform user for new or updated notes in shared notebooks
                 if(Utils.getShowSyncNotifications(context) && book.isShared() && !localChangedNotes.contains(note.getIdentification().getUid()) && lastSync != null){
@@ -133,6 +139,8 @@ public class RepositoryManager {
         noteRepository.cleanAccount(email,rootFolder);
         noteTagRepository.cleanAccount(email,rootFolder);
         tagRepository.cleanAccount(email,rootFolder);
+        attachmentRepository.cleanAccount(email,rootFolder);
+
     }
 
     private Notebook searchNotebookOfNote(NotesRepository repo, String noteUID){
@@ -156,8 +164,10 @@ public class RepositoryManager {
 
         for(Note note : localNotes){
             Modification modification = modificationRepository.getUnique(email, rootFolder, note.getIdentification().getUid());
+            List<Attachment> attachments = attachmentRepository.getAllCreatedAfter(email, rootFolder, note.getIdentification().getUid(), lastSync);
+            List<Modification> deletedAttachments = modificationRepository.getDeletions(email, rootFolder, Modification.Descriminator.ATTACHMENT, note.getIdentification().getUid());
 
-            if(modification != null){
+            if(modification != null || attachments.size() > 0 || deletedAttachments.size() > 0){
                 Notebook localNotebook = notebookRepository.getByUID(email, rootFolder, noteRepository.getUIDofNotebook(email, rootFolder, note.getIdentification().getUid()));
                 Notebook remoteNotebook = repo.getNotebookBySummary(localNotebook.getSummary());
 
@@ -174,6 +184,9 @@ public class RepositoryManager {
                     final Tag[] tagArray = localCategories.toArray(new Tag[localCategories.size()]);
                     remoteTags.attachTags(note.getIdentification().getUid(), tagArray);
                     localChangedNotes.add(note.getIdentification().getUid());
+
+                    //Add the attachments
+                    note.addAttachments(attachments.toArray(new Attachment[attachments.size()]));
                 }else{
                     Note remoteNote = remoteNotebook.getNote(note.getIdentification().getUid());
 
@@ -199,13 +212,13 @@ public class RepositoryManager {
                             if (withLatest) {
                                 //if local note is newer then remote, update it, if not the remote will be taken
                                 if (note.getAuditInformation().getLastModificationDate().after(remoteNote.getAuditInformation().getLastModificationDate())) {
-                                    updateRemoteNote(remoteTags, note, remoteNote);
+                                    updateRemoteNote(remoteTags, note, remoteNote, attachments, deletedAttachments);
                                 }
                             } else if (withLocal) {
-                                updateRemoteNote(remoteTags, note, remoteNote);
+                                updateRemoteNote(remoteTags, note, remoteNote,attachments, deletedAttachments);
                             }
                         } else {
-                            updateRemoteNote(remoteTags, note, remoteNote);
+                            updateRemoteNote(remoteTags, note, remoteNote,attachments, deletedAttachments);
                         }
                     }
                 }
@@ -271,12 +284,16 @@ public class RepositoryManager {
         remoteTags.deleteTags(toDeleteUIDs.toArray(new Identification[toDeleteUIDs.size()]));
     }
 
-    private void updateRemoteNote(RemoteTags remoteTags, Note note, Note remoteNote) {
+    private void updateRemoteNote(RemoteTags remoteTags, Note note, Note remoteNote, List<Attachment> createdAttachments, List<Modification> deletedAttachments) {
         Log.d("localIntoRepository", "Updating remote note:" + note);
 
         remoteNote.setClassification(note.getClassification());
         remoteNote.setDescription(note.getDescription());
         remoteNote.setSummary(note.getSummary());
+        remoteNote.addAttachments(createdAttachments.toArray(new Attachment[createdAttachments.size()]));
+        for(Modification mod : deletedAttachments){
+            remoteNote.removeAttachments(mod.getUid());
+        }
 
         Set<Tag> remoteCategories = remoteNote.getCategories();
 

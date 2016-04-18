@@ -5,6 +5,8 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
+import org.kore.kolabnotes.android.Utils;
+
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,6 +37,10 @@ public class ModificationRepository {
 
 
     public void insert(String account, String rootFolder, String uid, ModificationType type, String uidNotebook, Modification.Descriminator desc) {
+        if(Utils.isLocalAccount(account, rootFolder)){
+            return;
+        }
+
         ContentValues values = new ContentValues();
         values.put(DatabaseHelper.COLUMN_UID, uid);
         values.put(DatabaseHelper.COLUMN_ACCOUNT, account);
@@ -84,6 +90,27 @@ public class ModificationRepository {
                 DatabaseHelper.COLUMN_ACCOUNT + " = '" + account + "' AND " +
                         DatabaseHelper.COLUMN_ROOT_FOLDER + " = '" + rootFolder + "' AND " +
                         DatabaseHelper.COLUMN_DISCRIMINATOR + " = '" + descriminator.toString() + "' AND " +
+                        DatabaseHelper.COLUMN_MODIFICATIONTYPE + " = '" + ModificationType.DEL.toString() + "' ",
+                null,
+                null,
+                null,
+                null);
+
+        ArrayList<Modification> mod = new ArrayList<>();
+        while (cursor.moveToNext()) {
+            mod.add(cursorToModification(cursor));
+        }
+        cursor.close();
+        return mod;
+    }
+
+    public List<Modification> getDeletions(String account, String rootFolder, Modification.Descriminator descriminator, String uidNotebook) {
+        Cursor cursor = ConnectionManager.getDatabase(context).query(DatabaseHelper.TABLE_MODIFICATION,
+                allColumns,
+                DatabaseHelper.COLUMN_ACCOUNT + " = '" + account + "' AND " +
+                        DatabaseHelper.COLUMN_ROOT_FOLDER + " = '" + rootFolder + "' AND " +
+                        DatabaseHelper.COLUMN_DISCRIMINATOR + " = '" + descriminator.toString() + "' AND " +
+                        DatabaseHelper.COLUMN_UID_NOTEBOOK + " = '" + uidNotebook + "' AND " +
                         DatabaseHelper.COLUMN_MODIFICATIONTYPE + " = '" + ModificationType.DEL.toString() + "' ",
                 null,
                 null,
