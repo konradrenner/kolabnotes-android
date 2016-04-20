@@ -322,6 +322,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
                     Bundle userData = createAuthBundle(serverInfo,intervall);
 
                     if (mAccountManager.addAccountExplicitly(account, password, userData)) {
+                        new ActiveAccountRepository(this).insertAccount(email, rootFolder);
                         Toast.makeText(getBaseContext(), R.string.signup_ok, Toast.LENGTH_SHORT).show();
 
                         ContentResolver.setIsSyncable(account, MainActivity.AUTHORITY, 1);

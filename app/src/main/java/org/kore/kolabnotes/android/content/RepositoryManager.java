@@ -176,7 +176,7 @@ public class RepositoryManager {
                     remoteNotebook = repo.createNotebook(localNotebook.getIdentification().getUid(), localNotebook.getSummary());
                 }
 
-                if(ModificationRepository.ModificationType.INS.equals(modification.getType())){
+                if(modification != null && ModificationRepository.ModificationType.INS.equals(modification.getType())){
                     Log.d("localIntoRepository","Creating new note:"+note);
                     remoteNotebook.addNote(note);
 

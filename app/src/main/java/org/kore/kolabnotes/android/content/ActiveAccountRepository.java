@@ -5,6 +5,14 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
+import org.kore.kolabnotes.android.Utils;
+
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
+
 /**
  * Created by koni on 12.03.15.
  */
@@ -19,6 +27,54 @@ public class ActiveAccountRepository {
 
     public ActiveAccountRepository(Context context) {
         this.context = context;
+    }
+
+
+    public Set<AccountIdentifier> getAllAccounts() {
+        LinkedHashSet<AccountIdentifier> accounts = new LinkedHashSet<AccountIdentifier>();
+
+        Cursor cursor = ConnectionManager.getDatabase(context).query(DatabaseHelper.TABLE_ACCOUNTS,
+                allColumns,
+                null,
+                null,
+                null,
+                null,
+                null);
+
+        while (cursor.moveToNext()) {
+            AccountIdentifier id = new AccountIdentifier(cursor.getString(1), cursor.getString(2));
+            accounts.add(id);
+        }
+        cursor.close();
+        return accounts;
+    }
+
+    public void insertAccount(String account, String rootFolder) {
+        insertAccount(ConnectionManager.getDatabase(context), account, rootFolder);
+    }
+
+    public void insertAccount(SQLiteDatabase db, String account, String rootFolder) {
+        ContentValues values = new ContentValues();
+        values.put(DatabaseHelper.COLUMN_ACCOUNT, account);
+        values.put(DatabaseHelper.COLUMN_ROOT_FOLDER, rootFolder);
+
+        db.insert(DatabaseHelper.TABLE_ACCOUNTS, null, values);
+    }
+
+    public void deleteAccount(String account, String rootFolder){
+        if(Utils.isLocalAccount(account,rootFolder)){
+            return;
+        }
+
+        ConnectionManager.getDatabase(context).delete(DatabaseHelper.TABLE_ACCOUNTS,
+                DatabaseHelper.COLUMN_ACCOUNT + " = '" + account + "' AND " +
+                        DatabaseHelper.COLUMN_ROOT_FOLDER + " = '" + rootFolder + "' ",
+                null);
+
+        ActiveAccount activeAccount = getActiveAccount();
+        if(activeAccount.getAccount().equals(account) && activeAccount.getRootFolder().equals(rootFolder)){
+            switchAccount("local", "Notes");
+        }
     }
 
     public synchronized ActiveAccount switchAccount(String account, String rootFolder){

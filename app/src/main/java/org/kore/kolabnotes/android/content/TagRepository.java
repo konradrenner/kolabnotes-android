@@ -281,7 +281,7 @@ public class TagRepository {
         return tags;
     }
 
-    void cleanAccount(String account, String rootFolder){
+    public void cleanAccount(String account, String rootFolder){
         ConnectionManager.getDatabase(context).delete(DatabaseHelper.TABLE_TAGS,
                 DatabaseHelper.COLUMN_ACCOUNT + " = '" + account + "' AND " +
                         DatabaseHelper.COLUMN_ROOT_FOLDER + " = '" + rootFolder + "' ",

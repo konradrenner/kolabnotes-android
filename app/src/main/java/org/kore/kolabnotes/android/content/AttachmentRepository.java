@@ -112,6 +112,8 @@ public class AttachmentRepository {
                     }else{
                         Toast.makeText(context, context.getResources().getString(R.string.attachment_already_exist), Toast.LENGTH_SHORT).show();
                     }
+                }else{
+                    Toast.makeText(context, context.getResources().getString(R.string.attachment_already_exist), Toast.LENGTH_SHORT).show();
                 }
             } catch (IOException e) {
                 Log.e("attachment", "problem creating file", e);
@@ -126,7 +128,7 @@ public class AttachmentRepository {
         values.put(DatabaseHelper.COLUMN_ACCOUNT,account);
         values.put(DatabaseHelper.COLUMN_ROOT_FOLDER,rootFolder);
         values.put(DatabaseHelper.COLUMN_IDNOTE, noteUID);
-        values.put(DatabaseHelper.COLUMN_IDATTACHMENT,attachment.getId());
+        values.put(DatabaseHelper.COLUMN_IDATTACHMENT, attachment.getId());
         values.put(DatabaseHelper.COLUMN_FILESIZE,attachment.getData().length);
         values.put(DatabaseHelper.COLUMN_FILENAME, attachment.getFileName());
         values.put(DatabaseHelper.COLUMN_MIMETYPE, attachment.getMimeType());
@@ -166,7 +168,7 @@ public class AttachmentRepository {
                 null);
 
 
-        File folder = Utils.getAttachmentDirForNote(context,account,rootFolder,noteUID);
+        File folder = Utils.getAttachmentDirForNote(context, account, rootFolder, noteUID);
         deleteAttachmentsFromFolder(folder);
     }
 
@@ -181,7 +183,7 @@ public class AttachmentRepository {
     }
 
     public Uri getUriFromAttachment(String account, String rootFolder, String noteUID, Attachment attachment){
-        File filesDir = Utils.getAttachmentDirForNote(context,account,rootFolder,noteUID);
+        File filesDir = Utils.getAttachmentDirForNote(context, account, rootFolder, noteUID);
         File file = new File(filesDir,attachment.getFileName());
 
         return FileProvider.getUriForFile(
@@ -273,7 +275,12 @@ public class AttachmentRepository {
             String[] children = directory.list();
             for (int i = 0; i < children.length; i++)
             {
-                new File(directory, children[i]).delete();
+                File file = new File(directory, children[i]);
+                if(file.isDirectory()){
+                    deleteAttachmentsFromFolder(file);
+                }else{
+                    file.delete();
+                }
             }
 
             directory.delete();
