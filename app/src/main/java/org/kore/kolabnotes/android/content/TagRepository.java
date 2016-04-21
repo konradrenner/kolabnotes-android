@@ -44,58 +44,6 @@ public class TagRepository {
         this.context = context;
     }
 
-    public void migrateTags(){
-        List<String> tags = new ArrayList<String>();
-
-        String[] oldColumns = { DatabaseHelper.COLUMN_ID, DatabaseHelper.COLUMN_TAGNAME};
-
-        try {
-            Cursor cursor = ConnectionManager.getDatabase(context).query(DatabaseHelper.TABLE_OLD_TAGS,
-                    oldColumns,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null);
-
-            while (cursor.moveToNext()) {
-                tags.add(cursor.getString(1));
-            }
-        }catch(SQLiteException e){
-            //Table does not exist
-            return;
-        }
-
-        if(tags.isEmpty()){
-            //Already migrated
-            return;
-        }
-
-        String email = "local";
-        String rootFolder = "Notes";
-
-        for(String tagname : tags){
-            doInsert(email,rootFolder, Tag.createNewTag(tagname));
-        }
-
-        final AccountManager accountManager = AccountManager.get(context);
-        Account[] accounts = accountManager.getAccountsByType(AuthenticatorActivity.ARG_ACCOUNT_TYPE);
-
-        for(int i=0;i<accounts.length;i++) {
-            email = accountManager.getUserData(accounts[i],AuthenticatorActivity.KEY_EMAIL);
-            rootFolder = accountManager.getUserData(accounts[i],AuthenticatorActivity.KEY_ROOT_FOLDER);
-
-            for(String tagname : tags){
-                doInsert(email,rootFolder, Tag.createNewTag(tagname));
-            }
-        }
-
-        ConnectionManager.getDatabase(context).delete(DatabaseHelper.TABLE_OLD_TAGS,
-                null,
-                null);
-
-    }
-
     public boolean insert(String account, String rootFolder, Tag tag) {
 
         if(existsTagNameForAccount(account,rootFolder,tag.getName())){

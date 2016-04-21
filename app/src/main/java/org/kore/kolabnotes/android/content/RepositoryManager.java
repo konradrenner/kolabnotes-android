@@ -164,10 +164,14 @@ public class RepositoryManager {
 
         for(Note note : localNotes){
             Modification modification = modificationRepository.getUnique(email, rootFolder, note.getIdentification().getUid());
-            List<Attachment> attachments = attachmentRepository.getAllCreatedAfter(email, rootFolder, note.getIdentification().getUid(), lastSync);
+
+            final List<Attachment> allForNote = attachmentRepository.getAllForNote(email, rootFolder, note.getIdentification().getUid(), true);
+            note.addAttachments(allForNote.toArray(new Attachment[allForNote.size()]));
+
+            boolean attachmentsCreated = attachmentRepository.attachmentsCreatedAfterLastSync(email, rootFolder, note.getIdentification().getUid(), lastSync);
             List<Modification> deletedAttachments = modificationRepository.getDeletions(email, rootFolder, Modification.Descriminator.ATTACHMENT, note.getIdentification().getUid());
 
-            if(modification != null || attachments.size() > 0 || deletedAttachments.size() > 0){
+            if(modification != null || attachmentsCreated || deletedAttachments.size() > 0){
                 Notebook localNotebook = notebookRepository.getByUID(email, rootFolder, noteRepository.getUIDofNotebook(email, rootFolder, note.getIdentification().getUid()));
                 Notebook remoteNotebook = repo.getNotebookBySummary(localNotebook.getSummary());
 
@@ -184,9 +188,6 @@ public class RepositoryManager {
                     final Tag[] tagArray = localCategories.toArray(new Tag[localCategories.size()]);
                     remoteTags.attachTags(note.getIdentification().getUid(), tagArray);
                     localChangedNotes.add(note.getIdentification().getUid());
-
-                    //Add the attachments
-                    note.addAttachments(attachments.toArray(new Attachment[attachments.size()]));
                 }else{
                     Note remoteNote = remoteNotebook.getNote(note.getIdentification().getUid());
 
@@ -212,13 +213,13 @@ public class RepositoryManager {
                             if (withLatest) {
                                 //if local note is newer then remote, update it, if not the remote will be taken
                                 if (note.getAuditInformation().getLastModificationDate().after(remoteNote.getAuditInformation().getLastModificationDate())) {
-                                    updateRemoteNote(remoteTags, note, remoteNote, attachments, deletedAttachments);
+                                    updateRemoteNote(remoteTags, note, remoteNote);
                                 }
                             } else if (withLocal) {
-                                updateRemoteNote(remoteTags, note, remoteNote,attachments, deletedAttachments);
+                                updateRemoteNote(remoteTags, note, remoteNote);
                             }
                         } else {
-                            updateRemoteNote(remoteTags, note, remoteNote,attachments, deletedAttachments);
+                            updateRemoteNote(remoteTags, note, remoteNote);
                         }
                     }
                 }
@@ -284,16 +285,18 @@ public class RepositoryManager {
         remoteTags.deleteTags(toDeleteUIDs.toArray(new Identification[toDeleteUIDs.size()]));
     }
 
-    private void updateRemoteNote(RemoteTags remoteTags, Note note, Note remoteNote, List<Attachment> createdAttachments, List<Modification> deletedAttachments) {
+    private void updateRemoteNote(RemoteTags remoteTags, Note note, Note remoteNote) {
         Log.d("localIntoRepository", "Updating remote note:" + note);
 
         remoteNote.setClassification(note.getClassification());
         remoteNote.setDescription(note.getDescription());
         remoteNote.setSummary(note.getSummary());
-        remoteNote.addAttachments(createdAttachments.toArray(new Attachment[createdAttachments.size()]));
-        for(Modification mod : deletedAttachments){
-            remoteNote.removeAttachments(mod.getUid());
-        }
+
+        final Collection<Attachment> remoteAttachments = remoteNote.getAttachments();
+        remoteNote.removeAttachments(remoteAttachments.toArray(new Attachment[remoteAttachments.size()]));
+
+        final Collection<Attachment> localAttachments = note.getAttachments();
+        remoteNote.addAttachments(localAttachments.toArray(new Attachment[localAttachments.size()]));
 
         Set<Tag> remoteCategories = remoteNote.getCategories();
 

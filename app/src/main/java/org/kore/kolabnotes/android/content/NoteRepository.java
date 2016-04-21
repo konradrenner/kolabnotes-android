@@ -40,8 +40,6 @@ public class NoteRepository {
     public NoteRepository(Context context) {
         this.context = context;
         this.modificationRepository = new ModificationRepository(context);
-
-        new TagRepository(context).migrateTags();
     }
 
     public void insert(String account, String rootFolder, Note note, String uidNotebook) {

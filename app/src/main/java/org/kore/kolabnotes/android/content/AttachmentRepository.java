@@ -249,7 +249,7 @@ public class AttachmentRepository {
         return ret;
     }
 
-    public List<Attachment> getAllCreatedAfter(String account, String rootFolder, String noteUID, Date date) {
+    public boolean attachmentsCreatedAfterLastSync(String account, String rootFolder, String noteUID, Date date) {
         List<Attachment> attachments = new ArrayList<Attachment>();
 
         Cursor cursor = ConnectionManager.getDatabase(context).query(DatabaseHelper.TABLE_ATTACHMENT,
@@ -263,11 +263,11 @@ public class AttachmentRepository {
                 null,
                 null);
 
-        while (cursor.moveToNext()) {
-            attachments.add(cursorToAttachmment(cursor, true));
+        if (cursor.moveToNext()) {
+            return true;
         }
         cursor.close();
-        return attachments;
+        return false;
     }
 
     private void deleteAttachmentsFromFolder(File directory) {
