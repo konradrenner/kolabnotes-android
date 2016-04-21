@@ -94,6 +94,18 @@ public class NoteRepository {
         }
     }
 
+    void updateAuditInformation(String account, String rootFolder,String noteUID, long newModificationDate){
+        ContentValues values = new ContentValues();
+        values.put(DatabaseHelper.COLUMN_MODIFICATIONDATE, newModificationDate);
+
+        ConnectionManager.getDatabase(context).update(DatabaseHelper.TABLE_NOTES,
+                values,
+                DatabaseHelper.COLUMN_ACCOUNT + " = '" + account + "' AND " +
+                        DatabaseHelper.COLUMN_ROOT_FOLDER + " = '" + rootFolder + "' AND " +
+                        DatabaseHelper.COLUMN_UID + " = '" + noteUID + "' ",
+                null);
+    }
+
     public void delete(String account, String rootFolder,Note note) {
         String uidofNotebook = getUIDofNotebook(account, rootFolder, note.getIdentification().getUid());
 

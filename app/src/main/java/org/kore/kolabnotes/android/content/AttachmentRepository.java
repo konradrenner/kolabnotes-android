@@ -53,8 +53,11 @@ public class AttachmentRepository {
             DatabaseHelper.COLUMN_MIMETYPE};
     private final Context context;
 
+    private final NoteRepository noteRepository;
+
     public AttachmentRepository(Context context) {
         this.context = context;
+        this.noteRepository = new NoteRepository(context);
     }
 
 
@@ -72,7 +75,8 @@ public class AttachmentRepository {
                 File file = new File(folder, attachment.getFileName());
                 boolean newFile = file.createNewFile();
                 if(newFile) {
-                    long rowId = doInsert(database, account, rootFolder, noteUID, attachment);
+                    long akttime = System.currentTimeMillis();
+                    long rowId = doInsert(database, account, rootFolder, noteUID, attachment, akttime);
 
                     ret = rowId >= 0;
                     if (ret) {
@@ -109,6 +113,8 @@ public class AttachmentRepository {
 
                             notificationManager.notify(Utils.WRITE_REQUEST_CODE, notification);
                         }
+
+                        noteRepository.updateAuditInformation(account, rootFolder, noteUID, akttime);
                     }else{
                         Toast.makeText(context, context.getResources().getString(R.string.attachment_already_exist), Toast.LENGTH_SHORT).show();
                     }
@@ -123,7 +129,7 @@ public class AttachmentRepository {
         return false;
     }
 
-    private long doInsert(SQLiteDatabase db, String account, String rootFolder, String noteUID, Attachment attachment){
+    private long doInsert(SQLiteDatabase db, String account, String rootFolder, String noteUID, Attachment attachment, long aktTime){
         ContentValues values = new ContentValues();
         values.put(DatabaseHelper.COLUMN_ACCOUNT,account);
         values.put(DatabaseHelper.COLUMN_ROOT_FOLDER,rootFolder);
@@ -132,7 +138,7 @@ public class AttachmentRepository {
         values.put(DatabaseHelper.COLUMN_FILESIZE,attachment.getData().length);
         values.put(DatabaseHelper.COLUMN_FILENAME, attachment.getFileName());
         values.put(DatabaseHelper.COLUMN_MIMETYPE, attachment.getMimeType());
-        values.put(DatabaseHelper.COLUMN_CREATIONDATE, System.currentTimeMillis());
+        values.put(DatabaseHelper.COLUMN_CREATIONDATE, aktTime);
 
         return db.insert(DatabaseHelper.TABLE_ATTACHMENT, null, values);
     }
@@ -170,6 +176,8 @@ public class AttachmentRepository {
 
         File folder = Utils.getAttachmentDirForNote(context, account, rootFolder, noteUID);
         deleteAttachmentsFromFolder(folder);
+
+        noteRepository.updateAuditInformation(account, rootFolder, noteUID, System.currentTimeMillis());
     }
 
     public void cleanAccount(String account, String rootFolder) {
