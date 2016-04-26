@@ -37,7 +37,6 @@ dependencies {
     }
 
     //Android support libraries
-    
 
     // Add dependency for UI test
     androidTestCompile 'com.android.support.test.espresso:espresso-core:2.2.1'

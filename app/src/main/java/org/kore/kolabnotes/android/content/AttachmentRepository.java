@@ -202,12 +202,13 @@ public class AttachmentRepository {
     }
 
 
-    public Attachment getAttachmentWithAttachmentID(String account, String rootFolder, String attachmentid){
+    public Attachment getAttachmentWithAttachmentID(String account, String rootFolder, String noteUID, String attachmentid){
         Cursor cursor = ConnectionManager.getDatabase(context).query(DatabaseHelper.TABLE_ATTACHMENT,
                 allColumns,
                 DatabaseHelper.COLUMN_ACCOUNT + " = '" + account + "' AND " +
                         DatabaseHelper.COLUMN_ROOT_FOLDER + " = '" + rootFolder + "' AND " +
-                        DatabaseHelper.COLUMN_TAG_UID + " = '" + attachmentid + "' ",
+                        DatabaseHelper.COLUMN_IDNOTE + " = '" + noteUID + "' AND " +
+                        DatabaseHelper.COLUMN_IDATTACHMENT + " = '" + attachmentid + "' ",
                 null,
                 null,
                 null,

@@ -1,0 +1,40 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="org.kore.kolabnotes.android.fragment.PreviewFragment">
+
+    <EditText
+        android:id="@+id/preview_text"
+        android:visibility="invisible"
+        android:editable="false"
+        android:textColor="@color/primary_text_default_material_light"
+        android:inputType="textMultiLine"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <WebView
+        android:id="@+id/preview_html"
+        android:visibility="invisible"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <ImageView
+        android:id="@+id/preview_picture"
+        android:visibility="invisible"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <VideoView
+        android:id="@+id/preview_video"
+        android:visibility="invisible"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <MediaController
+        android:id="@+id/preview_music"
+        android:visibility="invisible"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+</FrameLayout>
