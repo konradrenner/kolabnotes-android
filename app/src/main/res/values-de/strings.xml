@@ -200,7 +200,7 @@
     <string name="attachment_creation_failed">Anhang konnte nicht erstellt werden</string>
     <string name="attachment_already_exist">Anhang mit diesem Dateinamen existiert bereits</string>
     <string name="attachment_send_to">Anhang teilen mit...</string>
-    <string name="no_preview">Kein Vorschau gewählt</string>
+    <string name="no_preview">Keine Vorschau gewählt</string>
     <string name="attachment_not_previewable">Kann Vorschau nicht öffnen</string>
-    <string name="attachment_now_playing">Aktuelle Vorschau:</string>
+    <string name="attachment_now_playing">Aktueller Titel:</string>
 </resources>

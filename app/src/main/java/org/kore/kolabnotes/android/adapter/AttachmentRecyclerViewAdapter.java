@@ -15,6 +15,7 @@ import org.kore.kolabnotes.android.NoteSortingComparator;
 import org.kore.kolabnotes.android.R;
 import org.kore.kolabnotes.android.Utils;
 import org.kore.kolabnotes.android.fragment.AttachmentFragment;
+import org.kore.kolabnotes.android.fragment.PreviewFragment;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -68,8 +69,19 @@ public class AttachmentRecyclerViewAdapter extends RecyclerView.Adapter<Attachme
         });
 
         if(Utils.isTablet(context.getResources())){
-            //TODO check if mimetype is possible to preview
-            holder.mPreviewButton.setVisibility(View.VISIBLE);
+
+            if(PreviewFragment.previewableMimetype(holder.mItem.getMimeType())){
+
+                holder.mPreviewButton.setVisibility(View.VISIBLE);
+
+                holder.mPreviewButton.setOnClickListener(new View.OnClickListener() {
+
+                    @Override
+                    public void onClick(View v) {
+                        mListener.onListFragmentInteraction(AttachmentFragment.OnListFragmentInteractionListener.Operation.PREVIEW, holder.mItem);
+                    }
+                });
+            }
         }
     }
 

@@ -17,6 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.MediaController;
 import android.widget.TextView;
@@ -51,6 +52,7 @@ public class PreviewFragment extends Fragment implements MediaPlayer.OnPreparedL
     private ActiveAccountRepository accountRepository;
     private WebView webView;
     private EditText textView;
+    private ImageView imageView;
     private LinearLayout musicView;
     private VideoView videoView;
     private TextView emptyView;
@@ -113,11 +115,20 @@ public class PreviewFragment extends Fragment implements MediaPlayer.OnPreparedL
         musicView = (LinearLayout) getActivity().findViewById(R.id.main_audio_view);
         videoView = (VideoView) getActivity().findViewById(R.id.preview_video);
         emptyView = (TextView) getActivity().findViewById(R.id.empty_view_preview);
+        imageView = (ImageView) getActivity().findViewById(R.id.preview_picture);
         nowPlayingView = (TextView) getActivity().findViewById(R.id.now_playing_text);
 
+        musicView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                mediaController.show(0);
+                return true;
+            }
+        });
+
         final ActiveAccount activeAccount = this.accountRepository.getActiveAccount();
-        final Attachment attachment = this.attachmentRepository.getAttachmentWithAttachmentID(activeAccount.getAccount(), activeAccount.getRootFolder(), noteUID, attachmentID);
-        displayPreview(activeAccount, noteUID, attachment);
+        //final Attachment attachment = this.attachmentRepository.getAttachmentWithAttachmentID(activeAccount.getAccount(), activeAccount.getRootFolder(), noteUID, attachmentID);
+        displayPreview(activeAccount, noteUID, null);
     }
 
     public void displayPreview(ActiveAccount account, String noteUID, Attachment attachment){
@@ -126,6 +137,7 @@ public class PreviewFragment extends Fragment implements MediaPlayer.OnPreparedL
         textView.setVisibility(View.INVISIBLE);
         musicView.setVisibility(View.INVISIBLE);
         videoView.setVisibility(View.INVISIBLE);
+        imageView.setVisibility(View.INVISIBLE);
 
         if(attachment == null){
             emptyView.setVisibility(View.VISIBLE);
@@ -142,20 +154,32 @@ public class PreviewFragment extends Fragment implements MediaPlayer.OnPreparedL
             displayAudio(account, noteUID,attachment);
         }else if(attachment.getMimeType().startsWith("video/")){
             displayVideo(account, noteUID,attachment);
+        }else if(attachment.getMimeType().startsWith("image/")){
+            displayImage(account, noteUID, attachment);
         }
     }
 
     void displayHTML(ActiveAccount account, String noteUID,Attachment attachment){
         webView.setVisibility(View.VISIBLE);
 
-        webView.loadUrl(attachmentRepository.getUriFromAttachment(account.getAccount(), account.getRootFolder(), noteUID, attachment).getPath());
+        webView.loadUrl(attachmentRepository.getUriFromAttachment(account.getAccount(), account.getRootFolder(), noteUID, attachment).toString());
+    }
+
+    void displayImage(ActiveAccount account, String noteUID,Attachment attachment){
+        imageView.setVisibility(View.VISIBLE);
+
+        imageView.setImageURI(attachmentRepository.getUriFromAttachment(account.getAccount(), account.getRootFolder(), noteUID, attachment));
     }
 
     void displayText(ActiveAccount account, String noteUID,Attachment attachment){
         textView.setVisibility(View.VISIBLE);
 
         if(android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT){
-            try(BufferedReader reader = new BufferedReader(new InputStreamReader(new ByteArrayInputStream(attachment.getData())))){
+            ContentResolver contentResolver = getActivity().getContentResolver();
+            Uri uri = attachmentRepository.getUriFromAttachment(account.getAccount(), account.getRootFolder(), noteUID, attachment);
+
+
+            try(BufferedReader reader = new BufferedReader(new InputStreamReader(contentResolver.openInputStream(uri)))){
 
                 StringBuilder text = new StringBuilder();
                 String  line;
@@ -186,6 +210,7 @@ public class PreviewFragment extends Fragment implements MediaPlayer.OnPreparedL
             mediaPlayer.setDataSource(getActivity(), attachmentRepository.getUriFromAttachment(account.getAccount(), account.getRootFolder(), noteUID, attachment));
             mediaPlayer.prepare();
 
+            mediaController.show(0);
         }catch (IOException e){
             Toast.makeText(getActivity(), R.string.attachment_not_previewable, Toast.LENGTH_LONG).show();
         }
@@ -197,9 +222,12 @@ public class PreviewFragment extends Fragment implements MediaPlayer.OnPreparedL
 
         MediaController mediaController = new MediaController(getActivity());
         mediaController.setAnchorView(videoView);
+
         videoView.setMediaController(mediaController);
 
         videoView.setVideoURI(attachmentRepository.getUriFromAttachment(account.getAccount(), account.getRootFolder(), noteUID, attachment));
+
+        mediaController.show(0);
     }
 
     public static boolean previewableMimetype(String mimeType){
@@ -210,6 +238,9 @@ public class PreviewFragment extends Fragment implements MediaPlayer.OnPreparedL
             return true;
         }
         if(mimeType.startsWith("video/")){
+            return true;
+        }
+        if(mimeType.startsWith("image/")){
             return true;
         }
 

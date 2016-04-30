@@ -6,8 +6,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
 import org.kore.kolab.notes.Attachment;
+import org.kore.kolabnotes.android.content.ActiveAccountRepository;
 import org.kore.kolabnotes.android.fragment.AttachmentFragment;
 import org.kore.kolabnotes.android.fragment.OnFragmentCallback;
+import org.kore.kolabnotes.android.fragment.PreviewFragment;
 
 /**
  * Created by konradrenner on 11.04.2016
@@ -17,6 +19,10 @@ public class AttachmentActivity extends AppCompatActivity implements AttachmentF
 
     private AttachmentFragment attachmentFragment;
     private Toolbar toolbar;
+    private PreviewFragment previewFragment;
+    private ActiveAccountRepository accountRepository;
+
+    private String noteUID;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -24,7 +30,7 @@ public class AttachmentActivity extends AppCompatActivity implements AttachmentF
         setContentView(R.layout.activity_attachments);
 
         Intent startIntent = getIntent();
-        String uid = startIntent.getStringExtra(Utils.NOTE_UID);
+        noteUID = startIntent.getStringExtra(Utils.NOTE_UID);
 
         toolbar = (Toolbar) findViewById(R.id.toolbar_attachments);
         if (toolbar != null) {
@@ -32,7 +38,21 @@ public class AttachmentActivity extends AppCompatActivity implements AttachmentF
         }
 
         attachmentFragment = (AttachmentFragment) getFragmentManager().findFragmentById(R.id.attachment_fragment);
-        attachmentFragment.setNoteUID(uid);
+        attachmentFragment.setNoteUID(noteUID);
+
+        accountRepository = new ActiveAccountRepository(this);
+
+        if (findViewById(R.id.preview_fragment) != null) {
+
+            if (savedInstanceState != null) {
+                return;
+            }
+
+            previewFragment = PreviewFragment.newInstance(noteUID,null);
+
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.preview_fragment, previewFragment).commit();
+        }
     }
 
     @Override
@@ -62,6 +82,8 @@ public class AttachmentActivity extends AppCompatActivity implements AttachmentF
             attachmentFragment.deleteAttachment(item);
         }else if(Operation.SELECT == operation){
             attachmentFragment.shareFile(item);
+        }else if(Operation.PREVIEW == operation){
+            previewFragment.displayPreview(accountRepository.getActiveAccount(),noteUID,item);
         }
     }
 }

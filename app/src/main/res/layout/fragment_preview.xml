@@ -12,12 +12,13 @@
         android:textColor="@android:color/darker_gray"
         android:textSize="30sp"
         android:gravity="center"
-        android:visibility="gone"
+        android:visibility="visible"
         android:text="@string/no_preview" />
 
     <EditText
         android:id="@+id/preview_text"
         android:visibility="invisible"
+        android:gravity="top|left"
         android:editable="false"
         android:textColor="@color/primary_text_default_material_light"
         android:inputType="textMultiLine"
@@ -40,12 +41,12 @@
         android:id="@+id/preview_video"
         android:visibility="invisible"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="wrap_content" />
 
     <LinearLayout
         android:id="@+id/main_audio_view"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:visibility="invisible"
         android:layout_gravity="center"
         android:orientation="vertical">
@@ -53,6 +54,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
+            android:textColor="@color/primary_text"
             android:text="@string/attachment_now_playing"
             android:textSize="25sp"
             android:textStyle="bold"
@@ -61,6 +63,7 @@
             android:id="@+id/now_playing_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textColor="@color/primary_text"
             android:layout_marginTop="20dip"
             android:layout_marginLeft="10dip"
             android:layout_marginRight="10dip"
