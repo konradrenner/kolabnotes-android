@@ -209,4 +209,7 @@
     <string name="attachment_creation_failed">tạo tập tin đính kèm không</string>
     <string name="attachment_already_exist">File đính kèm với tên tập tin được đặt đã tồn tại</string>
     <string name="attachment_send_to"> Chia sẻ với attachement ...</string>
+    <string name="no_preview">Không có lựa chọn xem trước</string>
+    <string name="attachment_not_previewable"> Không thể xem trước tập tin đính kèm</string>
+    <string name="attachment_now_playing"> Đang chơi:</string>
 </resources>

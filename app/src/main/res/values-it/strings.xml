@@ -203,4 +203,7 @@
     <string name="attachment_creation_failed"> Creazione allegato non riuscito</string>
     <string name="attachment_already_exist">Fissaggio con data filename esiste già</string>
     <string name="attachment_send_to">Condividi attachement con ...</string>
+    <string name="no_preview">Anteprima non selezionato</string>
+    <string name="attachment_not_previewable"> Non è possibile visualizzare l\'anteprima di attacco</string>
+    <string name="attachment_now_playing"> Ora giocando:</string>
 </resources>

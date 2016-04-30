@@ -4,6 +4,17 @@
     android:layout_height="match_parent"
     tools:context="org.kore.kolabnotes.android.fragment.PreviewFragment">
 
+
+    <TextView
+        android:id="@+id/empty_view_preview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:textColor="@android:color/darker_gray"
+        android:textSize="30sp"
+        android:gravity="center"
+        android:visibility="gone"
+        android:text="@string/no_preview" />
+
     <EditText
         android:id="@+id/preview_text"
         android:visibility="invisible"
@@ -31,10 +42,33 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <MediaController
-        android:id="@+id/preview_music"
+    <LinearLayout
+        android:id="@+id/main_audio_view"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
         android:visibility="invisible"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_gravity="center"
+        android:orientation="vertical">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="@string/attachment_now_playing"
+            android:textSize="25sp"
+            android:textStyle="bold"
+            />
+        <TextView
+            android:id="@+id/now_playing_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dip"
+            android:layout_marginLeft="10dip"
+            android:layout_marginRight="10dip"
+            android:layout_gravity="center"
+            android:text="Now playing.."
+            android:textSize="16sp"
+            android:textStyle="italic"
+            />
+    </LinearLayout>
 
 </FrameLayout>

@@ -1,15 +1,26 @@
 package org.kore.kolabnotes.android.fragment;
 
+import android.content.ContentResolver;
 import android.content.Context;
+import android.database.Cursor;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.MediaController;
+import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.VideoView;
 
 import org.kore.kolab.notes.Attachment;
@@ -17,11 +28,17 @@ import org.kore.kolabnotes.android.R;
 import org.kore.kolabnotes.android.content.ActiveAccount;
 import org.kore.kolabnotes.android.content.ActiveAccountRepository;
 import org.kore.kolabnotes.android.content.AttachmentRepository;
+
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+
 /**
  *
  *@author Konrad Renner
  */
-public class PreviewFragment extends Fragment {
+public class PreviewFragment extends Fragment implements MediaPlayer.OnPreparedListener, MediaController.MediaPlayerControl{
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_NOTEUID = "noteUID";
@@ -34,8 +51,15 @@ public class PreviewFragment extends Fragment {
     private ActiveAccountRepository accountRepository;
     private WebView webView;
     private EditText textView;
-    private MediaController musicView;
+    private LinearLayout musicView;
     private VideoView videoView;
+    private TextView emptyView;
+    private TextView nowPlayingView;
+
+    private MediaPlayer mediaPlayer;
+    private MediaController mediaController;
+
+    private Handler handler = new Handler();
 
     /**
      * Use this factory method to create a new instance of
@@ -86,8 +110,10 @@ public class PreviewFragment extends Fragment {
 
         webView = (WebView) getActivity().findViewById(R.id.preview_html);
         textView = (EditText) getActivity().findViewById(R.id.preview_text);
-        musicView = (MediaController) getActivity().findViewById(R.id.preview_music);
+        musicView = (LinearLayout) getActivity().findViewById(R.id.main_audio_view);
         videoView = (VideoView) getActivity().findViewById(R.id.preview_video);
+        emptyView = (TextView) getActivity().findViewById(R.id.empty_view_preview);
+        nowPlayingView = (TextView) getActivity().findViewById(R.id.now_playing_text);
 
         final ActiveAccount activeAccount = this.accountRepository.getActiveAccount();
         final Attachment attachment = this.attachmentRepository.getAttachmentWithAttachmentID(activeAccount.getAccount(), activeAccount.getRootFolder(), noteUID, attachmentID);
@@ -101,28 +127,68 @@ public class PreviewFragment extends Fragment {
         musicView.setVisibility(View.INVISIBLE);
         videoView.setVisibility(View.INVISIBLE);
 
-        /*if(attachment.getMimeType().startsWith("text/html")){
-            displayHTML(attachment);
+        if(attachment == null){
+            emptyView.setVisibility(View.VISIBLE);
+            return;
+        }else{
+            emptyView.setVisibility(View.INVISIBLE);
+        }
+
+        if(attachment.getMimeType().startsWith("text/html")){
+            displayHTML(account, noteUID, attachment);
         }else if(attachment.getMimeType().startsWith("text/")){
-            displayText(attachment);
+            displayText(account, noteUID,attachment);
         }else if(attachment.getMimeType().startsWith("audio/")){
-            displayAudio(attachment);
+            displayAudio(account, noteUID,attachment);
         }else if(attachment.getMimeType().startsWith("video/")){
-            displayVideo(attachment);
-        }*/
+            displayVideo(account, noteUID,attachment);
+        }
     }
 
     void displayHTML(ActiveAccount account, String noteUID,Attachment attachment){
         webView.setVisibility(View.VISIBLE);
+
+        webView.loadUrl(attachmentRepository.getUriFromAttachment(account.getAccount(), account.getRootFolder(), noteUID, attachment).getPath());
     }
 
     void displayText(ActiveAccount account, String noteUID,Attachment attachment){
         textView.setVisibility(View.VISIBLE);
 
+        if(android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT){
+            try(BufferedReader reader = new BufferedReader(new InputStreamReader(new ByteArrayInputStream(attachment.getData())))){
+
+                StringBuilder text = new StringBuilder();
+                String  line;
+                while((line =reader.readLine()) != null){
+                    text.append(line);
+                    text.append(System.lineSeparator());
+                }
+
+                textView.setText(text);
+            } catch (IOException e) {
+                Log.e("displayText","Exception while opening file:",e);
+            }
+        }
     }
 
     void displayAudio(ActiveAccount account, String noteUID,Attachment attachment){
         musicView.setVisibility(View.VISIBLE);
+
+        try {
+            nowPlayingView.setText(attachment.getFileName());
+
+            mediaPlayer = new MediaPlayer();
+            mediaPlayer.setOnPreparedListener(this);
+
+            mediaController = new MediaController(getActivity());
+
+            mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+            mediaPlayer.setDataSource(getActivity(), attachmentRepository.getUriFromAttachment(account.getAccount(), account.getRootFolder(), noteUID, attachment));
+            mediaPlayer.prepare();
+
+        }catch (IOException e){
+            Toast.makeText(getActivity(), R.string.attachment_not_previewable, Toast.LENGTH_LONG).show();
+        }
 
     }
 
@@ -133,7 +199,7 @@ public class PreviewFragment extends Fragment {
         mediaController.setAnchorView(videoView);
         videoView.setMediaController(mediaController);
 
-        //videoView.setVideoURI(attachmentRepository.getUriFromAttachment());
+        videoView.setVideoURI(attachmentRepository.getUriFromAttachment(account.getAccount(), account.getRootFolder(), noteUID, attachment));
     }
 
     public static boolean previewableMimetype(String mimeType){
@@ -154,5 +220,72 @@ public class PreviewFragment extends Fragment {
     @Override
     public void onDetach() {
         super.onDetach();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        mediaController.hide();
+        mediaPlayer.stop();
+        mediaPlayer.release();
+    }
+
+    @Override
+    public int getAudioSessionId() {
+        return 42;
+    }
+
+    //--MediaPlayerControl methods----------------------------------------------------
+    public void start() {
+        mediaPlayer.start();
+    }
+
+    public void pause() {
+        mediaPlayer.pause();
+    }
+
+    public int getDuration() {
+        return mediaPlayer.getDuration();
+    }
+
+    public int getCurrentPosition() {
+        return mediaPlayer.getCurrentPosition();
+    }
+
+    public void seekTo(int i) {
+        mediaPlayer.seekTo(i);
+    }
+
+    public boolean isPlaying() {
+        return mediaPlayer.isPlaying();
+    }
+
+    public int getBufferPercentage() {
+        return 0;
+    }
+
+    public boolean canPause() {
+        return true;
+    }
+
+    public boolean canSeekBackward() {
+        return true;
+    }
+
+    public boolean canSeekForward() {
+        return true;
+    }
+    //--------------------------------------------------------------------------------
+
+    public void onPrepared(MediaPlayer mediaPlayer) {
+        mediaController.setMediaPlayer(this);
+        mediaController.setAnchorView(musicView);
+
+        handler.post(new Runnable() {
+            public void run() {
+                mediaController.setEnabled(true);
+                mediaController.show();
+            }
+        });
     }
 }

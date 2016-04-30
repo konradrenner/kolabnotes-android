@@ -195,5 +195,8 @@
     <string name="attachment_creation_failed"> создание Не удалось загрузить приложение</string>
     <string name="attachment_already_exist"> Приложение с указанным именем уже существует</string>
     <string name="attachment_send_to">Доля прикрепленного с ...</string>
+    <string name="no_preview"> Без предварительного просмотра выбран</string>
+    <string name="attachment_not_previewable">Не удается просмотреть вложение</string>
+    <string name="attachment_now_playing">Сейчас играет:</string>
 
 </resources>

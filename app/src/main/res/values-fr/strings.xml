@@ -186,4 +186,7 @@
     <string name="attachment_creation_failed">La création de la pièce jointe a échoué</string>
     <string name="attachment_already_exist">Pièce jointe avec le nom de fichier existe déjà</string>
     <string name="attachment_send_to"> Annexe share avec ...</string>
+    <string name="no_preview">Aucun aperçu sélectionné</string>
+    <string name="attachment_not_previewable"> Vous ne pouvez pas obtenir un aperçu de l\'attachement</string>
+    <string name="attachment_now_playing"> Lecture en cours:</string>
 </resources>
