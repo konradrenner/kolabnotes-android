@@ -256,9 +256,13 @@ public class PreviewFragment extends Fragment implements MediaPlayer.OnPreparedL
     @Override
     public void onStop() {
         super.onStop();
-        mediaController.hide();
-        mediaPlayer.stop();
-        mediaPlayer.release();
+        if(mediaController != null) {
+            mediaController.hide();
+        }
+        if(mediaPlayer != null){
+            mediaPlayer.stop();
+            mediaPlayer.release();
+        }
     }
 
     @Override

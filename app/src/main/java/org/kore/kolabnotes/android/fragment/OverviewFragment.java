@@ -803,6 +803,10 @@ public class OverviewFragment extends Fragment implements /*NoteAdapter.NoteSele
 
     public void preventBlankDisplaying(){
         this.preventBlankDisplaying = true;
+
+        if(mAdapter != null && mRecyclerView != null){
+            mAdapter.restoreElevation(mRecyclerView);
+        }
     }
 
     @Override

@@ -241,6 +241,16 @@ public class NoteAdapter extends SelectableAdapter<NoteAdapter.ViewHolder> {
         }
     }
 
+    public void restoreElevation(RecyclerView recyclerView){
+        for(int i=0; i < recyclerView.getChildCount(); i++){
+            final View childAt = recyclerView.getChildAt(i);
+            Utils.setElevation(childAt,5);
+            if(i == recyclerView.getChildAdapterPosition(childAt)){
+                Utils.setElevation(childAt,30);
+            }
+        }
+    }
+
     @Override
     public int getItemCount() {
         return notes == null ? 0 : notes.size();

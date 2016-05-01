@@ -706,8 +706,11 @@ public class DetailFragment extends Fragment {
 
                     String alt = path;
 
-                    /* Set focus, as after rotate focus is lost and it's impossible to insert an image */
-                    editor.focusEditor();
+                    //issue 125
+                    if(!editor.isFocused()){
+                        /* Set focus, as after rotate focus is lost and it's impossible to insert an image */
+                        editor.focusEditor();
+                    }
                     editor.insertImage(imageEncoded, alt);
                     putImage(alt,imageEncoded);
 
@@ -738,6 +741,10 @@ public class DetailFragment extends Fragment {
                         ((OnFragmentCallback) activity).fileSelected();
                     }
                 }
+            }
+        }else if(requestCode == ATTACHMENT_ACTIVITY_RESULT_CODE){
+            if (activity instanceof OnFragmentCallback) {
+                ((OnFragmentCallback) activity).fileSelected();
             }
         }
     }
@@ -1404,7 +1411,7 @@ public class DetailFragment extends Fragment {
         Spinner spinner = (Spinner) activity.findViewById(R.id.spinner_notebook);
 
         boolean differences = false;
-        if(summary != null && spinner != null){
+        if(summary != null && spinner != null && note != null){
 
             Note newNote = new Note(note.getIdentification(), note.getAuditInformation(),
                     selectedClassification == null ? Note.Classification.PUBLIC : selectedClassification,
