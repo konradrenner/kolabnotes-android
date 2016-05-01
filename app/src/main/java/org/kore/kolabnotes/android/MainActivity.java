@@ -116,6 +116,11 @@ public class MainActivity extends AppCompatActivity implements SyncStatusObserve
         final Drawer drawer = overviewFragment.getDrawer();
         final int currentSelection = drawer.getCurrentSelection();
 
+        if(currentSelection >= drawer.getDrawerItems().size()){
+            //could be a indexoutofbounds, I think it is a bug in the drawer lib :-(
+            return;
+        }
+
         final IDrawerItem drawerItem = drawer.getDrawerItems().get(currentSelection);
 
         if(drawerItem instanceof BaseDrawerItem){
