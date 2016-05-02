@@ -180,18 +180,6 @@
             android:label="@string/title_activity_settings"
             android:theme="@style/SettingsTheme"></activity>
 
-        <receiver
-            android:name=".security.AccountDeletionReceiver"
-            android:enabled="true"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.accounts.LOGIN_ACCOUNTS_CHANGED" />
-            </intent-filter>
-
-            <meta-data
-                android:name="android.accounts.AccountAuthenticator"
-                android:resource="@xml/authenticator" />
-        </receiver>
     </application>
 
 </manifest>
