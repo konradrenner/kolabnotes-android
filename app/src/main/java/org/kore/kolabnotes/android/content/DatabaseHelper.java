@@ -145,6 +145,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + COLUMN_ROOT_FOLDER + " )" +
             "VALUES ('local','Notes');";
 
+    private static final String INIT_ACCOUNTS = "insert into "
+            + TABLE_ACCOUNTS +
+            "(" + COLUMN_ACCOUNT + ", "
+            + COLUMN_ROOT_FOLDER + " )" +
+            "VALUES ('local','Notes');";
+
     private final Context context;
 
     public DatabaseHelper(Context context) {
@@ -161,6 +167,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         database.execSQL(CREATE_ATTACHMENT);
         database.execSQL(CREATE_ACTIVEACCOUNT);
         database.execSQL(INIT_ACTIVEACCOUNT);
+
+        database.execSQL(CREATE_ACCOUNTS);
+        database.execSQL(INIT_ACCOUNTS);
     }
 
     @Override
@@ -184,19 +193,23 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             db.execSQL(CREATE_ATTACHMENT);
         }
         if(oldVersion < 7){
-            db.execSQL(CREATE_ACCOUNTS);
-            final ActiveAccountRepository activeAccountRepository = new ActiveAccountRepository(context);
-            activeAccountRepository.insertAccount(db, "local", "Notes");
+            createAccountsTable(db);
+        }
+    }
 
-            final AccountManager accountManager = AccountManager.get(context);
-            final Account[] accounts = accountManager.getAccounts();
+    private void createAccountsTable(SQLiteDatabase db) {
+        db.execSQL(CREATE_ACCOUNTS);
+        final ActiveAccountRepository activeAccountRepository = new ActiveAccountRepository(context);
+        activeAccountRepository.insertAccount(db, "local", "Notes");
 
-            for(Account account : accounts){
-                String email = accountManager.getUserData(account, AuthenticatorActivity.KEY_EMAIL);
-                String rootFolder = accountManager.getUserData(account,AuthenticatorActivity.KEY_ROOT_FOLDER);
+        final AccountManager accountManager = AccountManager.get(context);
+        final Account[] accounts = accountManager.getAccounts();
 
-                activeAccountRepository.insertAccount(db, email, rootFolder);
-            }
+        for(Account account : accounts){
+            String email = accountManager.getUserData(account, AuthenticatorActivity.KEY_EMAIL);
+            String rootFolder = accountManager.getUserData(account,AuthenticatorActivity.KEY_ROOT_FOLDER);
+
+            activeAccountRepository.insertAccount(db, email, rootFolder);
         }
     }
 
