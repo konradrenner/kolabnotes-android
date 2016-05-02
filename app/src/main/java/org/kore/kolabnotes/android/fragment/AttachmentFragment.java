@@ -87,6 +87,11 @@ public class AttachmentFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
 
         toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar_attachments);
+
+        if (activity == null) {
+            activity = (AppCompatActivity) getActivity();
+        }
+
         activity.setSupportActionBar(toolbar);
         if(activity.getSupportActionBar() != null){
             activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
