@@ -8,8 +8,8 @@ android {
         applicationId "org.kore.kolabnotes.android"
         minSdkVersion 16
         targetSdkVersion 23
-        versionCode 71
-        versionName "2.0.6"
+        versionCode 72
+        versionName "2.0.7"
 
         //Running test
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
