@@ -1,11 +1,14 @@
 package org.kore.kolabnotes.android.content;
 
+import android.accounts.Account;
+import android.accounts.AccountManager;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import org.kore.kolabnotes.android.Utils;
+import org.kore.kolabnotes.android.security.AuthenticatorActivity;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -47,6 +50,27 @@ public class ActiveAccountRepository {
         }
         cursor.close();
         return accounts;
+    }
+
+    public Set<AccountIdentifier> initAccounts() {
+        LinkedHashSet<AccountIdentifier> ret = new LinkedHashSet<>();
+        final SQLiteDatabase db = ConnectionManager.getDatabase(context);
+
+        insertAccount(db, "local", "Notes");
+        ret.add(new AccountIdentifier("local","Notes"));
+
+        final AccountManager accountManager = AccountManager.get(context);
+        final Account[] accounts = accountManager.getAccounts();
+
+        for(Account account : accounts){
+            String email = accountManager.getUserData(account, AuthenticatorActivity.KEY_EMAIL);
+            String rootFolder = accountManager.getUserData(account,AuthenticatorActivity.KEY_ROOT_FOLDER);
+
+            insertAccount(db, email, rootFolder);
+            ret.add(new AccountIdentifier(email, rootFolder));
+        }
+
+        return ret;
     }
 
     public void insertAccount(String account, String rootFolder) {

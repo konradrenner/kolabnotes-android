@@ -32,7 +32,12 @@ public class AccountDeletionReceiver extends BroadcastReceiver {
         final AccountManager accountManager = AccountManager.get(context);
         final Account[] accounts = accountManager.getAccounts();
 
-        final Set<AccountIdentifier> allAccounts = activeAccountRepository.getAllAccounts();
+        Set<AccountIdentifier> allAccounts = activeAccountRepository.getAllAccounts();
+
+        if(allAccounts.size() == 0){
+            allAccounts = activeAccountRepository.initAccounts();
+        }
+
         Set<AccountIdentifier> accountsForDeletion = new LinkedHashSet<>(allAccounts);
 
         for(Account account : accounts){

@@ -193,24 +193,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             db.execSQL(CREATE_ATTACHMENT);
         }
         if(oldVersion < 7){
-            createAccountsTable(db);
+            db.execSQL(CREATE_ACCOUNTS);
         }
     }
-
-    private void createAccountsTable(SQLiteDatabase db) {
-        db.execSQL(CREATE_ACCOUNTS);
-        final ActiveAccountRepository activeAccountRepository = new ActiveAccountRepository(context);
-        activeAccountRepository.insertAccount(db, "local", "Notes");
-
-        final AccountManager accountManager = AccountManager.get(context);
-        final Account[] accounts = accountManager.getAccounts();
-
-        for(Account account : accounts){
-            String email = accountManager.getUserData(account, AuthenticatorActivity.KEY_EMAIL);
-            String rootFolder = accountManager.getUserData(account,AuthenticatorActivity.KEY_ROOT_FOLDER);
-
-            activeAccountRepository.insertAccount(db, email, rootFolder);
-        }
-    }
-
 }
