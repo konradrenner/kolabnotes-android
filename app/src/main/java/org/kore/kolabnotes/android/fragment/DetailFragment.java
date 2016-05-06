@@ -1215,6 +1215,11 @@ public class DetailFragment extends Fragment {
      * @param html
      */
     String repairImages(String html){
+        //issue 127
+        if(!Utils.getUseRicheditor(activity)){
+            return html;
+        }
+
         if(html == null || html.trim().length() == 0){
             return null;
         }
