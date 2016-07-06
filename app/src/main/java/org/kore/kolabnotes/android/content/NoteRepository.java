@@ -110,10 +110,10 @@ public class NoteRepository {
         String uidofNotebook = getUIDofNotebook(account, rootFolder, note.getIdentification().getUid());
 
         ConnectionManager.getDatabase(context).delete(DatabaseHelper.TABLE_NOTES,
-               DatabaseHelper.COLUMN_ACCOUNT + " = '" + account + "' AND " +
-                       DatabaseHelper.COLUMN_ROOT_FOLDER + " = '" + rootFolder + "' AND " +
-                       DatabaseHelper.COLUMN_UID + " = '" + note.getIdentification().getUid() + "' ",
-               null);
+                DatabaseHelper.COLUMN_ACCOUNT + " = '" + account + "' AND " +
+                        DatabaseHelper.COLUMN_ROOT_FOLDER + " = '" + rootFolder + "' AND " +
+                        DatabaseHelper.COLUMN_UID + " = '" + note.getIdentification().getUid() + "' ",
+                null);
 
         Modification modification = modificationRepository.getUnique(account,rootFolder,note.getIdentification().getUid());
 
@@ -152,6 +152,28 @@ public class NoteRepository {
 
         while (cursor.moveToNext()) {
             Note note = cursorToNoteWithoutDescription(account,rootFolder,cursor);
+            notes.add(note);
+        }
+        cursor.close();
+        return notes;
+    }
+
+    public List<Note> getFromNotebookWithDescriptionLoaded(String account, String rootFolder,String uidNotebook, NoteSorting noteSorting) {
+        List<Note> notes = new ArrayList<Note>();
+
+        Cursor cursor = ConnectionManager.getDatabase(context).query(DatabaseHelper.TABLE_NOTES,
+                allColumns,
+                DatabaseHelper.COLUMN_ACCOUNT + " = '" + account + "' AND " +
+                        DatabaseHelper.COLUMN_ROOT_FOLDER + " = '" + rootFolder + "' AND " +
+                        DatabaseHelper.COLUMN_UID_NOTEBOOK + " = '" + uidNotebook + "' AND " +
+                        DatabaseHelper.COLUMN_DISCRIMINATOR + " = '" + DatabaseHelper.DESCRIMINATOR_NOTE + "' ",
+                null,
+                null,
+                null,
+                noteSorting.getColumnName() + " " + noteSorting.getDirection());
+
+        while (cursor.moveToNext()) {
+            Note note = cursorToNote(account,rootFolder,cursor);
             notes.add(note);
         }
         cursor.close();

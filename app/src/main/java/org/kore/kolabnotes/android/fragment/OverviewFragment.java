@@ -1400,7 +1400,7 @@ public class OverviewFragment extends Fragment implements /*NoteAdapter.NoteSele
             try {
                 Log.d("export", Arrays.toString(params));
                 Notebook notebook = notebookRepository.getBySummary(params[0], params[1], params[2]);
-                List<Note> fromNotebook = notesRepository.getFromNotebook(params[0], params[1], notebook.getIdentification().getUid(), new NoteSorting());
+                List<Note> fromNotebook = notesRepository.getFromNotebookWithDescriptionLoaded(params[0], params[1], notebook.getIdentification().getUid(), new NoteSorting());
 
                 for(Note note : fromNotebook){
                     notebook.addNote(note);
