@@ -19,14 +19,30 @@
         android:orientation="horizontal"
         android:columnCount="1">
 
-        <TextView
-            android:id="@+id/noteSummary"
+        <LinearLayout android:id="@+id/summaryLine"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:layout_row="0"
-            android:layout_rowSpan="2"
-            style="@style/NoteOverviewSummary"
-            android:clickable="false"
-            android:background="@drawable/button_rect_list_normal"
-            />
+            android:layout_rowSpan="2">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:src="@drawable/ic_attach_file_black_24dp"
+                android:id="@+id/attachmentHint"
+                android:visibility="gone"/>
+
+            <TextView
+                android:id="@+id/noteSummary"
+                style="@style/NoteOverviewSummary"
+                android:layout_height="match_parent"
+                android:layout_width="match_parent"
+                android:clickable="false"
+                android:background="@drawable/button_rect_list_normal"
+                />
+
+        </LinearLayout>
 
         <LinearLayout
             android:id="@+id/categories"

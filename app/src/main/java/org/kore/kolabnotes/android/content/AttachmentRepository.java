@@ -35,7 +35,10 @@ import java.io.OutputStream;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by koni on 12.03.15.
@@ -256,6 +259,25 @@ public class AttachmentRepository {
         boolean ret = cursor.moveToNext();
         cursor.close();
         return ret;
+    }
+
+    public Set<String> getNoteIDsWithAttachments(String account, String rootFolder) {
+        Cursor cursor = ConnectionManager.getDatabase(context).query(DatabaseHelper.TABLE_ATTACHMENT,
+                new String[]{DatabaseHelper.COLUMN_IDNOTE},
+                DatabaseHelper.COLUMN_ACCOUNT + " = '" + account + "' AND " +
+                        DatabaseHelper.COLUMN_ROOT_FOLDER + " = '" + rootFolder + "' ",
+                null,
+                null,
+                null,
+                null);
+
+        HashSet<String> ids = new HashSet<>();
+        while(cursor.moveToNext()){
+            ids.add(cursor.getString(0));
+        }
+
+        cursor.close();
+        return ids;
     }
 
     public boolean attachmentsCreatedAfterLastSync(String account, String rootFolder, String noteUID, Date date) {

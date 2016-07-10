@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -25,6 +26,7 @@ import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 public class NoteAdapter extends SelectableAdapter<NoteAdapter.ViewHolder> {
 
@@ -34,10 +36,11 @@ public class NoteAdapter extends SelectableAdapter<NoteAdapter.ViewHolder> {
     private ViewHolder.ClickListener clickListener;
     private DateFormat dateFormatter;
     private int COLOR_SELECTED_NOTE;
+    private Set<String> notesWithAttachment;
 
     private List<ViewHolder> views;
 
-    public NoteAdapter(List<Note> notes, int rowLayout, Context context, ViewHolder.ClickListener clickListener) {
+    public NoteAdapter(List<Note> notes, int rowLayout, Context context, ViewHolder.ClickListener clickListener, Set<String> notesWithAttachment) {
         this.notes = notes;
         this.rowLayout = rowLayout;
         this.context = context;
@@ -45,6 +48,7 @@ public class NoteAdapter extends SelectableAdapter<NoteAdapter.ViewHolder> {
         this.dateFormatter = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
         views = new ArrayList<>(notes.size());
         COLOR_SELECTED_NOTE = ContextCompat.getColor(context, R.color.theme_selected_notes);
+        this.notesWithAttachment = notesWithAttachment;
     }
 
     public void clearNotes() {
@@ -108,7 +112,7 @@ public class NoteAdapter extends SelectableAdapter<NoteAdapter.ViewHolder> {
         viewHolder.name.setText(note.getSummary());
         viewHolder.classification.setText(context.getResources().getString(R.string.classification)+": "+note.getClassification());
         viewHolder.createdDate.setText(context.getResources().getString(R.string.creationDate)+": "+ dateFormatter.format(note.getAuditInformation().getCreationDate()));
-        viewHolder.modificationDate.setText(context.getResources().getString(R.string.modificationDate)+": "+dateFormatter.format(note.getAuditInformation().getLastModificationDate()));
+        viewHolder.modificationDate.setText(context.getResources().getString(R.string.modificationDate) + ": " + dateFormatter.format(note.getAuditInformation().getLastModificationDate()));
         viewHolder.categories.removeAllViews();
 
         boolean useLightColor = Utils.useLightTextColor(context, note.getColor());
@@ -239,6 +243,18 @@ public class NoteAdapter extends SelectableAdapter<NoteAdapter.ViewHolder> {
         }else{
             viewHolder.hideCharacteristics();
         }
+
+        if(notesWithAttachment.contains(note.getIdentification().getUid())){
+            viewHolder.attachmentImage.setVisibility(View.VISIBLE);
+
+            if(useLightColor){
+                viewHolder.attachmentImage.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_attach_file_white_24dp));
+            }
+        }
+    }
+
+    public void setNotesWithAttachment(Set<String> ids){
+        this.notesWithAttachment = ids;
     }
 
     public void restoreElevation(RecyclerView recyclerView){
@@ -267,6 +283,7 @@ public class NoteAdapter extends SelectableAdapter<NoteAdapter.ViewHolder> {
         TextView modificationDate;
         LinearLayout categories;
         CardView cardView;
+        ImageView attachmentImage;
         private ClickListener listener;
         private List<Note> notes;
 
@@ -285,6 +302,7 @@ public class NoteAdapter extends SelectableAdapter<NoteAdapter.ViewHolder> {
             modificationDate = (TextView) itemView.findViewById(R.id.modificationDate);
             categories = (LinearLayout) itemView.findViewById(R.id.categories);
             cardView = (CardView)itemView;
+            attachmentImage = (ImageView)itemView.findViewById(R.id.attachmentHint);
         }
 
         @Override

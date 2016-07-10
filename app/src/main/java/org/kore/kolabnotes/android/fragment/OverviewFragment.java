@@ -283,8 +283,9 @@ public class OverviewFragment extends Fragment implements /*NoteAdapter.NoteSele
         mRecyclerView.setLayoutManager(new LinearLayoutManager(activity));
         //mRecyclerView.setItemAnimator(new CustomItemAnimator());
         //mRecyclerView.setItemAnimator(new ReboundItemAnimator());
+        final ActiveAccount activeAccount = activeAccountRepository.getActiveAccount();
 
-        mAdapter = new NoteAdapter(new ArrayList<Note>(), R.layout.row_note_overview, activity, this);
+        mAdapter = new NoteAdapter(new ArrayList<Note>(), R.layout.row_note_overview, activity, this, attachmentRepository.getNoteIDsWithAttachments(activeAccount.getAccount(),activeAccount.getRootFolder()));
         mRecyclerView.setAdapter(mAdapter);
 
         mSwipeRefreshLayout = (SwipeRefreshLayout) getActivity().findViewById(R.id.swipe_container);
@@ -1678,8 +1679,14 @@ public class OverviewFragment extends Fragment implements /*NoteAdapter.NoteSele
         orderDrawerItems(tags, mDrawer);
 
         if(mAdapter == null){
-            mAdapter = new NoteAdapter(new ArrayList<Note>(), R.layout.row_note_overview, activity, this);
+            final ActiveAccount activeAccount = activeAccountRepository.getActiveAccount();
+            mAdapter = new NoteAdapter(new ArrayList<Note>(), R.layout.row_note_overview, activity, this, attachmentRepository.getNoteIDsWithAttachments(activeAccount.getAccount(),activeAccount.getRootFolder()));
+        }else{
+            final ActiveAccount activeAccount = activeAccountRepository.getActiveAccount();
+            mAdapter.setNotesWithAttachment(attachmentRepository.getNoteIDsWithAttachments(activeAccount.getAccount(),activeAccount.getRootFolder()));
         }
+
+
 
         mAdapter.clearNotes();
         if(notes.size() == 0){
