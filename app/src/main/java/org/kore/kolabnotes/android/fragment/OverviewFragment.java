@@ -334,8 +334,8 @@ public class OverviewFragment extends Fragment implements /*NoteAdapter.NoteSele
         new InitializeApplicationsTask().execute();
 
         if (savedInstanceState != null) {
-            if (savedInstanceState != null && savedInstanceState.getBoolean(TAG_ACTION_MODE, false)){
-                mSelectedNotes = (HashMap<Integer, String>)savedInstanceState.getSerializable(TAG_SELECTED_NOTES);
+            mSelectedNotes = (HashMap<Integer, String>)savedInstanceState.getSerializable(TAG_SELECTED_NOTES);
+            if (savedInstanceState.getBoolean(TAG_ACTION_MODE, false)){
                 mActionMode = activity.startActionMode(mActionModeCallback);
                 mAdapter.setSelectedItems(savedInstanceState.getIntegerArrayList(TAG_SELECTABLE_ADAPTER));
                 mActionMode.setTitle(String.valueOf(mAdapter.getSelectedItemCount()));
@@ -1021,9 +1021,9 @@ public class OverviewFragment extends Fragment implements /*NoteAdapter.NoteSele
             Map<String,Tag> tags = tagRepository.getAllAsMap(activeAccount.getAccount(), activeAccount.getRootFolder());
             List<Notebook> notebooks = notebookRepository.getAll(activeAccount.getAccount(),activeAccount.getRootFolder());
 
-            if(preventBlankDisplaying){
+            if(preventBlankDisplaying) {
                 preventBlankDisplaying = false;
-            }else {
+            } else if(getFragmentManager().findFragmentById(R.id.details_fragment) == null) {
                 displayBlankFragment();
             }
 
