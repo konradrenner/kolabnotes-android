@@ -31,6 +31,7 @@
         <item name="colorPrimary">@color/theme_default_primary</item>
         <item name="colorPrimaryDark">@color/theme_default_primary_dark</item>
         <item name="colorAccent">@color/theme_accent</item>
+        <item name="android:background">@color/material_drawer_dark_background</item>
     </style>
 
     <style name="SettingsTheme" parent="Theme.AppCompat.NoActionBar">
