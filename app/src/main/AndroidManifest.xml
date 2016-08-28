@@ -33,6 +33,7 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            <layout android:defaultWidth="700dp" />
         </activity>
         <activity
             android:name=".DetailActivity"

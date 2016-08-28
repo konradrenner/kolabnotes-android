@@ -307,7 +307,7 @@ public class NoteAdapter extends SelectableAdapter<NoteAdapter.ViewHolder> {
 
         @Override
         public void onClick(View v) {
-            if (listener != null) {
+            if (listener != null && getAdapterPosition() >= 0) {
                 ViewParent parent = v.getParent();
                 if(parent instanceof RecyclerView){
                     RecyclerView recyclerView = (RecyclerView)parent;
