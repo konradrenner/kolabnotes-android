@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 You can also have a look on the GitHub release page: https://github.com/konradrenner/kolabnotes-android/releases
 
+## [2.2.4] - 2016-10-20
+### Fixed
+- Fixed issues 140 and 141
+
 ## [2.2.3] - 2016-09-17
 ### Fixed
 - Fixed text color in list widget
@@ -31,7 +35,8 @@ You can also have a look on the GitHub release page: https://github.com/konradre
 ### Fixed
 - First stable release, support for all major features of the Kolab notes format
 
-[Unreleased]: https://github.com/konradrenner/kolabnotes-android/compare/2.2.3...HEAD
+[Unreleased]: https://github.com/konradrenner/kolabnotes-android/compare/2.2.4...HEAD
+[2.2.4]: https://github.com/konradrenner/kolabnotes-android/compare/2.2.3...2.2.4
 [2.2.3]: https://github.com/konradrenner/kolabnotes-android/compare/2.2.2...2.2.3
 [2.2.2]: https://github.com/konradrenner/kolabnotes-android/compare/2.1.2...2.2.2
 [2.1.2]: https://github.com/konradrenner/kolabnotes-android/compare/2.1.0...2.1.2
