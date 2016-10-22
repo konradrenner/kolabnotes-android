@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 You can also have a look on the GitHub release page: https://github.com/konradrenner/kolabnotes-android/releases
 
-## [2.3.0] - 2016-10-22
+## [2.3.1] - 2016-10-22
 ### Added
 - Support for creating accounts from within the app (issue 137)
 
@@ -39,8 +39,8 @@ You can also have a look on the GitHub release page: https://github.com/konradre
 ### Fixed
 - First stable release, support for all major features of the Kolab notes format
 
-[Unreleased]: https://github.com/konradrenner/kolabnotes-android/compare/2.3.0...HEAD
-[2.3.0]: https://github.com/konradrenner/kolabnotes-android/compare/2.2.4...2.3.0
+[Unreleased]: https://github.com/konradrenner/kolabnotes-android/compare/2.3.1...HEAD
+[2.3.1]: https://github.com/konradrenner/kolabnotes-android/compare/2.2.4...2.3.1
 [2.2.4]: https://github.com/konradrenner/kolabnotes-android/compare/2.2.3...2.2.4
 [2.2.3]: https://github.com/konradrenner/kolabnotes-android/compare/2.2.2...2.2.3
 [2.2.2]: https://github.com/konradrenner/kolabnotes-android/compare/2.1.2...2.2.2
