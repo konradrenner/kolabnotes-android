@@ -312,9 +312,11 @@ public class NoteAdapter extends SelectableAdapter<NoteAdapter.ViewHolder> {
                 if(parent instanceof RecyclerView){
                     RecyclerView recyclerView = (RecyclerView)parent;
                     for(int i=0; i < recyclerView.getChildCount(); i++){
-                        Utils.setElevation(recyclerView.getChildAt(i),5);
-                        if(i == getAdapterPosition()){
-                            Utils.setElevation(recyclerView.getChildAt(i),30);
+                        final View childAt = recyclerView.getChildAt(i);
+                        Utils.setElevation(childAt,5);
+
+                        if(recyclerView.getChildAdapterPosition(childAt) == getAdapterPosition()){
+                            Utils.setElevation(childAt,30);
                         }
                     }
                 }
