@@ -53,6 +53,7 @@
     <string name="description_text">Medium Text</string>
     <string name="description_hint">Description</string>
     <string name="text_description">Medium Text</string>
+    <string name="error_connection">An error has occurred while attempting to connect to server</string>
 
     <string name="dialog_input_text_hint">Summary</string>
     <string name="dialog_input_text_search_hint">Note summary</string>
@@ -87,9 +88,25 @@
     <string name="configure">Configure</string>
     <string name="add_widget">Add widget</string>
     <string name="title_colorpicker">Choose Color</string>
+    <string name="action_sign_in">Sign In</string>
     <string name="button_add">button_add</string>
+    <string name="error_field_required">Required entry missing</string>
+    <string name="error_field_to_low">This value must be between 1 and 90</string>
+    <string name="error_incorrect_password">Password is incorrect</string>
+    <string name="error_invalid_email">Email is invalid</string>
+    <string name="error_invalid_password">Password is invalid</string>
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Password</string>
+    <string name="title_activity_kolab_login">Log in</string>
+    <string name="title_change_classification">Edit Classification</string>
+    <string name="title_create_notebook">New Notebook</string>
+    <string name="title_create_tag">New Tag</string>
+    <string name="title_delete">Delete</string>
+    <string name="title_dialog_search">Search</string>
+    <string name="title_ok">OK</string>
+    <string name="title_share">Share</string>
     <string name="kolab_enabled">Kolab extensions</string>
-    <string name="sync_intervall">Sync intervall (default 24)</string>
+    <string name="sync_intervall">Sync interval (default 24)</string>
     <string name="note_not_found">Note not found!</string>
     <string name="create_or_select_text">Select or create a note</string>
     <string name="select_or_create_hint">select or create note icon</string>
