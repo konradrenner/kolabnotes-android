@@ -1,9 +1,0 @@
-<resources>
-    <string name="title_create_notebook">New Notebook</string>
-    <string name="title_create_tag">New Tag</string>
-    <string name="title_dialog_search">Search Note</string>
-    <string name="title_ok">OK</string>
-    <string name="title_share">Share</string>
-    <string name="title_delete">Delete</string>
-    <string name="title_change_classification">Edit Classification</string>
-</resources>
