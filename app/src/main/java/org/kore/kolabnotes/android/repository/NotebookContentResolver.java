@@ -25,12 +25,18 @@ public final class NotebookContentResolver {
         Cursor cursor = context.getContentResolver().query(uri, new String[0], null, null, null);
 
         if(cursor == null){
-            return Collections.emptyList();
+            if (cursor != null) {
+				cursor.close();
+			}
+			return Collections.emptyList();
         }
         
         while(cursor.moveToNext()){
             //TODO was machen
         }
+		if (cursor != null) {
+			cursor.close();
+		}
         return null;
     }
 

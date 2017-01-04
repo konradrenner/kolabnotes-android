@@ -205,6 +205,9 @@ public class AttachmentFragment extends Fragment {
                 } else {
                     fileName = path.substring(path.lastIndexOf("/") + 1);
                 }
+				if (cursor != null) {
+					cursor.close();
+				}
 
                 String mimeType = contentResolver.getType(uri);
 
