@@ -21,6 +21,9 @@ public class AmbilWarnaPreference extends Preference {
 
 		final TypedArray ta = context.obtainStyledAttributes(attrs, R.styleable.AmbilWarnaPreference);
 		supportsAlpha = ta.getBoolean(R.styleable.AmbilWarnaPreference_supportsAlpha, false);
+		if (ta != null) {
+			ta.recycle();
+		}
 
 		setWidgetLayoutResource(R.layout.ambilwarna_pref_widget);
 	}

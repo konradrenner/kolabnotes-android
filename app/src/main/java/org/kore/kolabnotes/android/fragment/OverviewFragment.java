@@ -1206,6 +1206,9 @@ public class OverviewFragment extends Fragment implements /*NoteAdapter.NoteSele
 
                         notebookName = withouFileEnding(path.substring(path.lastIndexOf("/") + 1));
                     }
+					if (cursor != null) {
+						cursor.close();
+					}
 
                     InputStream inputStream = getActivity().getContentResolver().openInputStream(uri);
 
@@ -1243,6 +1246,9 @@ public class OverviewFragment extends Fragment implements /*NoteAdapter.NoteSele
 
                     notebookName = withouFileEnding(path.substring(path.lastIndexOf("/") + 1));
                 }
+				if (cursor != null) {
+					cursor.close();
+				}
 
                 ParcelFileDescriptor pfd = getActivity().getContentResolver().openFileDescriptor(uri, "w");
                 FileOutputStream fileOutputStream = new FileOutputStream(pfd.getFileDescriptor());
