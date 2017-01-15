@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Kolab Notes</string>
+
+    <string name="sticky_note_name">Kolab 付箋メモ</string>
+
+    <string name="drawer_open">スライダーメニューを開いています</string>
+    <string name="drawer_close">スライダーメニューを閉じています</string>
+
+    <string name="action_settings">設定</string>
+
+    <string name="ok">OK</string>
+    <string name="cancel">キャンセル</string>
+
+    <string name="yes">はい</string>
+    <string name="no">いいえ</string>
+    <string name="no_selection">選択されていません</string>
+
+    <string name="classification">分類</string>
+    <string name="creationDate">作成</string>
+    <string name="modificationDate">最終更新</string>
+    <string name="tags">タグ:</string>
+    <string name="notags">タグなし</string>
+    <string name="radio_public">公開</string>
+    <string name="radio_confidential">秘密</string>
+    <string name="radio_private">非公開</string>
+
+    <string name="activity_detail_title">DetailActivity</string>
+
+    <string name="drawer_item_tags">タグ</string>
+    <string name="drawer_item_notebooks">メモ帳</string>
+    <string name="drawer_item_allnotes">選択したアカウントからのメモ</string>
+    <string name="widget_allnotes">アカウントからすべて</string>
+    <string name="drawer_item_allaccount_notes">すべてのアカウントからのメモ</string>
+    <string name="drawer_account_local">ローカルアカウント</string>
+
+
+    <string name="dialog_nointernet">インターネット接続がありません!</string>
+    <string name="dialog_uploading">Progress Sample&#8230;</string>
+    <string name="dialog_processinganduploading">Showing a sample progress. Please be patient! (This does nothing. Just waiting 100ms / application)</string>
+    <string name="title_activity_phone">PhoneActivity</string>
+
+    <string name="hello_world">Hello world!</string>
+
+    <string name="label">Kolab メモ</string>
+
+    <string name="signup_title">新しいアカウントを作成</string>
+    <string name="signup_ok">新しいアカウントを作成しました</string>
+    <string name="login_label">ログイン</string>
+    <string name="summary_text">大きいテキスト</string>
+    <string name="text_summary">サマリー</string>
+    <string name="description_text">通常のテキスト</string>
+    <string name="description_hint">説明</string>
+    <string name="text_description">通常のテキスト</string>
+    <string name="error_connection">サーバーへの接続中にエラーが発生しました</string>
+
+    <string name="dialog_input_text_hint">サマリー</string>
+    <string name="dialog_input_text_search_hint">メモ サマリー</string>
+    <string name="dialog_input_text_notebook">新しいメモ帳</string>
+    <string name="dialog_input_text_search">メモを検索</string>
+    <string name="dialog_delete_note">メモを削除</string>
+    <string name="dialog_delete_notes">メモを削除</string>
+    <string name="dialog_cancel_warning">警告</string>
+    <string name="dialog_delete_nb_warning">メモ帳を削除</string>
+    <string name="dialog_question_delete_nb">メモ帳とそのすべてのメモが削除されます。よろしいですか?</string>
+    <string name="dialog_input_text_tag">新しいタグ</string>
+    <string name="dialog_change_classification">分類を編集</string>
+    <string name="dialog_change_tags">タグを編集</string>
+    <string name="no_nb_selected">メモ帳が選択されていません</string>
+    <string name="local_account_change">ローカルアカウントは変更できません</string>
+    <string name="add">追加</string>
+    <string name="title_edit_tag">タグを編集</string>
+    <string name="dialog_question_delete">このメモを削除してもよろしいですか?</string>
+    <string name="dialog_question_delete_notes">選択したメモを削除してもよろしいですか?</string>
+    <string name="dialog_question_cancel">すべての変更が破棄されます。よろしいですか?</string>
+    <string name="account_name">アカウント名</string>
+    <string name="imap_root_folder">IMAP ルートフォルダー (デフォルトは Notes)</string>
+    <string name="imap_server_url">imap.myserver.com</string>
+    <string name="port_number">ポート番号 (デフォルトは 993)</string>
+
+    <string name="error_generic">エラーが発生しました</string>
+    <string name="error_duplicate_account">アカウントを作成できませんでした (この名前のアカウントがすでに存在?)</string>
+    <string name="enable_ssl">SSL を有効にする</string>
+    <string name="title_add_account">アカウントを追加</string>
+    <string name="title_update_account">アカウントを変更</string>
+    <string name="appwidget_text">例</string>
+    <string name="configure">構成</string>
+    <string name="add_widget">ウィジェットを追加</string>
+    <string name="title_colorpicker">色を選択</string>
+    <string name="action_sign_in">サインイン</string>
+    <string name="button_add">追加</string>
+    <string name="error_field_required">必要なエントリが見つかりません</string>
+    <string name="error_field_to_low">この値は 1 と 90 の間にする必要があります</string>
+    <string name="error_incorrect_password">パスワードが間違っています</string>
+    <string name="error_invalid_email">メールアドレスが正しくありません</string>
+    <string name="error_invalid_password">パスワードが正しくありません</string>
+    <string name="prompt_email">メールアドレス</string>
+    <string name="prompt_password">パスワード</string>
+    <string name="title_activity_kolab_login">ログイン</string>
+    <string name="title_change_classification">分類を編集</string>
+    <string name="title_create_notebook">新しいメモ帳</string>
+    <string name="title_create_tag">新しいタグ</string>
+    <string name="title_delete">削除</string>
+    <string name="title_dialog_search">検索</string>
+    <string name="title_ok">OK</string>
+    <string name="title_share">共有</string>
+    <string name="kolab_enabled">Kolab 拡張</string>
+    <string name="sync_intervall">同期間隔 (デフォルト 24)</string>
+    <string name="note_not_found">メモが見つかりません!</string>
+    <string name="create_or_select_text">メモを選択または作成</string>
+    <string name="select_or_create_hint">メモのアイコンを選択または作成</string>
+    <string name="note_deleted">メモを削除しました</string>
+    <string name="note_saved">メモを保存しました</string>
+    <string name="sync_failed">同期に失敗しました</string>
+    <string name="title_delete_notebook">メモ帳を削除</string>
+    <string name="send_to">メモを共有...</string>
+    <string name="empty_note">メモは空です</string>
+    <string name="sort_with_heading">並び替え:</string>
+    <string name="radio_desc">降順</string>
+    <string name="radio_asc">昇順</string>
+    <string name="title_dialog_sorting">並び替えを変更</string>
+    <string name="color">色</string>
+    <string name="account_choose_title">アカウントを選択</string>
+    <string name="select_button">選択</string>
+    <string name="extended_options">追加のオプション</string>
+
+    <string name="day">日</string>
+    <string name="hour">時間</string>
+    <string name="minute">分</string>
+    <string name="title_metainformation">メタ情報</string>
+    <string name="productID">製品 ID</string>
+    <string name="uid">UID</string>
+    <string name="title_characteristics">特徴</string>
+    <string name="title_choose_tag_color">タグの色を選択</string>
+    <string name="no_tag_selected">タグが選択されていません</string>
+    <string name="remove">削除</string>
+    <string name="shared_folders">共有したメモ帳</string>
+    <string name="changed_content_shared_folder">共有したメモ帳に変更</string>
+    <string name="note_changed">メモは変更されました</string>
+    <string name="in_notebook">メモ帳に</string>
+    <string name="note_created">新しいメモ</string>
+    <string name="dialog_input_link">添付リンク</string>
+    <string name="no_folder_permission">フォルダーにアクセス許可がありません</string>
+    <string name="title_activity_settings">設定</string>
+    <string name="snackbar_delete_message">削除しました</string>
+    <string name="snackbar_undo_delete">元に戻す</string>
+    <string name="print">印刷</string>
+
+    <string name="move_note">移動</string>
+
+    <!-- Strings related to Settings -->
+    <!-- General settings -->
+    <string name="pref_header_general">全般</string>
+    <string-array name="pref_direction_titles">
+        <item>@string/radio_asc</item>
+        <item>@string/radio_desc</item>
+    </string-array>
+    <string-array name="pref_direction_values">
+        <item>ASC</item>
+        <item>DESC</item>
+    </string-array>
+
+    <!-- Settings for Data & Sync -->
+    <string name="pref_header_data_sync">データ &amp; 同期</string>
+
+    <string name="pref_title_sync_conflict">同期競合時の扱い</string>
+    <string-array name="pref_sync_conflict_titles">
+        <item>最後に更新したメモ</item>
+        <item>サーバーのメモ</item>
+        <item>ローカルのメモ</item>
+        <!--<item>Ask which</item>-->
+    </string-array>
+
+    <string name="pref_title_system_sync_settings">システム同期設定</string>
+
+    <!-- Settings for Notifications -->
+    <string name="pref_header_notifications">通知</string>
+    <string name="pref_characteristics">タグを表示</string>
+    <string name="pref_metainformation">メタ情報を表示</string>
+    <string name="pref_desc_metainformation">作成日と最終更新日を表示</string>
+    <string name="pref_column">列</string>
+    <string name="pref_direction">向き</string>
+    <string name="pref_show_sync_notifications">同期通知を表示</string>
+    <string name="pref_show_sync_notifications_summary">同期したフォルダーが変更された場合、通知を表示します</string>
+    <string name="no_write_permissions">選択したメモ帳に書き込みアクセス許可がありません</string>
+    <string name="no_change_permissions">選択したメモ帳に編集のアクセス許可がありません</string>
+    <string name="no_create_permissions">選択したメモ帳に作成のアクセス許可がありません</string>
+    <string name="pref_sorting_category">並び替え</string>
+
+    <!-- Tags editor -->
+    <string name="title_activity_tag_list">タグ</string>
+    <string name="tag_creationDate">作成</string>
+    <string name="tag_modificationDate">最終更新</string>
+    <string name="dialog_delete_tags">タグを削除</string>
+    <string name="dialog_question_delete_tags">選択したタグを削除してもよろしいですか?\n\n警告: タグを削除すると他のグループウェアのオブジェクトに影響する可能性があります。</string>
+    <string name="dialog_change_tag_warning">警告: タグを変更すると他のグループウェアのオブジェクトに影響する可能性があります</string>
+    <string name="dialog_input_update_tag_text">タグ名を変更</string>
+
+    <!--Empty list-->
+    <string name="no_tags">タグはありません</string>
+    <string name="no_notes">メモはありません</string>
+
+    <!--Import/export notebook-->
+    <string name="title_activity_export">メモ帳のエクスポート</string>
+    <string name="title_activity_import">メモ帳のインポート</string>
+    <string name="exporting">エクスポート中</string>
+    <string name="export_canceled">メモ帳のエクスポートをキャンセルしました</string>
+    <string name="exported">メモ帳をエクスポートしました</string>
+    <string name="importing">インポート中</string>
+    <string name="import_canceled">メモ帳のインポートをキャンセルしました</string>
+    <string name="imported">メモ帳をインポートしました</string>
+    <string name="pref_richeditor">リッチテキストエディターを有効にする</string>
+    <string name="pref_desc_richeditor">メモに文字飾りができる、リッチテキストエディターを有効にします</string>
+
+    <!-- Drawing editor -->
+    <string name="draweditor_title">ドロー</string>
+    <string name="draweditor_menu_undo">元に戻す</string>
+    <string name="draweditor_menu_redo">繰り返す</string>
+    <string name="draweditor_menu_clear">キャンバスをクリア</string>
+    <string name="draweditor_menu_ok">OK</string>
+    <string name="draweditor_title_line_weight">ブラシサイズ</string>
+    <string name="draweditor_saving_toast">保存中</string>
+    <string name="attachment_add">添付を追加</string>
+    <string name="attachment_none">添付はありません</string>
+    <string name="attachment_title">添付</string>
+    <string name="attachments">添付</string>
+    <string name="attachment_creation_failed">添付の作成に失敗しました</string>
+    <string name="attachment_already_exist">指定したファイル名の添付はすでに存在します</string>
+    <string name="attachment_send_to">添付を共有...</string>
+
+<!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="no_preview">プレビューが選択されていません</string>
+    <string name="attachment_not_previewable">添付をプレビューできません</string>
+    <string name="attachment_now_playing">再生しています:</string>
+
+</resources>
