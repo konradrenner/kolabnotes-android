@@ -36,3 +36,4 @@ Translations (help is highly desired!):
  * French (thanks kekh!)
  * Italian (thanks to Daniele Gobbetti!)
  * Vietnamese (thanks Anh Doung!)
+ * Japanese (thanks to naofum!)
