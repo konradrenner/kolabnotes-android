@@ -1,3 +1,3 @@
-The Kolab Notes Android app does not collect or share personal information. Personal informations (like mail adress or password) are only stored in the Android password store, locally on your device, and are only used to authenticate with your sync provider. 
+The Kolab Notes Android app does not collect or share personal information. Personal informations (like mail adress or password) are only stored in the Android account store, locally on your device, and are only used to authenticate with your sync provider. 
 Synced data is only stored locally on your Android device, the Kolab Notes Android app does not automatically analyze or share any of this data.
-If you want to know the privacy policies of your sync provider, please contact them.
+If you want to know the privacy policies of your sync provider, please contact them, we don't have any influence in the privacy policies of your sync providers.
