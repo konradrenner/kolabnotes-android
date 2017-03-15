@@ -3,6 +3,7 @@ package org.kore.kolabnotes.android.fragment;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Fragment;
+import android.content.ClipData;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -217,23 +218,12 @@ public class DetailFragment extends Fragment {
         String action = startIntent.getAction();
 
         if (Intent.ACTION_SEND.equals(action)) {
-            CharSequence description = startIntent.getCharSequenceExtra(Intent.EXTRA_TEXT);
-            CharSequence hdescription = startIntent.getCharSequenceExtra(Intent.EXTRA_HTML_TEXT);
-            String summary = startIntent.getStringExtra(Intent.EXTRA_SUBJECT);
+            final String type = startIntent.getType();
 
-            if(!TextUtils.isEmpty(hdescription)) {
-                String updatedDesc = initImageMap(hdescription.toString());
-                setHtml(updatedDesc);
-            }else if(!TextUtils.isEmpty(description)) {
-
-                String updatedDesc = initImageMap(description.toString());
-                setHtml(updatedDesc);
-            }
-
-            if(!TextUtils.isEmpty(summary)) {
-                EditText esummary = (EditText) activity.findViewById(R.id.detail_summary);
-                esummary.setText(summary);
-
+            if(type != null && type.startsWith("image")){
+                loadImageFromIntent(startIntent);
+            }else{
+                takeTextFromIntent(startIntent);
             }
         }
 
@@ -304,6 +294,27 @@ public class DetailFragment extends Fragment {
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
             activity.findViewById(R.id.action_insert_image).setVisibility(View.GONE);
+        }
+    }
+
+    private void takeTextFromIntent(Intent startIntent) {
+        CharSequence description = startIntent.getCharSequenceExtra(Intent.EXTRA_TEXT);
+        CharSequence hdescription = startIntent.getCharSequenceExtra(Intent.EXTRA_HTML_TEXT);
+        String summary = startIntent.getStringExtra(Intent.EXTRA_SUBJECT);
+
+        if(!TextUtils.isEmpty(hdescription)) {
+            String updatedDesc = initImageMap(hdescription.toString());
+            setHtml(updatedDesc);
+        }else if(!TextUtils.isEmpty(description)) {
+
+            String updatedDesc = initImageMap(description.toString());
+            setHtml(updatedDesc);
+        }
+
+        if(!TextUtils.isEmpty(summary)) {
+            EditText esummary = (EditText) activity.findViewById(R.id.detail_summary);
+            esummary.setText(summary);
+
         }
     }
 
@@ -682,44 +693,7 @@ public class DetailFragment extends Fragment {
 
         if (requestCode == Utils.READ_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             if (resultData != null) {
-                Uri uri = resultData.getData();
-                String path = uri.getPath();
-
-                try {
-                    Bitmap immagex = BitmapFactory.decodeStream(activity.getContentResolver().openInputStream(uri));
-                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                    String lowerPath = path.toLowerCase();
-                    String prefix;
-                    if (lowerPath.endsWith("png")) {
-                        immagex.compress(Bitmap.CompressFormat.PNG, 100, baos);
-                        prefix = "data:image/png;base64,";
-                    } else if (lowerPath.endsWith("webp")) {
-                        immagex.compress(Bitmap.CompressFormat.WEBP, 100, baos);
-                        prefix = "data:image/webp;base64,";
-                    } else {
-                        immagex.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-                        prefix = "data:image/jpeg;base64,";
-                    }
-
-                    byte[] b = baos.toByteArray();
-                    String imageEncoded = prefix + Base64.encodeToString(b, Base64.NO_WRAP);
-
-                    String alt = path;
-
-                    //issue 125
-                    if(!editor.isFocused()){
-                        /* Set focus, as after rotate focus is lost and it's impossible to insert an image */
-                        editor.focusEditor();
-                    }
-                    editor.insertImage(imageEncoded, alt);
-                    putImage(alt,imageEncoded);
-
-                    if (activity instanceof OnFragmentCallback) {
-                        ((OnFragmentCallback) activity).fileSelected();
-                    }
-                }catch(IOException e){
-                    Log.e("onActivityResult",e.toString());
-                }
+                loadImageFromIntent(resultData);
             }
         } else if (requestCode == DRAWEDITOR_ACTIVITY_RESULT_CODE && resultCode == Activity.RESULT_OK) {
             if (resultData != null) {
@@ -746,6 +720,59 @@ public class DetailFragment extends Fragment {
             if (activity instanceof OnFragmentCallback) {
                 ((OnFragmentCallback) activity).fileSelected();
             }
+        }
+    }
+
+    private void loadImageFromIntent(Intent resultData) {
+        Uri uri = resultData.getData();
+        if(uri != null){
+            loadImageFromUri(uri);
+        }else{
+            //in case of getting image via share intent from other app
+            final ClipData clipData = resultData.getClipData();
+            for(int i=0;i<clipData.getItemCount();i++){
+                loadImageFromUri(clipData.getItemAt(i).getUri());
+            }
+        }
+    }
+
+    private void loadImageFromUri(Uri uri) {
+        String path = uri.getPath();
+
+        try {
+            Bitmap immagex = BitmapFactory.decodeStream(activity.getContentResolver().openInputStream(uri));
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            String lowerPath = path.toLowerCase();
+            String prefix;
+            if (lowerPath.endsWith("png")) {
+                immagex.compress(Bitmap.CompressFormat.PNG, 100, baos);
+                prefix = "data:image/png;base64,";
+            } else if (lowerPath.endsWith("webp")) {
+                immagex.compress(Bitmap.CompressFormat.WEBP, 100, baos);
+                prefix = "data:image/webp;base64,";
+            } else {
+                immagex.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+                prefix = "data:image/jpeg;base64,";
+            }
+
+            byte[] b = baos.toByteArray();
+            String imageEncoded = prefix + Base64.encodeToString(b, Base64.NO_WRAP);
+
+            String alt = path;
+
+            //issue 125
+            if(!editor.isFocused()){
+                /* Set focus, as after rotate focus is lost and it's impossible to insert an image */
+                editor.focusEditor();
+            }
+            editor.insertImage(imageEncoded, alt);
+            putImage(alt,imageEncoded);
+
+            if (activity instanceof OnFragmentCallback) {
+                ((OnFragmentCallback) activity).fileSelected();
+            }
+        }catch(IOException e){
+            Log.e("onActivityResult",e.toString());
         }
     }
 
