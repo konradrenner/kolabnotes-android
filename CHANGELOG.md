@@ -6,7 +6,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 You can also have a look on the GitHub release page: https://github.com/konradrenner/kolabnotes-android/releases
 
-## [2.3.6] - 2016-01-15
+## [2.5.0] - 2017-03-15
+### Added
+- Implemented issue 148 (consume images from intents)
+### Fixed
+- Fixed issue 157
+
+## [2.4.0] - 2016-01-15
 ### Added
 - Japanese translation thx to naofum!
 
@@ -59,8 +65,9 @@ You can also have a look on the GitHub release page: https://github.com/konradre
 ### Fixed
 - First stable release, support for all major features of the Kolab notes format
 
-[Unreleased]: https://github.com/konradrenner/kolabnotes-android/compare/2.3.6...HEAD
-[2.3.6]: https://github.com/konradrenner/kolabnotes-android/compare/2.3.5...2.3.6
+[Unreleased]: https://github.com/konradrenner/kolabnotes-android/compare/2.5.0...HEAD
+[2.5.0]: https://github.com/konradrenner/kolabnotes-android/compare/2.4.0...2.5.0
+[2.4.0]: https://github.com/konradrenner/kolabnotes-android/compare/2.3.5...2.4.0
 [2.3.5]: https://github.com/konradrenner/kolabnotes-android/compare/2.3.4...2.3.5
 [2.3.4]: https://github.com/konradrenner/kolabnotes-android/compare/2.3.3...2.3.4
 [2.3.3]: https://github.com/konradrenner/kolabnotes-android/compare/2.3.2...2.3.3

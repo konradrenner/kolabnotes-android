@@ -325,6 +325,9 @@ public class OverviewFragment extends Fragment implements /*NoteAdapter.NoteSele
                             reloadData();
 
                             mSwipeRefreshLayout.setRefreshing(false);
+
+                            //issue 154
+                            mDrawer.setSelection(1);
                         }
                     });
                 }
