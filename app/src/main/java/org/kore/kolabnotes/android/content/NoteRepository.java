@@ -10,6 +10,7 @@ import org.kore.kolab.notes.Colors;
 import org.kore.kolab.notes.Identification;
 import org.kore.kolab.notes.Note;
 import org.kore.kolab.notes.Tag;
+import org.kore.kolabnotes.android.Utils;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -356,6 +357,10 @@ public class NoteRepository {
         Long creationDate = cursor.getLong(5);
         Long modificationDate = cursor.getLong(6);
         String summary = cursor.getString(7);
+        String description = null;
+        if(Utils.getShowPreview(context)){
+            description = cursor.getString(8);
+        }
         String classification = cursor.getString(9);
         String color = cursor.getString(12);
 
@@ -364,6 +369,7 @@ public class NoteRepository {
 
         Note note = new Note(ident,audit, Note.Classification.valueOf(classification),summary);
         note.setColor(Colors.getColor(color));
+        note.setDescription(description);
 
         if(account != null && rootFolder != null) {
             List<Tag> tags = new NoteTagRepository(context).getTagsFor(account, rootFolder, uid);

@@ -206,4 +206,7 @@
     <string name="no_preview">Anteprima non selezionato</string>
     <string name="attachment_not_previewable"> Non è possibile visualizzare l\'anteprima di attacco</string>
     <string name="attachment_now_playing"> Ora giocando:</string>
+    <string name="pref_preview"> Nota anteprima</string>
+    <string name="pref_desc_preview"> Mostra alcuni caratteri anteprima del testo di testo della nota </string>
+    <string name="empty_note_description" > Nessun testo della nota</string>
 </resources>

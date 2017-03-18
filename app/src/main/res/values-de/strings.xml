@@ -203,4 +203,7 @@
     <string name="no_preview">Keine Vorschau gewählt</string>
     <string name="attachment_not_previewable">Kann Vorschau nicht öffnen</string>
     <string name="attachment_now_playing">Aktueller Titel:</string>
+    <string name="pref_preview">Notiz Vorschau</string>
+    <string name="pref_desc_preview">Anzeige eines Teils der Notiz als Vorschau</string>
+    <string name="empty_note_description" >Kein Notiztext</string>
 </resources>

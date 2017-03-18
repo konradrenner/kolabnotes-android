@@ -7,6 +7,10 @@ import android.graphics.drawable.Drawable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
+import android.text.Html;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.Spanned;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -81,28 +85,22 @@ public class NoteAdapter extends SelectableAdapter<NoteAdapter.ViewHolder> {
     }
 
 
-    public void setMetainformationVisible(boolean value){
-        for(ViewHolder holder : this.views){
-            if(value){
-                holder.showMetainformation();
-            }else{
-                holder.hideMetainformation();
-            }
+    void setNotePreview(Note note, ViewHolder viewHolder){
+        final String description = note.getDescription();
+
+        if(description == null || description.trim().length() == 0){
+            viewHolder.notePreview.setText(context.getResources().getString(R.string.empty_note_description));
+            return;
         }
 
-        notifyDataSetChanged();
-    }
+        Spanned text = Html.fromHtml(Utils.getHtmlBodyText(description));
 
-    public void setCharacteristicsVisible(boolean value){
-        for(ViewHolder holder : this.views){
-            if(value){
-                holder.showCharacteristics();
-            }else{
-                holder.hideCharacteristics();
-            }
+        CharSequence displayText = text;
+        if(displayText.length() > 200){
+            displayText = displayText.subSequence(0,200) + " ...";
         }
 
-        notifyDataSetChanged();
+        viewHolder.notePreview.setText(displayText, TextView.BufferType.SPANNABLE);
     }
 
     @Override
@@ -114,11 +112,14 @@ public class NoteAdapter extends SelectableAdapter<NoteAdapter.ViewHolder> {
         viewHolder.createdDate.setText(context.getResources().getString(R.string.creationDate)+": "+ dateFormatter.format(note.getAuditInformation().getCreationDate()));
         viewHolder.modificationDate.setText(context.getResources().getString(R.string.modificationDate) + ": " + dateFormatter.format(note.getAuditInformation().getLastModificationDate()));
         viewHolder.categories.removeAllViews();
+        setNotePreview(note,viewHolder);
 
         boolean useLightColor = Utils.useLightTextColor(context, note.getColor());
 
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         params.setMargins(12, 0, 0, 0);
+
+
 
         if(note.getCategories().isEmpty()){
             TextView textView = new TextView(context);
@@ -185,11 +186,13 @@ public class NoteAdapter extends SelectableAdapter<NoteAdapter.ViewHolder> {
             viewHolder.createdDate.setBackgroundColor(COLOR_SELECTED_NOTE);
             viewHolder.modificationDate.setBackgroundColor(COLOR_SELECTED_NOTE);
             viewHolder.categories.setBackgroundColor(COLOR_SELECTED_NOTE);
+            viewHolder.notePreview.setBackgroundColor(COLOR_SELECTED_NOTE);
 
             viewHolder.name.setTextColor(Color.BLACK);
             viewHolder.classification.setTextColor(Color.BLACK);
             viewHolder.createdDate.setTextColor(Color.BLACK);
             viewHolder.modificationDate.setTextColor(Color.BLACK);
+            viewHolder.notePreview.setTextColor(Color.BLACK);
         } else {
             if(note != null && note.getColor() != null){
                 viewHolder.cardView.setCardBackgroundColor(Color.parseColor(note.getColor().getHexcode()));
@@ -198,6 +201,7 @@ public class NoteAdapter extends SelectableAdapter<NoteAdapter.ViewHolder> {
                 viewHolder.createdDate.setBackgroundColor(Color.parseColor(note.getColor().getHexcode()));
                 viewHolder.modificationDate.setBackgroundColor(Color.parseColor(note.getColor().getHexcode()));
                 viewHolder.categories.setBackgroundColor(Color.parseColor(note.getColor().getHexcode()));
+                viewHolder.notePreview.setBackgroundColor(Color.parseColor(note.getColor().getHexcode()));
 
             /*
             * Text color depending on background color:
@@ -209,11 +213,13 @@ public class NoteAdapter extends SelectableAdapter<NoteAdapter.ViewHolder> {
                     viewHolder.classification.setTextColor(Color.WHITE);
                     viewHolder.createdDate.setTextColor(Color.WHITE);
                     viewHolder.modificationDate.setTextColor(Color.WHITE);
+                    viewHolder.notePreview.setTextColor(Color.WHITE);
                 } else {
                     viewHolder.name.setTextColor(Color.BLACK);
                     viewHolder.classification.setTextColor(Color.GRAY);
                     viewHolder.createdDate.setTextColor(Color.GRAY);
                     viewHolder.modificationDate.setTextColor(Color.GRAY);
+                    viewHolder.notePreview.setTextColor(Color.GRAY);
                 }
 
             } else {
@@ -223,11 +229,13 @@ public class NoteAdapter extends SelectableAdapter<NoteAdapter.ViewHolder> {
                 viewHolder.createdDate.setBackgroundColor(Color.WHITE);
                 viewHolder.modificationDate.setBackgroundColor(Color.WHITE);
                 viewHolder.categories.setBackgroundColor(Color.WHITE);
+                viewHolder.notePreview.setBackgroundColor(Color.WHITE);
 
                 viewHolder.name.setTextColor(Color.BLACK);
                 viewHolder.classification.setTextColor(Color.GRAY);
                 viewHolder.createdDate.setTextColor(Color.GRAY);
                 viewHolder.modificationDate.setTextColor(Color.GRAY);
+                viewHolder.notePreview.setTextColor(Color.GRAY);
             }
         }
         Utils.setElevation(viewHolder.cardView, 5);
@@ -236,6 +244,12 @@ public class NoteAdapter extends SelectableAdapter<NoteAdapter.ViewHolder> {
             viewHolder.showMetainformation();
         }else{
             viewHolder.hideMetainformation();
+        }
+
+        if(Utils.getShowPreview(context)){
+            viewHolder.showPreview();
+        }else{
+            viewHolder.hidePreview();
         }
 
         if(Utils.getShowCharacteristics(context)){
@@ -281,6 +295,7 @@ public class NoteAdapter extends SelectableAdapter<NoteAdapter.ViewHolder> {
         TextView classification;
         TextView createdDate;
         TextView modificationDate;
+        TextView notePreview;
         LinearLayout categories;
         CardView cardView;
         ImageView attachmentImage;
@@ -303,6 +318,7 @@ public class NoteAdapter extends SelectableAdapter<NoteAdapter.ViewHolder> {
             categories = (LinearLayout) itemView.findViewById(R.id.categories);
             cardView = (CardView)itemView;
             attachmentImage = (ImageView)itemView.findViewById(R.id.attachmentHint);
+            notePreview = (TextView)itemView.findViewById(R.id.notePreview);
         }
 
         @Override
@@ -364,6 +380,14 @@ public class NoteAdapter extends SelectableAdapter<NoteAdapter.ViewHolder> {
             //issue #85
             classification.setVisibility(View.GONE);
             categories.setVisibility(View.VISIBLE);
+        }
+
+        void hidePreview(){
+            notePreview.setVisibility(View.GONE);
+        }
+
+        void showPreview(){
+            notePreview.setVisibility(View.VISIBLE);
         }
     }
 }

@@ -290,6 +290,36 @@ public class Utils {
 
     }
 
+    public static boolean getShowPreview(Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        if(prefs == null){
+            Log.d("getNoteSorting","MainActivity prefs are null");
+            return true;
+        }
+        return prefs.getBoolean("pref_preview", false);
+
+    }
+
+    public static String getHtmlBodyText(String html){
+        if(TextUtils.isEmpty(html)){
+            return null;
+        }
+
+        int start = html.indexOf("<body>");
+
+        if(start < 0){
+            return html;
+        }
+
+        int end = html.indexOf("</body>");
+
+        end = end < 0 ? html.length() : end;
+
+        start = start + 6;
+
+        return html.substring(start,end);
+    }
+
     public static boolean clearConflictWithLatest(Context context) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         if(prefs == null){

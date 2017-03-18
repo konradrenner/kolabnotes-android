@@ -212,4 +212,7 @@
     <string name="no_preview">Không có lựa chọn xem trước</string>
     <string name="attachment_not_previewable"> Không thể xem trước tập tin đính kèm</string>
     <string name="attachment_now_playing"> Đang chơi:</string>
+    <string name="pref_preview">Chú ý xem trước </string>
+    <string name="pref_desc_preview">Hiển thị một số ký tự văn bản xem trước của văn bản lưu ý </string>
+    <string name="empty_note_description" >Không có văn bản lưu ý</string>
 </resources>

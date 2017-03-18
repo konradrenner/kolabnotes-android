@@ -348,23 +348,7 @@ public class DetailFragment extends Fragment {
     }
 
     String stripBody(String html){
-        if(TextUtils.isEmpty(html)){
-            return null;
-        }
-
-        int start = html.indexOf("<body>");
-
-        if(start < 0){
-            return html;
-        }
-
-        int end = html.indexOf("</body>");
-
-        end = end < 0 ? html.length() : end;
-
-        start = start + 6;
-
-        return html.substring(start,end);
+        return Utils.getHtmlBodyText(html);
     }
 
     public void setStartUid(String startUid) {

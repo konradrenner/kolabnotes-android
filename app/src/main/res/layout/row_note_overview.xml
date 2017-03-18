@@ -44,6 +44,14 @@
 
         </LinearLayout>
 
+        <TextView
+            android:id="@+id/notePreview"
+            android:layout_row="3"
+            style="@style/NoteOverviewInfoText"
+            android:clickable="false"
+            android:background="@drawable/button_rect_list_normal"
+            />
+
         <LinearLayout
             android:id="@+id/categories"
             android:orientation="horizontal"

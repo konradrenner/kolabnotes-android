@@ -198,4 +198,7 @@
     <string name="title_share">Partager</string>
     <string name="title_delete">Supprimer</string>
     <string name="title_change_classification">Modifier la classification</string>
+    <string name="pref_preview">Aperçu de la note</string>
+    <string name="pref_desc_preview"> Afficher certains caractères de texte d\'aperçu du texte de la note </string>
+    <string name="empty_note_description" >Pas de texte de note</string>
 </resources>
