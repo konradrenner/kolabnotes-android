@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <account-authenticator xmlns:android="http://schemas.android.com/apk/res/android"
     android:accountType="kore.kolabnotes"
-    android:icon="@mipmap/ic_kjots"
-    android:smallIcon="@mipmap/ic_kjots"
+    android:icon="@mipmap/ic_kolabnotes_breeze"
+    android:smallIcon="@mipmap/ic_kolabnotes_breeze"
     android:label="@string/label"/>

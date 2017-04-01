@@ -21,7 +21,7 @@
 
     <application
         android:allowBackup="true"
-        android:icon="@mipmap/ic_kjots"
+        android:icon="@mipmap/ic_kolabnotes_breeze"
         android:label="@string/app_name"
         android:theme="@style/AppTheme">
         <activity
@@ -126,7 +126,7 @@
 
         <receiver
             android:name=".widget.ListWidget"
-            android:icon="@mipmap/ic_kjots"
+            android:icon="@mipmap/ic_kolabnotes_breeze"
             android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
@@ -139,7 +139,7 @@
 
         <activity
             android:name=".widget.ListWidgetConfigureActivity"
-            android:icon="@mipmap/ic_kjots"
+            android:icon="@mipmap/ic_kolabnotes_breeze"
             android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
@@ -148,7 +148,7 @@
 
         <receiver
             android:name=".widget.StickyNoteWidget"
-            android:icon="@mipmap/ic_kjots"
+            android:icon="@mipmap/ic_kolabnotes_breeze"
             android:label="@string/sticky_note_name">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
@@ -171,7 +171,7 @@
 
         <activity
             android:name=".widget.StickyNoteWidgetConfigureActivity"
-            android:icon="@mipmap/ic_kjots"
+            android:icon="@mipmap/ic_kolabnotes_breeze"
             android:label="@string/sticky_note_name">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />

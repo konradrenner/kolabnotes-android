@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<maskable-icon xmlns:android="http://schemas.android.com/tools">
+    <background android:drawable="@color/md_red_900"/>
+    <foreground android:drawable="@mipmap/ic_kolabnotes_breeze"/>
+</maskable-icon>
