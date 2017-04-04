@@ -1,17 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
     <shortcut
-        android:shortcutId="compose"
+        android:shortcutId="newnote"
         android:enabled="true"
-        android:icon="@drawable/compose_icon"
-        android:shortcutShortLabel="@string/compose_shortcut_short_label1"
-        android:shortcutLongLabel="@string/compose_shortcut_long_label1"
-        android:shortcutDisabledMessage="@string/compose_disabled_message1">
+        android:icon="@drawable/ic_compose"
+        android:shortcutShortLabel="@string/note_created"
+        android:shortcutLongLabel="@string/note_created">
+
+        <!-- So that back navigation goes to Main Activity -->
         <intent
             android:action="android.intent.action.VIEW"
-            android:targetPackage="com.example.myapplication"
-            android:targetClass="com.example.myapplication.ComposeActivity" />
+            android:targetPackage="org.kore.kolabnotes.android"
+            android:targetClass="org.kore.kolabnotes.android.MainActivity" />
 
-        <categories android:name="android.shortcut.conversation" />
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="org.kore.kolabnotes.android"
+            android:targetClass="org.kore.kolabnotes.android.DetailActivity" />
     </shortcut>
 </shortcuts>
