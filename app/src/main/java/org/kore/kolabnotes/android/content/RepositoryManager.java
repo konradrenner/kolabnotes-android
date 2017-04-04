@@ -99,7 +99,7 @@ public class RepositoryManager {
 
                     if(lastSync.getTime() < note.getAuditInformation().getCreationDate().getTime()){
                         final Notification notification = new NotificationCompat.Builder(context)
-                                .setSmallIcon(R.drawable.ic_kjots)
+                                .setSmallIcon(R.drawable.ic_kolabnotes_breeze)
                                 .setContentTitle(context.getResources().getString(R.string.changed_content_shared_folder))
                                 .setContentText(context.getResources().getString(R.string.note_created))
                                 .setStyle(new NotificationCompat.BigTextStyle().bigText(context.getResources().getString(R.string.note_created) + ": " + note.getSummary() + " " + context.getResources().getString(R.string.in_notebook) + " " + book.getSummary()))
@@ -109,7 +109,7 @@ public class RepositoryManager {
                         notificationManager.notify(i++,notification);
                     }else if(lastSync.getTime() < note.getAuditInformation().getLastModificationDate().getTime()){
                         final Notification notification = new NotificationCompat.Builder(context)
-                                .setSmallIcon(R.drawable.ic_kjots)
+                                .setSmallIcon(R.drawable.ic_kolabnotes_breeze)
                                 .setContentTitle(context.getResources().getString(R.string.changed_content_shared_folder))
                                 .setContentText(context.getResources().getString(R.string.note_changed))
                                 .setStyle(new NotificationCompat.BigTextStyle().bigText(context.getResources().getString(R.string.note_changed) + ": " + note.getSummary() + " " + context.getResources().getString(R.string.in_notebook) + " " + book.getSummary()))

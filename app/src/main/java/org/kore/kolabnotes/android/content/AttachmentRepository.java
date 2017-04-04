@@ -97,7 +97,7 @@ public class AttachmentRepository {
                             NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 
                             final Notification notification = new NotificationCompat.Builder(context)
-                                    .setSmallIcon(R.drawable.ic_kjots)
+                                    .setSmallIcon(R.drawable.ic_kolabnotes_breeze)
                                     .setContentTitle(context.getResources().getString(R.string.attachment_creation_failed))
                                     .setStyle(new NotificationCompat.BigTextStyle().bigText(e.getMessage()))
                                     .setAutoCancel(true).build();
@@ -109,7 +109,7 @@ public class AttachmentRepository {
                             NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 
                             final Notification notification = new NotificationCompat.Builder(context)
-                                    .setSmallIcon(R.drawable.ic_kjots)
+                                    .setSmallIcon(R.drawable.ic_kolabnotes_breeze)
                                     .setContentTitle(context.getResources().getString(R.string.attachment_creation_failed))
                                     .setStyle(new NotificationCompat.BigTextStyle().bigText(e.getMessage()))
                                     .setAutoCancel(true).build();

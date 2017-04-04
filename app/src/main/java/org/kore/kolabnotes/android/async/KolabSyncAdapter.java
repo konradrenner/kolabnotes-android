@@ -120,7 +120,7 @@ public class KolabSyncAdapter extends AbstractThreadedSyncAdapter {
             }
         }catch(Exception e){
             final Notification notification = new NotificationCompat.Builder(context)
-                    .setSmallIcon(R.drawable.ic_kjots)
+                    .setSmallIcon(R.drawable.ic_kolabnotes_breeze)
                     .setContentTitle(context.getResources().getString(R.string.sync_failed))
                     .setContentText(accName+" refresh failed")
                     .setStyle(new NotificationCompat.BigTextStyle().bigText(e.toString()))
@@ -145,7 +145,7 @@ public class KolabSyncAdapter extends AbstractThreadedSyncAdapter {
             }
         }catch(Exception e){
             final Notification notification =  new NotificationCompat.Builder(context)
-                    .setSmallIcon(R.drawable.ic_kjots)
+                    .setSmallIcon(R.drawable.ic_kolabnotes_breeze)
                     .setContentTitle(context.getResources().getString(R.string.sync_failed))
                     .setContentText(accName+" sync failed")
                     .setStyle(new NotificationCompat.BigTextStyle().bigText(e.toString()))
@@ -165,7 +165,7 @@ public class KolabSyncAdapter extends AbstractThreadedSyncAdapter {
             }
         }catch(Exception e){
             final Notification notification =  new NotificationCompat.Builder(context)
-                    .setSmallIcon(R.drawable.ic_kjots)
+                    .setSmallIcon(R.drawable.ic_kolabnotes_breeze)
                     .setContentTitle(context.getResources().getString(R.string.sync_failed))
                     .setContentText(accName+" merge failed")
                     .setStyle(new NotificationCompat.BigTextStyle().bigText(e.toString()))
@@ -197,7 +197,7 @@ public class KolabSyncAdapter extends AbstractThreadedSyncAdapter {
 
                 if(message.contains("no permission")){
                     final Notification notification =  new NotificationCompat.Builder(context)
-                            .setSmallIcon(R.drawable.ic_kjots)
+                            .setSmallIcon(R.drawable.ic_kolabnotes_breeze)
                             .setContentTitle(context.getResources().getString(R.string.no_folder_permission) +" "+ folderName)
                             .setContentText(context.getResources().getString(R.string.no_folder_permission) +" "+ folderName)
                             .setStyle(new NotificationCompat.BigTextStyle().bigText(e.toString()))

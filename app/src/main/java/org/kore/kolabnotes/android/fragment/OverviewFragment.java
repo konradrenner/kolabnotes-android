@@ -1222,7 +1222,7 @@ public class OverviewFragment extends Fragment implements /*NoteAdapter.NoteSele
                     NotificationManager notificationManager = (NotificationManager) getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
 
                     final Notification notification = new NotificationCompat.Builder(getActivity())
-                            .setSmallIcon(R.drawable.ic_kjots)
+                            .setSmallIcon(R.drawable.ic_kolabnotes_breeze)
                             .setContentTitle(getActivity().getResources().getString(R.string.export_canceled))
                             .setStyle(new NotificationCompat.BigTextStyle().bigText(e.getMessage()))
                             .setAutoCancel(true).build();
@@ -1262,7 +1262,7 @@ public class OverviewFragment extends Fragment implements /*NoteAdapter.NoteSele
                 NotificationManager notificationManager = (NotificationManager) getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
 
                 final Notification notification = new NotificationCompat.Builder(getActivity())
-                        .setSmallIcon(R.drawable.ic_kjots)
+                        .setSmallIcon(R.drawable.ic_kolabnotes_breeze)
                         .setContentTitle(getActivity().getResources().getString(R.string.export_canceled))
                         .setStyle(new NotificationCompat.BigTextStyle().bigText(e.getMessage()))
                         .setAutoCancel(true).build();
@@ -1331,7 +1331,7 @@ public class OverviewFragment extends Fragment implements /*NoteAdapter.NoteSele
             NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 
             final Notification notification = new NotificationCompat.Builder(context)
-                    .setSmallIcon(R.drawable.ic_kjots)
+                    .setSmallIcon(R.drawable.ic_kolabnotes_breeze)
                     .setContentTitle(context.getResources().getString(R.string.import_canceled))
                     .setStyle(new NotificationCompat.BigTextStyle().bigText(s))
                     .setAutoCancel(true).build();
@@ -1346,7 +1346,7 @@ public class OverviewFragment extends Fragment implements /*NoteAdapter.NoteSele
             NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 
             final Notification notification = new NotificationCompat.Builder(context)
-                    .setSmallIcon(R.drawable.ic_kjots)
+                    .setSmallIcon(R.drawable.ic_kolabnotes_breeze)
                     .setContentTitle(context.getResources().getString(R.string.imported))
                     .setStyle(new NotificationCompat.BigTextStyle().bigText(s))
                     .setAutoCancel(true).build();
@@ -1439,7 +1439,7 @@ public class OverviewFragment extends Fragment implements /*NoteAdapter.NoteSele
             NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 
             final Notification notification = new NotificationCompat.Builder(context)
-                    .setSmallIcon(R.drawable.ic_kjots)
+                    .setSmallIcon(R.drawable.ic_kolabnotes_breeze)
                     .setContentTitle(context.getResources().getString(R.string.export_canceled))
                     .setStyle(new NotificationCompat.BigTextStyle().bigText(s))
                     .setAutoCancel(true).build();
@@ -1454,7 +1454,7 @@ public class OverviewFragment extends Fragment implements /*NoteAdapter.NoteSele
             NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 
             final Notification notification = new NotificationCompat.Builder(context)
-                    .setSmallIcon(R.drawable.ic_kjots)
+                    .setSmallIcon(R.drawable.ic_kolabnotes_breeze)
                     .setContentTitle(context.getResources().getString(R.string.exported))
                     .setStyle(new NotificationCompat.BigTextStyle().bigText(s))
                     .setAutoCancel(true).build();

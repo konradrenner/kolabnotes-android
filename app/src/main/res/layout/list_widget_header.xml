@@ -15,7 +15,7 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:id="@+id/imageButton_icon"
-            android:src="@drawable/ic_kjots"
+            android:src="@drawable/ic_kolabnotes_breeze"
             android:background="@android:color/transparent"
             android:layout_alignParentEnd="false"
             android:clickable="true"
