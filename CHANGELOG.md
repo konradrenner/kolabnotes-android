@@ -6,6 +6,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 You can also have a look on the GitHub release page: https://github.com/konradrenner/kolabnotes-android/releases
 
+## [2.7.0] - 2017-04-05
+### Added
+- Implemented issue 158 ("New note" app shortcut on Android >= 7.1 devices)
+### Updated
+- App icon (issue 159)
+
 ## [2.6.0] - 2017-03-18
 ### Added
 - Implemented issue 147 (preview of note description in overview)
@@ -71,7 +77,8 @@ You can also have a look on the GitHub release page: https://github.com/konradre
 ### Fixed
 - First stable release, support for all major features of the Kolab notes format
 
-[Unreleased]: https://github.com/konradrenner/kolabnotes-android/compare/2.6.0...HEAD
+[Unreleased]: https://github.com/konradrenner/kolabnotes-android/compare/2.7.0...HEAD
+[2.7.0]: https://github.com/konradrenner/kolabnotes-android/compare/2.6.0...2.7.0
 [2.6.0]: https://github.com/konradrenner/kolabnotes-android/compare/2.5.0...2.6.0
 [2.5.0]: https://github.com/konradrenner/kolabnotes-android/compare/2.4.0...2.5.0
 [2.4.0]: https://github.com/konradrenner/kolabnotes-android/compare/2.3.5...2.4.0
