@@ -551,7 +551,7 @@ public class OverviewFragment extends Fragment implements /*NoteAdapter.NoteSele
             final ArrayList<Note> notes = new ArrayList<Note>();
             for (int position : items) {
                 final String uid = mSelectedNotes.get(position);
-                final Note note = notesRepository.getByUID(account, rootFolder, uid);
+                final Note note = notesRepository.getByUIDWithoutDescription(account, rootFolder, uid);
                 notes.add(note);
             }
             mAdapter.deleteNotes(notes);

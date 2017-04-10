@@ -209,4 +209,5 @@
     <string name="pref_preview"> Nota anteprima</string>
     <string name="pref_desc_preview"> Mostra alcuni caratteri anteprima del testo di testo della nota </string>
     <string name="empty_note_description" > Nessun testo della nota</string>
+    <string name="image_too_big">Immagine troppo grande (dimensione del file deve essere inferiore a 900 kB)</string>
 </resources>

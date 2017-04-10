@@ -740,17 +740,22 @@ public class DetailFragment extends Fragment {
             }
 
             byte[] b = baos.toByteArray();
-            String imageEncoded = prefix + Base64.encodeToString(b, Base64.NO_WRAP);
+            if(b.length < 900000) {
+                String imageEncoded = prefix + Base64.encodeToString(b, Base64.NO_WRAP);
 
-            String alt = path;
+                String alt = path;
 
-            //issue 125
-            if(!editor.isFocused()){
+                //issue 125
+                if (!editor.isFocused()) {
                 /* Set focus, as after rotate focus is lost and it's impossible to insert an image */
-                editor.focusEditor();
+                    editor.focusEditor();
+                }
+                editor.insertImage(imageEncoded, alt);
+                putImage(alt, imageEncoded);
+            }else{
+                Toast.makeText(activity, R.string.image_too_big, Toast.LENGTH_LONG).show();
             }
-            editor.insertImage(imageEncoded, alt);
-            putImage(alt,imageEncoded);
+
 
             if (activity instanceof OnFragmentCallback) {
                 ((OnFragmentCallback) activity).fileSelected();

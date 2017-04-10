@@ -206,4 +206,5 @@
     <string name="pref_preview">Notiz Vorschau</string>
     <string name="pref_desc_preview">Anzeige eines Teils der Notiz als Vorschau</string>
     <string name="empty_note_description" >Kein Notiztext</string>
+    <string name="image_too_big">Bild ist zu groß (Datei muss kleiner 900 kB sein!)</string>
 </resources>

@@ -201,5 +201,6 @@
     <string name="pref_preview">Предварительный просмотр заметок </string>
     <string name="pref_desc_preview"> Показать некоторые текстовые символы для предварительного просмотра текста примечания</string>
     <string name="empty_note_description" >Нет текста примечания</string>
+    <string name="image_too_big">Слишком большое изображение (размер файла не должен превышать 900 КБ)</string>
 
 </resources>

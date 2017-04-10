@@ -36,6 +36,22 @@ public class NoteRepository {
             DatabaseHelper.COLUMN_UID_NOTEBOOK,
             DatabaseHelper.COLUMN_DISCRIMINATOR,
             DatabaseHelper.COLUMN_COLOR};
+
+    private String[] withoutDescriptionColumns = { DatabaseHelper.COLUMN_ID,
+            DatabaseHelper.COLUMN_ACCOUNT,
+            DatabaseHelper.COLUMN_ROOT_FOLDER,
+            DatabaseHelper.COLUMN_UID,
+            DatabaseHelper.COLUMN_PRODUCTID ,
+            DatabaseHelper.COLUMN_CREATIONDATE ,
+            DatabaseHelper.COLUMN_MODIFICATIONDATE ,
+            DatabaseHelper.COLUMN_SUMMARY ,
+            DatabaseHelper.COLUMN_CLASSIFICATION,
+            DatabaseHelper.COLUMN_UID_NOTEBOOK,
+            DatabaseHelper.COLUMN_DISCRIMINATOR,
+            DatabaseHelper.COLUMN_COLOR};
+
+    private String[] notebookUIDColumn = {DatabaseHelper.COLUMN_UID_NOTEBOOK};
+
     private ModificationRepository modificationRepository;
 
     public NoteRepository(Context context) {
@@ -56,7 +72,7 @@ public class NoteRepository {
         values.put(DatabaseHelper.COLUMN_DESCRIPTION, note.getDescription());
         values.put(DatabaseHelper.COLUMN_UID_NOTEBOOK, uidNotebook);
         values.put(DatabaseHelper.COLUMN_COLOR, note.getColor() == null ? null : note.getColor().getHexcode());
-        values.put(DatabaseHelper.COLUMN_CLASSIFICATION, note.getClassification().toString());
+        values.put(DatabaseHelper.COLUMN_CLASSIFICATION, note.getClassification() == null ? Note.Classification.PUBLIC.toString() : note.getClassification().toString());
 
         ConnectionManager.getDatabase(context).insert(DatabaseHelper.TABLE_NOTES, null, values);
 
@@ -79,7 +95,7 @@ public class NoteRepository {
         values.put(DatabaseHelper.COLUMN_DESCRIPTION, note.getDescription());
         values.put(DatabaseHelper.COLUMN_UID_NOTEBOOK, uidNotebook);
         values.put(DatabaseHelper.COLUMN_COLOR, note.getColor() == null ? null : note.getColor().getHexcode());
-        values.put(DatabaseHelper.COLUMN_CLASSIFICATION, note.getClassification().toString());
+        values.put(DatabaseHelper.COLUMN_CLASSIFICATION, note.getClassification() == null ? Note.Classification.PUBLIC.toString() : note.getClassification().toString());
 
         ConnectionManager.getDatabase(context).update(DatabaseHelper.TABLE_NOTES,
                 values,
@@ -143,8 +159,10 @@ public class NoteRepository {
             query.append(" AND "+DatabaseHelper.COLUMN_UID_NOTEBOOK + " = '" + uidNotebook+"' ");
         }
 
+        String[] columns = Utils.getShowPreview(context) ? allColumns : withoutDescriptionColumns;
+
         Cursor cursor = ConnectionManager.getDatabase(context).query(DatabaseHelper.TABLE_NOTES,
-                allColumns,
+                columns,
                 query.toString(),
                 null,
                 null,
@@ -184,8 +202,10 @@ public class NoteRepository {
     public List<Note> getFromNotebook(String account, String rootFolder,String uidNotebook, NoteSorting noteSorting) {
         List<Note> notes = new ArrayList<Note>();
 
+        String[] columns = Utils.getShowPreview(context) ? allColumns : withoutDescriptionColumns;
+
         Cursor cursor = ConnectionManager.getDatabase(context).query(DatabaseHelper.TABLE_NOTES,
-                allColumns,
+                columns,
                 DatabaseHelper.COLUMN_ACCOUNT + " = '" + account + "' AND " +
                         DatabaseHelper.COLUMN_ROOT_FOLDER + " = '" + rootFolder + "' AND " +
                         DatabaseHelper.COLUMN_UID_NOTEBOOK + " = '" + uidNotebook + "' AND " +
@@ -227,8 +247,10 @@ public class NoteRepository {
     public List<Note> getAll(String account, String rootFolder, NoteSorting noteSorting) {
         List<Note> notes = new ArrayList<Note>();
 
+        String[] columns = Utils.getShowPreview(context) ? allColumns : withoutDescriptionColumns;
+
         Cursor cursor = ConnectionManager.getDatabase(context).query(DatabaseHelper.TABLE_NOTES,
-                allColumns,
+                columns,
                 DatabaseHelper.COLUMN_ACCOUNT + " = '" + account + "' AND " +
                         DatabaseHelper.COLUMN_ROOT_FOLDER + " = '" + rootFolder + "' AND " +
                         DatabaseHelper.COLUMN_DISCRIMINATOR + " = '" + DatabaseHelper.DESCRIMINATOR_NOTE + "' ",
@@ -248,8 +270,10 @@ public class NoteRepository {
     public List<Note> getAll(NoteSorting noteSorting) {
         List<Note> notes = new ArrayList<Note>();
 
+        String[] columns = Utils.getShowPreview(context) ? allColumns : withoutDescriptionColumns;
+
         Cursor cursor = ConnectionManager.getDatabase(context).query(DatabaseHelper.TABLE_NOTES,
-                allColumns,
+                columns,
                 DatabaseHelper.COLUMN_DISCRIMINATOR + " = '" + DatabaseHelper.DESCRIMINATOR_NOTE + "' ",
                 null,
                 null,
@@ -284,6 +308,28 @@ public class NoteRepository {
         return note;
     }
 
+    public Note getByUIDWithoutDescription(String account, String rootFolder,String uid) {
+        String[] columns = Utils.getShowPreview(context) ? allColumns : withoutDescriptionColumns;
+
+        Cursor cursor = ConnectionManager.getDatabase(context).query(DatabaseHelper.TABLE_NOTES,
+                columns,
+                DatabaseHelper.COLUMN_ACCOUNT + " = '" + account + "' AND " +
+                        DatabaseHelper.COLUMN_ROOT_FOLDER + " = '" + rootFolder + "' AND " +
+                        DatabaseHelper.COLUMN_UID + " = '" + uid + "' AND " +
+                        DatabaseHelper.COLUMN_DISCRIMINATOR + " = '" + DatabaseHelper.DESCRIMINATOR_NOTE + "' ",
+                null,
+                null,
+                null,
+                DatabaseHelper.COLUMN_MODIFICATIONDATE + " DESC");
+
+        Note note = null;
+        if (cursor.moveToNext()) {
+            note = cursorToNoteWithoutDescription(account,rootFolder,cursor);
+        }
+        cursor.close();
+        return note;
+    }
+
     public AccountIdentifier getAccountFromNote(String uid) {
         Cursor cursor = ConnectionManager.getDatabase(context).query(DatabaseHelper.TABLE_NOTES,
                 allColumns,
@@ -304,7 +350,7 @@ public class NoteRepository {
 
     public String getUIDofNotebook(String account, String rootFolder,String uid) {
         Cursor cursor = ConnectionManager.getDatabase(context).query(DatabaseHelper.TABLE_NOTES,
-                allColumns,
+                notebookUIDColumn,
                 DatabaseHelper.COLUMN_ACCOUNT + " = '" + account + "' AND " +
                         DatabaseHelper.COLUMN_ROOT_FOLDER + " = '" + rootFolder + "' AND " +
                         DatabaseHelper.COLUMN_UID + " = '" + uid + "' AND " +
@@ -316,7 +362,7 @@ public class NoteRepository {
 
         String uidNB = null;
         if (cursor.moveToNext()) {
-            uidNB = cursor.getString(10);
+            uidNB = cursor.getString(0);
         }
         cursor.close();
         return uidNB;
@@ -358,11 +404,13 @@ public class NoteRepository {
         Long modificationDate = cursor.getLong(6);
         String summary = cursor.getString(7);
         String description = null;
+
+        int index = 8;
         if(Utils.getShowPreview(context)){
-            description = cursor.getString(8);
+            description = cursor.getString(index++);
         }
-        String classification = cursor.getString(9);
-        String color = cursor.getString(12);
+        String classification = cursor.getString(index);
+        String color = cursor.getString(index+3);
 
         AuditInformation audit = new AuditInformation(new Timestamp(creationDate),new Timestamp(modificationDate));
         Identification ident = new Identification(uid,productId);
@@ -401,8 +449,10 @@ public class NoteRepository {
         query.append(DatabaseHelper.COLUMN_DISCRIMINATOR+" = '"+DatabaseHelper.DESCRIMINATOR_NOTE+"' AND ");
         query.append(" "+DatabaseHelper.COLUMN_SUMMARY+" like '%"+keyWord.trim()+"%' COLLATE NOCASE ");
 
+        String[] columns = Utils.getShowPreview(context) ? allColumns : withoutDescriptionColumns;
+
         Cursor cursor = ConnectionManager.getDatabase(context).query(DatabaseHelper.TABLE_NOTES,
-            allColumns,
+            columns,
             query.toString(),
             null,
             null,
