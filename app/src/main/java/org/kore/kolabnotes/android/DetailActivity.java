@@ -15,7 +15,7 @@ import org.kore.kolabnotes.android.fragment.OnAccountChooseListener;
 import org.kore.kolabnotes.android.fragment.OnFragmentCallback;
 import org.kore.kolabnotes.android.security.AuthenticatorActivity;
 
-public class DetailActivity extends AppCompatActivity implements OnFragmentCallback, OnAccountChooseListener {
+public class DetailActivity extends AppCompatActivity implements OnFragmentCallback, OnAccountChooseListener, AccountChooserActivity {
 
     private DetailFragment detailFragment;
     private Toolbar toolbar;
@@ -43,26 +43,19 @@ public class DetailActivity extends AppCompatActivity implements OnFragmentCallb
         if (Intent.ACTION_SEND.equals(action)) {
             AccountManager accountManager = AccountManager.get(this);
             Account[] accounts = AccountManager.get(this).getAccountsByType(AuthenticatorActivity.ARG_ACCOUNT_TYPE);
-
-            if(accounts.length > 0) {
-                showAccountChooseDialog();
-            }
         }
     }
 
-    private void showAccountChooseDialog() {
+    @Override
+    public void showAccountChooseDialog() {
         FragmentManager fm = getFragmentManager();
         ChooseAccountDialogFragment chooseAccountDialog = new ChooseAccountDialogFragment();
         chooseAccountDialog.show(fm, "fragment_choose_account");
     }
 
-
     @Override
     public void onAccountElected(String name,AccountIdentifier accountIdentifier){
-        detailFragment.resetSpinner();
-        if(toolbar != null){
-            toolbar.setTitle(name);
-        }
+        detailFragment.onAccountElected(name, accountIdentifier);
     }
 
     @Override

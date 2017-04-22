@@ -3,6 +3,7 @@ package org.kore.kolabnotes.android;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.app.Fragment;
+import android.app.FragmentManager;
 import android.content.Intent;
 import android.content.SyncStatusObserver;
 import android.os.Bundle;
@@ -15,14 +16,17 @@ import com.mikepenz.materialdrawer.model.BaseDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.mikepenz.materialdrawer.util.KeyboardUtil;
 
+import org.kore.kolabnotes.android.content.AccountIdentifier;
 import org.kore.kolabnotes.android.content.ActiveAccount;
 import org.kore.kolabnotes.android.content.ActiveAccountRepository;
+import org.kore.kolabnotes.android.fragment.ChooseAccountDialogFragment;
 import org.kore.kolabnotes.android.fragment.DetailFragment;
+import org.kore.kolabnotes.android.fragment.OnAccountChooseListener;
 import org.kore.kolabnotes.android.fragment.OnFragmentCallback;
 import org.kore.kolabnotes.android.fragment.OverviewFragment;
 import org.kore.kolabnotes.android.security.AuthenticatorActivity;
 
-public class MainActivity extends AppCompatActivity implements SyncStatusObserver, OnFragmentCallback {
+public class MainActivity extends AppCompatActivity implements SyncStatusObserver, OnFragmentCallback, OnAccountChooseListener, AccountChooserActivity {
 
     public static final String AUTHORITY = "kore.kolabnotes";
 
@@ -145,8 +149,25 @@ public class MainActivity extends AppCompatActivity implements SyncStatusObserve
     }
 
     @Override
+    public void showAccountChooseDialog() {
+        FragmentManager fm = getFragmentManager();
+        ChooseAccountDialogFragment chooseAccountDialog = new ChooseAccountDialogFragment();
+        chooseAccountDialog.show(fm, "fragment_choose_account");
+    }
+
+    @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
     }
 
+    @Override
+    public void onAccountElected(String name, AccountIdentifier accountIdentifier) {
+
+        overviewFragment.onAccountElected(name, accountIdentifier);
+
+        DetailFragment detailFragment = (DetailFragment)getFragmentManager().findFragmentById(R.id.detail_fragment);
+        if(detailFragment != null){
+            detailFragment.onAccountElected(name,accountIdentifier);
+        }
+    }
 }

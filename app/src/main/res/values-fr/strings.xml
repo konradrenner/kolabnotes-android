@@ -202,4 +202,5 @@
     <string name="pref_desc_preview"> Afficher certains caractères de texte d\'aperçu du texte de la note </string>
     <string name="empty_note_description" >Pas de texte de note</string>
     <string name="image_too_big">Image trop grande (la taille du fichier doit être inférieure à 900 kB)</string>
+    <string name="changeAccount">Choisir un compte</string>
 </resources>

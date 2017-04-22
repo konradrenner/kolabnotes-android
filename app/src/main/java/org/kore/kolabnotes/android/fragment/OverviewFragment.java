@@ -5,6 +5,7 @@ import android.accounts.AccountManager;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Fragment;
+import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -112,7 +113,7 @@ import yuku.ambilwarna.AmbilWarnaDialog;
 /**
  * Fragment which displays the notes overview and implements the logic for the overview
  */
-public class OverviewFragment extends Fragment implements /*NoteAdapter.NoteSelectedListener,*/ NoteAdapter.ViewHolder.ClickListener{
+public class OverviewFragment extends Fragment implements NoteAdapter.ViewHolder.ClickListener, OnAccountChooseListener{
 
     public static final int DETAIL_ACTIVITY_RESULT_CODE = 1;
     public static final int TAG_LIST_ACTIVITY_RESULT_CODE = 1;
@@ -354,6 +355,11 @@ public class OverviewFragment extends Fragment implements /*NoteAdapter.NoteSele
     private void cleanupAccounts(Set<AccountIdentifier> accountsForDeletion){
         Thread cleanupThread = new Thread(new AccountsCleaner(accountsForDeletion));
         cleanupThread.start();
+    }
+
+    @Override
+    public void onAccountElected(String name, AccountIdentifier accountIdentifier) {
+        reloadData();
     }
 
     final class AccountsCleaner implements Runnable{
@@ -1718,6 +1724,11 @@ public class OverviewFragment extends Fragment implements /*NoteAdapter.NoteSele
         }
     }
 
+    public void showAccountChooseDialog() {
+        FragmentManager fm = getFragmentManager();
+        ChooseAccountDialogFragment chooseAccountDialog = new ChooseAccountDialogFragment();
+        chooseAccountDialog.show(fm, "fragment_choose_account");
+    }
 
     final void reloadData(){
         ActiveAccount activeAccount = activeAccountRepository.getActiveAccount();

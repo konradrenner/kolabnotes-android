@@ -3,6 +3,7 @@ package org.kore.kolabnotes.android.fragment;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Fragment;
+import android.app.FragmentManager;
 import android.content.ClipData;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -47,6 +48,7 @@ import org.kore.kolab.notes.Note;
 import org.kore.kolab.notes.Notebook;
 import org.kore.kolab.notes.SharedNotebook;
 import org.kore.kolab.notes.Tag;
+import org.kore.kolabnotes.android.AccountChooserActivity;
 import org.kore.kolabnotes.android.AttachmentActivity;
 import org.kore.kolabnotes.android.DrawEditorActivity;
 import org.kore.kolabnotes.android.R;
@@ -79,7 +81,7 @@ import yuku.ambilwarna.AmbilWarnaDialog;
 /**
  * Fragment for displaying and editing the details of a note
  */
-public class DetailFragment extends Fragment {
+public class DetailFragment extends Fragment implements  OnAccountChooseListener{
     public static final int DRAWEDITOR_ACTIVITY_RESULT_CODE = 1;
     public static final int ATTACHMENT_ACTIVITY_RESULT_CODE = 2;
 
@@ -161,6 +163,8 @@ public class DetailFragment extends Fragment {
         tagRepository = new TagRepository(activity);
         activeAccountRepository = new ActiveAccountRepository(activity);
     }
+
+
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -875,6 +879,9 @@ public class DetailFragment extends Fragment {
             case R.id.attachments:
                 showAttachments();
                 break;
+            case R.id.changeAccount:
+                showAccountChooseDialog();
+                break;
         }
         return true;
     }
@@ -973,6 +980,20 @@ public class DetailFragment extends Fragment {
         }
 
         builder.show();
+    }
+
+
+    void showAccountChooseDialog(){
+        AccountChooserActivity chooser = (AccountChooserActivity)this.activity;
+        chooser.showAccountChooseDialog();
+    }
+
+    @Override
+    public void onAccountElected(String name, AccountIdentifier accountIdentifier) {
+        resetSpinner();
+        if(toolbar != null){
+            toolbar.setTitle(name);
+        }
     }
 
     class OnClassificationChange implements DialogInterface.OnClickListener {

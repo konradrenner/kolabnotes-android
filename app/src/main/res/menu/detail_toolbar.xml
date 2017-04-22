@@ -47,4 +47,9 @@
         app:showAsAction="ifRoom"
         android:icon="@drawable/ic_print_white_48dp"
         android:title="@string/print"/>
+
+    <item android:id="@+id/changeAccount"
+        app:showAsAction="ifRoom"
+        android:icon="@drawable/ic_assignment_ind_white_48dp"
+        android:title="@string/changeAccount"/>
 </menu>

@@ -119,7 +119,7 @@
     <string name="no_tag_selected">Không có tag được chọn</string>
     <string name="remove">Xoá</string>
     <string name="shared_folders">Chia sẻ những quyển sổ ghi chú</string>
-    <string name="changed_content_shared_folder">Thay đổi ở quyển sổ chung</string>
+    <string name="changed_content_shared_folder">Thay đổi sổ tay dùng chung</string>
     <string name="note_changed">Ghi chú đã thay đổi</string>
     <string name="in_notebook">trong ghi chú</string>
     <string name="note_created">Ghi chú mới</string>
@@ -216,4 +216,5 @@
     <string name="pref_desc_preview">Hiển thị một số ký tự văn bản xem trước của văn bản lưu ý </string>
     <string name="empty_note_description" >Không có văn bản lưu ý</string>
     <string name="image_too_big">Hình ảnh quá lớn (kích thước tệp phải nhỏ hơn 900 kB)</string>
+    <string name="changeAccount">Chọn Tài khoản</string>
 </resources>
