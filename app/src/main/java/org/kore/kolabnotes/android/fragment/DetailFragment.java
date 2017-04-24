@@ -3,7 +3,6 @@ package org.kore.kolabnotes.android.fragment;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Fragment;
-import android.app.FragmentManager;
 import android.content.ClipData;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -81,7 +80,7 @@ import yuku.ambilwarna.AmbilWarnaDialog;
 /**
  * Fragment for displaying and editing the details of a note
  */
-public class DetailFragment extends Fragment implements  OnAccountChooseListener{
+public class DetailFragment extends Fragment implements OnAccountSwitchedListener {
     public static final int DRAWEDITOR_ACTIVITY_RESULT_CODE = 1;
     public static final int ATTACHMENT_ACTIVITY_RESULT_CODE = 2;
 
@@ -127,6 +126,7 @@ public class DetailFragment extends Fragment implements  OnAccountChooseListener
     private AppCompatActivity activity;
 
     private boolean isDescriptionDirty = false;
+    private boolean accountGotChanged = false;
 
     private String uuidForCreation;
 
@@ -162,6 +162,8 @@ public class DetailFragment extends Fragment implements  OnAccountChooseListener
         noteTagRepository = new NoteTagRepository(activity);
         tagRepository = new TagRepository(activity);
         activeAccountRepository = new ActiveAccountRepository(activity);
+
+        ((OnFragmentCallback)activity).fragementAttached(this);
     }
 
 
@@ -989,11 +991,13 @@ public class DetailFragment extends Fragment implements  OnAccountChooseListener
     }
 
     @Override
-    public void onAccountElected(String name, AccountIdentifier accountIdentifier) {
+    public void onAccountSwitched(String name, AccountIdentifier accountIdentifier) {
         resetSpinner();
         if(toolbar != null){
             toolbar.setTitle(name);
         }
+        this.accountGotChanged = true;
+        this.isNewNote = true;
     }
 
     class OnClassificationChange implements DialogInterface.OnClickListener {
@@ -1175,7 +1179,7 @@ public class DetailFragment extends Fragment implements  OnAccountChooseListener
                 descriptionValue = HTMLSTART + repairImages(getDescriptionFromView()) + HTMLEND;
             }
 
-            if (note == null) {
+            if (note == null || accountGotChanged) {
                 final String uuid = getUUIDForCreation();
                 Identification ident = new Identification(uuid, "kolabnotes-android");
                 Timestamp now = new Timestamp(System.currentTimeMillis());
@@ -1312,7 +1316,7 @@ public class DetailFragment extends Fragment implements  OnAccountChooseListener
     }
 
     void deleteNote(){
-        if(note != null){
+        if(note != null && !accountGotChanged){
             Notebook book = notebookRepository.getByUID(activeAccountRepository.getActiveAccount().getAccount(), activeAccountRepository.getActiveAccount().getRootFolder(), noteRepository.getUIDofNotebook(activeAccountRepository.getActiveAccount().getAccount(), activeAccountRepository.getActiveAccount().getRootFolder(), note.getIdentification().getUid()));
 
             if(book.isShared()){

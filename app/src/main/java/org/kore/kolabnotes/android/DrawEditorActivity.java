@@ -1,5 +1,6 @@
 package org.kore.kolabnotes.android;
 
+import android.app.Fragment;
 import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
@@ -35,6 +36,11 @@ public class DrawEditorActivity extends AppCompatActivity implements OnFragmentC
         }
 
         drawEditorFragment = (DrawEditorFragment) getFragmentManager().findFragmentById(R.id.draweditor_fragment);
+    }
+
+    @Override
+    public void fragementAttached(Fragment fragment) {
+        //nothing at the moment
     }
 
     @Override

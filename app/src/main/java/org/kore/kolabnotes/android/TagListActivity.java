@@ -1,5 +1,6 @@
 package org.kore.kolabnotes.android;
 
+import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -26,6 +27,11 @@ public class TagListActivity extends AppCompatActivity implements OnFragmentCall
         }
 
         tagListFragment = (TagListFragment)getFragmentManager().findFragmentById(R.id.tag_list_fragment);
+    }
+
+    @Override
+    public void fragementAttached(Fragment fragment) {
+        //nothing at the moment
     }
 
     @Override

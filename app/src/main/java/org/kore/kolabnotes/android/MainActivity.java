@@ -7,6 +7,7 @@ import android.app.FragmentManager;
 import android.content.Intent;
 import android.content.SyncStatusObserver;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.widget.Toast;
@@ -21,12 +22,19 @@ import org.kore.kolabnotes.android.content.ActiveAccount;
 import org.kore.kolabnotes.android.content.ActiveAccountRepository;
 import org.kore.kolabnotes.android.fragment.ChooseAccountDialogFragment;
 import org.kore.kolabnotes.android.fragment.DetailFragment;
-import org.kore.kolabnotes.android.fragment.OnAccountChooseListener;
+import org.kore.kolabnotes.android.fragment.OnAccountSwitchedListener;
 import org.kore.kolabnotes.android.fragment.OnFragmentCallback;
 import org.kore.kolabnotes.android.fragment.OverviewFragment;
 import org.kore.kolabnotes.android.security.AuthenticatorActivity;
 
-public class MainActivity extends AppCompatActivity implements SyncStatusObserver, OnFragmentCallback, OnAccountChooseListener, AccountChooserActivity {
+import java.util.ArrayList;
+import java.util.Deque;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Queue;
+
+public class MainActivity extends AppCompatActivity implements SyncStatusObserver, OnFragmentCallback, OnAccountSwitchedListener, AccountChooserActivity {
 
     public static final String AUTHORITY = "kore.kolabnotes";
 
@@ -34,12 +42,16 @@ public class MainActivity extends AppCompatActivity implements SyncStatusObserve
     private ActiveAccountRepository activeAccountRepository = new ActiveAccountRepository(this);
     private OverviewFragment overviewFragment;
 
+    private Deque<OnAccountSwitchedListener> accountSwitchedListeners;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        this.accountSwitchedListeners = new LinkedList<>();
         overviewFragment = (OverviewFragment)getFragmentManager().findFragmentById(R.id.overview_fragment);
+        this.accountSwitchedListeners.push(overviewFragment);
 
         mAccountManager = AccountManager.get(this);
 
@@ -161,13 +173,22 @@ public class MainActivity extends AppCompatActivity implements SyncStatusObserve
     }
 
     @Override
-    public void onAccountElected(String name, AccountIdentifier accountIdentifier) {
+    public void onAccountSwitched(String name, AccountIdentifier accountIdentifier) {
+        final Iterator<OnAccountSwitchedListener> iterator = this.accountSwitchedListeners.iterator();
+        while(iterator.hasNext()){
+            iterator.next().onAccountSwitched(name, accountIdentifier);
+        }
+    }
 
-        overviewFragment.onAccountElected(name, accountIdentifier);
+    @Override
+    public void fragementAttached(Fragment fragment) {
+        final OnAccountSwitchedListener peek = this.accountSwitchedListeners.peek();
+        if(peek instanceof  DetailFragment){
+            this.accountSwitchedListeners.poll();
+        }
 
-        DetailFragment detailFragment = (DetailFragment)getFragmentManager().findFragmentById(R.id.detail_fragment);
-        if(detailFragment != null){
-            detailFragment.onAccountElected(name,accountIdentifier);
+        if(fragment instanceof OnAccountSwitchedListener){
+            this.accountSwitchedListeners.push((OnAccountSwitchedListener)fragment);
         }
     }
 }

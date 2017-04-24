@@ -61,7 +61,6 @@ import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IProfile;
 
-import org.kore.kolab.notes.Attachment;
 import org.kore.kolab.notes.AuditInformation;
 import org.kore.kolab.notes.Colors;
 import org.kore.kolab.notes.Identification;
@@ -113,7 +112,7 @@ import yuku.ambilwarna.AmbilWarnaDialog;
 /**
  * Fragment which displays the notes overview and implements the logic for the overview
  */
-public class OverviewFragment extends Fragment implements NoteAdapter.ViewHolder.ClickListener, OnAccountChooseListener{
+public class OverviewFragment extends Fragment implements NoteAdapter.ViewHolder.ClickListener, OnAccountSwitchedListener {
 
     public static final int DETAIL_ACTIVITY_RESULT_CODE = 1;
     public static final int TAG_LIST_ACTIVITY_RESULT_CODE = 1;
@@ -358,7 +357,7 @@ public class OverviewFragment extends Fragment implements NoteAdapter.ViewHolder
     }
 
     @Override
-    public void onAccountElected(String name, AccountIdentifier accountIdentifier) {
+    public void onAccountSwitched(String name, AccountIdentifier accountIdentifier) {
         reloadData();
     }
 

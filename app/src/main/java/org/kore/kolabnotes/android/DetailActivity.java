@@ -2,6 +2,7 @@ package org.kore.kolabnotes.android;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
+import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Intent;
 import android.os.Bundle;
@@ -9,16 +10,19 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
 import org.kore.kolabnotes.android.content.AccountIdentifier;
+import org.kore.kolabnotes.android.content.ActiveAccountRepository;
 import org.kore.kolabnotes.android.fragment.ChooseAccountDialogFragment;
 import org.kore.kolabnotes.android.fragment.DetailFragment;
-import org.kore.kolabnotes.android.fragment.OnAccountChooseListener;
+import org.kore.kolabnotes.android.fragment.OnAccountSwitchedListener;
 import org.kore.kolabnotes.android.fragment.OnFragmentCallback;
 import org.kore.kolabnotes.android.security.AuthenticatorActivity;
 
-public class DetailActivity extends AppCompatActivity implements OnFragmentCallback, OnAccountChooseListener, AccountChooserActivity {
+public class DetailActivity extends AppCompatActivity implements OnFragmentCallback, OnAccountSwitchedListener, AccountChooserActivity {
 
     private DetailFragment detailFragment;
     private Toolbar toolbar;
+
+    private ActiveAccountRepository activeAccountRepository = new ActiveAccountRepository(this);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,8 +58,8 @@ public class DetailActivity extends AppCompatActivity implements OnFragmentCallb
     }
 
     @Override
-    public void onAccountElected(String name,AccountIdentifier accountIdentifier){
-        detailFragment.onAccountElected(name, accountIdentifier);
+    public void onAccountSwitched(String name, AccountIdentifier accountIdentifier){
+        detailFragment.onAccountSwitched(name, accountIdentifier);
     }
 
     @Override
@@ -67,6 +71,11 @@ public class DetailActivity extends AppCompatActivity implements OnFragmentCallb
             setResult(RESULT_CANCELED,resultIntent);
         }
         finish();
+    }
+
+    @Override
+    public void fragementAttached(Fragment fragment) {
+        //nothing at the moment
     }
 
     @Override

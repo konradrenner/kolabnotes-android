@@ -1,5 +1,6 @@
 package org.kore.kolabnotes.android.fragment;
 
+import android.app.Fragment;
 import android.content.Intent;
 
 /**
@@ -11,6 +12,8 @@ public interface OnFragmentCallback {
     }
 
     void fragmentFinished(Intent resultIntent,ResultCode code);
+
+    void fragementAttached(Fragment fragment);
 
     void fileSelected();
 }

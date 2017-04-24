@@ -61,15 +61,20 @@ public class ChooseAccountDialogFragment extends DialogFragment implements View.
     @Override
     public void onClick(View view) {
         if(view.getId() == R.id.select_button) {
-            OnAccountChooseListener listener = (OnAccountChooseListener) getActivity();
+            OnAccountSwitchedListener listener = (OnAccountSwitchedListener) getActivity();
 
             String name = accountSpinner.getSelectedItem().toString();
 
             final AccountIdentifier selectedAccount = Utils.getAccountIdentifierWithName(getActivity(), name);
 
-            activeAccountRepository.switchAccount(selectedAccount.getAccount(), selectedAccount.getRootFolder());
+            final ActiveAccount activeAccount = activeAccountRepository.getActiveAccount();
+            final AccountIdentifier id = new AccountIdentifier(activeAccount.getAccount(), activeAccount.getRootFolder());
 
-            listener.onAccountElected(name, selectedAccount);
+            if(!id.equals(selectedAccount)) {
+                activeAccountRepository.switchAccount(selectedAccount.getAccount(), selectedAccount.getRootFolder());
+
+                listener.onAccountSwitched(name, selectedAccount);
+            }
         }
         this.dismiss();
     }
