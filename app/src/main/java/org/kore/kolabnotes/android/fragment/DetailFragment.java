@@ -1179,6 +1179,7 @@ public class DetailFragment extends Fragment implements OnAccountSwitchedListene
                 descriptionValue = HTMLSTART + repairImages(getDescriptionFromView()) + HTMLEND;
             }
 
+            final ActiveAccount activeAccount = activeAccountRepository.getActiveAccount();
             if (note == null || accountGotChanged) {
                 final String uuid = getUUIDForCreation();
                 Identification ident = new Identification(uuid, "kolabnotes-android");
@@ -1189,7 +1190,7 @@ public class DetailFragment extends Fragment implements OnAccountSwitchedListene
                 note.setDescription(descriptionValue);
                 note.setColor(selectedColor);
 
-                Notebook book = notebookRepository.getBySummary(activeAccountRepository.getActiveAccount().getAccount(), activeAccountRepository.getActiveAccount().getRootFolder(), notebookName);
+                Notebook book = notebookRepository.getBySummary(activeAccount.getAccount(), activeAccount.getRootFolder(), notebookName);
 
                 if(book.isShared()){
                     if(!((SharedNotebook)book).isNoteCreationAllowed()){
@@ -1198,10 +1199,18 @@ public class DetailFragment extends Fragment implements OnAccountSwitchedListene
                     }
                 }
 
-                noteRepository.insert(activeAccountRepository.getActiveAccount().getAccount(), activeAccountRepository.getActiveAccount().getRootFolder(), note, book.getIdentification().getUid());
-                noteTagRepository.delete(activeAccountRepository.getActiveAccount().getAccount(), activeAccountRepository.getActiveAccount().getRootFolder(), uuid);
+                noteRepository.insert(activeAccount.getAccount(), activeAccount.getRootFolder(), note, book.getIdentification().getUid());
+                noteTagRepository.delete(activeAccount.getAccount(), activeAccount.getRootFolder(), uuid);
                 for (String tag : selectedTags) {
-                    noteTagRepository.insert(activeAccountRepository.getActiveAccount().getAccount(), activeAccountRepository.getActiveAccount().getRootFolder(), uuid, tag);
+                    if(accountGotChanged){
+                        //search for the selected tag, if it  not exists, create it
+                        boolean existsTag = tagRepository.existsTagNameFor(activeAccount.getAccount(), activeAccount.getRootFolder(), tag);
+                        if(!existsTag){
+                            final Tag newTag = Tag.createNewTag(tag);
+                            tagRepository.insert(activeAccount.getAccount(), activeAccount.getRootFolder(), newTag);
+                        }
+                    }
+                    noteTagRepository.insert(activeAccount.getAccount(), activeAccount.getRootFolder(), uuid, tag);
                 }
             } else {
                 final String uuid = note.getIdentification().getUid();
@@ -1211,15 +1220,15 @@ public class DetailFragment extends Fragment implements OnAccountSwitchedListene
                 note.setColor(selectedColor);
                 note.getAuditInformation().setLastModificationDate(System.currentTimeMillis());
 
-                Notebook book = notebookRepository.getBySummary(activeAccountRepository.getActiveAccount().getAccount(), activeAccountRepository.getActiveAccount().getRootFolder(), notebookName);
+                Notebook book = notebookRepository.getBySummary(activeAccount.getAccount(), activeAccount.getRootFolder(), notebookName);
 
                 if (checkModificationPermissions(book)) return;
 
-                noteRepository.update(activeAccountRepository.getActiveAccount().getAccount(), activeAccountRepository.getActiveAccount().getRootFolder(), note, book.getIdentification().getUid());
+                noteRepository.update(activeAccount.getAccount(), activeAccount.getRootFolder(), note, book.getIdentification().getUid());
 
-                noteTagRepository.delete(activeAccountRepository.getActiveAccount().getAccount(), activeAccountRepository.getActiveAccount().getRootFolder(), uuid);
+                noteTagRepository.delete(activeAccount.getAccount(), activeAccount.getRootFolder(), uuid);
                 for (String tag : selectedTags) {
-                    noteTagRepository.insert(activeAccountRepository.getActiveAccount().getAccount(), activeAccountRepository.getActiveAccount().getRootFolder(), uuid, tag);
+                    noteTagRepository.insert(activeAccount.getAccount(), activeAccount.getRootFolder(), uuid, tag);
                 }
 
                 String selectedNotebookName = Utils.getSelectedNotebookName(activity);
@@ -1241,6 +1250,8 @@ public class DetailFragment extends Fragment implements OnAccountSwitchedListene
                     Utils.setSelectedNotebookName(activity,notebookName);
                 }
             }
+            isDescriptionDirty = false;
+
             Utils.updateWidgetsForChange(activity);
 
             ((OnFragmentCallback) activity).fragmentFinished(returnIntent, OnFragmentCallback.ResultCode.SAVED);
