@@ -217,4 +217,5 @@
     <string name="empty_note_description" >Không có văn bản lưu ý</string>
     <string name="image_too_big">Hình ảnh quá lớn (kích thước tệp phải nhỏ hơn 900 kB)</string>
     <string name="changeAccount">Chọn Tài khoản</string>
+    <string name="drawer_organise_tags">Tổ chức thẻ</string>
 </resources>

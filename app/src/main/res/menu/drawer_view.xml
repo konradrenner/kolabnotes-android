@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/all_notes"
+            android:icon="@drawable/ic_action_group"
+            android:title="@string/drawer_item_allaccount_notes" />
+        <item
+            android:id="@+id/all_notes_from_account"
+            android:icon="@drawable/ic_action_person"
+            android:title="@string/drawer_item_allnotes" />
+        <item
+            android:id="@+id/navigation_tags"
+            android:icon="@drawable/ic_action_labels"
+            android:title="@string/drawer_item_tags">
+            <menu>
+                <item
+                    android:id="@+id/organise_tags"
+                    android:icon="@drawable/ic_settings_applications_black_24dp"
+                    android:title="@string/drawer_organise_tags" />
+                <!-- will be filled at runtime -->
+            </menu>
+        </item>
+
+        <item
+            android:id="@+id/navigation_notebooks"
+            android:icon="@drawable/ic_action_collection"
+            android:title="@string/drawer_item_notebooks">
+            <menu>
+                <!-- will be filled at runtime -->/>
+            </menu>
+        </item>
+
+        <item
+            android:id="@+id/drawer_export_notebook"
+            android:icon="@drawable/ic_file_upload_black_24dp"
+            android:title="@string/title_activity_export" />
+        <item
+            android:id="@+id/drawer_import_notebook"
+            android:icon="@drawable/ic_file_download_black_24dp"
+            android:title="@string/title_activity_import" />
+
+        <item
+            android:id="@+id/drawer_settings"
+            android:icon="@drawable/ic_settings_black_24dp"
+            android:title="@string/action_settings" />
+    </group>
+</menu>

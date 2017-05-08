@@ -239,5 +239,6 @@
     <string name="empty_note_description" >メモテキストなし</string>
     <string name="image_too_big">イメージが大きすぎます（ファイルサイズは900 KB未満である必要があります）</string>
     <string name="changeAccount">アカウントを選択</string>
+    <string name="drawer_organise_tags">" タグを整理する"</string>
 
 </resources>

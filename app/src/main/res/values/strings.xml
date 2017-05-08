@@ -239,5 +239,6 @@
     <string name="empty_note_description" >No note text</string>
     <string name="image_too_big"> Image too big (file size must be less than 900 kB)</string>
     <string name="changeAccount">Choose Account</string>
+    <string name="drawer_organise_tags">Organize Tags</string>
 
 </resources>

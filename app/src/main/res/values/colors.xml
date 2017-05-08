@@ -26,4 +26,13 @@
     <color name="list_background_normal">#FCFCFC</color>
     <!-- secondary colors for drawer -->
     <color name="list_background_secondary_normal">#F2F2F2</color>
+    <color name="primary_text">@android:color/black</color>
+    <color name="md_black_1000">@android:color/black</color>
+    <color name="md_yellow_A700">@android:color/holo_orange_light</color>
+    <color name="md_brown_600">@android:color/holo_orange_dark</color>
+    <color name="md_blue_900">@android:color/holo_blue_dark</color>
+    <color name="md_green_700">@android:color/holo_green_dark</color>
+    <color name="md_orange_400">@android:color/holo_orange_dark</color>
+    <color name="md_white_1000">@android:color/white</color>
+    <color name="md_yellow_300">@android:color/holo_orange_light</color>
 </resources>

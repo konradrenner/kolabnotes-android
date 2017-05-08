@@ -211,4 +211,5 @@
     <string name="empty_note_description" > Nessun testo della nota</string>
     <string name="image_too_big">Immagine troppo grande (dimensione del file deve essere inferiore a 900 kB)</string>
     <string name="changeAccount">Scegli Account</string>
+    <string name="drawer_organise_tags">" Organizza i tag"</string>
 </resources>

@@ -203,5 +203,6 @@
     <string name="empty_note_description" >Нет текста примечания</string>
     <string name="image_too_big">Слишком большое изображение (размер файла не должен превышать 900 КБ)</string>
     <string name="changeAccount">Выберите учетную запись</string>
+    <string name="drawer_organise_tags">" Упорядочить теги"</string>
 
 </resources>

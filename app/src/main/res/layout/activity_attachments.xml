@@ -26,7 +26,7 @@
             android:layout_height="match_parent"
             android:layout_below="@id/toolbar_attachments"
             android:orientation="horizontal"
-            android:background="@color/md_white_1000">
+            android:background="@android:color/white">
 
             <fragment
                 class="org.kore.kolabnotes.android.fragment.AttachmentFragment"
