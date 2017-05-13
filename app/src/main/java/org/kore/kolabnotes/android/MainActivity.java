@@ -7,15 +7,13 @@ import android.app.FragmentManager;
 import android.content.Intent;
 import android.content.SyncStatusObserver;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
+import android.support.design.widget.NavigationView;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
-
-import com.mikepenz.materialdrawer.Drawer;
-import com.mikepenz.materialdrawer.model.BaseDrawerItem;
-import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
-import com.mikepenz.materialdrawer.util.KeyboardUtil;
 
 import org.kore.kolabnotes.android.content.AccountIdentifier;
 import org.kore.kolabnotes.android.content.ActiveAccount;
@@ -27,17 +25,17 @@ import org.kore.kolabnotes.android.fragment.OnFragmentCallback;
 import org.kore.kolabnotes.android.fragment.OverviewFragment;
 import org.kore.kolabnotes.android.security.AuthenticatorActivity;
 
-import java.util.ArrayList;
 import java.util.Deque;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
 
 public class MainActivity extends AppCompatActivity implements SyncStatusObserver, OnFragmentCallback, OnAccountSwitchedListener, AccountChooserActivity {
 
     public static final String AUTHORITY = "kore.kolabnotes";
 
+    private DrawerLayout mDrawerLayout;
+    private ActionBarDrawerToggle mDrawerToggle;
+    private NavigationView mNavigationView;
     private AccountManager mAccountManager;
     private ActiveAccountRepository activeAccountRepository = new ActiveAccountRepository(this);
     private OverviewFragment overviewFragment;
@@ -55,10 +53,25 @@ public class MainActivity extends AppCompatActivity implements SyncStatusObserve
 
         mAccountManager = AccountManager.get(this);
 
-        if(Utils.isTablet(getResources())) {
-            KeyboardUtil keyboardUtil = new KeyboardUtil(this, findViewById(R.id.activity_main));
-            keyboardUtil.enable();
-        }
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.activity_main);
+        mNavigationView = (NavigationView) findViewById(R.id.navigation_view);
+
+        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
+                R.string.drawer_open, R.string.drawer_close) {
+
+            /** Called when a drawer has settled in a completely closed state. */
+            public void onDrawerClosed(View view) {
+                super.onDrawerClosed(view);
+            }
+
+            /** Called when a drawer has settled in a completely open state. */
+            public void onDrawerOpened(View drawerView) {
+                super.onDrawerOpened(drawerView);
+            }
+        };
+
+        // Set the drawer toggle as the DrawerListener
+        mDrawerLayout.addDrawerListener(mDrawerToggle);
     }
 
     @Override
@@ -86,7 +99,7 @@ public class MainActivity extends AppCompatActivity implements SyncStatusObserve
             overviewFragment.onResume();
         }else if(ResultCode.BACK == code){
             overviewFragment.onResume();
-            overviewFragment.openDrawer();
+            //TODO open drawer
         }
     }
 
@@ -128,36 +141,6 @@ public class MainActivity extends AppCompatActivity implements SyncStatusObserve
     @Override
     protected void onPause() {
         super.onPause();
-
-        final Drawer drawer = overviewFragment.getDrawer();
-        final int currentSelection = drawer.getCurrentSelection();
-
-        if(currentSelection >= drawer.getDrawerItems().size()){
-            //could be a indexoutofbounds, I think it is a bug in the drawer lib :-(
-            return;
-        }
-
-        final IDrawerItem drawerItem = drawer.getDrawerItems().get(currentSelection);
-
-        if(drawerItem instanceof BaseDrawerItem){
-            BaseDrawerItem selected = (BaseDrawerItem)drawerItem;
-
-            String tag = drawerItem.getTag() == null || drawerItem.getTag().toString().trim().length() == 0 ? "ALL_NOTEBOOK" :  drawerItem.getTag().toString();
-
-            if("NOTEBOOK".equalsIgnoreCase(tag)){
-                Utils.setSelectedNotebookName(this, selected.getName());
-                Utils.setSelectedTagName(this,null);
-            }else if("TAG".equalsIgnoreCase(tag)){
-                Utils.setSelectedNotebookName(this, null);
-                Utils.setSelectedTagName(this,selected.getName());
-            }else if("ALL_NOTES".equalsIgnoreCase(tag)){
-                Utils.setSelectedNotebookName(this, null);
-                Utils.setSelectedTagName(this,null);
-            }else{
-                Utils.setSelectedNotebookName(this, null);
-                Utils.setSelectedTagName(this,null);
-            }
-        }
     }
 
     @Override

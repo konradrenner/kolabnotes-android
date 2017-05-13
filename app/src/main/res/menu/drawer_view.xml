@@ -27,7 +27,7 @@
             android:icon="@drawable/ic_action_collection"
             android:title="@string/drawer_item_notebooks">
             <menu>
-                <!-- will be filled at runtime -->/>
+                <!-- will be filled at runtime -->
             </menu>
         </item>
 

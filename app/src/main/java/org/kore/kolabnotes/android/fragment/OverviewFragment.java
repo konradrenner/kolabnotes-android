@@ -15,8 +15,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
-import android.graphics.PorterDuff;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -43,23 +41,10 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.mikepenz.materialdrawer.Drawer;
-import com.mikepenz.materialdrawer.DrawerBuilder;
-import com.mikepenz.materialdrawer.accountswitcher.AccountHeader;
-import com.mikepenz.materialdrawer.accountswitcher.AccountHeaderBuilder;
-import com.mikepenz.materialdrawer.model.BaseDrawerItem;
-import com.mikepenz.materialdrawer.model.DividerDrawerItem;
-import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
-import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
-import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
-import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
-import com.mikepenz.materialdrawer.model.interfaces.IProfile;
 
 import org.kore.kolab.notes.AuditInformation;
 import org.kore.kolab.notes.Colors;
@@ -70,7 +55,6 @@ import org.kore.kolab.notes.SharedNotebook;
 import org.kore.kolab.notes.Tag;
 import org.kore.kolab.notes.local.LocalNotesRepository;
 import org.kore.kolab.notes.v3.KolabNotesParserV3;
-import org.kore.kolabnotes.android.ColorCircleDrawable;
 import org.kore.kolabnotes.android.DetailActivity;
 import org.kore.kolabnotes.android.MainActivity;
 import org.kore.kolabnotes.android.R;
@@ -97,9 +81,7 @@ import java.io.OutputStream;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -119,9 +101,6 @@ public class OverviewFragment extends Fragment implements NoteAdapter.ViewHolder
     private static final String TAG_ACTION_MODE = "ActionMode";
     private static final String TAG_SELECTED_NOTES = "SelectedNotes";
     private static final String TAG_SELECTABLE_ADAPTER = "SelectableAdapter";
-    private static final String KEY_SEARCH_QUERY = "KEY_SEARCH_QUERY";
-
-    private final DrawerItemClickedListener drawerItemClickedListener = new DrawerItemClickedListener();
 
 
     private NoteAdapter mAdapter;
@@ -149,8 +128,6 @@ public class OverviewFragment extends Fragment implements NoteAdapter.ViewHolder
     private ModificationRepository modificationRepository;
     private Toolbar toolbar;
 
-    private Drawer mDrawer;
-    private AccountHeader mAccount;
     private boolean tabletMode;
 
     private boolean initPhase;
@@ -212,16 +189,14 @@ public class OverviewFragment extends Fragment implements NoteAdapter.ViewHolder
         Set<AccountIdentifier> accountsForDeletion = new LinkedHashSet<>(allAccounts);
         accountsForDeletion.remove(new AccountIdentifier("local","Notes"));
 
-        ProfileDrawerItem[] profiles = new ProfileDrawerItem[accounts.length+1];
-        profiles[0] = new ProfileDrawerItem().withName(getResources().getString(R.string.drawer_account_local)).withTag("Notes").withIcon(getResources().getDrawable(R.drawable.ic_local_account));
-
         for(int i=0;i<accounts.length;i++) {
             String email = mAccountManager.getUserData(accounts[i],AuthenticatorActivity.KEY_EMAIL);
             String name = mAccountManager.getUserData(accounts[i],AuthenticatorActivity.KEY_ACCOUNT_NAME);
             String rootFolder = mAccountManager.getUserData(accounts[i],AuthenticatorActivity.KEY_ROOT_FOLDER);
             String accountType = mAccountManager.getUserData(accounts[i], AuthenticatorActivity.KEY_ACCOUNT_TYPE);
 
-            ProfileDrawerItem item = new ProfileDrawerItem().withName(name).withTag(rootFolder).withEmail(email);
+            //TODO init accounts in drawer
+            /*ProfileDrawerItem item = new ProfileDrawerItem().withName(name).withTag(rootFolder).withEmail(email);
 
             if(accountType != null) {
                 int type = Integer.parseInt(accountType);
@@ -242,31 +217,13 @@ public class OverviewFragment extends Fragment implements NoteAdapter.ViewHolder
                 item.withName(null);
             }
 
-            profiles[i+1] = item;
+            profiles[i+1] = item;*/
 
             accountsForDeletion.remove(new AccountIdentifier(email,rootFolder));
         }
 
         cleanupAccounts(accountsForDeletion);
 
-
-        mAccount = new AccountHeaderBuilder()
-                .withActivity(this.activity)
-                .withHeaderBackground(R.drawable.drawer_header_background)
-                .addProfiles(profiles)
-                .withCompactStyle(true)
-                .withOnAccountHeaderListener(new ProfileChanger())
-                .build();
-        mDrawer = new DrawerBuilder()
-                .withActivity(this.activity)
-                .withToolbar(toolbar)
-                .withAccountHeader(mAccount)
-                .withOnDrawerItemClickListener(getDrawerItemClickedListener())
-                .build();
-
-        addDrawerStandardItems(mDrawer);
-
-        mDrawer.setSelection(1);
 
         ContentResolver.addStatusChangeListener(ContentResolver.SYNC_OBSERVER_TYPE_ACTIVE, activity);
 
@@ -327,7 +284,7 @@ public class OverviewFragment extends Fragment implements NoteAdapter.ViewHolder
                             mSwipeRefreshLayout.setRefreshing(false);
 
                             //issue 154
-                            mDrawer.setSelection(1);
+                            //TODO set drawer selection to all notes from account
                         }
                     });
                 }
@@ -826,10 +783,6 @@ public class OverviewFragment extends Fragment implements NoteAdapter.ViewHolder
         notesRepository.update(account, rootFolder, note, book.getIdentification().getUid());
     }
 
-    public void openDrawer(){
-        mDrawer.openDrawer();
-    }
-
     public void displayBlankFragment(){
         Log.d("displayBlankFragment", "tabletMode:" + tabletMode);
         if(tabletMode){
@@ -839,10 +792,6 @@ public class OverviewFragment extends Fragment implements NoteAdapter.ViewHolder
             ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
             ft.commit();
         }
-    }
-
-    public DrawerItemClickedListener getDrawerItemClickedListener(){
-        return drawerItemClickedListener;
     }
 
     void setDetailFragment(Note note, boolean sameSelection){
@@ -920,8 +869,8 @@ public class OverviewFragment extends Fragment implements NoteAdapter.ViewHolder
 
         String selectedNotebookName = Utils.getSelectedNotebookName(activity);
 
-
-        AccountHeader accountHeader = mAccount;
+    //TODO set selected account
+        /*AccountHeader accountHeader = mAccount;
         for(IProfile profile : accountHeader.getProfiles()){
             if(profile instanceof ProfileDrawerItem){
                 ProfileDrawerItem item = (ProfileDrawerItem)profile;
@@ -931,7 +880,7 @@ public class OverviewFragment extends Fragment implements NoteAdapter.ViewHolder
                     break;
                 }
             }
-        }
+        }*/
 
         if(initPhase){
             initPhase = false;
@@ -999,14 +948,15 @@ public class OverviewFragment extends Fragment implements NoteAdapter.ViewHolder
                 public void run() {
                     String name = Utils.getNameOfActiveAccount(activity, activeAccount.getAccount(), activeAccount.getRootFolder());
                     if(changeDrawerAccount){
-                        final ArrayList<IProfile> profiles = mAccount.getProfiles();
+                        //TODO set selected account
+                        /*final ArrayList<IProfile> profiles = mAccount.getProfiles();
                         for(IProfile profile : profiles){
                             String profileName = profile.getName() == null ? profile.getEmail() : profile.getName();
                             if(name.equals(profileName)){
                                 mAccount.setActiveProfile(profile,false);
                                 break;
                             }
-                        }
+                        }*/
                     }
                     toolbar.setTitle(name);
                 }
@@ -1147,11 +1097,8 @@ public class OverviewFragment extends Fragment implements NoteAdapter.ViewHolder
             case R.id.delete_notebook_menu:
                 AlertDialog deleteNBDialog = deleteNotebookDialog();
 
-                int selection = mDrawer.getCurrentSelection();
-                final IDrawerItem drawerItem = mDrawer.getDrawerItems().get(selection);
-                String tag = drawerItem.getTag() == null || drawerItem.getTag().toString().trim().length() == 0 ? null : drawerItem.getTag().toString();
-
-                if(tag == null || !tag.equals("NOTEBOOK")){
+                //TODO get notebook name from drawer
+                if(/*tag == null || !tag.equals("NOTEBOOK")*/true){
                     Toast.makeText(activity,R.string.no_nb_selected,Toast.LENGTH_LONG).show();
                 }else {
                     deleteNBDialog.show();
@@ -1365,11 +1312,8 @@ public class OverviewFragment extends Fragment implements NoteAdapter.ViewHolder
     private void exportNotebooks(){
 
         Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.exporting), Toast.LENGTH_SHORT).show();
-        int selection = mDrawer.getCurrentSelection();
-        final IDrawerItem drawerItem = mDrawer.getDrawerItems().get(selection);
-        String tag = drawerItem.getTag() == null || drawerItem.getTag().toString().trim().length() == 0 ? null : drawerItem.getTag().toString();
         ActiveAccount activeAccount = activeAccountRepository.getActiveAccount();
-        if(tag == null || !tag.equals("NOTEBOOK")){
+        if(/*tag == null || !tag.equals("NOTEBOOK")*/true){
             List<Notebook> all = notebookRepository.getAll(activeAccount.getAccount(), activeAccount.getRootFolder());
 
             for(Notebook book : all){
@@ -1383,14 +1327,14 @@ public class OverviewFragment extends Fragment implements NoteAdapter.ViewHolder
                 startActivityForResult(intent, Utils.WRITE_REQUEST_CODE);
             }
         }else{
-            BaseDrawerItem base = (BaseDrawerItem)drawerItem;
-
             Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
 
             intent.addCategory(Intent.CATEGORY_OPENABLE);
 
             intent.setType("application/zip");
-            intent.putExtra(Intent.EXTRA_TITLE, base.getName()+".zip");
+            //TODO get notebook name from drawer
+            String notebookName = null;
+            intent.putExtra(Intent.EXTRA_TITLE, notebookName+".zip");
             startActivityForResult(intent, Utils.WRITE_REQUEST_CODE);
         }
     }
@@ -1477,20 +1421,14 @@ public class OverviewFragment extends Fragment implements NoteAdapter.ViewHolder
         builder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                int selection = mDrawer.getCurrentSelection();
-                final IDrawerItem drawerItem = mDrawer.getDrawerItems().get(selection);
+                //TODO load selected notebook from drawer
+
                 ActiveAccount activeAccount = activeAccountRepository.getActiveAccount();
 
-                BaseDrawerItem base = (BaseDrawerItem)drawerItem;
-                notebookRepository.delete(activeAccount.getAccount(), activeAccount.getRootFolder(), notebookRepository.getBySummary(activeAccount.getAccount(), activeAccount.getRootFolder(),base.getName()));
-                mDrawer.removeItem(selection);
+                notebookRepository.delete(activeAccount.getAccount(), activeAccount.getRootFolder(), notebookRepository.getBySummary(activeAccount.getAccount(), activeAccount.getRootFolder(),null));
 
                 Utils.setSelectedNotebookName(activity, null);
                 Utils.setSelectedTagName(activity,null);
-
-                mDrawer.setSelection(1);
-
-                orderDrawerItems(tagRepository.getAllAsMap(activeAccount.getAccount(),activeAccount.getRootFolder()), mDrawer, null);
             }
         });
         builder.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
@@ -1526,69 +1464,6 @@ public class OverviewFragment extends Fragment implements NoteAdapter.ViewHolder
         return  createNotebookDialog(null);
     }
 
-    public Drawer getDrawer(){
-        return mDrawer;
-    }
-
-    private class DrawerItemClickedListener implements Drawer.OnDrawerItemClickListener{
-
-        @Override
-        public boolean onItemClick(AdapterView<?> adapterView, View view, int i, long l, IDrawerItem iDrawerItem) {
-            if(iDrawerItem instanceof BaseDrawerItem) {
-                changeNoteSelection((BaseDrawerItem) iDrawerItem);
-            }
-
-            //because after a selection the drawer should close
-            return false;
-        }
-
-
-        public void changeNoteSelection(BaseDrawerItem drawerItem){
-            if(drawerItem == null){
-                return;
-            }
-            if(mAdapter != null) {
-                mAdapter.clearNotes();
-            }
-
-            String tag = drawerItem.getTag() == null || drawerItem.getTag().toString().trim().length() == 0 ? "ALL_NOTEBOOK" :  drawerItem.getTag().toString();
-            List<Note> notes;
-            ActiveAccount activeAccount = activeAccountRepository.getActiveAccount();
-            if("NOTEBOOK".equalsIgnoreCase(tag)){
-                Notebook notebook = notebookRepository.getBySummary(activeAccount.getAccount(), activeAccount.getRootFolder(), drawerItem.getName());
-                notes = notesRepository.getFromNotebook(activeAccount.getAccount(),activeAccount.getRootFolder(),notebook.getIdentification().getUid(),Utils.getNoteSorting(activity));
-
-                String summary = notebook.getSummary();
-
-                if(notebook.isShared()){
-                    summary = ((SharedNotebook)notebook).getShortName();
-                }
-
-                Utils.setSelectedNotebookName(activity, summary);
-                Utils.setSelectedTagName(activity,null);
-            }else if("TAG".equalsIgnoreCase(tag)){
-                notes = notetagRepository.getNotesWith(activeAccount.getAccount(), activeAccount.getRootFolder(), drawerItem.getName(),Utils.getNoteSorting(activity));
-                Utils.setSelectedNotebookName(activity, null);
-                Utils.setSelectedTagName(activity,drawerItem.getName());
-            }else if("ALL_NOTES".equalsIgnoreCase(tag)){
-                notes = notesRepository.getAll(Utils.getNoteSorting(activity));
-                Utils.setSelectedNotebookName(activity, null);
-                Utils.setSelectedTagName(activity,null);
-            }else{
-                notes = notesRepository.getAll(activeAccount.getAccount(),activeAccount.getRootFolder(),Utils.getNoteSorting(activity));
-                Utils.setSelectedNotebookName(activity, null);
-                Utils.setSelectedTagName(activity,null);
-            }
-
-            if(mAdapter != null) {
-                if(notes.size() == 0){
-                    mAdapter.notifyDataSetChanged();
-                }else {
-                    mAdapter.addNotes(notes);
-                }
-            }
-        }
-    }
 
     private class InitializeApplicationsTask extends AsyncTask<Void, Void, Void> implements Runnable{
 
@@ -1636,62 +1511,7 @@ public class OverviewFragment extends Fragment implements NoteAdapter.ViewHolder
 
     }
 
-    private SecondaryDrawerItem createTagItem(Tag tag){
-        final SecondaryDrawerItem item = new SecondaryDrawerItem().withName(tag.getName()).withTag("TAG");
-        item.withTextColorRes(R.color.abc_primary_text_material_light);
-        Drawable circle = new ColorCircleDrawable(Color.WHITE, R.color.theme_selected_notes);
-        if(tag.getColor() != null){
-            final int color = Color.parseColor(tag.getColor().getHexcode());
-            circle.setColorFilter(color, PorterDuff.Mode.MULTIPLY);
-            //item.setTextColor(color);
-            //item.withBadgeStyle(new BadgeStyle(color,color).withTextColor(color));
-        }
-        item.setIcon(circle);
-
-        return item;
-    }
-
-    final SecondaryDrawerItem createNotebookForDrawer(Notebook notebook){
-        String summary = notebook.getSummary();
-
-        SecondaryDrawerItem drawerItem = new SecondaryDrawerItem();
-
-        if(notebook.isShared()){
-            SharedNotebook shared =((SharedNotebook) notebook);
-            summary = shared.getShortName();
-
-            if(shared.isNoteCreationAllowed() && !shared.isNoteModificationAllowed()){
-                drawerItem.withBadgeBackgroundResource(R.drawable.ic_note_add_black_24dp).withBadge("   ");
-            }else if(!shared.isNoteCreationAllowed() && !shared.isNoteModificationAllowed()){
-                drawerItem.withBadgeBackgroundResource(R.drawable.ic_lock_black_24dp).withBadge("   ");
-            }else if(!shared.isNoteCreationAllowed() && shared.isNoteModificationAllowed()){
-                drawerItem.withBadgeBackgroundResource(R.drawable.ic_create_black_24dp).withBadge("   ");
-            }
-
-        }
-
-        drawerItem.withName(summary).withTag("NOTEBOOK");
-
-        return drawerItem;
-    }
-
     final synchronized void reloadData(List<Notebook> notebooks, List<Note> notes, Map<String,Tag> tags){
-        mDrawer.getDrawerItems().clear();
-
-        addDrawerStandardItems(mDrawer);
-        //Query the tags
-        for (Tag tag : tags.values()) {
-            mDrawer.getDrawerItems().add(createTagItem(tag));
-        }
-
-        //Query the notebooks
-        for (Notebook notebook : notebooks) {
-
-            mDrawer.getDrawerItems().add(createNotebookForDrawer(notebook));
-        }
-
-        orderDrawerItems(tags, mDrawer);
-
         if(mAdapter == null){
             final ActiveAccount activeAccount = activeAccountRepository.getActiveAccount();
             mAdapter = new NoteAdapter(new ArrayList<Note>(), R.layout.row_note_overview, activity, this, attachmentRepository.getNoteIDsWithAttachments(activeAccount.getAccount(),activeAccount.getRootFolder()));
@@ -1772,57 +1592,6 @@ public class OverviewFragment extends Fragment implements NoteAdapter.ViewHolder
         }
     }
 
-    public class SearchNoteButtonListener implements DialogInterface.OnClickListener{
-
-        private final EditText textField;
-
-        public SearchNoteButtonListener(EditText textField) {
-            this.textField = textField;
-        }
-
-        @Override
-        public void onClick(DialogInterface dialog, int which) {
-            if(textField == null || textField.getText() == null || textField.getText().toString().trim().length() == 0){
-                return;
-            }
-
-            ActiveAccount activeAccount = activeAccountRepository.getActiveAccount();
-
-            IDrawerItem drawerItem = mDrawer.getDrawerItems().get(mDrawer.getCurrentSelection());
-            if(drawerItem instanceof BaseDrawerItem){
-                BaseDrawerItem item = (BaseDrawerItem)drawerItem;
-                String tag = item.getTag() == null || item.getTag().toString().trim().length() == 0 ? null : item.getTag().toString();
-
-                List<Note> notes;
-                if("NOTEBOOK".equalsIgnoreCase(tag)){
-                    notes = notesRepository.getFromNotebookWithSummary(activeAccount.getAccount(),
-                            activeAccount.getRootFolder(),
-                            notebookRepository.getBySummary(activeAccount.getAccount(),activeAccount.getRootFolder(),item.getName()).getIdentification().getUid(),
-                            textField.getText().toString(),
-                            Utils.getNoteSorting(activity));
-                }else if("TAG".equalsIgnoreCase(tag)){
-                    List<Note> unfiltered = notetagRepository.getNotesWith(activeAccount.getAccount(), activeAccount.getRootFolder(), item.getName(),Utils.getNoteSorting(activity));
-                    notes = new ArrayList<Note>();
-                    for(Note note : unfiltered){
-                        String summary = note.getSummary().toLowerCase();
-                        if(summary.contains(textField.getText().toString().toLowerCase())){
-                            notes.add(note);
-                        }
-                    }
-                }else{
-                    notes = notesRepository.getFromNotebookWithSummary(activeAccount.getAccount(),activeAccount.getRootFolder(),null,textField.getText().toString(),Utils.getNoteSorting(activity));
-                }
-
-                List<Notebook> notebooks = notebookRepository.getAll(activeAccount.getAccount(), activeAccount.getRootFolder());
-                Map<String,Tag> tags = tagRepository.getAllAsMap(activeAccount.getAccount(), activeAccount.getRootFolder());
-
-                displayBlankFragment();
-
-                getActivity().runOnUiThread(new ReloadDataThread(notebooks, notes, tags));
-            }
-        }
-    }
-
     public class CreateNotebookButtonListener implements DialogInterface.OnClickListener{
 
         private final EditText textField;
@@ -1852,9 +1621,7 @@ public class OverviewFragment extends Fragment implements NoteAdapter.ViewHolder
             Notebook nb = new Notebook(ident,audit, Note.Classification.PUBLIC, value);
             nb.setDescription(value);
             if(notebookRepository.insert(activeAccount.getAccount(), activeAccount.getRootFolder(), nb)) {
-                mDrawer.addItem(createNotebookForDrawer(nb));
-
-                orderDrawerItems(tagRepository.getAllAsMap(activeAccount.getAccount(),activeAccount.getRootFolder()), mDrawer, value);
+                //TODO add notebook to drawer
             }
 
             if(intent != null){
@@ -1875,187 +1642,5 @@ public class OverviewFragment extends Fragment implements NoteAdapter.ViewHolder
         }
     }
 
-    void orderDrawerItems(Map<String,Tag> allTags, Drawer drawer){
-        orderDrawerItems(allTags,drawer,null);
-    }
 
-    class Orderer implements Runnable{
-        private final Drawer drawer;
-        private final String selectionName;
-        private final Map<String, Tag> allTags;
-
-        Orderer(Map<String, Tag> allTags,Drawer drawer, String selectionName) {
-            this.drawer = drawer;
-            this.selectionName = selectionName;
-            this.allTags = allTags;
-        }
-
-        private Orderer(Map<String, Tag> allTags,Drawer drawer) {
-            this.drawer = drawer;
-            this.selectionName = null;
-            this.allTags = allTags;
-        }
-
-        @Override
-        public void run() {
-            ActiveAccount activeAccount = activeAccountRepository.getActiveAccount();
-            ArrayList<IDrawerItem> items = drawer.getDrawerItems();
-
-            List<String> tags = new ArrayList<>();
-            List<String> notebooks = new ArrayList<>();
-
-            boolean notebookSelected = true;
-            boolean allnotesSelected = false;
-            String selected = null;
-
-            int selection = drawer.getCurrentSelection();
-            for(IDrawerItem item : items){
-                if(item instanceof BaseDrawerItem){
-                    BaseDrawerItem base = (BaseDrawerItem)item;
-
-                    String type = base.getTag().toString();
-                    if(type.equalsIgnoreCase("TAG")){
-                        tags.add(base.getName());
-                        if(selection == 0){
-                            notebookSelected = false;
-                            selected = base.getName();
-                        }
-                    }else if(type.equalsIgnoreCase("NOTEBOOK")){
-                        notebooks.add(base.getName());
-                        if(selection == 0){
-                            selected = base.getName();
-                        }
-                    }else if(type.equalsIgnoreCase("ALL_NOTEBOOK")){
-                        if(selection == 0){
-                            notebookSelected = false;
-                            allnotesSelected = true;
-                            selected = base.getName();
-                        }
-                    }
-                }
-                selection--;
-            }
-
-            String selectedNotebookName = Utils.getSelectedNotebookName(activity);
-            String selectedTagName = Utils.getSelectedTagName(activity);
-            if(selectedNotebookName != null){
-                selected = selectedNotebookName;
-                notebookSelected = true;
-            }else if(selectionName != null){
-                selected = selectionName;
-                notebookSelected = true;
-            }else if(selectedTagName != null){
-                selected = selectedTagName;
-                notebookSelected = false;
-                if(selection < 0){
-                    allnotesSelected = false;
-                }
-            }
-
-            Collections.sort(tags);
-            Collections.sort(notebooks);
-
-            drawer.getDrawerItems().clear();
-
-            addDrawerStandardItems(drawer);
-
-            int idx = 3;
-            Set<String> displayedTags = new HashSet<>();
-            for(String tag : tags){
-                if(displayedTags.contains(tag)){
-                    continue;
-                }
-                displayedTags.add(tag);
-
-                drawer.getDrawerItems().add(createTagItem(allTags.get(tag)));
-
-                idx++;
-                if(!notebookSelected && !allnotesSelected && tag.equals(selected)){
-                    selection = idx;
-                }
-            }
-
-            drawer.getDrawerItems().add(new DividerDrawerItem());
-
-            drawer.getDrawerItems().add(new PrimaryDrawerItem().withName(getResources().getString(R.string.drawer_item_notebooks)).withTag("HEADING_NOTEBOOK").withEnabled(false).withDisabledTextColor(getResources().getColor(R.color.material_drawer_secondary_text)).withIcon(R.drawable.ic_action_collection));
-
-            idx = idx+2;
-            if(notebookSelected){
-                selection = idx;
-            }
-            BaseDrawerItem selectedItem = null;
-            for(String notebook : notebooks){
-                BaseDrawerItem item = createNotebookForDrawer(notebookRepository.getBySummary(activeAccount.getAccount(),activeAccount.getRootFolder(),notebook));
-                item.withTextColorRes(R.color.abc_primary_text_material_light);
-                drawer.getDrawerItems().add(item);
-
-                idx++;
-                if((allnotesSelected || notebookSelected) && notebook.equals(selected)){
-                    selection = idx;
-                    selectedItem = item;
-                }
-            }
-
-            if(selection < 1 || (selectedItem != null && selection >= drawer.getDrawerItems().size())){
-                //default if nothing is selected, choose "all notes form actual account"
-                selection = 1;
-            }else {
-
-                //fallback: if the notebook heading or tag heading is selected, select all notes
-                final IDrawerItem fallbackCheck = drawer.getDrawerItems().get(selection);
-                if (fallbackCheck != null) {
-                    Object itemName = fallbackCheck.getTag();
-                    if(itemName == null || itemName.toString().startsWith("HEADING")){
-                        selection = 1;
-                    }
-                }
-            }
-
-            drawer.setSelection(selection);
-            drawerItemClickedListener.changeNoteSelection(selectedItem);
-        }
-    }
-
-    void orderDrawerItems(Map<String,Tag> allTags, Drawer drawer, String selectionName){
-        getActivity().runOnUiThread(new Orderer(allTags,drawer, selectionName));
-    }
-
-    class ProfileChanger implements AccountHeader.OnAccountHeaderListener{
-        @Override
-        public boolean onProfileChanged(View view, IProfile profile, boolean current) {
-            final ActiveAccount activeAccount = activeAccountRepository.getActiveAccount();
-            String account;
-            String rootFolder;
-            boolean changed;
-            if(profile.getEmail() == null || profile.getEmail().trim().length() == 0){
-                changed = !activeAccount.getAccount().equalsIgnoreCase("local");
-                account = "local";
-                rootFolder = ((ProfileDrawerItem)profile).getTag().toString();
-            }else{
-                String folder = ((ProfileDrawerItem)profile).getTag().toString();
-                changed = !activeAccount.getAccount().equalsIgnoreCase(profile.getEmail()) || !activeAccount.getRootFolder().equalsIgnoreCase(folder);
-                account = profile.getEmail();
-                rootFolder = folder;
-            }
-
-            if(changed){
-                AccountChangeThread thread = new AccountChangeThread(account,rootFolder);
-                thread.disableProfileChangeing();
-                thread.resetDrawerSelection();
-                thread.start();
-                mDrawer.setSelection(1);
-            }
-
-            mDrawer.closeDrawer();
-            return changed;
-        }
-    }
-
-    public final void addDrawerStandardItems(Drawer drawer){
-        drawer.getDrawerItems().add(new PrimaryDrawerItem().withName(getResources().getString(R.string.drawer_item_allaccount_notes)).withTag("ALL_NOTES").withIcon(R.drawable.ic_action_group));
-        drawer.getDrawerItems().add(new PrimaryDrawerItem().withName(getResources().getString(R.string.drawer_item_allnotes)).withTag("ALL_NOTEBOOK").withIcon(R.drawable.ic_action_person));
-        drawer.getDrawerItems().add(new DividerDrawerItem());
-        drawer.getDrawerItems().add(new PrimaryDrawerItem().withName(getResources().getString(R.string.drawer_item_tags)).withTag("HEADING_TAG").withEnabled(false).withDisabledTextColor(getResources().getColor(R.color.material_drawer_secondary_text)).withIcon(R.drawable.ic_action_labels));
-
-    }
 }
