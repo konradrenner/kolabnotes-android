@@ -26,6 +26,7 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.NotificationCompat;
@@ -171,6 +172,7 @@ public class OverviewFragment extends Fragment implements NoteAdapter.ViewHolder
         toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
         activity.setSupportActionBar(toolbar);
         activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        activity.getSupportActionBar().setHomeButtonEnabled(true);
 
         tabletMode = Utils.isTablet(getResources());
 
@@ -1090,6 +1092,9 @@ public class OverviewFragment extends Fragment implements NoteAdapter.ViewHolder
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()){
+            case android.R.id.home:
+                activity.getDrawerLayout().openDrawer(GravityCompat.START);
+                break;
             case R.id.create_notebook_menu:
                 AlertDialog newNBDialog = createNotebookDialog();
                 newNBDialog.show();

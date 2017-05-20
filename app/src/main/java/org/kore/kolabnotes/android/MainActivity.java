@@ -74,6 +74,10 @@ public class MainActivity extends AppCompatActivity implements SyncStatusObserve
         mDrawerLayout.addDrawerListener(mDrawerToggle);
     }
 
+    public DrawerLayout getDrawerLayout(){
+        return this.mDrawerLayout;
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
