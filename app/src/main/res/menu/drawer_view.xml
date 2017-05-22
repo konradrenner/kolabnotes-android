@@ -12,6 +12,7 @@
         <item
             android:id="@+id/navigation_tags"
             android:icon="@drawable/ic_action_labels"
+            android:enabled="false"
             android:title="@string/drawer_item_tags">
             <menu>
                 <!-- will be filled at runtime -->
@@ -21,6 +22,7 @@
         <item
             android:id="@+id/navigation_notebooks"
             android:icon="@drawable/ic_action_collection"
+            android:enabled="false"
             android:title="@string/drawer_item_notebooks">
             <menu>
                 <!-- will be filled at runtime -->

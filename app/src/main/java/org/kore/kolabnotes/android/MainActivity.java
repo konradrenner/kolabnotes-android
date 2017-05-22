@@ -78,6 +78,10 @@ public class MainActivity extends AppCompatActivity implements SyncStatusObserve
         return this.mDrawerLayout;
     }
 
+    public NavigationView getNavigationView(){
+        return this.mNavigationView;
+    }
+
     @Override
     protected void onResume() {
         super.onResume();

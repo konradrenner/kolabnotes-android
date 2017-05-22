@@ -72,6 +72,7 @@ import org.kore.kolabnotes.android.content.NoteSorting;
 import org.kore.kolabnotes.android.content.NoteTagRepository;
 import org.kore.kolabnotes.android.content.NotebookRepository;
 import org.kore.kolabnotes.android.content.TagRepository;
+import org.kore.kolabnotes.android.drawer.DrawerService;
 import org.kore.kolabnotes.android.security.AuthenticatorActivity;
 import org.kore.kolabnotes.android.setting.SettingsActivity;
 
@@ -1517,6 +1518,10 @@ public class OverviewFragment extends Fragment implements NoteAdapter.ViewHolder
     }
 
     final synchronized void reloadData(List<Notebook> notebooks, List<Note> notes, Map<String,Tag> tags){
+        DrawerService drawerService = new DrawerService();
+        drawerService.overrideNotebooks(activity.getNavigationView(), notebooks);
+        drawerService.overrideTags(activity.getNavigationView(), tags.values());
+
         if(mAdapter == null){
             final ActiveAccount activeAccount = activeAccountRepository.getActiveAccount();
             mAdapter = new NoteAdapter(new ArrayList<Note>(), R.layout.row_note_overview, activity, this, attachmentRepository.getNoteIDsWithAttachments(activeAccount.getAccount(),activeAccount.getRootFolder()));
