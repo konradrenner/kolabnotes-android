@@ -73,6 +73,7 @@ import org.kore.kolabnotes.android.content.NoteTagRepository;
 import org.kore.kolabnotes.android.content.NotebookRepository;
 import org.kore.kolabnotes.android.content.TagRepository;
 import org.kore.kolabnotes.android.drawer.DrawerService;
+import org.kore.kolabnotes.android.drawer.OnDrawerSelectionChangedListener;
 import org.kore.kolabnotes.android.security.AuthenticatorActivity;
 import org.kore.kolabnotes.android.setting.SettingsActivity;
 
@@ -96,7 +97,7 @@ import yuku.ambilwarna.AmbilWarnaDialog;
 /**
  * Fragment which displays the notes overview and implements the logic for the overview
  */
-public class OverviewFragment extends Fragment implements NoteAdapter.ViewHolder.ClickListener, OnAccountSwitchedListener {
+public class OverviewFragment extends Fragment implements NoteAdapter.ViewHolder.ClickListener, OnAccountSwitchedListener, OnDrawerSelectionChangedListener {
 
     public static final int DETAIL_ACTIVITY_RESULT_CODE = 1;
     public static final int TAG_LIST_ACTIVITY_RESULT_CODE = 1;
@@ -1103,8 +1104,8 @@ public class OverviewFragment extends Fragment implements NoteAdapter.ViewHolder
             case R.id.delete_notebook_menu:
                 AlertDialog deleteNBDialog = deleteNotebookDialog();
 
-                //TODO get notebook name from drawer
-                if(/*tag == null || !tag.equals("NOTEBOOK")*/true){
+                final String selectedNotebookName = Utils.getSelectedNotebookName(activity);
+                if(selectedNotebookName == null){
                     Toast.makeText(activity,R.string.no_nb_selected,Toast.LENGTH_LONG).show();
                 }else {
                     deleteNBDialog.show();
@@ -1427,11 +1428,15 @@ public class OverviewFragment extends Fragment implements NoteAdapter.ViewHolder
         builder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                //TODO load selected notebook from drawer
-
                 ActiveAccount activeAccount = activeAccountRepository.getActiveAccount();
 
-                notebookRepository.delete(activeAccount.getAccount(), activeAccount.getRootFolder(), notebookRepository.getBySummary(activeAccount.getAccount(), activeAccount.getRootFolder(),null));
+                final String selectedNotebookName = Utils.getSelectedNotebookName(activity);
+                Notebook book = null;
+                if(selectedNotebookName != null) {
+                    book = notebookRepository.getBySummary(activeAccount.getAccount(), activeAccount.getRootFolder(), selectedNotebookName);
+                }
+
+                notebookRepository.delete(activeAccount.getAccount(), activeAccount.getRootFolder(), book);
 
                 Utils.setSelectedNotebookName(activity, null);
                 Utils.setSelectedTagName(activity,null);
@@ -1518,9 +1523,13 @@ public class OverviewFragment extends Fragment implements NoteAdapter.ViewHolder
     }
 
     final synchronized void reloadData(List<Notebook> notebooks, List<Note> notes, Map<String,Tag> tags){
-        DrawerService drawerService = new DrawerService();
-        drawerService.overrideNotebooks(activity.getNavigationView(), notebooks);
-        drawerService.overrideTags(activity.getNavigationView(), tags.values());
+        DrawerService drawerService = new DrawerService(activity.getNavigationView(), activity.getDrawerLayout());
+        if(notebooks != null) {
+            drawerService.overrideNotebooks(this, notebooks);
+        }
+        if(tags != null) {
+            drawerService.overrideTags(this, tags.values());
+        }
 
         if(mAdapter == null){
             final ActiveAccount activeAccount = activeAccountRepository.getActiveAccount();
@@ -1557,6 +1566,37 @@ public class OverviewFragment extends Fragment implements NoteAdapter.ViewHolder
         FragmentManager fm = getFragmentManager();
         ChooseAccountDialogFragment chooseAccountDialog = new ChooseAccountDialogFragment();
         chooseAccountDialog.show(fm, "fragment_choose_account");
+    }
+
+    @Override
+    public void notebookSelected(String notebookName) {
+        ActiveAccount activeAccount = activeAccountRepository.getActiveAccount();
+        final String account = activeAccount.getAccount();
+        final String rootFolder = activeAccount.getRootFolder();
+        final Notebook notebook = notebookRepository.getBySummary(account, rootFolder, notebookName);
+        final List<Note> notes = notesRepository.getFromNotebook(account, rootFolder, notebook.getIdentification().getUid(), Utils.getNoteSorting(getActivity()));
+        reloadData(null, notes, null);
+    }
+
+    @Override
+    public void tagSelected(String tagName) {
+        ActiveAccount activeAccount = activeAccountRepository.getActiveAccount();
+        final List<Note> notes = notetagRepository.getNotesWith(activeAccount.getAccount(), activeAccount.getRootFolder(), tagName, Utils.getNoteSorting(getActivity()));
+        reloadData(null, notes, null);
+    }
+
+    @Override
+    public void allNotesFromAccountSelected() {
+        ActiveAccount activeAccount = activeAccountRepository.getActiveAccount();
+        final List<Note> notes = notesRepository.getAll(activeAccount.getAccount(), activeAccount.getRootFolder(), Utils.getNoteSorting(getActivity()));
+        reloadData(null, notes, null);
+    }
+
+    @Override
+    public void allNotesSelected() {
+        ActiveAccount activeAccount = activeAccountRepository.getActiveAccount();
+        final List<Note> notes = notesRepository.getAll(Utils.getNoteSorting(getActivity()));
+        reloadData(null, notes, null);
     }
 
     final void reloadData(){
@@ -1631,7 +1671,8 @@ public class OverviewFragment extends Fragment implements NoteAdapter.ViewHolder
             Notebook nb = new Notebook(ident,audit, Note.Classification.PUBLIC, value);
             nb.setDescription(value);
             if(notebookRepository.insert(activeAccount.getAccount(), activeAccount.getRootFolder(), nb)) {
-                //TODO add notebook to drawer
+                DrawerService service = new DrawerService(activity.getNavigationView(), activity.getDrawerLayout());
+                service.addNotebook(OverviewFragment.this, nb);
             }
 
             if(intent != null){

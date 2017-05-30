@@ -11,6 +11,7 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
@@ -119,6 +120,30 @@ public class MainActivity extends AppCompatActivity implements SyncStatusObserve
 
             detail.onOptionsItemSelected(item);
         }
+    }
+
+    public void allNotesSelected(MenuItem item){
+        Utils.setSelectedNotebookName(this, null);
+        Utils.setSelectedTagName(this, null);
+
+        final boolean checked = item.isChecked();
+        if(!checked){
+            item.setChecked(true);
+            overviewFragment.allNotesSelected();
+        }
+        mDrawerLayout.closeDrawer(Gravity.LEFT);
+    }
+
+    public void allNotesFromAccountSelected(MenuItem item){
+        Utils.setSelectedNotebookName(this, null);
+        Utils.setSelectedTagName(this, null);
+
+        final boolean checked = item.isChecked();
+        if(!checked){
+            item.setChecked(true);
+            overviewFragment.allNotesFromAccountSelected();
+        }
+        mDrawerLayout.closeDrawer(Gravity.LEFT);
     }
 
     @Override
