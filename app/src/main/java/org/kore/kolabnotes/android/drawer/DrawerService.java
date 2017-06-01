@@ -9,11 +9,13 @@ import android.text.style.ForegroundColorSpan;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
+import android.view.View;
 
 import org.kore.kolab.notes.Notebook;
 import org.kore.kolab.notes.SharedNotebook;
 import org.kore.kolab.notes.Tag;
 import org.kore.kolabnotes.android.R;
+import org.kore.kolabnotes.android.Utils;
 
 import java.util.Collection;
 
@@ -38,7 +40,12 @@ public class DrawerService {
         notebookSubmenu.clear();
 
         for(Notebook book : notebooks){
-            addNotebook(view.getContext(), notebookSubmenu, listener, book);
+            final MenuItem notebook = addNotebook(view.getContext(), notebookSubmenu, listener, book);
+
+            final String selectedNotebookName = Utils.getSelectedNotebookName(view.getContext());
+            if(selectedNotebookName != null && selectedNotebookName.equals(notebook.getTitle().toString())){
+                notebook.setChecked(true);
+            }
         }
     }
 
@@ -49,7 +56,24 @@ public class DrawerService {
         tagSubmenu.clear();
 
         for(Tag tag : tags){
-            addTag(tagSubmenu, listener, tag);
+            final MenuItem tagItem = addTag(tagSubmenu, listener, tag);
+
+            final String selectedNotebookName = Utils.getSelectedNotebookName(view.getContext());
+            if(selectedNotebookName != null && selectedNotebookName.equals(tagItem.getTitle().toString())){
+                tagItem.setChecked(true);
+            }
+        }
+    }
+
+    public void deleteNotebook(String notebookName){
+        final SubMenu notebookSubmenu = view.getMenu().findItem(R.id.navigation_notebooks).getSubMenu();
+
+        for(int i=0; i<notebookSubmenu.size(); i++){
+            final int currentId = notebookSubmenu.getItem(i).getItemId();
+            final String actualTitle = notebookSubmenu.getItem(i).getTitle().toString();
+            if(actualTitle.equals(notebookName)){
+                notebookSubmenu.removeItem(currentId);
+            }
         }
     }
 
@@ -62,7 +86,7 @@ public class DrawerService {
         if(tag.getColor() != null) {
             spannable.setSpan(new ForegroundColorSpan(Color.parseColor(tag.getColor().getHexcode())), 0, spannable.length(), 0);
         }
-        final MenuItem newTagEntry = tagMenu.add(spannable);
+        final MenuItem newTagEntry = tagMenu.add(Menu.NONE, tagMenu.size(), Menu.NONE, spannable);
         newTagEntry.setOnMenuItemClickListener(new OnTagItemClickedListener(listener, layout));
         newTagEntry.setCheckable(true);
         return newTagEntry;
@@ -73,7 +97,7 @@ public class DrawerService {
     }
 
     private MenuItem addNotebook(Context context, SubMenu notebookMenu, OnDrawerSelectionChangedListener listener, Notebook notebook){
-        final MenuItem newNotebookEntry = notebookMenu.add(notebook.getSummary());
+        final MenuItem newNotebookEntry = notebookMenu.add(Menu.NONE, notebookMenu.size(), Menu.NONE, notebook.getSummary());
         setNotebookPermissionIcon(context, notebook, newNotebookEntry);
         newNotebookEntry.setOnMenuItemClickListener(new OnNotebookItemClickedListener(listener, layout));
         newNotebookEntry.setCheckable(true);

@@ -108,7 +108,7 @@ public class MainActivity extends AppCompatActivity implements SyncStatusObserve
             overviewFragment.onResume();
         }else if(ResultCode.BACK == code){
             overviewFragment.onResume();
-            //TODO open drawer
+            mDrawerLayout.openDrawer(Gravity.LEFT);
         }
     }
 

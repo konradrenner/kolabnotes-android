@@ -1438,6 +1438,7 @@ public class OverviewFragment extends Fragment implements NoteAdapter.ViewHolder
 
                 notebookRepository.delete(activeAccount.getAccount(), activeAccount.getRootFolder(), book);
 
+                new DrawerService(activity.getNavigationView(), activity.getDrawerLayout()).deleteNotebook(book.getSummary());
                 Utils.setSelectedNotebookName(activity, null);
                 Utils.setSelectedTagName(activity,null);
             }
