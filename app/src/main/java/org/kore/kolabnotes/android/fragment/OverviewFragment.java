@@ -72,6 +72,7 @@ import org.kore.kolabnotes.android.content.NoteSorting;
 import org.kore.kolabnotes.android.content.NoteTagRepository;
 import org.kore.kolabnotes.android.content.NotebookRepository;
 import org.kore.kolabnotes.android.content.TagRepository;
+import org.kore.kolabnotes.android.drawer.DrawerAccountsService;
 import org.kore.kolabnotes.android.drawer.DrawerService;
 import org.kore.kolabnotes.android.drawer.OnDrawerSelectionChangedListener;
 import org.kore.kolabnotes.android.security.AuthenticatorActivity;
@@ -121,6 +122,7 @@ public class OverviewFragment extends Fragment implements NoteAdapter.ViewHolder
     private HashMap<Integer, String> mSelectedNotes = new HashMap<Integer, String>();
 
     private AccountManager mAccountManager;
+    private DrawerAccountsService mDrawerAccountsService;
 
     private NoteRepository notesRepository;
     private NotebookRepository notebookRepository;
@@ -189,6 +191,9 @@ public class OverviewFragment extends Fragment implements NoteAdapter.ViewHolder
             allAccounts = activeAccountRepository.initAccounts();
         }
 
+        final ActiveAccount activeAccount = activeAccountRepository.getActiveAccount();
+        mDrawerAccountsService = new DrawerAccountsService(activity.getNavigationView());
+
         //For accounts cleanup
         Set<AccountIdentifier> accountsForDeletion = new LinkedHashSet<>(allAccounts);
         accountsForDeletion.remove(new AccountIdentifier("local","Notes"));
@@ -244,7 +249,6 @@ public class OverviewFragment extends Fragment implements NoteAdapter.ViewHolder
         mRecyclerView.setLayoutManager(new LinearLayoutManager(activity));
         //mRecyclerView.setItemAnimator(new CustomItemAnimator());
         //mRecyclerView.setItemAnimator(new ReboundItemAnimator());
-        final ActiveAccount activeAccount = activeAccountRepository.getActiveAccount();
 
         mAdapter = new NoteAdapter(new ArrayList<Note>(), R.layout.row_note_overview, activity, this, attachmentRepository.getNoteIDsWithAttachments(activeAccount.getAccount(),activeAccount.getRootFolder()));
         mRecyclerView.setAdapter(mAdapter);
@@ -262,7 +266,8 @@ public class OverviewFragment extends Fragment implements NoteAdapter.ViewHolder
 
                     for (Account acc : accounts) {
                         String email = mAccountManager.getUserData(acc, AuthenticatorActivity.KEY_EMAIL);
-                        if (activeAccount.getAccount().equalsIgnoreCase(email)) {
+                        String folder = mAccountManager.getUserData(acc, AuthenticatorActivity.KEY_ROOT_FOLDER);
+                        if (activeAccount.getAccount().equalsIgnoreCase(email) && activeAccount.getRootFolder().equals(folder)) {
                             selectedAccount = acc;
                             break;
                         }
@@ -961,6 +966,7 @@ public class OverviewFragment extends Fragment implements NoteAdapter.ViewHolder
                                 break;
                             }
                         }*/
+                        mDrawerAccountsService.changeSelectedAccount(name, activeAccount.getAccount());
                     }
                     toolbar.setTitle(name);
                 }
