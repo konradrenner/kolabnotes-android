@@ -1,6 +1,7 @@
 package org.kore.kolabnotes.android.drawer;
 
 import android.graphics.drawable.Drawable;
+import android.support.design.widget.NavigationView;
 import android.view.View;
 import android.widget.ImageButton;
 
@@ -12,7 +13,16 @@ import org.kore.kolabnotes.android.R;
 
 public class OnAccountsArrowClicked implements View.OnClickListener {
 
-    private boolean arrowDown = true;
+    private final NavigationView navigationView;
+    private final DrawerAccountsService drawerAccountsService;
+
+    private boolean arrowDown;
+
+    public OnAccountsArrowClicked(NavigationView navigationView) {
+        this.navigationView = navigationView;
+        this.drawerAccountsService = new DrawerAccountsService(this.navigationView);
+        this.arrowDown = true;
+    }
 
     @Override
     public void onClick(View view) {
@@ -22,11 +32,11 @@ public class OnAccountsArrowClicked implements View.OnClickListener {
 
         if(arrowDown){
             button.setImageDrawable(view.getContext().getResources().getDrawable(R.drawable.ic_arrow_drop_up_white_24dp));
-            //TODO display accounts
+            drawerAccountsService.displayAccounts();
             arrowDown = false;
         }else{
             button.setImageDrawable(view.getContext().getResources().getDrawable(R.drawable.ic_arrow_drop_down_white_24dp));
-            //TODO display navigation
+            drawerAccountsService.displayNavigation();
             arrowDown = true;
         }
     }

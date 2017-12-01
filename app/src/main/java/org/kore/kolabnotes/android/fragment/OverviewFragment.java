@@ -200,34 +200,7 @@ public class OverviewFragment extends Fragment implements NoteAdapter.ViewHolder
 
         for(int i=0;i<accounts.length;i++) {
             String email = mAccountManager.getUserData(accounts[i],AuthenticatorActivity.KEY_EMAIL);
-            String name = mAccountManager.getUserData(accounts[i],AuthenticatorActivity.KEY_ACCOUNT_NAME);
             String rootFolder = mAccountManager.getUserData(accounts[i],AuthenticatorActivity.KEY_ROOT_FOLDER);
-            String accountType = mAccountManager.getUserData(accounts[i], AuthenticatorActivity.KEY_ACCOUNT_TYPE);
-
-            //TODO init accounts in drawer
-            /*ProfileDrawerItem item = new ProfileDrawerItem().withName(name).withTag(rootFolder).withEmail(email);
-
-            if(accountType != null) {
-                int type = Integer.parseInt(accountType);
-
-                if(type == AuthenticatorActivity.ID_ACCOUNT_TYPE_KOLABNOW){
-                    item.withIcon(getResources().getDrawable(R.drawable.ic_kolabnow));
-                }else if(type == AuthenticatorActivity.ID_ACCOUNT_TYPE_KOLAB){
-                    item.withIcon(getResources().getDrawable(R.drawable.ic_kolab));
-                }else{
-                    item.withIcon(getResources().getDrawable(R.drawable.ic_imap));
-                }
-            }
-
-            //GitHub issue 47
-            item.setNameShown(true);
-            if(name != null && name.equals(email)){
-                item.setNameShown(false);
-                item.withName(null);
-            }
-
-            profiles[i+1] = item;*/
-
             accountsForDeletion.remove(new AccountIdentifier(email,rootFolder));
         }
 
@@ -878,18 +851,8 @@ public class OverviewFragment extends Fragment implements NoteAdapter.ViewHolder
 
         String selectedNotebookName = Utils.getSelectedNotebookName(activity);
 
-    //TODO set selected account
-        /*AccountHeader accountHeader = mAccount;
-        for(IProfile profile : accountHeader.getProfiles()){
-            if(profile instanceof ProfileDrawerItem){
-                ProfileDrawerItem item = (ProfileDrawerItem)profile;
-
-                if(activeAccount.getAccount().equals(item.getEmail()) && activeAccount.getRootFolder().equals(item.getTag().toString())){
-                    accountHeader.setActiveProfile(profile);
-                    break;
-                }
-            }
-        }*/
+        final String nameOfActiveAccount = Utils.getNameOfActiveAccount(activity, activeAccount.getAccount(), activeAccount.getRootFolder());
+        mDrawerAccountsService.changeSelectedAccount(nameOfActiveAccount, activeAccount.getAccount());
 
         if(initPhase){
             initPhase = false;
@@ -957,15 +920,6 @@ public class OverviewFragment extends Fragment implements NoteAdapter.ViewHolder
                 public void run() {
                     String name = Utils.getNameOfActiveAccount(activity, activeAccount.getAccount(), activeAccount.getRootFolder());
                     if(changeDrawerAccount){
-                        //TODO set selected account
-                        /*final ArrayList<IProfile> profiles = mAccount.getProfiles();
-                        for(IProfile profile : profiles){
-                            String profileName = profile.getName() == null ? profile.getEmail() : profile.getName();
-                            if(name.equals(profileName)){
-                                mAccount.setActiveProfile(profile,false);
-                                break;
-                            }
-                        }*/
                         mDrawerAccountsService.changeSelectedAccount(name, activeAccount.getAccount());
                     }
                     toolbar.setTitle(name);
@@ -1507,6 +1461,9 @@ public class OverviewFragment extends Fragment implements NoteAdapter.ViewHolder
             }else{
                 activeAccount = activeAccountRepository.getActiveAccount();
             }
+
+            mDrawerAccountsService.overrideAccounts(activity, mAccountManager.getAccountsByType(AuthenticatorActivity.ARG_ACCOUNT_TYPE), mAccountManager);
+
 
             new AccountChangeThread(activeAccount).run();
         }

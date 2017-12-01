@@ -19,7 +19,6 @@ import android.widget.Toast;
 import org.kore.kolabnotes.android.content.AccountIdentifier;
 import org.kore.kolabnotes.android.content.ActiveAccount;
 import org.kore.kolabnotes.android.content.ActiveAccountRepository;
-import org.kore.kolabnotes.android.drawer.DrawerAccountsService;
 import org.kore.kolabnotes.android.drawer.OnAccountsArrowClicked;
 import org.kore.kolabnotes.android.fragment.ChooseAccountDialogFragment;
 import org.kore.kolabnotes.android.fragment.DetailFragment;
@@ -76,7 +75,7 @@ public class MainActivity extends AppCompatActivity implements SyncStatusObserve
         // Set the drawer toggle as the DrawerListener
         mDrawerLayout.addDrawerListener(mDrawerToggle);
 
-        mNavigationView.getHeaderView(0).findViewById(R.id.drawer_openclose_button).setOnClickListener(new OnAccountsArrowClicked());
+        mNavigationView.getHeaderView(0).findViewById(R.id.drawer_openclose_button).setOnClickListener(new OnAccountsArrowClicked(mNavigationView));
     }
 
     public DrawerLayout getDrawerLayout(){

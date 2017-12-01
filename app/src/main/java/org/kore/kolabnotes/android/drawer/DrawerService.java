@@ -40,12 +40,7 @@ public class DrawerService {
         notebookSubmenu.clear();
 
         for(Notebook book : notebooks){
-            final MenuItem notebook = addNotebook(view.getContext(), notebookSubmenu, listener, book);
-
-            final String selectedNotebookName = Utils.getSelectedNotebookName(view.getContext());
-            if(selectedNotebookName != null && selectedNotebookName.equals(notebook.getTitle().toString())){
-                notebook.setChecked(true);
-            }
+            addNotebook(view.getContext(), notebookSubmenu, listener, book);
         }
     }
 
@@ -56,12 +51,7 @@ public class DrawerService {
         tagSubmenu.clear();
 
         for(Tag tag : tags){
-            final MenuItem tagItem = addTag(tagSubmenu, listener, tag);
-
-            final String selectedNotebookName = Utils.getSelectedNotebookName(view.getContext());
-            if(selectedNotebookName != null && selectedNotebookName.equals(tagItem.getTitle().toString())){
-                tagItem.setChecked(true);
-            }
+            addTag(tagSubmenu, listener, tag);
         }
     }
 
