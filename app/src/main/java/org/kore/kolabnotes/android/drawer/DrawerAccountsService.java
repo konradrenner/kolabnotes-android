@@ -19,6 +19,7 @@ import org.kore.kolabnotes.android.R;
 import org.kore.kolabnotes.android.content.AccountIdentifier;
 import org.kore.kolabnotes.android.content.ActiveAccount;
 import org.kore.kolabnotes.android.content.ActiveAccountRepository;
+import org.kore.kolabnotes.android.fragment.OnAccountSwitchedFromNavListener;
 import org.kore.kolabnotes.android.fragment.OnAccountSwitchedListener;
 import org.kore.kolabnotes.android.security.AuthenticatorActivity;
 
@@ -45,19 +46,21 @@ public class DrawerAccountsService {
         TextView tmail = (TextView) headerView.findViewById(R.id.drawer_header_mail);
 
         tname.setText(name);
-        if(!"local".equalsIgnoreCase(mail)){
-            tmail.setText(mail);
+        String corrmail = mail;
+        if("local".equalsIgnoreCase(mail)){
+            corrmail = "";
         }
+        tmail.setText(corrmail);
     }
 
-    public Set<AccountIdentifier> overrideAccounts(OnAccountSwitchedListener list, Account[] accounts, AccountManager accountManager, DrawerLayout layout){
+    public Set<AccountIdentifier> overrideAccounts(OnAccountSwitchedFromNavListener list, Account[] accounts, AccountManager accountManager, DrawerLayout layout){
         Set<AccountIdentifier> createdAccounts = new LinkedHashSet<>();
         final Menu menu = nav.getMenu();
         final Context context = nav.getContext();
 
         menu.removeGroup(R.id.drawer_accounts);
 
-        createMenuItem(list, menu, context, 0, "", context.getString(R.string.drawer_account_local), "Notes", "local", layout);
+        createMenuItem(list, menu, context, 0, "local", context.getString(R.string.drawer_account_local), "Notes", "local", layout);
 
         for(int i=0;i<accounts.length;i++) {
             String email = accountManager.getUserData(accounts[i], AuthenticatorActivity.KEY_EMAIL);
@@ -72,14 +75,14 @@ public class DrawerAccountsService {
     }
 
     @NonNull
-    private AccountIdentifier createMenuItem(OnAccountSwitchedListener list, Menu menu, Context context, int id, String email, String name, String rootFolder, String accountType, DrawerLayout layout) {
+    private AccountIdentifier createMenuItem(OnAccountSwitchedFromNavListener list, Menu menu, Context context, int id, String email, String name, String rootFolder, String accountType, DrawerLayout layout) {
         final AccountIdentifier accountIdentifier = new AccountIdentifier(email, rootFolder);
 
         final MenuItem accountEntry = menu.add(R.id.drawer_accounts, id, Menu.NONE, name);
         setIcon(context, accountType, accountEntry);
         accountEntry.setOnMenuItemClickListener(new AccountSwichtedACL(nav, layout, context, name, accountIdentifier, list));
         accountEntry.setCheckable(true);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        if (!"local".equals(email) && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             accountEntry.setTooltipText(email);
         }
         return accountIdentifier;
@@ -120,12 +123,12 @@ public class DrawerAccountsService {
     static class AccountSwichtedACL implements MenuItem.OnMenuItemClickListener{
         private final String name;
         private final AccountIdentifier id;
-        private final OnAccountSwitchedListener listener;
+        private final OnAccountSwitchedFromNavListener listener;
         private final Context context;
         private final DrawerLayout layout;
         private final NavigationView view;
 
-        AccountSwichtedACL(NavigationView view, DrawerLayout layout, Context ctx, String name, AccountIdentifier id, OnAccountSwitchedListener list) {
+        AccountSwichtedACL(NavigationView view, DrawerLayout layout, Context ctx, String name, AccountIdentifier id, OnAccountSwitchedFromNavListener list) {
             this.name = name;
             this.id = id;
             this.listener = list;
@@ -145,7 +148,7 @@ public class DrawerAccountsService {
             layout.closeDrawer(Gravity.LEFT);
 
             if(!accountEquals(activeAccount)){
-                listener.onAccountSwitched(name, id);
+                listener.onAccountSwitchedFromNav(name, id);
             }
             return true;
         }

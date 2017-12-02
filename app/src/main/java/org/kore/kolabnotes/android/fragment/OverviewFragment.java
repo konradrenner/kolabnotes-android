@@ -299,7 +299,7 @@ public class OverviewFragment extends Fragment implements NoteAdapter.ViewHolder
     public void onAccountSwitched(String name, AccountIdentifier accountIdentifier) {
         mDrawerAccountsService.changeSelectedAccount(name, accountIdentifier.getAccount());
         mDrawerAccountsService.displayNavigation();
-        activity.setTitle(name);
+        activeAccountRepository.switchAccount(accountIdentifier.getAccount(), accountIdentifier.getRootFolder());
         reloadData();
     }
 
@@ -776,6 +776,8 @@ public class OverviewFragment extends Fragment implements NoteAdapter.ViewHolder
             ft.replace(R.id.details_fragment, blank);
             ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
             ft.commit();
+
+            ((OnFragmentCallback)activity).fragementAttached(this);
         }
     }
 

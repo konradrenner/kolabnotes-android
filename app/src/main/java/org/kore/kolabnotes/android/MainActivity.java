@@ -22,6 +22,7 @@ import org.kore.kolabnotes.android.content.ActiveAccountRepository;
 import org.kore.kolabnotes.android.drawer.OnAccountsArrowClicked;
 import org.kore.kolabnotes.android.fragment.ChooseAccountDialogFragment;
 import org.kore.kolabnotes.android.fragment.DetailFragment;
+import org.kore.kolabnotes.android.fragment.OnAccountSwitchedFromNavListener;
 import org.kore.kolabnotes.android.fragment.OnAccountSwitchedListener;
 import org.kore.kolabnotes.android.fragment.OnFragmentCallback;
 import org.kore.kolabnotes.android.fragment.OverviewFragment;
@@ -31,7 +32,7 @@ import java.util.Deque;
 import java.util.Iterator;
 import java.util.LinkedList;
 
-public class MainActivity extends AppCompatActivity implements SyncStatusObserver, OnFragmentCallback, OnAccountSwitchedListener, AccountChooserActivity {
+public class MainActivity extends AppCompatActivity implements SyncStatusObserver, OnFragmentCallback, OnAccountSwitchedListener, OnAccountSwitchedFromNavListener, AccountChooserActivity {
 
     public static final String AUTHORITY = "kore.kolabnotes";
 
@@ -193,10 +194,18 @@ public class MainActivity extends AppCompatActivity implements SyncStatusObserve
 
     @Override
     public void onAccountSwitched(String name, AccountIdentifier accountIdentifier) {
+        setTitle(name);
         final Iterator<OnAccountSwitchedListener> iterator = this.accountSwitchedListeners.iterator();
         while(iterator.hasNext()){
             iterator.next().onAccountSwitched(name, accountIdentifier);
         }
+    }
+
+    @Override
+    public void onAccountSwitchedFromNav(String name, AccountIdentifier accountIdentifier) {
+        setTitle(name);
+        overviewFragment.onAccountSwitched(name, accountIdentifier);
+        overviewFragment.displayBlankFragment();
     }
 
     @Override
