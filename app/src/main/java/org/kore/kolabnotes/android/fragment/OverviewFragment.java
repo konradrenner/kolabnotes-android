@@ -297,6 +297,9 @@ public class OverviewFragment extends Fragment implements NoteAdapter.ViewHolder
 
     @Override
     public void onAccountSwitched(String name, AccountIdentifier accountIdentifier) {
+        mDrawerAccountsService.changeSelectedAccount(name, accountIdentifier.getAccount());
+        mDrawerAccountsService.displayNavigation();
+        activity.setTitle(name);
         reloadData();
     }
 
@@ -1462,8 +1465,12 @@ public class OverviewFragment extends Fragment implements NoteAdapter.ViewHolder
                 activeAccount = activeAccountRepository.getActiveAccount();
             }
 
-            mDrawerAccountsService.overrideAccounts(activity, mAccountManager.getAccountsByType(AuthenticatorActivity.ARG_ACCOUNT_TYPE), mAccountManager);
-
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    mDrawerAccountsService.overrideAccounts(activity, mAccountManager.getAccountsByType(AuthenticatorActivity.ARG_ACCOUNT_TYPE), mAccountManager, activity.getDrawerLayout());
+                }
+            });
 
             new AccountChangeThread(activeAccount).run();
         }
