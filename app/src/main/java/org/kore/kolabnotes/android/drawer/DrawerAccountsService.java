@@ -81,7 +81,6 @@ public class DrawerAccountsService {
         final MenuItem accountEntry = menu.add(R.id.drawer_accounts, id, Menu.NONE, name);
         setIcon(context, accountType, accountEntry);
         accountEntry.setOnMenuItemClickListener(new AccountSwichtedACL(nav, layout, context, name, accountIdentifier, list));
-        accountEntry.setCheckable(true);
         if (!"local".equals(email) && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             accountEntry.setTooltipText(email);
         }

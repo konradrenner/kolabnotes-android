@@ -78,7 +78,6 @@ public class DrawerService {
         }
         final MenuItem newTagEntry = tagMenu.add(Menu.NONE, tagMenu.size(), Menu.NONE, spannable);
         newTagEntry.setOnMenuItemClickListener(new OnTagItemClickedListener(listener, layout));
-        newTagEntry.setCheckable(true);
         return newTagEntry;
     }
 
@@ -90,7 +89,6 @@ public class DrawerService {
         final MenuItem newNotebookEntry = notebookMenu.add(Menu.NONE, notebookMenu.size(), Menu.NONE, notebook.getSummary());
         setNotebookPermissionIcon(context, notebook, newNotebookEntry);
         newNotebookEntry.setOnMenuItemClickListener(new OnNotebookItemClickedListener(listener, layout));
-        newNotebookEntry.setCheckable(true);
         return newNotebookEntry;
     }
 

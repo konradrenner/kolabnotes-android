@@ -7,7 +7,8 @@
         <FrameLayout
             android:id="@+id/activity_main_frame"
             android:layout_height="match_parent"
-            android:layout_width="match_parent">
+            android:layout_width="match_parent"
+            android:background="?attr/colorPrimary">
 
             <RelativeLayout
                 android:gravity="center"
@@ -28,6 +29,7 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:background="@color/list_background"
                     android:layout_below="@id/toolbar"
                     android:orientation="horizontal">
 
@@ -48,6 +50,8 @@
         android:layout_width="wrap_content"
         android:layout_gravity="start"
         android:fitsSystemWindows="true"
+        app:itemTextColor="@color/primary_text"
+        app:itemIconTint="@color/primary_text"
         app:theme="@style/ThemeOverlay.AppCompat.Light"
         app:headerLayout="@layout/drawer_header"
         app:menu="@menu/drawer_view"/>

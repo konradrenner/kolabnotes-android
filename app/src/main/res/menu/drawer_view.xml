@@ -2,7 +2,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <group
         android:id="@+id/drawer_navigation"
-        android:checkableBehavior="single">
+        android:checkableBehavior="none">
         <item
             android:id="@+id/all_notes"
             android:icon="@drawable/ic_action_group"
@@ -11,6 +11,7 @@
         <item
             android:id="@+id/all_notes_from_account"
             android:icon="@drawable/ic_action_person"
+            android:iconTint="@color/primary_text"
             android:onClick="allNotesFromAccountSelected"
             android:title="@string/drawer_item_allnotes" />
         <item
@@ -36,7 +37,7 @@
     <group
         android:id="@+id/drawer_accounts"
         android:visible="false"
-        android:checkableBehavior="single">
+        android:checkableBehavior="none">
         <!-- will be filled at runtime -->
     </group>
 </menu>

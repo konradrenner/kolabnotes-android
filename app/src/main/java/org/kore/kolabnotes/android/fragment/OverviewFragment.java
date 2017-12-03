@@ -1471,6 +1471,7 @@ public class OverviewFragment extends Fragment implements NoteAdapter.ViewHolder
                 @Override
                 public void run() {
                     mDrawerAccountsService.overrideAccounts(activity, mAccountManager.getAccountsByType(AuthenticatorActivity.ARG_ACCOUNT_TYPE), mAccountManager, activity.getDrawerLayout());
+                    mDrawerAccountsService.displayNavigation();
                 }
             });
 

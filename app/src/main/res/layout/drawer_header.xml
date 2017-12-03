@@ -4,7 +4,7 @@
     android:layout_height="@dimen/nav_header_height"
     android:background="@color/theme_default_primary_dark"
     android:gravity="bottom"
-    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingBottom="@dimen/nav_header_bottom_padding"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/nav_header_top_padding"
