@@ -1304,8 +1304,7 @@ public class OverviewFragment extends Fragment implements NoteAdapter.ViewHolder
             intent.addCategory(Intent.CATEGORY_OPENABLE);
 
             intent.setType("application/zip");
-            //TODO get notebook name from drawer
-            String notebookName = null;
+            String notebookName = Utils.getSelectedNotebookName(activity);
             intent.putExtra(Intent.EXTRA_TITLE, notebookName+".zip");
             startActivityForResult(intent, Utils.WRITE_REQUEST_CODE);
         }
