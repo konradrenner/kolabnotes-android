@@ -50,9 +50,7 @@ public class MainActivity extends AppCompatActivity implements SyncStatusObserve
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        this.accountSwitchedListeners = new LinkedList<>();
-        overviewFragment = (OverviewFragment)getFragmentManager().findFragmentById(R.id.overview_fragment);
-        this.accountSwitchedListeners.push(overviewFragment);
+        initAccountSwitchedListeners();
 
         mAccountManager = AccountManager.get(this);
 
@@ -91,8 +89,18 @@ public class MainActivity extends AppCompatActivity implements SyncStatusObserve
     protected void onResume() {
         super.onResume();
 
+        initAccountSwitchedListeners();
+
         if(Utils.getReloadDataAfterDetail(this)){
             Utils.setReloadDataAfterDetail(this,false);
+        }
+    }
+
+    private void initAccountSwitchedListeners() {
+        if(this.accountSwitchedListeners == null){
+            this.accountSwitchedListeners = new LinkedList<>();
+            overviewFragment = (OverviewFragment)getFragmentManager().findFragmentById(R.id.overview_fragment);
+            this.accountSwitchedListeners.push(overviewFragment);
         }
     }
 
@@ -195,6 +203,7 @@ public class MainActivity extends AppCompatActivity implements SyncStatusObserve
     @Override
     public void onAccountSwitched(String name, AccountIdentifier accountIdentifier) {
         setTitle(name);
+        initAccountSwitchedListeners();
         final Iterator<OnAccountSwitchedListener> iterator = this.accountSwitchedListeners.iterator();
         while(iterator.hasNext()){
             iterator.next().onAccountSwitched(name, accountIdentifier);
@@ -210,6 +219,7 @@ public class MainActivity extends AppCompatActivity implements SyncStatusObserve
 
     @Override
     public void fragementAttached(Fragment fragment) {
+        initAccountSwitchedListeners();
         final OnAccountSwitchedListener peek = this.accountSwitchedListeners.peek();
         if(peek instanceof  DetailFragment){
             this.accountSwitchedListeners.poll();

@@ -798,10 +798,16 @@ public class OverviewFragment extends Fragment implements NoteAdapter.ViewHolder
     }
 
     private void replaceDetailFragment(DetailFragment detail) {
-        FragmentTransaction ft = getFragmentManager(). beginTransaction();
-        ft.replace(R.id.details_fragment, detail);
-        ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-        ft.commitAllowingStateLoss();
+        final Fragment detailFragment = getFragmentManager().findFragmentById(R.id.details_fragment);
+
+        if(detailFragment instanceof DetailFragment){
+            //TODO change values in Detail Fragment instead of replacing the fragment
+        }else{
+            FragmentTransaction ft = getFragmentManager(). beginTransaction();
+            ft.replace(R.id.details_fragment, detail);
+            ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+            ft.commit();
+        }
     }
 
     public void preventBlankDisplaying(){
