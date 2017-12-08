@@ -4,6 +4,12 @@
     android:layout_height="match_parent"
     android:layout_width="match_parent">
 
+    <FrameLayout
+        android:id="@+id/activity_main_frame"
+        android:layout_height="match_parent"
+        android:layout_width="match_parent"
+        android:background="?attr/colorPrimary">
+
     <RelativeLayout
         android:gravity="center"
         android:fitsSystemWindows="true"
@@ -23,6 +29,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_below="@id/toolbar"
+            android:background="@color/list_background"
             android:orientation="horizontal">
 
             <fragment
@@ -43,6 +50,8 @@
             />
     </LinearLayout>
     </RelativeLayout>
+
+    </FrameLayout>
 
     <!-- The navigation drawer -->
     <android.support.design.widget.NavigationView

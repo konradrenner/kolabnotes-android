@@ -793,11 +793,15 @@ public class OverviewFragment extends Fragment implements NoteAdapter.ViewHolder
             }
             detail.setStartNotebook(notebook);
 
-            FragmentTransaction ft = getFragmentManager(). beginTransaction();
-            ft.replace(R.id.details_fragment, detail);
-            ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-            ft.commit();
+            replaceDetailFragment(detail);
         }
+    }
+
+    private void replaceDetailFragment(DetailFragment detail) {
+        FragmentTransaction ft = getFragmentManager(). beginTransaction();
+        ft.replace(R.id.details_fragment, detail);
+        ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+        ft.commitAllowingStateLoss();
     }
 
     public void preventBlankDisplaying(){
@@ -1601,10 +1605,7 @@ public class OverviewFragment extends Fragment implements NoteAdapter.ViewHolder
                     }
 
                     DetailFragment detail = DetailFragment.newInstance(null,notebookUID);
-                    FragmentTransaction ft = getFragmentManager(). beginTransaction();
-                    ft.replace(R.id.details_fragment, detail);
-                    ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-                    ft.commit();
+                    replaceDetailFragment(detail);
                 }else {
                     if (notebook != null) {
                         intent.putExtra(Utils.NOTEBOOK_UID, notebook.getIdentification().getUid());
@@ -1651,10 +1652,7 @@ public class OverviewFragment extends Fragment implements NoteAdapter.ViewHolder
             if(intent != null){
                 if(tabletMode){
                     DetailFragment detail = DetailFragment.newInstance(null,nb.getIdentification().getUid());
-                    FragmentTransaction ft = getFragmentManager(). beginTransaction();
-                    ft.replace(R.id.details_fragment, detail);
-                    ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-                    ft.commit();
+                    replaceDetailFragment(detail);
                 }else {
 
                     intent.putExtra(Utils.NOTEBOOK_UID, nb.getIdentification().getUid());

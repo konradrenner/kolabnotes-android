@@ -52,6 +52,8 @@ import java.util.ArrayList;
 
 public class Utils {
 
+    public  static final String DETAIL_FRAGMENT_TAG = "detail_fragment";
+
     private static final int CYAN = 210;
     private static final int RED = 0;
     private static final int RED_ORANGE = 20;

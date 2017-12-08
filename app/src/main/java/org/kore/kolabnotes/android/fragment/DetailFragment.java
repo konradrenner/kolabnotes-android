@@ -17,6 +17,7 @@ import android.print.PrintAttributes;
 import android.print.PrintDocumentAdapter;
 import android.print.PrintJob;
 import android.print.PrintManager;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
@@ -71,6 +72,7 @@ import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
@@ -165,7 +167,6 @@ public class DetailFragment extends Fragment implements OnAccountSwitchedListene
 
         ((OnFragmentCallback)activity).fragementAttached(this);
     }
-
 
 
     @Override
@@ -1485,9 +1486,15 @@ public class DetailFragment extends Fragment implements OnAccountSwitchedListene
 
             newNote.addCategories(tags);
 
-            String nb = spinner.getSelectedItem().toString();
+            String nb = spinner.getSelectedItem() == null ? null : spinner.getSelectedItem().toString();
 
-            boolean nbSameNames = nb.equals(intialNotebookName);
+            boolean nbSameNames = false;
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
+                //NPE prevention
+                nbSameNames = Objects.equals(nb,intialNotebookName);
+            }else{
+                nbSameNames = nb.equals(intialNotebookName);
+            }
             differences = Utils.differentMutableData(note, newNote) || !nbSameNames || isDescriptionDirty;
         }
         return  differences;
