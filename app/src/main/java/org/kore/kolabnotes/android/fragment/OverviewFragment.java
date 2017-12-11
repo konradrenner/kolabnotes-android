@@ -807,13 +807,8 @@ public class OverviewFragment extends Fragment implements NoteAdapter.ViewHolder
             detail.updateFragmentDataWithNewNoteSelection(noteUID, notebookUID, account);
         }else{
             ft.commit();
-            //TODO does not work on android below N
-            activity.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    detail.updateFragmentDataWithNewNoteSelection(noteUID, notebookUID, account);
-                }
-            });
+            getFragmentManager().executePendingTransactions();
+            detail.updateFragmentDataWithNewNoteSelection(noteUID, notebookUID, account);
         }
     }
 
