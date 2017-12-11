@@ -68,6 +68,7 @@ public class MainActivity extends AppCompatActivity implements SyncStatusObserve
             /** Called when a drawer has settled in a completely open state. */
             public void onDrawerOpened(View drawerView) {
                 super.onDrawerOpened(drawerView);
+                overviewFragment.displayBlankFragment();
             }
         };
 

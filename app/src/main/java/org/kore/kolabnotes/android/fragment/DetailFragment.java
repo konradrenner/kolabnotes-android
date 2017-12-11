@@ -181,32 +181,7 @@ public class DetailFragment extends Fragment implements OnAccountSwitchedListene
 
         setHasOptionsMenu(true);
 
-        boolean useRicheditor = Utils.getUseRicheditor(activity);
-
-        if(useRicheditor) {
-            editor = (RichEditor) activity.findViewById(R.id.detail_description);
-            editor.setVisibility(View.VISIBLE);
-            editor.setBackgroundColor(Color.TRANSPARENT);
-            editor.setEditorHeight(300);
-            editor.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-                @Override
-                public void onFocusChange(View view, boolean b) {
-                    final View bar = activity.findViewById(R.id.editor_bar);
-                    final int visibility = bar.getVisibility();
-                    if (visibility == View.GONE) {
-                        bar.setVisibility(View.VISIBLE);
-                    } else {
-                        bar.setVisibility(View.GONE
-                        );
-                    }
-                }
-            });
-            initEditor();
-        }else{
-            editText = (EditText) activity.findViewById(R.id.detail_description_plain);
-            editText.setVisibility(View.VISIBLE);
-            editText.setMovementMethod(LinkMovementMethod.getInstance());
-        }
+        initTextEditor();
 
         // Handle Back Navigation :D
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
@@ -257,41 +232,14 @@ public class DetailFragment extends Fragment implements OnAccountSwitchedListene
 
             initSpinner();
 
-            note = noteRepository.getByUID(activeAccount.getAccount(), activeAccount.getRootFolder(), uid);
-
-            //Maybe the note got deleted (sync happend after a click on a note was done) => Issues 34 on GitHub
-            if (note == null) {
-                Toast.makeText(activity, R.string.note_not_found, Toast.LENGTH_LONG).show();
-            } else {
-                EditText summary = (EditText) activity.findViewById(R.id.detail_summary);
-                summary.setText(note.getSummary());
-
-                String desc = note.getDescription();
-                if(!TextUtils.isEmpty(desc)) {
-                    String updatedDesc = initImageMap(note.getDescription());
-                    setHtml(updatedDesc);
-                    note.setDescription(updatedDesc);
-                }
-
-                selectedClassification = note.getClassification();
-                for (Tag tag : note.getCategories()) {
-                    selectedTags.add(tag.getName());
-                }
-
-                selectedColor = note.getColor();
-
-                if(notebook == null){
-                    notebook = noteRepository.getUIDofNotebook(activeAccount.getAccount(), activeAccount.getRootFolder(), uid);
-                }
-            }
+            notebook = initNote(uid, notebook, activeAccount);
         }else{
             initSpinner();
             isNewNote = true;
         }
 
-        allTags.putAll(tagRepository.getAllAsMap(activeAccount.getAccount(), activeAccount.getRootFolder()));
-        setNotebook(activeAccount, notebook, startNotebook != null);
-        intialNotebookName = getNotebookSpinnerSelectionName();
+        initTags(activeAccount);
+        initNotebook(notebook, activeAccount);
 
         if (savedInstanceState != null && savedInstanceState.getString(EDITOR) != null) {
             /* Restoring saved data into editor */
@@ -302,6 +250,92 @@ public class DetailFragment extends Fragment implements OnAccountSwitchedListene
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
             activity.findViewById(R.id.action_insert_image).setVisibility(View.GONE);
         }
+    }
+
+    private void initTextEditor() {
+        boolean useRicheditor = Utils.getUseRicheditor(activity);
+
+        if(useRicheditor) {
+            editor = (RichEditor) activity.findViewById(R.id.detail_description);
+            editor.setVisibility(View.VISIBLE);
+            editor.setBackgroundColor(Color.TRANSPARENT);
+            editor.setEditorHeight(300);
+            editor.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                @Override
+                public void onFocusChange(View view, boolean b) {
+                    final View bar = activity.findViewById(R.id.editor_bar);
+                    final int visibility = bar.getVisibility();
+                    if (visibility == View.GONE) {
+                        bar.setVisibility(View.VISIBLE);
+                    } else {
+                        bar.setVisibility(View.GONE
+                        );
+                    }
+                }
+            });
+            initEditor();
+        }else{
+            editText = (EditText) activity.findViewById(R.id.detail_description_plain);
+            editText.setVisibility(View.VISIBLE);
+            editText.setMovementMethod(LinkMovementMethod.getInstance());
+        }
+    }
+
+    void updateFragmentDataWithNewNoteSelection(String noteUid, String notebookUID, ActiveAccount account){
+        initTextEditor();
+        initSpinner();
+        String bookID = notebookUID;
+        //if the notebookuid is null it will be loaded from this method
+        if(noteUid == null){
+            isNewNote = true;
+        }else {
+            isNewNote = false;
+            bookID = initNote(noteUid, notebookUID, account);
+        }
+        initNotebook(bookID, account);
+        initTags(account);
+
+    }
+
+    private void initTags(ActiveAccount activeAccount) {
+        allTags.clear();
+        allTags.putAll(tagRepository.getAllAsMap(activeAccount.getAccount(), activeAccount.getRootFolder()));
+    }
+
+    private void initNotebook(String notebook, ActiveAccount activeAccount) {
+        setNotebook(activeAccount, notebook, startNotebook != null);
+        intialNotebookName = getNotebookSpinnerSelectionName();
+    }
+
+    private String initNote(String uid, String notebook, ActiveAccount activeAccount) {
+        note = noteRepository.getByUID(activeAccount.getAccount(), activeAccount.getRootFolder(), uid);
+
+        //Maybe the note got deleted (sync happend after a click on a note was done) => Issues 34 on GitHub
+        if (note == null) {
+            Toast.makeText(activity, R.string.note_not_found, Toast.LENGTH_LONG).show();
+        } else {
+            EditText summary = (EditText) activity.findViewById(R.id.detail_summary);
+            summary.setText(note.getSummary());
+
+            String desc = note.getDescription();
+            if(!TextUtils.isEmpty(desc)) {
+                String updatedDesc = initImageMap(note.getDescription());
+                setHtml(updatedDesc);
+                note.setDescription(updatedDesc);
+            }
+
+            selectedClassification = note.getClassification();
+            for (Tag tag : note.getCategories()) {
+                selectedTags.add(tag.getName());
+            }
+
+            selectedColor = note.getColor();
+
+            if(notebook == null){
+                notebook = noteRepository.getUIDofNotebook(activeAccount.getAccount(), activeAccount.getRootFolder(), uid);
+            }
+        }
+        return notebook;
     }
 
     private void takeTextFromIntent(Intent startIntent) {

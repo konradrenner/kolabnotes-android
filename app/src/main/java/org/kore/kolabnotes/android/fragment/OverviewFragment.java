@@ -386,6 +386,7 @@ public class OverviewFragment extends Fragment implements NoteAdapter.ViewHolder
     public void select(final Note note,final boolean sameSelection) {
         if(tabletMode){
             Fragment fragment = getFragmentManager().findFragmentById(R.id.details_fragment);
+            final ActiveAccount activeAccount = this.activeAccountRepository.getActiveAccount();
             if(fragment instanceof  DetailFragment){
                 DetailFragment detail = (DetailFragment)fragment;
                 boolean changes = detail.checkDifferences();
@@ -398,7 +399,7 @@ public class OverviewFragment extends Fragment implements NoteAdapter.ViewHolder
                     builder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            setDetailFragment(note, sameSelection);
+                            setDetailFragment(activeAccount, note, sameSelection);
                         }
                     });
                     builder.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
@@ -409,10 +410,10 @@ public class OverviewFragment extends Fragment implements NoteAdapter.ViewHolder
                     });
                     builder.show();
                 }else{
-                    setDetailFragment(note,sameSelection);
+                    setDetailFragment(activeAccount, note,sameSelection);
                 }
             }else{
-                setDetailFragment(note,sameSelection);
+                setDetailFragment(activeAccount, note,sameSelection);
             }
         }else {
             Intent i = new Intent(activity, DetailActivity.class);
@@ -781,7 +782,7 @@ public class OverviewFragment extends Fragment implements NoteAdapter.ViewHolder
         }
     }
 
-    void setDetailFragment(Note note, boolean sameSelection){
+    void setDetailFragment(ActiveAccount account, Note note, boolean sameSelection){
         DetailFragment detail = DetailFragment.newInstance(note.getIdentification().getUid(),null);
         if (detail.getNote() == null || !sameSelection) {
 
@@ -793,20 +794,26 @@ public class OverviewFragment extends Fragment implements NoteAdapter.ViewHolder
             }
             detail.setStartNotebook(notebook);
 
-            replaceDetailFragment(detail);
+            replaceDetailFragment(detail, note.getIdentification().getUid(), null, account);
         }
     }
 
-    private void replaceDetailFragment(DetailFragment detail) {
-        final Fragment detailFragment = getFragmentManager().findFragmentById(R.id.details_fragment);
-
-        if(detailFragment instanceof DetailFragment){
-            //TODO change values in Detail Fragment instead of replacing the fragment
+    private void replaceDetailFragment(DetailFragment detail, String noteUID, String notebookUID, ActiveAccount account) {
+        FragmentTransaction ft = getFragmentManager(). beginTransaction();
+        ft.replace(R.id.details_fragment, detail);
+        ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            ft.commitNow();
+            detail.updateFragmentDataWithNewNoteSelection(noteUID, notebookUID, account);
         }else{
-            FragmentTransaction ft = getFragmentManager(). beginTransaction();
-            ft.replace(R.id.details_fragment, detail);
-            ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
             ft.commit();
+            //TODO does not work on android below N
+            activity.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    detail.updateFragmentDataWithNewNoteSelection(noteUID, notebookUID, account);
+                }
+            });
         }
     }
 
@@ -1611,7 +1618,7 @@ public class OverviewFragment extends Fragment implements NoteAdapter.ViewHolder
                     }
 
                     DetailFragment detail = DetailFragment.newInstance(null,notebookUID);
-                    replaceDetailFragment(detail);
+                    replaceDetailFragment(detail, null, notebookUID, activeAccount);
                 }else {
                     if (notebook != null) {
                         intent.putExtra(Utils.NOTEBOOK_UID, notebook.getIdentification().getUid());
@@ -1658,7 +1665,7 @@ public class OverviewFragment extends Fragment implements NoteAdapter.ViewHolder
             if(intent != null){
                 if(tabletMode){
                     DetailFragment detail = DetailFragment.newInstance(null,nb.getIdentification().getUid());
-                    replaceDetailFragment(detail);
+                    replaceDetailFragment(detail, null, nb.getIdentification().getUid(), activeAccount);
                 }else {
 
                     intent.putExtra(Utils.NOTEBOOK_UID, nb.getIdentification().getUid());
