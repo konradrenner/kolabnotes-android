@@ -3,6 +3,7 @@ package org.kore.kolabnotes.android.drawer;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
@@ -13,6 +14,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewParent;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.kore.kolabnotes.android.R;
@@ -41,9 +43,10 @@ public class DrawerAccountsService {
         this.nav = view;
     }
 
-    public void changeSelectedAccount(String name, String mail){
+    public void changeSelectedAccount(Context context, String name, String mail, String accountType){
         TextView tname = (TextView) headerView.findViewById(R.id.drawer_header_name);
         TextView tmail = (TextView) headerView.findViewById(R.id.drawer_header_mail);
+        ImageView accountImage = (ImageView) headerView.findViewById(R.id.drawer_account_image);
 
         tname.setText(name);
         String corrmail = mail;
@@ -51,6 +54,13 @@ public class DrawerAccountsService {
             corrmail = "";
         }
         tmail.setText(corrmail);
+
+        final Drawable icon = evaluateIcon(context, accountType);
+        if(icon != null){
+            accountImage.setImageDrawable(icon);
+        }else{
+            accountImage.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_kolabnotes_breeze));
+        }
     }
 
     public Set<AccountIdentifier> overrideAccounts(OnAccountSwitchedFromNavListener list, Account[] accounts, AccountManager accountManager, DrawerLayout layout){
@@ -88,24 +98,30 @@ public class DrawerAccountsService {
     }
 
     private void setIcon(Context context, String accountType, MenuItem accountEntry) {
+        final Drawable icon = evaluateIcon(context, accountType);
+
+        if(icon != null){
+            accountEntry.setIcon(icon);
+        }
+    }
+
+    private Drawable evaluateIcon(Context context, String accountType) {
         if(accountType == null) {
-            return;
+            return null;
         }
 
         if("local".equalsIgnoreCase(accountType)){
-            accountEntry.setIcon(context.getResources().getDrawable(R.drawable.ic_local_account));
-            return;
+            return context.getResources().getDrawable(R.drawable.ic_local_account);
         }
 
         int type = Integer.parseInt(accountType);
 
         if(type == AuthenticatorActivity.ID_ACCOUNT_TYPE_KOLABNOW){
-            accountEntry.setIcon(context.getResources().getDrawable(R.drawable.ic_kolabnow));
+            return context.getResources().getDrawable(R.drawable.ic_kolabnow);
         }else if(type == AuthenticatorActivity.ID_ACCOUNT_TYPE_KOLAB){
-            accountEntry.setIcon(context.getResources().getDrawable(R.drawable.ic_kolab));
-        }else{
-            accountEntry.setIcon(context.getResources().getDrawable(R.drawable.ic_imap));
+            return context.getResources().getDrawable(R.drawable.ic_kolab);
         }
+        return context.getResources().getDrawable(R.drawable.ic_imap);
     }
 
 
@@ -142,7 +158,7 @@ public class DrawerAccountsService {
             ActiveAccountRepository repo = new ActiveAccountRepository(context);
             final ActiveAccount activeAccount = repo.getActiveAccount();
 
-            ((ImageButton)view.findViewById(R.id.drawer_openclose_button)).callOnClick();
+            view.findViewById(R.id.drawer_header).callOnClick();
 
             layout.closeDrawer(Gravity.LEFT);
 

@@ -11,14 +11,14 @@ import org.kore.kolabnotes.android.R;
  * Created by koni on 01.12.17.
  */
 
-public class OnAccountsArrowClicked implements View.OnClickListener {
+public class OnHeaderClicked implements View.OnClickListener {
 
     private final NavigationView navigationView;
     private final DrawerAccountsService drawerAccountsService;
 
     private boolean arrowDown;
 
-    public OnAccountsArrowClicked(NavigationView navigationView) {
+    public OnHeaderClicked(NavigationView navigationView) {
         this.navigationView = navigationView;
         this.drawerAccountsService = new DrawerAccountsService(this.navigationView);
         this.arrowDown = true;
@@ -26,7 +26,7 @@ public class OnAccountsArrowClicked implements View.OnClickListener {
 
     @Override
     public void onClick(View view) {
-        ImageButton button = (ImageButton)view;
+        ImageButton button = (ImageButton)view.findViewById(R.id.drawer_openclose_button);
 
         final Drawable drawable = button.getDrawable();
 

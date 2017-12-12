@@ -297,9 +297,9 @@ public class OverviewFragment extends Fragment implements NoteAdapter.ViewHolder
 
     @Override
     public void onAccountSwitched(String name, AccountIdentifier accountIdentifier) {
-        mDrawerAccountsService.changeSelectedAccount(name, accountIdentifier.getAccount());
+        mDrawerAccountsService.changeSelectedAccount(activity, name, accountIdentifier.getAccount(), Utils.getAccountType(activity, accountIdentifier));
+        final ActiveAccount activeAccount = activeAccountRepository.switchAccount(accountIdentifier.getAccount(), accountIdentifier.getRootFolder());
         mDrawerAccountsService.displayNavigation();
-        activeAccountRepository.switchAccount(accountIdentifier.getAccount(), accountIdentifier.getRootFolder());
         reloadData();
     }
 
@@ -869,7 +869,7 @@ public class OverviewFragment extends Fragment implements NoteAdapter.ViewHolder
         String selectedNotebookName = Utils.getSelectedNotebookName(activity);
 
         final String nameOfActiveAccount = Utils.getNameOfActiveAccount(activity, activeAccount.getAccount(), activeAccount.getRootFolder());
-        mDrawerAccountsService.changeSelectedAccount(nameOfActiveAccount, activeAccount.getAccount());
+        mDrawerAccountsService.changeSelectedAccount(activity, nameOfActiveAccount, activeAccount.getAccount(), Utils.getAccountType(activity, activeAccount));
 
         if(initPhase){
             initPhase = false;
@@ -937,7 +937,7 @@ public class OverviewFragment extends Fragment implements NoteAdapter.ViewHolder
                 public void run() {
                     String name = Utils.getNameOfActiveAccount(activity, activeAccount.getAccount(), activeAccount.getRootFolder());
                     if(changeDrawerAccount){
-                        mDrawerAccountsService.changeSelectedAccount(name, activeAccount.getAccount());
+                        mDrawerAccountsService.changeSelectedAccount(activity, name, activeAccount.getAccount(), Utils.getAccountType(activity, activeAccount));
                     }
                     toolbar.setTitle(name);
                 }
@@ -1581,7 +1581,6 @@ public class OverviewFragment extends Fragment implements NoteAdapter.ViewHolder
 
     @Override
     public void allNotesSelected() {
-        ActiveAccount activeAccount = activeAccountRepository.getActiveAccount();
         final List<Note> notes = notesRepository.getAll(Utils.getNoteSorting(getActivity()));
         reloadData(null, notes, null);
     }

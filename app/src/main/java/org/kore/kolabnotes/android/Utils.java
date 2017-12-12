@@ -494,6 +494,25 @@ public class Utils {
         return new AccountIdentifier(email,rootFolder);
     }
 
+    public static String getAccountType(Context context, AccountIdentifier accountId) {
+        if(Utils.isLocalAccount(accountId)){
+            return "local";
+        }
+
+        AccountManager accountManager = AccountManager.get(context);
+        Account[] accounts = AccountManager.get(context).getAccountsByType(AuthenticatorActivity.ARG_ACCOUNT_TYPE);
+
+        for (Account acc : accounts) {
+            String email = accountManager.getUserData(acc, AuthenticatorActivity.KEY_EMAIL);
+            String rootFolder = accountManager.getUserData(acc, AuthenticatorActivity.KEY_ROOT_FOLDER);
+
+            if(accountId.getAccount().equals(email) && accountId.getRootFolder().equals(rootFolder)){
+                return accountManager.getUserData(acc, AuthenticatorActivity.KEY_ACCOUNT_TYPE);
+            }
+        }
+        return null;
+    }
+
     public static void setToolbarTextAndIconColor(final Activity activity, final Toolbar toolbar, final boolean lightText){
 
         setOverflowButtonColor(activity,lightText);

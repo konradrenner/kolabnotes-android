@@ -6,23 +6,20 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Intent;
 import android.content.SyncStatusObserver;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.Toast;
 
 import org.kore.kolabnotes.android.content.AccountIdentifier;
 import org.kore.kolabnotes.android.content.ActiveAccount;
 import org.kore.kolabnotes.android.content.ActiveAccountRepository;
-import org.kore.kolabnotes.android.drawer.OnAccountsArrowClicked;
+import org.kore.kolabnotes.android.drawer.OnHeaderClicked;
 import org.kore.kolabnotes.android.fragment.ChooseAccountDialogFragment;
 import org.kore.kolabnotes.android.fragment.DetailFragment;
 import org.kore.kolabnotes.android.fragment.OnAccountSwitchedFromNavListener;
@@ -78,7 +75,7 @@ public class MainActivity extends AppCompatActivity implements SyncStatusObserve
         // Set the drawer toggle as the DrawerListener
         mDrawerLayout.addDrawerListener(mDrawerToggle);
 
-        mNavigationView.getHeaderView(0).findViewById(R.id.drawer_openclose_button).setOnClickListener(new OnAccountsArrowClicked(mNavigationView));
+        mNavigationView.getHeaderView(0).findViewById(R.id.drawer_header).setOnClickListener(new OnHeaderClicked(mNavigationView));
         mNavigationView.setItemIconTintList(null);
     }
 
