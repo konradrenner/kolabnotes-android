@@ -23,11 +23,7 @@ public abstract class OnDrawerItemClickListener implements MenuItem.OnMenuItemCl
 
     @Override
     public boolean onMenuItemClick(MenuItem item) {
-        final boolean checked = item.isChecked();
-        if(!checked){
-            item.setChecked(true);
-            selectionChanged(item.getTitle().toString());
-        }
+        selectionChanged(item.getTitle().toString());
         layout.closeDrawer(Gravity.LEFT);
         return true;
     }

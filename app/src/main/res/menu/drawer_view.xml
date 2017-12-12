@@ -6,12 +6,10 @@
         <item
             android:id="@+id/all_notes"
             android:icon="@drawable/ic_action_group"
-            android:onClick="allNotesSelected"
             android:title="@string/drawer_item_allaccount_notes" />
         <item
             android:id="@+id/all_notes_from_account"
             android:icon="@drawable/ic_action_person"
-            android:onClick="allNotesFromAccountSelected"
             android:title="@string/drawer_item_allnotes" />
         <item
             android:id="@+id/navigation_tags"

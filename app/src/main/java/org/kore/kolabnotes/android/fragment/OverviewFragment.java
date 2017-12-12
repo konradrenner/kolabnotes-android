@@ -266,7 +266,7 @@ public class OverviewFragment extends Fragment implements NoteAdapter.ViewHolder
                             mSwipeRefreshLayout.setRefreshing(false);
 
                             //issue 154
-                            //TODO set drawer selection to all notes from account
+                            allNotesFromAccountSelected();
                         }
                     });
                 }
@@ -1297,7 +1297,7 @@ public class OverviewFragment extends Fragment implements NoteAdapter.ViewHolder
 
         Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.exporting), Toast.LENGTH_SHORT).show();
         ActiveAccount activeAccount = activeAccountRepository.getActiveAccount();
-        if(/*tag == null || !tag.equals("NOTEBOOK")*/true){
+        if(Utils.getSelectedNotebookName(activity) == null){
             List<Notebook> all = notebookRepository.getAll(activeAccount.getAccount(), activeAccount.getRootFolder());
 
             for(Notebook book : all){
@@ -1485,6 +1485,8 @@ public class OverviewFragment extends Fragment implements NoteAdapter.ViewHolder
                     mDrawerAccountsService.displayNavigation();
                 }
             });
+
+            new DrawerService(activity.getNavigationView(), activity.getDrawerLayout()).setNotesFromAccountClickListener(OverviewFragment.this);
 
             new AccountChangeThread(activeAccount).run();
         }

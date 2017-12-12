@@ -6,6 +6,7 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
@@ -31,6 +32,27 @@ public class DrawerService {
     public DrawerService(NavigationView view, DrawerLayout layout) {
         this.view = view;
         this.layout = layout;
+    }
+
+    public void setNotesFromAccountClickListener(final OnDrawerSelectionChangedListener listener){
+        final Menu menu = view.getMenu();
+        menu.findItem(R.id.all_notes).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem menuItem) {
+                listener.allNotesSelected();
+                layout.closeDrawer(Gravity.LEFT);
+                return true;
+            }
+        });
+
+        menu.findItem(R.id.all_notes_from_account).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem menuItem) {
+                listener.allNotesFromAccountSelected();
+                layout.closeDrawer(Gravity.LEFT);
+                return true;
+            }
+        });
     }
 
     public void overrideNotebooks(OnDrawerSelectionChangedListener listener, Collection<Notebook> notebooks){

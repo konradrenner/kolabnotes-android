@@ -45,7 +45,6 @@ public class MainActivity extends AppCompatActivity implements SyncStatusObserve
     private AccountManager mAccountManager;
     private ActiveAccountRepository activeAccountRepository = new ActiveAccountRepository(this);
     private OverviewFragment overviewFragment;
-    private boolean isTablet;
 
     private Deque<OnAccountSwitchedListener> accountSwitchedListeners;
 
@@ -81,8 +80,6 @@ public class MainActivity extends AppCompatActivity implements SyncStatusObserve
 
         mNavigationView.getHeaderView(0).findViewById(R.id.drawer_openclose_button).setOnClickListener(new OnAccountsArrowClicked(mNavigationView));
         mNavigationView.setItemIconTintList(null);
-
-        isTablet = Utils.isTablet(getResources());
     }
 
 
