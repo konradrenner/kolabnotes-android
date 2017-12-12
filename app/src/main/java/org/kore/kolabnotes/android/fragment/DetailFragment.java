@@ -179,6 +179,17 @@ public class DetailFragment extends Fragment implements OnAccountSwitchedListene
             activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            if(activity.isInMultiWindowMode() && activity.findViewById(R.id.spinner_notebook) == null){
+                //if the activity resizes in multiwindow mode to phone ui, all views in this fragment will be null becuase they are not displayed, so don't do anything
+                Intent returnIntent = new Intent();
+                returnIntent.putExtra("selectedNotebookName",givenNotebook);
+
+                ((OnFragmentCallback)activity).fragmentFinished(returnIntent, OnFragmentCallback.ResultCode.NOT_VISIBLE);
+                return;
+            }
+        }
+
         setHasOptionsMenu(true);
 
         initTextEditor();
@@ -1438,6 +1449,10 @@ public class DetailFragment extends Fragment implements OnAccountSwitchedListene
     @Override
     public void onSaveInstanceState(Bundle outState) {
         //outState.putParcelable("appInfo", appInfo.getComponentName());
+        if(editText == null && editor == null){
+            //in multiwindowmode it could be that both are null
+            return;
+        }
         String descriptionValue = repairImages(getDescriptionFromView());
         if (descriptionValue != null) {
             outState.putString(EDITOR, descriptionValue);

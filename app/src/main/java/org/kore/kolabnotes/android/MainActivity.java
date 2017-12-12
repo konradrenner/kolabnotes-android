@@ -6,14 +6,17 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Intent;
 import android.content.SyncStatusObserver;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Toast;
 
 import org.kore.kolabnotes.android.content.AccountIdentifier;
@@ -42,6 +45,7 @@ public class MainActivity extends AppCompatActivity implements SyncStatusObserve
     private AccountManager mAccountManager;
     private ActiveAccountRepository activeAccountRepository = new ActiveAccountRepository(this);
     private OverviewFragment overviewFragment;
+    private boolean isTablet;
 
     private Deque<OnAccountSwitchedListener> accountSwitchedListeners;
 
@@ -77,7 +81,10 @@ public class MainActivity extends AppCompatActivity implements SyncStatusObserve
 
         mNavigationView.getHeaderView(0).findViewById(R.id.drawer_openclose_button).setOnClickListener(new OnAccountsArrowClicked(mNavigationView));
         mNavigationView.setItemIconTintList(null);
+
+        isTablet = Utils.isTablet(getResources());
     }
+
 
     public DrawerLayout getDrawerLayout(){
         return this.mDrawerLayout;
@@ -123,6 +130,8 @@ public class MainActivity extends AppCompatActivity implements SyncStatusObserve
         }else if(ResultCode.BACK == code){
             overviewFragment.onResume();
             mDrawerLayout.openDrawer(Gravity.LEFT);
+        }else if(ResultCode.NOT_VISIBLE == code){
+            overviewFragment.onResume();
         }
     }
 

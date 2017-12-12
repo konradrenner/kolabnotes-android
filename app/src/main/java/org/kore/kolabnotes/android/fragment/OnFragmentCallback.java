@@ -8,7 +8,7 @@ import android.content.Intent;
  */
 public interface OnFragmentCallback {
     enum ResultCode{
-        OK, SAVED, DELETED, CANCEL, BACK;
+        OK, SAVED, DELETED, CANCEL, BACK, NOT_VISIBLE;
     }
 
     void fragmentFinished(Intent resultIntent,ResultCode code);
