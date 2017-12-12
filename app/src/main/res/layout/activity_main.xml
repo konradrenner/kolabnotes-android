@@ -51,7 +51,6 @@
         android:layout_gravity="start"
         android:fitsSystemWindows="true"
         app:itemTextColor="@color/primary_text"
-        app:itemIconTint="@color/primary_text"
         app:theme="@style/ThemeOverlay.AppCompat.Light"
         app:headerLayout="@layout/drawer_header"
         app:menu="@menu/drawer_view"/>

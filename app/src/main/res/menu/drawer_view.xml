@@ -11,7 +11,6 @@
         <item
             android:id="@+id/all_notes_from_account"
             android:icon="@drawable/ic_action_person"
-            android:iconTint="@color/primary_text"
             android:onClick="allNotesFromAccountSelected"
             android:title="@string/drawer_item_allnotes" />
         <item

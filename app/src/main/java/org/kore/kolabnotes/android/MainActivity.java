@@ -76,6 +76,7 @@ public class MainActivity extends AppCompatActivity implements SyncStatusObserve
         mDrawerLayout.addDrawerListener(mDrawerToggle);
 
         mNavigationView.getHeaderView(0).findViewById(R.id.drawer_openclose_button).setOnClickListener(new OnAccountsArrowClicked(mNavigationView));
+        mNavigationView.setItemIconTintList(null);
     }
 
     public DrawerLayout getDrawerLayout(){
