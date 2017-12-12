@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 You can also have a look on the GitHub release page: https://github.com/konradrenner/kolabnotes-android/releases
 
+
 ## [3.0.0] - 2017-12-12
 ### Added
 - Implemented issue 161
