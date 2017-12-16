@@ -422,7 +422,11 @@ public class OverviewFragment extends Fragment implements NoteAdapter.ViewHolder
             String selectedNotebookName = Utils.getSelectedNotebookName(activity);
             if (selectedNotebookName != null) {
                 ActiveAccount activeAccount = activeAccountRepository.getActiveAccount();
-                i.putExtra(Utils.NOTEBOOK_UID, notebookRepository.getBySummary(activeAccount.getAccount(), activeAccount.getRootFolder(), selectedNotebookName).getIdentification().getUid());
+                final Notebook bySummary = notebookRepository.getBySummary(activeAccount.getAccount(), activeAccount.getRootFolder(), selectedNotebookName);
+                // not null because of issue 167
+                if(bySummary != null) {
+                    i.putExtra(Utils.NOTEBOOK_UID,bySummary.getIdentification().getUid());
+                }
             }
 
             startActivityForResult(i, DETAIL_ACTIVITY_RESULT_CODE);
@@ -693,7 +697,8 @@ public class OverviewFragment extends Fragment implements NoteAdapter.ViewHolder
         Notebook book = notebookRepository.getByUID(account, rootFolder, notesRepository
                 .getUIDofNotebook(account, rootFolder, uid));
 
-        if (book.isShared()) {
+        // not null because of issue 167
+        if (book != null && book.isShared()) {
             if (!((SharedNotebook) book).isNoteModificationAllowed()) {
                 Toast.makeText(activity, R.string.no_change_permissions, Toast.LENGTH_LONG).show();
                 return null;

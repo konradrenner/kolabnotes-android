@@ -1238,7 +1238,8 @@ public class DetailFragment extends Fragment implements OnAccountSwitchedListene
 
                 Notebook book = notebookRepository.getBySummary(activeAccount.getAccount(), activeAccount.getRootFolder(), notebookName);
 
-                if(book.isShared()){
+                // not null because of issue 167
+                if(book != null && book.isShared()){
                     if(!((SharedNotebook)book).isNoteCreationAllowed()){
                         Toast.makeText(activity, R.string.no_create_permissions, Toast.LENGTH_LONG).show();
                         return;
