@@ -447,7 +447,8 @@ public class NoteRepository {
         StringBuilder query = new StringBuilder(DatabaseHelper.COLUMN_ACCOUNT + " = '" + account+"' AND ");
         query.append(DatabaseHelper.COLUMN_ROOT_FOLDER + " = '" + rootFolder+"' AND ");
         query.append(DatabaseHelper.COLUMN_DISCRIMINATOR+" = '"+DatabaseHelper.DESCRIMINATOR_NOTE+"' AND ");
-        query.append(" "+DatabaseHelper.COLUMN_SUMMARY+" like '%"+keyWord.trim()+"%' COLLATE NOCASE ");
+        query.append(" ( "+DatabaseHelper.COLUMN_SUMMARY+" like '%"+keyWord.trim()+"%' COLLATE NOCASE OR ");
+        query.append(DatabaseHelper.COLUMN_DESCRIPTION+" like '%"+keyWord.trim()+"%' COLLATE NOCASE )");
 
         String[] columns = Utils.getShowPreview(context) ? allColumns : withoutDescriptionColumns;
 

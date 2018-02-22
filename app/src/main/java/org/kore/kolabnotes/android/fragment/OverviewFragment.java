@@ -1045,7 +1045,7 @@ public class OverviewFragment extends Fragment implements NoteAdapter.ViewHolder
 
     /**
      * This function searches all the note that fit the key word, at the moment, the query only
-     * apply for the note summary, but it can be expanded to filter more. The notes from all
+     * apply for the note summary and description, but it can be expanded to filter more. The notes from all
      * notebooks which matched the query will be update to the view for the user.
      *
      * @param keyWord input keyword to apply for the search
