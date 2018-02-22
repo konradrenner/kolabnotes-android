@@ -168,6 +168,11 @@ public class DetailFragment extends Fragment implements OnAccountSwitchedListene
         ((OnFragmentCallback)activity).fragementAttached(this);
     }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+        saveNote(false);
+    }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -898,7 +903,7 @@ public class DetailFragment extends Fragment implements OnAccountSwitchedListene
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()){
             case R.id.ok_menu:
-                saveNote();
+                saveNote(true);
                 break;
             case R.id.delete_menu:
                 deleteNote();
@@ -1199,7 +1204,7 @@ public class DetailFragment extends Fragment implements OnAccountSwitchedListene
     }
 
 
-    void saveNote(){
+    void saveNote(boolean closeWhenSaved){
         EditText summary = (EditText) activity.findViewById(R.id.detail_summary);
 
         Spinner spinner = (Spinner) activity.findViewById(R.id.spinner_notebook);
@@ -1291,7 +1296,6 @@ public class DetailFragment extends Fragment implements OnAccountSwitchedListene
                 }
             }
 
-            Intent returnIntent = new Intent();
             if (isNewNote) {
                 if(Utils.getSelectedNotebookName(activity) != null){
                     Utils.setSelectedNotebookName(activity,notebookName);
@@ -1301,7 +1305,10 @@ public class DetailFragment extends Fragment implements OnAccountSwitchedListene
 
             Utils.updateWidgetsForChange(activity);
 
-            ((OnFragmentCallback) activity).fragmentFinished(returnIntent, OnFragmentCallback.ResultCode.SAVED);
+            if(closeWhenSaved) {
+                Intent returnIntent = new Intent();
+                ((OnFragmentCallback) activity).fragmentFinished(returnIntent, OnFragmentCallback.ResultCode.SAVED);
+            }
         }
     }
 
