@@ -2,10 +2,12 @@ package org.kore.kolabnotes.android;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
+import android.annotation.TargetApi;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Intent;
 import android.content.SyncStatusObserver;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
@@ -26,11 +28,13 @@ import org.kore.kolabnotes.android.fragment.OnAccountSwitchedFromNavListener;
 import org.kore.kolabnotes.android.fragment.OnAccountSwitchedListener;
 import org.kore.kolabnotes.android.fragment.OnFragmentCallback;
 import org.kore.kolabnotes.android.fragment.OverviewFragment;
+import org.kore.kolabnotes.android.fragment.SaveableFragment;
 import org.kore.kolabnotes.android.security.AuthenticatorActivity;
 
 import java.util.Deque;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements SyncStatusObserver, OnFragmentCallback, OnAccountSwitchedListener, OnAccountSwitchedFromNavListener, AccountChooserActivity {
 
@@ -191,6 +195,19 @@ public class MainActivity extends AppCompatActivity implements SyncStatusObserve
     @Override
     protected void onPause() {
         super.onPause();
+        saveDataInSaveableFragments();
+    }
+
+    private void saveDataInSaveableFragments() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+            FragmentManager fm = getFragmentManager();
+            final List<Fragment> fragments = fm.getFragments();
+            for (Fragment fragment : fragments) {
+                if (fragment instanceof SaveableFragment) {
+                    ((SaveableFragment) fragment).save();
+                }
+            }
+        }
     }
 
     @Override

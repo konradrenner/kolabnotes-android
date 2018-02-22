@@ -82,7 +82,7 @@ import yuku.ambilwarna.AmbilWarnaDialog;
 /**
  * Fragment for displaying and editing the details of a note
  */
-public class DetailFragment extends Fragment implements OnAccountSwitchedListener {
+public class DetailFragment extends Fragment implements OnAccountSwitchedListener, SaveableFragment {
     public static final int DRAWEDITOR_ACTIVITY_RESULT_CODE = 1;
     public static final int ATTACHMENT_ACTIVITY_RESULT_CODE = 2;
 
@@ -166,12 +166,6 @@ public class DetailFragment extends Fragment implements OnAccountSwitchedListene
         activeAccountRepository = new ActiveAccountRepository(activity);
 
         ((OnFragmentCallback)activity).fragementAttached(this);
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        saveNote(false);
     }
 
     @Override
@@ -1203,6 +1197,10 @@ public class DetailFragment extends Fragment implements OnAccountSwitchedListene
         }
     }
 
+    @Override
+    public void save() {
+        saveNote(false);
+    }
 
     void saveNote(boolean closeWhenSaved){
         EditText summary = (EditText) activity.findViewById(R.id.detail_summary);

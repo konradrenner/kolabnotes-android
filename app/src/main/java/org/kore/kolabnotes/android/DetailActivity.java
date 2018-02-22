@@ -51,6 +51,12 @@ public class DetailActivity extends AppCompatActivity implements OnFragmentCallb
     }
 
     @Override
+    public void onPause() {
+        super.onPause();
+        detailFragment.save();
+    }
+
+    @Override
     public void showAccountChooseDialog() {
         FragmentManager fm = getFragmentManager();
         ChooseAccountDialogFragment chooseAccountDialog = new ChooseAccountDialogFragment();
