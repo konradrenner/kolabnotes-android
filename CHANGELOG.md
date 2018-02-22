@@ -6,6 +6,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 You can also have a look on the GitHub release page: https://github.com/konradrenner/kolabnotes-android/releases
 
+## [3.1.0] - 2018-02-22
+### Added
+- Search in note description (issue 155)
+### Added
+- Autosave when app is paused (issue 169)
+
 ## [3.0.1] - 2017-12-12
 ### Fixed
 - Fixed issue 167
@@ -77,7 +83,8 @@ You can also have a look on the GitHub release page: https://github.com/konradre
 ### Fixed
 - First stable release, support for all major features of the Kolab notes format
 
-[Unreleased]: https://github.com/konradrenner/kolabnotes-android/compare/3.0.1...HEAD
+[Unreleased]: https://github.com/konradrenner/kolabnotes-android/compare/3.1.0...HEAD
+[3.0.1]: https://github.com/konradrenner/kolabnotes-android/compare/3.0.1...3.1.0
 [3.0.1]: https://github.com/konradrenner/kolabnotes-android/compare/3.0.0...3.0.1
 [3.0.0]: https://github.com/konradrenner/kolabnotes-android/compare/2.7.2...3.0.0
 [2.7.2]: https://github.com/konradrenner/kolabnotes-android/compare/2.7.1...2.7.2
