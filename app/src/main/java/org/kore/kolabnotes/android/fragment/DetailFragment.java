@@ -76,7 +76,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
-import jp.wasabeef.richeditor.RichEditor;
+import org.kore.kolabnotes.android.fragment.KolabNotesRichEditor;
 import yuku.ambilwarna.AmbilWarnaDialog;
 
 /**
@@ -121,7 +121,7 @@ public class DetailFragment extends Fragment implements OnAccountSwitchedListene
     private String startUid;
     private String startNotebook;
 
-    private RichEditor editor;
+    private KolabNotesRichEditor editor;
 
     private EditText editText;
     
@@ -266,7 +266,7 @@ public class DetailFragment extends Fragment implements OnAccountSwitchedListene
         boolean useRicheditor = Utils.getUseRicheditor(activity);
 
         if(useRicheditor) {
-            editor = (RichEditor) activity.findViewById(R.id.detail_description);
+            editor = (KolabNotesRichEditor) activity.findViewById(R.id.detail_description);
             editor.setVisibility(View.VISIBLE);
             editor.setBackgroundColor(Color.TRANSPARENT);
             editor.setEditorHeight(300);
@@ -450,7 +450,7 @@ public class DetailFragment extends Fragment implements OnAccountSwitchedListene
     }
 
     void initEditor(){
-        editor.setOnTextChangeListener(new RichEditor.OnTextChangeListener() {
+        editor.setOnTextChangeListener(new KolabNotesRichEditor.OnTextChangeListener() {
             @Override
             public void onTextChange(String s) {
                 DetailFragment.this.isDescriptionDirty = true;
@@ -1222,10 +1222,11 @@ public class DetailFragment extends Fragment implements OnAccountSwitchedListene
 
             String notebookName = getNotebookSpinnerSelectionName();
 
-            String descriptionValue = repairImages(getDescriptionFromView());
+            String beforeRepair = getDescriptionFromView();
+            String descriptionValue = repairImages(beforeRepair);
 
             if(descriptionValue != null && !descriptionValue.startsWith("<!DOCTYPE HTML")){
-                descriptionValue = HTMLSTART + repairImages(getDescriptionFromView()) + HTMLEND;
+                descriptionValue = HTMLSTART + repairImages(beforeRepair) + HTMLEND;
             }
 
             final ActiveAccount activeAccount = activeAccountRepository.getActiveAccount();

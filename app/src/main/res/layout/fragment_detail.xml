@@ -278,7 +278,7 @@
                 android:textColorHint="@color/secondary_text_default_material_light" />
         </FrameLayout>
 
-        <jp.wasabeef.richeditor.RichEditor
+        <org.kore.kolabnotes.android.fragment.KolabNotesRichEditor
             android:visibility="gone"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
