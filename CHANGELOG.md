@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 You can also have a look on the GitHub release page: https://github.com/konradrenner/kolabnotes-android/releases
 
+## [3.2.0] - 2018-11-06
+### Added
+- Polish translation thx to Waldemar Stoczkowski!
+
 ## [3.1.3] - 2018-05-21
 ### Fixed
 - plus sign disappears after saving (issue 174)

@@ -37,3 +37,4 @@ Translations (help is highly desired!):
  * Italian (thanks to Daniele Gobbetti!)
  * Vietnamese (thanks Anh Doung!)
  * Japanese (thanks to naofum!)
+ * Polish (thanks to Waldemar Stoczkowski!)
