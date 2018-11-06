@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Kolab Notes</string>
+
+    <string name="sticky_note_name">Kolab Notatka</string>
+
+    <string name="drawer_open">Menu suwakowe otwarte</string>
+    <string name="drawer_close">Menu suwakowe zamknięte</string>
+
+    <string name="action_settings">Ustawienia</string>
+
+    <string name="ok">Ok</string>
+    <string name="cancel">Anuluj</string>
+
+    <string name="yes">Tak</string>
+    <string name="no">Nie</string>
+    <string name="no_selection">Brak wyboru</string>
+
+    <string name="classification">Klasyfikacja</string>
+    <string name="creationDate">Utworzony</string>
+    <string name="modificationDate">Ostatnio zmodyfikowany</string>
+    <string name="tags">Tagi:</string>
+    <string name="notags">Brak tagów</string>
+    <string name="radio_public">Publiczne</string>
+    <string name="radio_confidential">Poufne</string>
+    <string name="radio_private">Prywatne</string>
+
+    <string name="activity_detail_title">Szczegóły aktywności</string>
+
+    <string name="drawer_item_tags">Tagi</string>
+    <string name="drawer_item_notebooks">Notatnik</string>
+    <string name="drawer_item_allnotes">Notatki z wybranego konta</string>
+    <string name="widget_allnotes">Wszystkie z konta</string>
+    <string name="drawer_item_allaccount_notes">Notatki ze wszystkich kont</string>
+    <string name="drawer_account_local">Konto Lokalne</string>
+
+
+    <string name="dialog_nointernet">Brak połączenia z internetem!</string>
+    <string name="dialog_uploading">Próba postępu&#8230;</string>
+    <string name="dialog_processinganduploading">Pokazuje przykładowy postęp. Proszę być cierpliwym! (Nie robi nic, tylko czeka 100ms / aplikacji)</string>
+    <string name="title_activity_phone">Aktywność telefonu</string>
+
+    <string name="hello_world">Witaj świecie!</string>
+
+    <string name="label">Kolab Notes</string>
+
+    <string name="signup_title">Utwórz nowe konto</string>
+    <string name="signup_ok">Utworzono nowe konto</string>
+    <string name="login_label">Zaloguj się</string>
+    <string name="summary_text"> Duży tekst</string>
+    <string name="text_summary">Krótki opis</string>
+    <string name="description_text">Średni tekst</string>
+    <string name="description_hint">Opis</string>
+    <string name="text_description">Średni tekst</string>
+    <string name="error_connection">Wystąpił błąd podczas próby połączenia z serwerem</string>
+
+    <string name="dialog_input_text_hint">Krótki opis</string>
+    <string name="dialog_input_text_search_hint">Podsumowanie notatek</string>
+    <string name="dialog_input_text_notebook">Nowy notatnik</string>
+    <string name="dialog_input_text_search">Wyszukaj notatkę</string>
+    <string name="dialog_delete_note">Usuń notatkę</string>
+    <string name="dialog_delete_notes">Usuń notatki</string>
+    <string name="dialog_cancel_warning">Anuluj ostrzeżenie</string>
+    <string name="dialog_delete_nb_warning">Usuń notatnik</string>
+    <string name="dialog_question_delete_nb">Notatnik i wszystkie jego notatki zostaną usunięte, czy na pewno?</string>
+    <string name="dialog_input_text_tag">Nowy Tag</string>
+    <string name="dialog_change_classification">Edytuj klasyfikację</string>
+    <string name="dialog_change_tags">Edytuj Tagi</string>
+    <string name="no_nb_selected">Nie wybrano notesu</string>
+    <string name="local_account_change">Konto lokalne nie może zostać zmienione</string>
+    <string name="add">dodaj</string>
+    <string name="title_edit_tag">Edytuj Tagi</string>
+    <string name="dialog_question_delete">Czy na pewno chcesz usunąć tę notatkę?</string>
+    <string name="dialog_question_delete_notes">Czy na pewno chcesz usunąć wybrane notatki?</string>
+    <string name="dialog_question_cancel">Wszystkie zmiany zostaną odrzucone, czy na pewno?</string>
+    <string name="account_name">Nazwa konta</string>
+    <string name="imap_root_folder">Folder główny IMAP (domyślny to Notes)</string>
+    <string name="imap_server_url">imap.myserver.com</string>
+    <string name="port_number">Numer portu (domyślnie 993)</string>
+
+    <string name="error_generic">Wystąpił błąd</string>
+    <string name="error_duplicate_account">Nie można utworzyć konta (konto o tej nazwie już istnieje?)</string>
+    <string name="enable_ssl">SSL włączony</string>
+    <string name="title_add_account">Dodaj konto</string>
+    <string name="title_update_account">Zmień konto</string>
+    <string name="appwidget_text">PRZYKŁAD</string>
+    <string name="configure">Skonfiguruj</string>
+    <string name="add_widget">Dodaj widżet</string>
+    <string name="title_colorpicker">Wybierz kolor</string>
+    <string name="action_sign_in">Zaloguj</string>
+    <string name="button_add">przycisk dodaj</string>
+    <string name="error_field_required">Brak wymaganego wpisu</string>
+    <string name="error_field_to_low">Ta wartość musi zawierać się w przedziale od 1 do 90</string>
+    <string name="error_incorrect_password">Hasło jest niepoprawne</string>
+    <string name="error_invalid_email">E-mail jest nie prawidłowy</string>
+    <string name="error_invalid_password">Hasło jest niewłaściwe</string>
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Hasło</string>
+    <string name="title_activity_kolab_login">Zaloguj się</string>
+    <string name="title_change_classification">Edytuj klasyfikację</string>
+    <string name="title_create_notebook">Nowy Notatnik</string>
+    <string name="title_create_tag">Nowy Tag</string>
+    <string name="title_delete">Usuń</string>
+    <string name="title_dialog_search">Szukaj</string>
+    <string name="title_ok">OK</string>
+    <string name="title_share">Udostępnij</string>
+    <string name="kolab_enabled">Rozszerzenia Kolab</string>
+    <string name="sync_intervall">Interwał synchronizacji (domyślnie 24)</string>
+    <string name="note_not_found">Uwaga nie znaleziono!</string>
+    <string name="create_or_select_text">Wybierz lub utwórz notatkę</string>
+    <string name="select_or_create_hint">wybierz lub utwórz ikonę notatki</string>
+    <string name="note_deleted">Notatka została usunięta</string>
+    <string name="note_saved">Notatka została zapisana</string>
+    <string name="sync_failed">Synchronizacja nie powiodła się</string>
+    <string name="title_delete_notebook">Usuń notatnik</string>
+    <string name="send_to">Udostępnij notatkę...</string>
+    <string name="empty_note">Uwaga jest pusta</string>
+    <string name="sort_with_heading">Sortuj według:</string>
+    <string name="radio_desc">Malejąco</string>
+    <string name="radio_asc">Rosnąco</string>
+    <string name="title_dialog_sorting">Zmień sortowanie</string>
+    <string name="color">Kolor</string>
+    <string name="account_choose_title">Wybierz konto</string>
+    <string name="select_button">Wybierz</string>
+    <string name="extended_options">Więcej opcji</string>
+
+    <string name="day">Dzień</string>
+    <string name="hour">Godzina</string>
+    <string name="minute">Minuty</string>
+    <string name="title_metainformation">Metainformacja</string>
+    <string name="productID">Product ID</string>
+    <string name="uid">UID</string>
+    <string name="title_characteristics">Charakterystyka</string>
+    <string name="title_choose_tag_color">Wybierz kolor tagu</string>
+    <string name="no_tag_selected">Nie wybrano tagu</string>
+    <string name="remove">Usuń</string>
+    <string name="shared_folders">Udostępnione Notesy</string>
+    <string name="changed_content_shared_folder">Zmień udostępniony notatnik</string>
+    <string name="note_changed">Notatka została zmieniona</string>
+    <string name="in_notebook">w notatniku</string>
+    <string name="note_created">Nowa uwaga</string>
+    <string name="dialog_input_link">Dołącz link</string>
+    <string name="no_folder_permission">Brak uprawnień do folderu</string>
+    <string name="title_activity_settings">Ustawienia</string>
+    <string name="snackbar_delete_message">Usunięte</string>
+    <string name="snackbar_undo_delete">Cofnij</string>
+    <string name="print">Drukuj</string>
+
+    <string name="move_note">Przenieś</string>
+
+    <!-- Strings related to Settings -->
+    <!-- General settings -->
+    <string name="pref_header_general">Ogólne</string>
+    <string-array name="pref_direction_titles">
+        <item>@string/radio_asc</item>
+        <item>@string/radio_desc</item>
+    </string-array>
+    <string-array name="pref_direction_values">
+        <item>ASC</item>
+        <item>DESC</item>
+    </string-array>
+
+    <!-- Settings for Data & Sync -->
+    <string name="pref_header_data_sync">Data &amp; sync</string>
+
+    <string name="pref_title_sync_conflict">Synchronizacja konfliktów</string>
+    <string-array name="pref_sync_conflict_titles">
+        <item>Ostatnia modyfikacja notatki</item>
+        <item>Notatka Serwera</item>
+        <item>Lokalna uwaga</item>
+        <!--<item>Ask which</item>-->
+    </string-array>
+
+    <string name="pref_title_system_sync_settings">Ustawienia synchronizacji systemu</string>
+
+    <!-- Settings for Notifications -->
+    <string name="pref_header_notifications">Powiadomienia</string>
+    <string name="pref_characteristics">Pokaż tagi</string>
+    <string name="pref_metainformation">Pokaż metainformacje</string>
+    <string name="pref_desc_metainformation">Pokaż datę utworzenia i datę ostatniej modyfikacji</string>
+    <string name="pref_column">Kolumna</string>
+    <string name="pref_direction">Wskazówki</string>
+    <string name="pref_show_sync_notifications">Pokaż powiadomienia o synchronizacji</string>
+    <string name="pref_show_sync_notifications_summary">Pokaż powiadomienia, jeśli zmieniono uwagi w folderach udostępnionych</string>
+    <string name="no_write_permissions">Brak uprawnień do zapisu w wybranym notatniku</string>
+    <string name="no_change_permissions">Brak uprawnień do edycji w wybranym notatniku</string>
+    <string name="no_create_permissions">Brak pozwolenia na tworzenie w wybranym notatniku</string>
+    <string name="pref_sorting_category">Sortowanie</string>
+
+    <!-- Tags editor -->
+    <string name="title_activity_tag_list">Tagi</string>
+    <string name="tag_creationDate">Utworzony</string>
+    <string name="tag_modificationDate">Ostatnio zmodyfikowany</string>
+    <string name="dialog_delete_tags">Usuń Tagi</string>
+    <string name="dialog_question_delete_tags">Czy na pewno chcesz usunąć wybrane tagi?\n\nOstrzeżenie: usunięcie tagu może wpłynąć na inne obiekty pracy grupowej.</string>
+    <string name="dialog_change_tag_warning">Ostrzeżenie: zmiana tagu może wpłynąć na inne obiekty do pracy grupowej</string>
+    <string name="dialog_input_update_tag_text">Zmień nazwę tagu</string>
+
+    <!--Empty list-->
+    <string name="no_tags">Brak tagów</string>
+    <string name="no_notes">Brak notatek</string>
+
+    <!--Import/export notebook-->
+    <string name="title_activity_export">Eksportuj notatnik</string>
+    <string name="title_activity_import">Zaimportuj notatnik</string>
+    <string name="exporting">Eksportowanie</string>
+    <string name="export_canceled">Eksport notatnika został anulowany</string>
+    <string name="exported">Notatnik został wyeksportowany</string>
+    <string name="importing">Importowanie</string>
+    <string name="import_canceled">Import notatnika został anulowany</string>
+    <string name="imported">Notatnik zaimportowany</string>
+    <string name="pref_richeditor">Włącz Richtexteditor</string>
+    <string name="pref_desc_richeditor">Włącza Richtexteditor dla sformatowanych notatek</string>
+
+    <!-- Drawing editor -->
+    <string name="draweditor_title">Rysunek</string>
+    <string name="draweditor_menu_undo">Cofnij</string>
+    <string name="draweditor_menu_redo">Przywróć</string>
+    <string name="draweditor_menu_clear">Przezroczyste płótno</string>
+    <string name="draweditor_menu_ok">OK</string>
+    <string name="draweditor_title_line_weight">Rozmiar pędzla</string>
+    <string name="draweditor_saving_toast">Zapisywanie</string>
+    <string name="attachment_add">Dodaj załącznik</string>
+    <string name="attachment_none">Bez załączników</string>
+    <string name="attachment_title">Załączniki</string>
+    <string name="attachments">Załączniki</string>
+    <string name="attachment_creation_failed">Nie udało się utworzyć załącznika</string>
+    <string name="attachment_already_exist">Załącznik o podanej nazwie już istnieje</string>
+    <string name="attachment_send_to">Udostępnij załącznik za pomocą...</string>
+
+<!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Witaj pusty fragment</string>
+    <string name="no_preview">Nie wybrano podglądu</string>
+    <string name="attachment_not_previewable">Nie można wyświetlić podglądu załącznika</string>
+    <string name="attachment_now_playing">Teraz odtwarzane:</string>
+    <string name="pref_preview">Podgląd notatki</string>
+    <string name="pref_desc_preview">Pokaż niektóre znaki tekstu podglądu tekstu notatki</string>
+    <string name="empty_note_description" >Brak tekstu notatki</string>
+    <string name="image_too_big"> Obraz zbyt duży (rozmiar pliku musi być mniejszy niż 900 kB)</string>
+    <string name="changeAccount">Wybierz konto</string>
+    <string name="drawer_organise_tags">Porządkuj Tagi</string>
+
+</resources>
