@@ -83,6 +83,9 @@ public class StickyNoteWidget extends AppWidgetProvider {
         if(note == null){
             views.setTextViewText(R.id.sticky_note_summary, context.getResources().getString(R.string.note_not_found));
 
+            //GitHub issue 198
+            views.setOnClickPendingIntent(R.id.sticky_note_summary, null);
+
             views.setTextViewText(R.id.sticky_note_description, "");
         }else {
 

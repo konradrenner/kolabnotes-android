@@ -32,6 +32,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.RadioButton;
@@ -131,6 +133,9 @@ public class DetailFragment extends Fragment implements OnAccountSwitchedListene
     private boolean accountGotChanged = false;
 
     private String uuidForCreation;
+
+    // the onPause methode of the activity is always called, when the fragment is finished. This applies also to "back" action, where it is not necessary to store the note (because when selected back, the user don't wants to store the note)
+    private boolean saveNotRequiredAnymore = false;
 
     //This map contains inline images in its base form, sadly the android webview destroys the correct form
     private Map<String,String> base64Images = new HashMap<>();
@@ -1199,7 +1204,9 @@ public class DetailFragment extends Fragment implements OnAccountSwitchedListene
 
     @Override
     public void save() {
-        saveNote(false);
+        if(!saveNotRequiredAnymore){
+            saveNote(false);
+        }
     }
 
     void saveNote(boolean closeWhenSaved){
@@ -1491,7 +1498,7 @@ public class DetailFragment extends Fragment implements OnAccountSwitchedListene
             }else{
                 goBack();
             }
-        } else if (editor.getHtml() != null || !TextUtils.isEmpty(
+        } else if (/* GitHub issue 197 */(editor != null && editor.getHtml() != null) || !TextUtils.isEmpty(
                 ((EditText) activity.findViewById(R.id.detail_summary)).getText().toString())) {
             AlertDialog.Builder builder = new AlertDialog.Builder(activity);
 
@@ -1503,6 +1510,12 @@ public class DetailFragment extends Fragment implements OnAccountSwitchedListene
                     if(isNewNote){
                         final ActiveAccount activeAccount = activeAccountRepository.getActiveAccount();
                         new AttachmentRepository(activity).deleteForNote(activeAccount.getAccount(), activeAccount.getRootFolder(), getUUIDForCreation());
+
+                        // If the  activity was paused, the note got stored in the meantime
+                        if(note != null) {
+                            noteRepository.delete(activeAccount.getAccount(), activeAccount.getRootFolder(), note);
+                            noteTagRepository.delete(activeAccount.getAccount(), activeAccount.getRootFolder(), note.getIdentification().getUid());
+                        }
                     }
                     goBack();
                 }
@@ -1560,8 +1573,54 @@ public class DetailFragment extends Fragment implements OnAccountSwitchedListene
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             PrintManager printManager = (PrintManager) activity.getSystemService(Context.PRINT_SERVICE);
             String jobName = getString(R.string.app_name) + " Document";
-            PrintDocumentAdapter printAdapter = editor.createPrintDocumentAdapter();
-            PrintJob printJob = printManager.print(jobName, printAdapter, new PrintAttributes.Builder().build());
+
+            // GitHub issue 197
+            if(editor != null){
+                PrintDocumentAdapter printAdapter = editor.createPrintDocumentAdapter();
+                printManager.print(jobName, printAdapter, new PrintAttributes.Builder().build());
+            }else if(editText != null){
+                printEditText(jobName);
+            }else{
+                Toast.makeText(activity, R.string.empty_note_description, Toast.LENGTH_LONG).show();
+            }
+
+        }
+    }
+
+    private void printEditText(final String jobName) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            // Create a WebView object specifically for printing
+            WebView webView = new WebView(getActivity());
+            webView.setWebViewClient(new WebViewClient() {
+
+                public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                    return false;
+                }
+
+                @Override
+                public void onPageFinished(WebView view, String url) {
+                    Log.i("printEditText", "page finished loading " + url);
+                    createWebPrintJob(view, jobName);
+                }
+            });
+
+            String htmlDocument = Html.toHtml(editText.getText());
+            webView.loadDataWithBaseURL(null, htmlDocument, "text/HTML", "UTF-8", null);
+        }
+    }
+
+    private void createWebPrintJob(WebView webView, String jobName) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            // Get a PrintManager instance
+            PrintManager printManager = (PrintManager) getActivity()
+                    .getSystemService(Context.PRINT_SERVICE);
+
+            // Get a print adapter instance
+            PrintDocumentAdapter printAdapter = webView.createPrintDocumentAdapter();
+
+            // Create a print job with name and adapter instance
+            PrintJob printJob = printManager.print(jobName, printAdapter,
+                    new PrintAttributes.Builder().build());
         }
     }
 
@@ -1580,6 +1639,8 @@ public class DetailFragment extends Fragment implements OnAccountSwitchedListene
     private void goBack(){
         Intent returnIntent = new Intent();
         returnIntent.putExtra("selectedNotebookName",givenNotebook);
+
+        saveNotRequiredAnymore = true;
 
         ((OnFragmentCallback)activity).fragmentFinished(returnIntent, OnFragmentCallback.ResultCode.BACK);
     }
