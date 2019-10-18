@@ -3,10 +3,8 @@ package org.kore.kolabnotes.android.content;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.app.TaskStackBuilder;
 import android.content.Context;
 import android.content.Intent;
-import android.support.v7.app.NotificationCompat;
 import android.util.Log;
 
 import org.kore.kolab.notes.Attachment;
@@ -22,14 +20,14 @@ import org.kore.kolabnotes.android.R;
 import org.kore.kolabnotes.android.Utils;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.TimeZone;
 import java.util.UUID;
+
+import androidx.core.app.NotificationCompat;
 
 /**
  * This class syncs the database with data from a given repository

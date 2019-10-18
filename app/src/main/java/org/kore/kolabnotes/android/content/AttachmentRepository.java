@@ -2,42 +2,34 @@ package org.kore.kolabnotes.android.content;
 
 import android.app.Notification;
 import android.app.NotificationManager;
-import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Build;
-import android.support.v4.content.FileProvider;
-import android.support.v7.app.NotificationCompat;
+
+import androidx.core.app.NotificationCompat;
+import androidx.core.content.FileProvider;
 import android.util.Log;
 import android.widget.Toast;
 
 import org.kore.kolab.notes.Attachment;
-import org.kore.kolab.notes.AuditInformation;
-import org.kore.kolab.notes.Colors;
-import org.kore.kolab.notes.Identification;
-import org.kore.kolab.notes.Tag;
 import org.kore.kolabnotes.android.R;
 import org.kore.kolabnotes.android.Utils;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileDescriptor;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 /**

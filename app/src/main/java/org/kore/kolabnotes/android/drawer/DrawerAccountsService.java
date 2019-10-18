@@ -5,15 +5,13 @@ import android.accounts.AccountManager;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
-import android.support.annotation.NonNull;
-import android.support.design.widget.NavigationView;
-import android.support.v4.widget.DrawerLayout;
+import androidx.annotation.NonNull;
+import com.google.android.material.navigation.NavigationView;
+import androidx.drawerlayout.widget.DrawerLayout;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewParent;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -22,7 +20,6 @@ import org.kore.kolabnotes.android.content.AccountIdentifier;
 import org.kore.kolabnotes.android.content.ActiveAccount;
 import org.kore.kolabnotes.android.content.ActiveAccountRepository;
 import org.kore.kolabnotes.android.fragment.OnAccountSwitchedFromNavListener;
-import org.kore.kolabnotes.android.fragment.OnAccountSwitchedListener;
 import org.kore.kolabnotes.android.security.AuthenticatorActivity;
 
 import java.util.LinkedHashSet;

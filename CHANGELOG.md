@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 You can also have a look on the GitHub release page: https://github.com/konradrenner/kolabnotes-android/releases
 
+## [4.0.0] - 2019-10-18
+### Added
+- Android Q support
+
 ## [3.2.1] - 2019-07-11
 ### Fixed
 - GitHub issue 197
@@ -100,7 +104,8 @@ You can also have a look on the GitHub release page: https://github.com/konradre
 ### Fixed
 - First stable release, support for all major features of the Kolab notes format
 
-[Unreleased]: https://github.com/konradrenner/kolabnotes-android/compare/3.2.1...HEAD
+[Unreleased]: https://github.com/konradrenner/kolabnotes-android/compare/4.0.0...HEAD
+[4.0.0]: https://github.com/konradrenner/kolabnotes-android/compare/3.2.1...4.0.0
 [3.2.1]: https://github.com/konradrenner/kolabnotes-android/compare/3.2.0...3.2.1
 [3.2.0]: https://github.com/konradrenner/kolabnotes-android/compare/3.1.3...3.2.0
 [3.1.3]: https://github.com/konradrenner/kolabnotes-android/compare/3.1.2...3.1.3

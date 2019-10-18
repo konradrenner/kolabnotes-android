@@ -10,7 +10,6 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.SyncResult;
 import android.os.Bundle;
-import android.support.v7.app.NotificationCompat;
 import android.util.Log;
 
 import com.sun.mail.iap.CommandFailedException;
@@ -27,6 +26,8 @@ import org.kore.kolabnotes.android.security.AuthenticatorActivity;
 
 import java.sql.Timestamp;
 import java.util.Date;
+
+import androidx.core.app.NotificationCompat;
 
 /**
  * Created by koni on 18.04.15.

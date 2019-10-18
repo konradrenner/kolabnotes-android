@@ -1,9 +1,9 @@
-<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/tag_list_fragment"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent">
 
-    <android.support.v7.widget.RecyclerView
+    <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/listTag"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -17,7 +17,7 @@
         android:gravity="center"
         android:visibility="gone"
         android:text="@string/no_tags" />
-    <android.support.design.widget.FloatingActionButton
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/addTagButton"
         android:transitionName="fab"
         android:layout_width="@dimen/fab_size"
@@ -35,4 +35,4 @@
         android:contentDescription="@string/add"
         android:src="@drawable/ic_action_new" />
 
-</android.support.design.widget.CoordinatorLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

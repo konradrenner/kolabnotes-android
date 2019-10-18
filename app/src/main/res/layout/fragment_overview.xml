@@ -10,15 +10,15 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <android.support.design.widget.CoordinatorLayout
+        <androidx.coordinatorlayout.widget.CoordinatorLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:id="@+id/coordinator_overview">
-            <android.support.v4.widget.SwipeRefreshLayout
+            <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
                 android:id="@+id/swipe_container"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
-                <android.support.v7.widget.RecyclerView
+                <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/list"
                     android:clipToPadding="false"
                     android:layout_width="match_parent"
@@ -28,7 +28,7 @@
                     android:paddingTop="@dimen/activity_horizontal_margin"
                     android:paddingBottom="@dimen/activity_vertical_margin"
                     />
-            </android.support.v4.widget.SwipeRefreshLayout>
+            </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
             <TextView
                 android:id="@+id/empty_view_overview"
                 android:layout_width="match_parent"
@@ -38,7 +38,7 @@
                 android:gravity="center"
                 android:visibility="gone"
                 android:text="@string/no_notes" />
-            <android.support.design.widget.FloatingActionButton
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:id="@+id/fab_button"
                 android:transitionName="fab"
                 android:layout_width="@dimen/fab_size"
@@ -55,6 +55,6 @@
                 android:layout_marginBottom="25dp"
                 android:contentDescription="@string/add"
                 android:src="@drawable/ic_action_edit" />
-        </android.support.design.widget.CoordinatorLayout>
+        </androidx.coordinatorlayout.widget.CoordinatorLayout>
     </RelativeLayout>
 </FrameLayout>

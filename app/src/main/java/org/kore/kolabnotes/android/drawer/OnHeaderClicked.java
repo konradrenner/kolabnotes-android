@@ -1,7 +1,7 @@
 package org.kore.kolabnotes.android.drawer;
 
 import android.graphics.drawable.Drawable;
-import android.support.design.widget.NavigationView;
+import com.google.android.material.navigation.NavigationView;
 import android.view.View;
 import android.widget.ImageButton;
 

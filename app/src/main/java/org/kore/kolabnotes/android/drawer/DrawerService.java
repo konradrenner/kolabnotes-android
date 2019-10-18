@@ -2,21 +2,19 @@ package org.kore.kolabnotes.android.drawer;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.support.design.widget.NavigationView;
-import android.support.v4.widget.DrawerLayout;
+import com.google.android.material.navigation.NavigationView;
+import androidx.drawerlayout.widget.DrawerLayout;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
-import android.view.View;
 
 import org.kore.kolab.notes.Notebook;
 import org.kore.kolab.notes.SharedNotebook;
 import org.kore.kolab.notes.Tag;
 import org.kore.kolabnotes.android.R;
-import org.kore.kolabnotes.android.Utils;
 
 import java.util.Collection;
 

@@ -2,15 +2,10 @@ package org.kore.kolabnotes.android;
 
 import android.app.Fragment;
 import android.content.Intent;
-import android.graphics.PorterDuff;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
+import androidx.core.content.ContextCompat;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import org.kore.kolabnotes.android.fragment.DrawEditorFragment;
 import org.kore.kolabnotes.android.fragment.OnFragmentCallback;

@@ -1,12 +1,7 @@
 package org.kore.kolabnotes.android.drawer;
 
-import android.content.Context;
-import android.support.design.widget.NavigationView;
-import android.support.v4.widget.DrawerLayout;
-import android.view.Gravity;
-import android.view.MenuItem;
+import androidx.drawerlayout.widget.DrawerLayout;
 
-import org.kore.kolab.notes.Tag;
 import org.kore.kolabnotes.android.Utils;
 
 /**

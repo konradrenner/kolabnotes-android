@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     android:layout_width="match_parent">
 
-    <android.support.v7.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
+    <androidx.recyclerview.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
         android:id="@+id/attachment_list"
@@ -27,7 +27,7 @@
         android:visibility="gone"
         android:text="@string/attachment_none" />
 
-    <android.support.design.widget.FloatingActionButton
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab_button"
         android:transitionName="fab"
         android:layout_width="@dimen/fab_size"

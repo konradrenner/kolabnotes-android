@@ -1,17 +1,14 @@
 package org.kore.kolabnotes.android.adapter;
 
 import android.content.Context;
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
 import org.kore.kolab.notes.Attachment;
-import org.kore.kolab.notes.Note;
-import org.kore.kolabnotes.android.NoteSortingComparator;
 import org.kore.kolabnotes.android.R;
 import org.kore.kolabnotes.android.Utils;
 import org.kore.kolabnotes.android.fragment.AttachmentFragment;
