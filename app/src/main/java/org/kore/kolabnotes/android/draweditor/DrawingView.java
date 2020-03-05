@@ -270,7 +270,7 @@ public class DrawingView extends View {
         mListener = listener;
     }
 
-    private Paint createPaint(int color, int size, int alpha) {
+    private static Paint createPaint(int color, int size, int alpha) {
         Paint paint = new Paint();
         paint.setAntiAlias(true);
         paint.setDither(true);

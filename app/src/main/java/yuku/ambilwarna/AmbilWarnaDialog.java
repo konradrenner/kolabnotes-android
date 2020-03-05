@@ -140,7 +140,7 @@ public class AmbilWarnaDialog {
 						y = viewAlphaCheckered.getMeasuredHeight() - 0.001f; // to avoid jumping the cursor from bottom to top.
 					}
 					final int a = Math.round(255.f - ((255.f / viewAlphaCheckered.getMeasuredHeight()) * y));
-					AmbilWarnaDialog.this.setAlpha(a);
+					this.alpha = a;
 
 					// update view
 					moveAlphaCursor();
