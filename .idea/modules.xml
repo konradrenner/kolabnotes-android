@@ -2,8 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" group="kolabnotes-android/app" />
-      <module fileurl="file://$PROJECT_DIR$/kolabnotes-android.iml" filepath="$PROJECT_DIR$/kolabnotes-android.iml" group="kolabnotes-android" />
+      <module fileurl="file://$PROJECT_DIR$/Entwicklung.iml" filepath="$PROJECT_DIR$/Entwicklung.iml" group="Entwicklung" />
+      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" group="Entwicklung/app" />
     </modules>
   </component>
 </project>
