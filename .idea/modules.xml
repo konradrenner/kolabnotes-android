@@ -2,8 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/Entwicklung.iml" filepath="$PROJECT_DIR$/Entwicklung.iml" group="Entwicklung" />
-      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" group="Entwicklung/app" />
+      <module fileurl="file://$PROJECT_DIR$/Cloned Repos.iml" filepath="$PROJECT_DIR$/Cloned Repos.iml" group="Cloned Repos" />
+      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" group="Cloned Repos/app" />
     </modules>
   </component>
 </project>

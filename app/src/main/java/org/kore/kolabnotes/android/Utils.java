@@ -61,6 +61,7 @@ public class Utils {
     private static final int SATURATION = 1;
     private static final int BRIGHTNESS = 2;
 
+    public static final String TAG = "Main";
     public enum SortingColumns{
         summary {
             @Override
@@ -350,7 +351,8 @@ public class Utils {
     }
 
     public static NoteSorting getNoteSorting(Context context) {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        Log.e(TAG, "getNoteSorting: context : "+context.toString());
+        SharedPreferences prefs = context.getSharedPreferences("note_sorting",Context.MODE_PRIVATE);
         if(prefs == null){
             Log.d("getNoteSorting","MainActivity prefs are null");
             return new NoteSorting();

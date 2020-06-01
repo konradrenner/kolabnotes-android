@@ -96,6 +96,8 @@ import java.util.UUID;
 
 import yuku.ambilwarna.AmbilWarnaDialog;
 
+import static org.kore.kolabnotes.android.Utils.TAG;
+
 /**
  * Fragment which displays the notes overview and implements the logic for the overview
  */
@@ -1593,7 +1595,9 @@ public class OverviewFragment extends Fragment implements NoteAdapter.ViewHolder
 
     final void reloadData(){
         ActiveAccount activeAccount = activeAccountRepository.getActiveAccount();
-        final List<Note> notes = notesRepository.getAll(activeAccount.getAccount(), activeAccount.getRootFolder(), Utils.getNoteSorting(getActivity()));
+        // getActivity() is depricated so i use getContext()
+        //in fragment you should use getContext()
+        final List<Note> notes = notesRepository.getAll(activeAccount.getAccount(), activeAccount.getRootFolder(), Utils.getNoteSorting(getContext()));
         final List<Notebook> notebooks = notebookRepository.getAll(activeAccount.getAccount(), activeAccount.getRootFolder());
         final Map<String,Tag> tags = tagRepository.getAllAsMap(activeAccount.getAccount(), activeAccount.getRootFolder());
         reloadData(notebooks, notes, tags);
