@@ -1196,9 +1196,8 @@ public class OverviewFragment extends Fragment implements NoteAdapter.ViewHolder
 				}
 
                 ParcelFileDescriptor pfd = getActivity().getContentResolver().openFileDescriptor(uri, "w");
-                FileOutputStream fileOutputStream = new FileOutputStream(pfd.getFileDescriptor());
 
-                new ExportNotebook(getActivity(), uri, fileOutputStream).execute(activeAccount.getAccount(), activeAccount.getRootFolder(), notebookName);
+                new ExportNotebook(getActivity(), uri, pfd).execute(activeAccount.getAccount(), activeAccount.getRootFolder(), notebookName);
             }catch (FileNotFoundException e){
                 Log.e("result", e.getMessage(), e);
                 NotificationManager notificationManager = (NotificationManager) getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
@@ -1331,13 +1330,13 @@ public class OverviewFragment extends Fragment implements NoteAdapter.ViewHolder
     class ExportNotebook extends AsyncTask<String, Void, String>{
 
         private final Context context;
-        private final OutputStream pathToZIP;
+        private final ParcelFileDescriptor pfd;
         private final Uri fileUri;
         private final Random random;
 
-        ExportNotebook(Context context, Uri fileUri, OutputStream pathToZIP){
+        ExportNotebook(Context context, Uri fileUri, ParcelFileDescriptor pfd){
             this.context = context;
-            this.pathToZIP = pathToZIP;
+            this.pfd = pfd;
             random = new Random();
             this.fileUri = fileUri;
         }
@@ -1347,6 +1346,7 @@ public class OverviewFragment extends Fragment implements NoteAdapter.ViewHolder
         protected String doInBackground(String... params) {
             try {
                 Log.d("export", Arrays.toString(params));
+                FileOutputStream pathToZIP = new FileOutputStream(pfd.getFileDescriptor());
                 Notebook notebook = notebookRepository.getBySummary(params[0], params[1], params[2]);
                 List<Note> fromNotebook = notesRepository.getFromNotebookWithDescriptionLoaded(params[0], params[1], notebook.getIdentification().getUid(), new NoteSorting());
 
@@ -1358,6 +1358,7 @@ public class OverviewFragment extends Fragment implements NoteAdapter.ViewHolder
 
 
                 repository.exportNotebook(notebook, new KolabNotesParserV3(), pathToZIP);
+                pathToZIP.close();
 
                 Intent intent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
                 intent.setData(fileUri);
