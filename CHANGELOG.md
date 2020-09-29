@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 You can also have a look on the GitHub release page: https://github.com/konradrenner/kolabnotes-android/releases
 
+## [4.1.0] - 2020-09-29
+### Added
+- Turkish translation (thanks to Fahrettin Vardım!)
+
 ## [4.0.1] - 2020-07-30
 ### Fixed
 - GitHub issue 188 (thanks to Reimar Döffinger!)
