@@ -112,7 +112,8 @@ You can also have a look on the GitHub release page: https://github.com/konradre
 ### Fixed
 - First stable release, support for all major features of the Kolab notes format
 
-[Unreleased]: https://github.com/konradrenner/kolabnotes-android/compare/4.0.1...HEAD
+[Unreleased]: https://github.com/konradrenner/kolabnotes-android/compare/4.1.0...HEAD
+[4.1.0]: https://github.com/konradrenner/kolabnotes-android/compare/4.0.1...4.1.0
 [4.0.1]: https://github.com/konradrenner/kolabnotes-android/compare/3.2.1...4.0.1
 [4.0.0]: https://github.com/konradrenner/kolabnotes-android/compare/3.2.1...4.0.0
 [3.2.1]: https://github.com/konradrenner/kolabnotes-android/compare/3.2.0...3.2.1
