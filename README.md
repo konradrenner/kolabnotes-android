@@ -38,3 +38,4 @@ Translations (help is highly desired!):
  * Vietnamese (thanks Anh Doung!)
  * Japanese (thanks to naofum!)
  * Polish (thanks to Waldemar Stoczkowski!)
+ * Turkish (thanks to Fahrettin Vardım!)
