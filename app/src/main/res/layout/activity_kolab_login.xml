@@ -155,15 +155,15 @@
                     android:clickable="true" />
 
                 <Switch
+                    android:id="@+id/enable_shared_folders"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/shared_folders"
-                    android:id="@+id/enable_shared_folders"
-                    android:textColor="@android:color/black"
-                    android:checked="true"
+                    android:checked="false"
+                    android:clickable="true"
                     android:paddingTop="5dp"
                     android:paddingBottom="5dp"
-                    android:clickable="true" />
+                    android:text="@string/shared_folders"
+                    android:textColor="@android:color/black" />
 
 
                 <Button android:id="@+id/submit"

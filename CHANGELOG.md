@@ -6,6 +6,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 You can also have a look on the GitHub release page: https://github.com/konradrenner/kolabnotes-android/releases
 
+## [4.2.0] - 2020-10-16
+### Added
+- Brazilian Portuguese translation (thanks to RickyM7!)
+### Changed
+- GitHub issue 201 : Disable shared notebooks by default
+
 ## [4.1.0] - 2020-09-29
 ### Added
 - Turkish translation (thanks to Fahrettin Vardım!)
@@ -112,7 +118,8 @@ You can also have a look on the GitHub release page: https://github.com/konradre
 ### Fixed
 - First stable release, support for all major features of the Kolab notes format
 
-[Unreleased]: https://github.com/konradrenner/kolabnotes-android/compare/4.1.0...HEAD
+[Unreleased]: https://github.com/konradrenner/kolabnotes-android/compare/4.2.0...HEAD
+[4.2.0]: https://github.com/konradrenner/kolabnotes-android/compare/4.1.0...4.2.0
 [4.1.0]: https://github.com/konradrenner/kolabnotes-android/compare/4.0.1...4.1.0
 [4.0.1]: https://github.com/konradrenner/kolabnotes-android/compare/3.2.1...4.0.1
 [4.0.0]: https://github.com/konradrenner/kolabnotes-android/compare/3.2.1...4.0.0

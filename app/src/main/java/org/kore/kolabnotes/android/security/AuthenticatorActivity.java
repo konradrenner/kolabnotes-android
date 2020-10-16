@@ -439,13 +439,13 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
             mPortView.setText("993");
             mEnableSSLView.setChecked(true);
             mKolabView.setChecked(true);
-            mSharedFoldersView.setChecked(true);
+            mSharedFoldersView.setChecked(false);
             mIMAPServerView.setText("imap.kolabnow.com");
         }
 
         private void setKolabValues(){
             mKolabView.setChecked(true);
-            mSharedFoldersView.setChecked(true);
+            mSharedFoldersView.setChecked(false);
             mIMAPServerView.setText("");
         }
 
