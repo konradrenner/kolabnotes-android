@@ -166,9 +166,9 @@
 
     <string name="pref_title_sync_conflict">Tratar conflitos de sincronização</string>
     <string-array name="pref_sync_conflict_titles">
-        <item>Última nota modificada</item>
-        <item>Nota do servidor</item>
-        <item>Nota local</item>
+        <item>Last modified note</item>
+        <item>Server note</item>
+        <item>Local note</item>
         <!--<item>Ask which</item>-->
     </string-array>
 
