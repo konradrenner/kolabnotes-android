@@ -157,8 +157,8 @@
         <item>@string/radio_desc</item>
     </string-array>
     <string-array name="pref_direction_values">
-        <item>CRESC</item>
-        <item>DECRESC</item>
+        <item>ASC</item>
+        <item>DESC</item>
     </string-array>
 
     <!-- Settings for Data & Sync -->
