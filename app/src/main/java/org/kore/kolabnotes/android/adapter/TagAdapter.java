@@ -54,10 +54,8 @@ public class TagAdapter extends SelectableAdapter<TagAdapter.ViewHolder>{
         boolean isSelected = SelectableAdapter.getSelectedItems().contains(position) ? true : false;
         final Tag tag = tags.get(position);
         holder.tagName.setText(tag.getName());
-        holder.tagCreatedDate.setText(context.getResources().getString(R.string.tag_creationDate) + ": " +
-                dateFormatter.format(tag.getAuditInformation().getCreationDate()));
-        holder.tagModificationDate.setText(context.getResources().getString(R.string.tag_modificationDate) + ": " +
-                dateFormatter.format(tag.getAuditInformation().getLastModificationDate()));
+        holder.tagCreatedDate.setText(String.format("%s: %s", context.getResources().getString(R.string.tag_creationDate), dateFormatter.format(tag.getAuditInformation().getCreationDate())));
+        holder.tagModificationDate.setText(String.format("%s: %s", context.getResources().getString(R.string.tag_modificationDate), dateFormatter.format(tag.getAuditInformation().getLastModificationDate())));
         Drawable circle = ContextCompat.getDrawable(context, R.drawable.tag_list_default_circle);
         if (tag.getColor() != null) {
             circle.setColorFilter(Color.parseColor(tag.getColor().getHexcode()), PorterDuff.Mode.MULTIPLY);

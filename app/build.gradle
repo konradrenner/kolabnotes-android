@@ -1,31 +1,39 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion  29
-    buildToolsVersion '29.0.3'
+    signingConfigs {
+        debug {
+            storeFile file('/home/koni/Entwicklung/Android KeyStore/android_keystore.jks')
+        }
+    }
+    compileSdk 33
+    buildToolsVersion '33.0.2'
 
     defaultConfig {
         applicationId "org.kore.kolabnotes.android"
-        minSdkVersion 16
-        targetSdkVersion 29
-        versionCode 105
-        versionName "4.2.1"
+        minSdk 29
+        targetSdk 33
+        versionCode 106
+        versionName '5.0.0'
 
         //Running test
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
-
     packagingOptions {
-        exclude "META-INF/LICENSE.txt"
-    }
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        resources {
+            excludes += ['META-INF/LICENSE.txt']
+        }
     }
 
-    lintOptions {
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
+    }
+    namespace 'org.kore.kolabnotes.android'
+    lint {
         checkReleaseBuilds false
     }
+
 }
 
 dependencies {

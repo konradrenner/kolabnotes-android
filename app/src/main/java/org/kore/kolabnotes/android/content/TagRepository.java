@@ -74,10 +74,12 @@ public class TagRepository {
     public void update(String account, String rootFolder,Tag tag){
         Tag oldTag = getTagWithUID(account, rootFolder, tag.getIdentification().getUid());
 
+        String tagId = tag.getIdentification().getUid();
+
         ContentValues values = new ContentValues();
         values.put(DatabaseHelper.COLUMN_ACCOUNT,account);
         values.put(DatabaseHelper.COLUMN_ROOT_FOLDER,rootFolder);
-        values.put(DatabaseHelper.COLUMN_TAG_UID,tag.getIdentification().getUid());
+        values.put(DatabaseHelper.COLUMN_TAG_UID,tagId);
         values.put(DatabaseHelper.COLUMN_PRODUCTID,tag.getIdentification().getProductId());
         values.put(DatabaseHelper.COLUMN_CREATIONDATE,tag.getAuditInformation().getCreationDate().getTime());
         values.put(DatabaseHelper.COLUMN_MODIFICATIONDATE,tag.getAuditInformation().getLastModificationDate().getTime());
@@ -85,11 +87,13 @@ public class TagRepository {
         values.put(DatabaseHelper.COLUMN_COLOR,tag.getColor() == null ? null : tag.getColor().getHexcode());
         values.put(DatabaseHelper.COLUMN_PRIORITY, tag.getPriority());
 
+        String whereClause = DatabaseHelper.COLUMN_ACCOUNT + " = '" + account + "' AND " +
+                DatabaseHelper.COLUMN_ROOT_FOLDER + " = '" + rootFolder + "' AND " +
+                DatabaseHelper.COLUMN_TAG_UID + " = '" + tagId + "' ";
+
         ConnectionManager.getDatabase(context).update(DatabaseHelper.TABLE_TAGS,
                 values,
-                DatabaseHelper.COLUMN_ACCOUNT + " = '" + account + "' AND " +
-                        DatabaseHelper.COLUMN_ROOT_FOLDER + " = '" + rootFolder + "' AND " +
-                        DatabaseHelper.COLUMN_TAG_UID + " = '" + tag.getIdentification().getUid() + "' ",
+                whereClause,
                 null);
 
         new NoteTagRepository(context).updateTagID(account,rootFolder,oldTag.getName(),tag.getName());
