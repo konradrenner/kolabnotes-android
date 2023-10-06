@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="org.kore.kolabnotes.android">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.AUTHENTICATE_ACCOUNTS" />
@@ -27,7 +28,6 @@
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name"
-            android:exported="true"
             android:windowSoftInputMode="adjustResize|stateAlwaysHidden">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -40,7 +40,6 @@
         <activity
             android:name=".DetailActivity"
             android:label="@string/app_name"
-            android:exported="false"
             android:windowSoftInputMode="adjustResize|stateHidden">
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
@@ -60,7 +59,6 @@
         </activity>
         <activity
             android:name=".TagListActivity"
-            android:exported="false"
             android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
@@ -70,7 +68,6 @@
         </activity>
         <activity
             android:name=".DrawEditorActivity"
-            android:exported="false"
             android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
@@ -80,7 +77,6 @@
         </activity>
         <activity
             android:name=".AttachmentActivity"
-            android:exported="false"
             android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
@@ -91,8 +87,7 @@
         <activity
             android:name=".security.AuthenticatorActivity"
             android:label="@string/login_label"
-            android:windowSoftInputMode="adjustPan|stateHidden"
-            android:exported="false">
+            android:windowSoftInputMode="adjustPan|stateHidden">
             <intent-filter>
                 <action android:name="org.kore.kolabnotes.android.security.AuthenticatorActivity" />
 
@@ -118,8 +113,7 @@
                 android:name="android.content.SyncAdapter"
                 android:resource="@xml/syncadapter" />
         </service>
-        <service android:name=".security.AccountAuthenticatorService"
-            android:exported="false">
+        <service android:name=".security.AccountAuthenticatorService">
             <intent-filter>
                 <action android:name="android.accounts.AccountAuthenticator" />
             </intent-filter>
@@ -135,8 +129,7 @@
         <receiver
             android:name=".widget.ListWidget"
             android:icon="@mipmap/ic_kolabnotes_breeze"
-            android:label="@string/app_name"
-            android:exported="false">
+            android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
@@ -149,8 +142,7 @@
         <activity
             android:name=".widget.ListWidgetConfigureActivity"
             android:icon="@mipmap/ic_kolabnotes_breeze"
-            android:label="@string/app_name"
-            android:exported="false">
+            android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
             </intent-filter>
@@ -159,8 +151,7 @@
         <receiver
             android:name=".widget.StickyNoteWidget"
             android:icon="@mipmap/ic_kolabnotes_breeze"
-            android:label="@string/sticky_note_name"
-            android:exported="false">
+            android:label="@string/sticky_note_name">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
@@ -183,8 +174,7 @@
         <activity
             android:name=".widget.StickyNoteWidgetConfigureActivity"
             android:icon="@mipmap/ic_kolabnotes_breeze"
-            android:label="@string/sticky_note_name"
-            android:exported="false">
+            android:label="@string/sticky_note_name">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
             </intent-filter>

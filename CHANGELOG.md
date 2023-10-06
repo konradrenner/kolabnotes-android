@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 You can also have a look on the GitHub release page: https://github.com/konradrenner/kolabnotes-android/releases
 
+## [5.0.1] - 2023-10-06
+### Fixed
+- Switched back to 4.2.1 sources because snyc is not working with Android 13
+
 ## [5.0.0] - 2023-04-27
 ### Fixed
 - Compiled with Android 13 SDK
